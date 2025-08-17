@@ -80,6 +80,19 @@ const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
       />
 
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        {/* Search Bar */}
+        <div className="max-w-md mx-auto mb-12">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Input
+              type="text"
+              placeholder="Search procedures (e.g., root canal, extraction...)"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-10 pr-4 py-3 text-base border-2 border-gray-200 focus:border-blue-500 rounded-lg"
+            />
+          </div>
+        </div>
         {/* Search Results */}
         {isSearching && (
           <div className="mb-12">
