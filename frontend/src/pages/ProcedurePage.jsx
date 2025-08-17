@@ -11,10 +11,14 @@ import {
   Activity,
   Pill,
   Calendar,
-  Phone
+  Phone,
+  Download
 } from 'lucide-react';
 import LoadingSpinner, { ErrorMessage } from '../components/LoadingSpinner';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { dentalApi } from '../services/api';
+import { generateProcedurePDF } from '../utils/pdfGenerator';
 import { useToast } from '../hooks/use-toast';
 
 const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
