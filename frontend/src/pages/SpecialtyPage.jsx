@@ -1,18 +1,97 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import ProcedureCard from '../components/ProcedureCard';
-import { dentalSpecialties } from '../data/mock';
+import LoadingSpinner, { LoadingCard, ErrorMessage } from '../components/LoadingSpinner';
+import { dentalApi } from '../services/api';
+import { useToast } from '../components/ui/use-toast';
 
 const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
-  const specialty = dentalSpecialties.find(s => s.id === specialtyId);
+  const [specialty, setSpecialty] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { toast } = useToast();
 
-  if (!specialty) {
+  useEffect(() => {
+    if (specialtyId) {
+      loadSpecialty();
+    }
+  }, [specialtyId]);
+
+  const loadSpecialty = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await dentalApi.getSpecialty(specialtyId);
+      setSpecialty(response.data);
+    } catch (err) {
+      setError(err.message);
+      toast({
+        title: "Error",
+        description: "Failed to load specialty information. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <div className="flex items-center mb-6">
+              <Button 
+                variant="ghost" 
+                onClick={onBackToHome}
+                className="mr-4 p-2 hover:bg-gray-100 rounded-full"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <div className="h-8 bg-gray-200 rounded animate-pulse w-64 mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-96"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <div className="h-6 bg-gray-200 rounded animate-pulse w-64 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-full mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+          </div>
+          
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <LoadingCard key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !specialty) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Specialty not found</h2>
-          <Button onClick={onBackToHome}>Back to Home</Button>
+        <div className="max-w-md w-full">
+          <div className="flex items-center mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={onBackToHome}
+              className="mr-4"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              Back to Home
+            </Button>
+          </div>
+          <ErrorMessage 
+            message={error || "Specialty not found"} 
+            onRetry={loadSpecialty}
+          />
         </div>
       </div>
     );
