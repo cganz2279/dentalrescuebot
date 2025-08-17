@@ -6,7 +6,7 @@ import SpecialtyCard from '../components/SpecialtyCard';
 import ProcedureCard from '../components/ProcedureCard';
 import LoadingSpinner, { LoadingCard, ErrorMessage } from '../components/LoadingSpinner';
 import { dentalApi } from '../services/api';
-import { useToast } from '../components/ui/use-toast';
+import { useToast } from '../hooks/use-toast';
 
 const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
   const [searchQuery, setSearchQuery] = useState('');
