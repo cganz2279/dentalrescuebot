@@ -135,7 +135,7 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {specialty.procedures.map((procedure) => (
+          {specialty.procedures?.map((procedure) => (
             <ProcedureCard
               key={procedure.id}
               procedure={procedure}
@@ -144,7 +144,7 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
           ))}
         </div>
 
-        {specialty.procedures.length === 0 && (
+        {(!specialty.procedures || specialty.procedures.length === 0) && (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               <svg className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
