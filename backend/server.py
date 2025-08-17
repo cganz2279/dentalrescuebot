@@ -10,9 +10,11 @@ from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
 
-# Import the new auth and practice routes
+# Import the new auth, practice, payment, and webhook routes
 from routes.auth import router as auth_router
 from routes.practice import router as practice_router
+from routes.payments import router as payments_router
+from routes.webhooks import router as webhooks_router
 
 
 ROOT_DIR = Path(__file__).parent
