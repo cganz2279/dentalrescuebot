@@ -200,8 +200,10 @@ async def register_practice(request: PracticeRegisterRequest):
             },
             "subscription": {
                 "plan": "basic",
-                "status": "trial",
-                "trialEndsAt": datetime.utcnow() + timedelta(days=15)
+                "status": "trial", 
+                "trialEndsAt": datetime.utcnow() + timedelta(days=15),
+                "requiresPayment": True,  # Flag to track if payment is needed after trial
+                "monthlyAmount": 49.0     # Monthly subscription amount
             },
             "settings": {
                 "allowPatientRegistration": False,
