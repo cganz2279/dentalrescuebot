@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner, { ErrorMessage } from '../components/LoadingSpinner';
 import { dentalApi } from '../services/api';
-import { useToast } from '../components/ui/use-toast';
+import { useToast } from '../hooks/use-toast';
 
 const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
   const [procedure, setProcedure] = useState(null);
