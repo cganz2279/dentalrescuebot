@@ -93,27 +93,13 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <div className="flex items-center mb-6">
-            <Button 
-              variant="ghost" 
-              onClick={onBackToHome}
-              className="mr-4 p-2 hover:bg-gray-100 rounded-full"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {specialty.name}
-              </h1>
-              <p className="text-lg text-gray-600 mt-2">
-                {specialty.description}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header
+        title={specialty.name}
+        subtitle={specialty.description}
+        showBackButton={true}
+        onBackClick={onBackToHome}
+        showBranding={false}
+      />
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -149,6 +135,9 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
           </div>
         )}
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
