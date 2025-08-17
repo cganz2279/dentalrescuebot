@@ -71,30 +71,20 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-        <div className="bg-white shadow-sm border-b">
-          <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <div className="flex items-center mb-6">
-              <Button 
-                variant="ghost" 
-                onClick={onBackToHome}
-                className="mr-4 p-2 hover:bg-gray-100 rounded-full"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div className="flex-1">
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-32 mb-2"></div>
-                <div className="h-8 bg-gray-200 rounded animate-pulse w-64 mb-2"></div>
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-48"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Header 
+          title="Loading..."
+          subtitle="Loading procedure information..."
+          showBackButton={true}
+          onBackClick={onBackToHome}
+          showBranding={false}
+        />
         
         <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center py-32">
             <LoadingSpinner size="xl" />
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
