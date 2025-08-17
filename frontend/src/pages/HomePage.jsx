@@ -74,7 +74,7 @@ const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Header with Logo */}
       <Header 
-        title="Post-Operative Dental Care Guide"
+        title="The Dental Rescue Bot Library Of Post-Operative Care"
         subtitle="Your comprehensive resource for post-procedure care instructions, warning signs, and recovery guidelines for all dental treatments."
         showBranding={true}
       />
