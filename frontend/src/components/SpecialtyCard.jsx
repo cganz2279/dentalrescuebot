@@ -44,7 +44,7 @@ const SpecialtyCard = ({ specialty, onClick }) => {
           {specialty.description}
         </p>
         <Badge variant="outline" className="text-xs font-medium">
-          {specialty.procedures.length} procedures
+          {specialty.procedureCount || 0} procedures
         </Badge>
       </CardContent>
     </Card>
