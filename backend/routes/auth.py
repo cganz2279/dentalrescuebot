@@ -201,7 +201,7 @@ async def register_practice(request: PracticeRegisterRequest):
             "subscription": {
                 "plan": "basic",
                 "status": "trial",
-                "trialEndsAt": datetime.utcnow() + timedelta(days=14)
+                "trialEndsAt": datetime.utcnow() + timedelta(days=15)
             },
             "settings": {
                 "allowPatientRegistration": False,
