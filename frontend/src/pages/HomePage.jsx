@@ -183,24 +183,50 @@ const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
         {/* Dental Specialties */}
         {!isSearching && (
           <>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Browse by Dental Specialty
-              </h2>
-              <p className="text-lg text-gray-600">
-                Select your procedure category for specific post-operative care instructions
-              </p>
-            </div>
-            
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {dentalSpecialties.map((specialty) => (
-                <SpecialtyCard
-                  key={specialty.id}
-                  specialty={specialty}
-                  onClick={() => onSelectSpecialty(specialty.id)}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Browse by Dental Specialty
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    Loading dental specialties...
+                  </p>
+                </div>
+                
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                    <LoadingCard key={i} />
+                  ))}
+                </div>
+              </>
+            ) : error ? (
+              <ErrorMessage 
+                message={error} 
+                onRetry={loadSpecialties}
+              />
+            ) : (
+              <>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Browse by Dental Specialty
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    Select your procedure category for specific post-operative care instructions
+                  </p>
+                </div>
+                
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {specialties.map((specialty) => (
+                    <SpecialtyCard
+                      key={specialty.id}
+                      specialty={specialty}
+                      onClick={() => onSelectSpecialty(specialty.id)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
