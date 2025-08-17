@@ -323,6 +323,9 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
