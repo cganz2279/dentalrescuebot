@@ -111,7 +111,13 @@ const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Search Results ({searchResults.length})
             </h2>
-            {searchResults.length > 0 ? (
+            {searchLoading ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <LoadingCard key={i} />
+                ))}
+              </div>
+            ) : searchResults.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {searchResults.map((procedure) => (
                   <ProcedureCard
