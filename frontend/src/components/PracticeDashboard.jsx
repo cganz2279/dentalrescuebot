@@ -267,7 +267,7 @@ const PracticeDashboard = () => {
                   </p>
                 </div>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Upgrade Now
+                  Subscribe for $49/month
                 </Button>
               </div>
             </CardContent>
