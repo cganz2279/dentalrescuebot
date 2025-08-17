@@ -359,7 +359,7 @@ const PracticeRegistrationForm = ({ onSwitchToLogin }) => {
             <p className="text-xs text-gray-500">
               By registering, you agree to our Terms of Service and Privacy Policy.
               <br />
-              14-day free trial, then starting at $99/month.
+              15-day free trial, then $49/month. Cancel anytime.
             </p>
           </div>
         </CardContent>
