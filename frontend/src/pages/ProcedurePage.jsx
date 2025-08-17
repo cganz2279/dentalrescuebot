@@ -128,7 +128,7 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
               </Button>
               <div className="flex-1">
                 <Badge variant="secondary" className="mb-2">
-                  {procedure.specialty}
+                  {procedure.specialtyName}
                 </Badge>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {procedure.name}
