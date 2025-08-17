@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, List
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://dental-healing.preview.emergentagent.com/api"
+BACKEND_URL = "https://postcare-dental.preview.emergentagent.com/api"
 
 class DentalAPITester:
     def __init__(self, base_url: str):
