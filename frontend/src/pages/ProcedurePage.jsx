@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -13,17 +13,89 @@ import {
   Calendar,
   Phone
 } from 'lucide-react';
-import { procedureDetails } from '../data/mock';
+import LoadingSpinner, { ErrorMessage } from '../components/LoadingSpinner';
+import { dentalApi } from '../services/api';
+import { useToast } from '../components/ui/use-toast';
 
 const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
-  const procedure = procedureDetails[procedureId];
+  const [procedure, setProcedure] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { toast } = useToast();
 
-  if (!procedure) {
+  useEffect(() => {
+    if (procedureId) {
+      loadProcedure();
+    }
+  }, [procedureId]);
+
+  const loadProcedure = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await dentalApi.getProcedure(procedureId);
+      setProcedure(response.data);
+    } catch (err) {
+      setError(err.message);
+      toast({
+        title: "Error",
+        description: "Failed to load procedure information. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <div className="flex items-center mb-6">
+              <Button 
+                variant="ghost" 
+                onClick={onBackToHome}
+                className="mr-4 p-2 hover:bg-gray-100 rounded-full"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex-1">
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-32 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded animate-pulse w-64 mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-48"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center py-32">
+            <LoadingSpinner size="xl" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !procedure) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Procedure not found</h2>
-          <Button onClick={onBackToHome}>Back to Home</Button>
+        <div className="max-w-md w-full">
+          <div className="flex items-center mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={onBackToHome}
+              className="mr-4"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              Back to Home
+            </Button>
+          </div>
+          <ErrorMessage 
+            message={error || "Procedure not found"} 
+            onRetry={loadProcedure}
+          />
         </div>
       </div>
     );
