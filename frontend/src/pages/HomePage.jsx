@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Search, BookOpen, Shield, Users } from 'lucide-react';
 import SpecialtyCard from '../components/SpecialtyCard';
 import ProcedureCard from '../components/ProcedureCard';
-import { dentalSpecialties, searchProcedures } from '../data/mock';
+import LoadingSpinner, { LoadingCard, ErrorMessage } from '../components/LoadingSpinner';
+import { dentalApi } from '../services/api';
+import { useToast } from '../components/ui/use-toast';
 
 const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
   const [searchQuery, setSearchQuery] = useState('');
