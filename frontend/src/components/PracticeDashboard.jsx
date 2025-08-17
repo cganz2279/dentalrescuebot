@@ -263,7 +263,7 @@ const PracticeDashboard = () => {
                 <div className="flex-1">
                   <h3 className="font-semibold text-blue-900">Free Trial Active</h3>
                   <p className="text-blue-800 text-sm">
-                    Your 14-day free trial is active. Upgrade to continue using DentalRescueBot after your trial ends.
+                    Your 15-day free trial is active. Subscribe to continue using DentalRescueBot after your trial ends.
                   </p>
                 </div>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
