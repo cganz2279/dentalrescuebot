@@ -59,7 +59,7 @@ const PracticeRegistrationForm = ({ onSwitchToLogin }) => {
       if (result.success) {
         toast({
           title: "Registration Successful!",
-          description: `Welcome to DentalRescueBot, ${result.user.firstName}! Your 14-day trial has started.`,
+          description: `Welcome to DentalRescueBot, ${result.user.firstName}! Your 15-day trial has started.`,
           variant: "default",
         });
       } else {
