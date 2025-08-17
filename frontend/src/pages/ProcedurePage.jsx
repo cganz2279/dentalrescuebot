@@ -33,22 +33,7 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
     }
   }, [procedureId]);
 
-  const handleDownloadPDF = () => {
-    const success = generateProcedurePDF(procedure);
-    if (success) {
-      toast({
-        title: "PDF Generated",
-        description: "Your post-operative care guide has been downloaded.",
-        variant: "default",
-      });
-    } else {
-      toast({
-        title: "Download Failed",
-        description: "Failed to generate PDF. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
+  const loadProcedure = async () => {
     try {
       setLoading(true);
       setError(null);
