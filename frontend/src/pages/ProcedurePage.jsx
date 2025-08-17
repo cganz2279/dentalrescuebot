@@ -117,25 +117,36 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <div className="flex items-center mb-6">
-            <Button 
-              variant="ghost" 
-              onClick={onBackToHome}
-              className="mr-4 p-2 hover:bg-gray-100 rounded-full"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex-1">
-              <Badge variant="secondary" className="mb-2">
-                {procedure.specialty}
-              </Badge>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {procedure.name}
-              </h1>
-              <p className="text-lg text-gray-600">
-                Post-Operative Care Guide
-              </p>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                onClick={onBackToHome}
+                className="mr-4 p-2 hover:bg-gray-100 rounded-full"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex-1">
+                <Badge variant="secondary" className="mb-2">
+                  {procedure.specialty}
+                </Badge>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {procedure.name}
+                </h1>
+                <p className="text-lg text-gray-600">
+                  Post-Operative Care Guide
+                </p>
+              </div>
             </div>
+            
+            {/* PDF Download Button */}
+            <Button 
+              onClick={handleDownloadPDF}
+              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download PDF
+            </Button>
           </div>
         </div>
       </div>
