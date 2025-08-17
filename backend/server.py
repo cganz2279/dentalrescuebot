@@ -202,6 +202,10 @@ async def get_procedure(procedure_id: str):
 # Include the router in the main app
 app.include_router(api_router)
 
+# Include auth and practice management routes
+app.include_router(auth_router)
+app.include_router(practice_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
