@@ -12,16 +12,59 @@ const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSearch = (query) => {
+  // Load specialties on component mount
+  useEffect(() => {
+    loadSpecialties();
+  }, []);
+
+  const loadSpecialties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await dentalApi.getSpecialties();
+      setSpecialties(response.data);
+    } catch (err) {
+      setError(err.message);
+      toast({
+        title: "Error",
+        description: "Failed to load dental specialties. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async (query) => {
     setSearchQuery(query);
+    
     if (query.trim()) {
       setIsSearching(true);
-      const results = searchProcedures(query);
-      setSearchResults(results);
+      setSearchLoading(true);
+      
+      try {
+        const response = await dentalApi.searchProcedures(query);
+        setSearchResults(response.data);
+      } catch (err) {
+        toast({
+          title: "Search Error",
+          description: "Failed to search procedures. Please try again.",
+          variant: "destructive",
+        });
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
     } else {
       setIsSearching(false);
       setSearchResults([]);
+      setSearchLoading(false);
     }
   };
 
