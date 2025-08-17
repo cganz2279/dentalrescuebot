@@ -218,6 +218,9 @@ const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
           </>
         )}
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
