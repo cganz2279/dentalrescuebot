@@ -97,7 +97,7 @@ const PracticeRegistrationForm = ({ onSwitchToLogin }) => {
             Register Your Dental Practice
           </CardTitle>
           <p className="text-gray-600 mt-2">
-            Start your 14-day free trial today
+            Start your 15-day free trial today
           </p>
         </CardHeader>
         <CardContent>
