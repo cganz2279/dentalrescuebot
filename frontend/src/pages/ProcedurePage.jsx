@@ -51,6 +51,23 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
     }
   };
 
+  const handleDownloadPDF = () => {
+    const success = generateProcedurePDF(procedure);
+    if (success) {
+      toast({
+        title: "PDF Generated",
+        description: "Your post-operative care guide has been downloaded.",
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Download Failed",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
