@@ -183,7 +183,7 @@ async def register_practice(request: PracticeRegisterRequest):
         practice_id = str(uuid.uuid4())
         admin_user_id = str(uuid.uuid4())
         
-        # Create practice document
+        # Create practice document with trial that requires payment setup
         practice_doc = {
             "id": practice_id,
             "name": request.practiceName,
@@ -203,17 +203,19 @@ async def register_practice(request: PracticeRegisterRequest):
             },
             "subscription": {
                 "plan": "basic",
-                "status": "trial", 
+                "status": "trial_pending_payment",  # Requires payment method setup
                 "trialEndsAt": datetime.utcnow() + timedelta(days=15),
-                "requiresPayment": True,  # Flag to track if payment is needed after trial
-                "monthlyAmount": 49.0     # Monthly subscription amount
+                "requiresPayment": True,
+                "monthlyAmount": 49.0,
+                "paymentMethodRequired": True,
+                "chargeDate": datetime.utcnow() + timedelta(days=15)  # When to charge
             },
             "settings": {
                 "allowPatientRegistration": False,
                 "requirePatientApproval": True,
                 "customProcedures": []
             },
-            "isActive": True,
+            "isActive": False,  # Will be activated after payment method setup
             "createdAt": datetime.utcnow(),
             "updatedAt": datetime.utcnow()
         }
@@ -227,7 +229,7 @@ async def register_practice(request: PracticeRegisterRequest):
             "lastName": request.adminLastName,
             "role": "practice_admin",
             "practiceId": practice_id,
-            "isActive": True,
+            "isActive": False,  # Will be activated after payment setup
             "isEmailVerified": True,
             "loginCount": 0,
             "createdAt": datetime.utcnow(),
@@ -238,31 +240,19 @@ async def register_practice(request: PracticeRegisterRequest):
         await db.practices.insert_one(practice_doc)
         await db.users.insert_one(admin_user_doc)
         
-        # Generate token for immediate login
-        token = generate_token(admin_user_id, "practice_admin", practice_id)
-        
-        # Create response
-        user_response = UserResponse(
-            id=admin_user_id,
-            email=request.email.lower(),
-            firstName=request.adminFirstName,
-            lastName=request.adminLastName,
-            role="practice_admin",
-            practiceId=practice_id,
-            isActive=True
-        )
-        
+        # Return practice info and flag for payment setup requirement
         return {
             "success": True,
-            "message": "Practice registered successfully",
-            "user": user_response,
-            "token": token,
+            "message": "Practice registered successfully - payment method required to activate trial",
             "practice": {
                 "id": practice_id,
                 "name": request.practiceName,
                 "email": request.email,
-                "trialEndsAt": practice_doc["subscription"]["trialEndsAt"]
-            }
+                "trialEndsAt": practice_doc["subscription"]["trialEndsAt"],
+                "chargeDate": practice_doc["subscription"]["chargeDate"]
+            },
+            "requiresPaymentSetup": True,
+            "nextStep": "setup_payment_method"
         }
         
     except HTTPException:
@@ -272,6 +262,85 @@ async def register_practice(request: PracticeRegisterRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Registration failed"
+        )
+
+@router.post("/setup-payment-method")
+async def setup_payment_method(
+    practice_id: str,
+    origin_url: str
+):
+    """Setup payment method for trial activation - redirects to Stripe"""
+    try:
+        # Find practice
+        practice = await db.practices.find_one({"id": practice_id})
+        if not practice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Practice not found"
+            )
+        
+        if practice["subscription"]["status"] != "trial_pending_payment":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Practice already has payment method setup"
+            )
+        
+        # Create Stripe checkout for payment method setup (with $0.50 authorization)
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
+        
+        STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=f"{origin_url}/api/webhook/stripe")
+        
+        # Setup URLs
+        success_url = f"{origin_url}/payment-setup-success?session_id={{CHECKOUT_SESSION_ID}}&practice_id={practice_id}"
+        cancel_url = f"{origin_url}/payment-setup-cancelled?practice_id={practice_id}"
+        
+        # Create metadata for payment method setup
+        metadata = {
+            "purpose": "payment_method_setup",
+            "practice_id": practice_id,
+            "practice_name": practice["name"],
+            "charge_amount": "49.00",
+            "charge_date": practice["subscription"]["chargeDate"].isoformat()
+        }
+        
+        # Create $0.50 authorization (will be refunded immediately)
+        checkout_request = CheckoutSessionRequest(
+            amount=0.50,  # Small authorization charge
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata=metadata
+        )
+        
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store session for tracking
+        payment_setup = {
+            "id": str(uuid.uuid4()),
+            "practice_id": practice_id,
+            "session_id": session.session_id,
+            "purpose": "payment_method_setup",
+            "amount": 0.50,
+            "currency": "usd",
+            "status": "pending",
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.payment_setups.insert_one(payment_setup)
+        
+        return {
+            "success": True,
+            "checkout_url": session.url,
+            "session_id": session.session_id,
+            "message": "Redirecting to payment method setup"
+        }
+        
+    except Exception as e:
+        print(f"Payment setup error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to setup payment method"
         )
 
 @router.post("/invite-patient")
