@@ -102,7 +102,317 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the dental post-operative care app backend APIs including health check, specialties, procedures, search functionality, and error handling"
+user_problem_statement: "Fix the Practice Dashboard buttons for 'Add Patient' and 'Assign Procedure' functionality. These buttons were not working, preventing practices from managing patients and testing core functionality with branded PDFs."
+
+backend:
+  - task: "Health Check API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/ endpoint working correctly, returns {'message': 'Hello World'}"
+
+  - task: "Get All Specialties API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/specialties returns all 7 dental specialties with procedure counts. Response format: {'success': true, 'data': [...]} as expected"
+
+  - task: "Get Individual Specialty API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/specialties/oral-surgery returns specialty details with 3 associated procedures. Proper error handling for invalid IDs"
+
+  - task: "Get All Procedures API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/procedures returns all 8 procedures with required fields (id, name, specialty, specialtyName, duration)"
+
+  - task: "Get Individual Procedure API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/procedures/root-canal returns detailed procedure information including overview, aftercare, diet restrictions, warning signs, recovery timeline, and medications"
+
+  - task: "Search Procedures API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "Initial test failed due to route ordering issue - /procedures/search was defined after /procedures/{id} causing FastAPI to match 'search' as procedure_id"
+        - working: true
+          agent: "testing"
+          comment: "Fixed route ordering by moving /procedures/search before /procedures/{id}. Now returns 3 matching procedures for query 'root'"
+
+  - task: "Error Handling"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Proper 404 error handling for invalid specialty IDs. Returns appropriate error message: 'Specialty not found'"
+
+  - task: "Database Seeding"
+    implemented: true
+    working: true
+    file: "seed_database.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Created Python seeding script to populate MongoDB with 7 specialties and 8 procedures. Database was initially empty, seeding resolved all data-related test failures"
+
+  - task: "Practice Dashboard API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "GET /api/practice/dashboard endpoint exists and returns practice stats, recent patients, and recent procedures. Confirmed API implementation is complete."
+
+  - task: "Create Patient API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "POST /api/practice/patients endpoint implemented. Accepts PatientCreate model with firstName, lastName, email, and optional phone. Generates UUID, creates user with role 'patient', links to practice. Needs testing."
+
+  - task: "Assign Procedure API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "POST /api/practice/assign-procedure endpoint implemented. Accepts ProcedureAssignment model with patientId, procedureId, performedDate, dentistName, optional notes and custom instructions. Creates assignment in patientprocedures collection. Needs testing."
+
+  - task: "Get Practice Patients API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "GET /api/practice/patients endpoint implemented. Returns all patients for the authenticated practice with procedure counts. Needs testing."
+
+frontend:
+  - task: "Homepage Loading & Display"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/HomePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Homepage loads correctly with hero section, search bar, features section, and specialty cards. All 7 dental specialties load from backend API with proper procedure counts. Professional medical design verified."
+
+  - task: "Search Functionality"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/HomePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Search functionality working perfectly. Successfully tested searches for 'root canal', 'extraction', and 'crown' - all return appropriate results with specialty badges. Empty search correctly returns to specialty view."
+
+  - task: "Navigation Flow"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Navigation flow working seamlessly. Successfully tested: Home → Search → Procedure Detail → Back to Home. Specialty page navigation also working with proper procedure listings."
+
+  - task: "Procedure Detail Pages"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/ProcedurePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Procedure detail pages fully functional with all 8 required sections: Overview, Emergency Alert, Immediate Aftercare, Diet Restrictions, Warning Signs (red alert), Recovery Timeline, Medications, and Contact Information. Professional medical layout with proper color coding."
+
+  - task: "Loading States & Error Handling"
+    implemented: true
+    working: true
+    file: "frontend/src/components/LoadingSpinner.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Loading states working properly during API calls. Loading spinners appear during data fetching. Error handling implemented with toast notifications for failed API requests."
+
+  - task: "UI/UX Quality & Responsive Design"
+    implemented: true
+    working: true
+    file: "frontend/src/App.css"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Professional medical design verified with proper color contrast and readability. Responsive design working on mobile (390x844) and desktop (1920x1080). Lucide React icons displaying correctly (12 SVG icons found). Styled cards and interactive elements working properly."
+
+  - task: "Backend Integration"
+    implemented: true
+    working: true
+    file: "frontend/src/services/api.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "Initial testing failed due to import path error for use-toast component in HomePage, SpecialtyPage, and ProcedurePage"
+        - working: true
+          agent: "testing"
+          comment: "Fixed import paths from '../components/ui/use-toast' to '../hooks/use-toast'. Backend integration now working seamlessly with real data from https://dentalnotes.preview.emergentagent.com/api. All API endpoints functioning correctly with proper error handling and loading states."
+
+  - task: "Add Patient Page Routing"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Fixed missing route for /add-patient in App.js. Added import for AddPatientPage and created route. Dashboard 'Add Patient' button should now navigate correctly."
+
+  - task: "Add Patient Page Component"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/AddPatientPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "AddPatientPage component already existed and is well-implemented with form validation, API integration, and proper UI. Includes firstName, lastName, email (required), phone and dateOfBirth (optional). Uses practiceApi.createPatient."
+
+  - task: "Assign Procedure Page Routing"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added missing route for /assign-procedure in App.js. Added import for AssignProcedurePage and created route. Dashboard 'Assign Procedure' button should now navigate correctly."
+
+  - task: "Assign Procedure Page Component"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/AssignProcedurePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Created comprehensive AssignProcedurePage component with patient selection, procedure selection, procedure details (date, dentist, notes), custom instructions, and form validation. Uses practiceApi.assignProcedure and dentalApi.getProcedures."
+
+metadata:
+  created_by: "main_agent"
+  version: "2.0"
+  test_sequence: 3
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Create Patient API"
+    - "Assign Procedure API"
+    - "Get Practice Patients API"
+    - "Add Patient Page functionality"
+    - "Assign Procedure Page functionality"
+    - "Dashboard button navigation"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "testing"
+      message: "Comprehensive backend API testing completed. All 7 test scenarios passed: health check, specialties API, individual specialty, procedures API, individual procedure, search functionality, and error handling. Fixed one critical route ordering issue in FastAPI. Database seeding was required and implemented. Backend APIs are fully functional and ready for production use."
+    - agent: "testing"
+      message: "Comprehensive frontend testing completed successfully. Fixed critical import path issue for use-toast component. All major functionality verified: homepage loading with backend data integration, search functionality for multiple queries, complete navigation flow, detailed procedure pages with all 8 required sections, loading states, responsive design on mobile and desktop, and professional medical UI. Frontend-backend integration working seamlessly with real data from production APIs."
+    - agent: "main"
+      message: "Fixed the main user issue: Dashboard buttons not working. Root cause was missing routes in App.js for /add-patient and /assign-procedure. Added both routes and created AssignProcedurePage component. Fixed compilation errors with lucide-react icons. Both Add Patient and Assign Procedure functionality now implemented and need backend testing."
 
 backend:
   - task: "Health Check API"
