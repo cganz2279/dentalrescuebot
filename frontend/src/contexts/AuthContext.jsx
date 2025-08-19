@@ -39,24 +39,12 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const response = await authApi.login(email, password);
-      
-      setUser(response.user);
-      setPractice(response.practice);
-      setToken(response.token);
-      
-      localStorage.setItem('dentalToken', response.token);
-      
-      return { success: true, user: response.user };
-    } catch (error) {
-      console.error('Login failed:', error);
-      return { 
-        success: false, 
-        error: error.response?.data?.detail || 'Login failed' 
-      };
-    }
+  const login = (userData, authToken, practiceData = null) => {
+    setUser(userData);
+    setPractice(practiceData);
+    setToken(authToken);
+    localStorage.setItem('dentalToken', authToken);
+    return { success: true };
   };
 
   const registerPractice = async (practiceData) => {
