@@ -147,12 +147,23 @@ const PracticeDashboard = () => {
     return true;
   }) || [];
 
-  // Filter procedures based on selected patient only (no search on procedures)
+  // Filter procedures based on selected patient and search term
   const filteredProcedures = dashboardData?.recentProcedures?.filter(procedure => {
-    // Filter by selected patient only
+    // Filter by selected patient
     if (selectedPatientId && procedure.patientId !== selectedPatientId) {
       return false;
     }
+    
+    // Filter by search term
+    if (procedureSearchTerm) {
+      const searchLower = procedureSearchTerm.toLowerCase();
+      return (
+        procedure.procedureName.toLowerCase().includes(searchLower) ||
+        procedure.dentistName.toLowerCase().includes(searchLower) ||
+        (procedure.patientName && procedure.patientName.toLowerCase().includes(searchLower))
+      );
+    }
+    
     return true;
   }) || [];
 
