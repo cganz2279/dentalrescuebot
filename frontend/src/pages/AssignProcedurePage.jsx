@@ -19,6 +19,7 @@ const AssignProcedurePage = () => {
   
   const [patients, setPatients] = useState([]);
   const [procedures, setProcedures] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
