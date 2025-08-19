@@ -144,6 +144,28 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
     const primaryColor = practice.branding?.primaryColor ? 
       hexToRgb(practice.branding.primaryColor) : [0, 51, 102];
 
+    // Helper function to add practice logo
+    const addLogo = async () => {
+      if (practice.branding?.logo) {
+        try {
+          // If logo is a data URL (base64), use it directly
+          if (practice.branding.logo.startsWith('data:image')) {
+            const logoWidth = 40;
+            const logoHeight = 30;
+            pdf.addImage(practice.branding.logo, 'JPEG', pageWidth - rightMargin - logoWidth, yPosition, logoWidth, logoHeight);
+            return logoHeight + 5;
+          }
+          // If logo is a URL, we'd need to fetch it (more complex in browser environment)
+          // For now, we'll show a placeholder
+          return 0;
+        } catch (error) {
+          console.warn('Could not load logo:', error);
+          return 0;
+        }
+      }
+      return 0;
+    };
+
     // Helper function to add page numbers (starting from page 2)
     const addPageNumber = () => {
       if (currentPage > 1) {
@@ -154,13 +176,34 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
       }
     };
 
+    // Helper function to add header with logo on each page
+    const addPageHeader = () => {
+      if (currentPage > 1) {
+        // Add logo on subsequent pages
+        addLogo();
+        
+        // Add practice name in smaller font
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        pdf.text(practice.name || 'DENTAL PRACTICE', leftMargin, topMargin + 10);
+        
+        // Add a line separator
+        pdf.setDrawColor(200, 200, 200);
+        pdf.setLineWidth(0.5);
+        pdf.line(leftMargin, topMargin + 20, pageWidth - rightMargin, topMargin + 20);
+        
+        yPosition = topMargin + 30;
+      }
+    };
+
     // Helper function to check for page break and add new page
     const checkPageBreak = (neededSpace) => {
       if (yPosition + neededSpace > pageHeight - bottomMargin) {
         addPageNumber();
         pdf.addPage();
         currentPage++;
-        yPosition = topMargin;
+        addPageHeader();
         return true;
       }
       return false;
@@ -173,7 +216,7 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
         addPageNumber();
         pdf.addPage();
         currentPage++;
-        yPosition = topMargin;
+        addPageHeader();
         return true;
       }
       return false;
@@ -308,7 +351,9 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
 
     // START DOCUMENT CREATION
 
-    // Header - Practice Information
+    // Header - Practice Information with Logo
+    const logoHeight = await addLogo();
+    
     pdf.setFontSize(20);
     pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
