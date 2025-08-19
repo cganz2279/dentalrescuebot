@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 // Get backend URL with fallback
-const BACKEND_URL = import.meta.env?.REACT_APP_BACKEND_URL || 
-                    process.env?.REACT_APP_BACKEND_URL || 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 
                     'https://dentalcarebot.preview.emergentagent.com';
 
 const AUTH_BASE_URL = `${BACKEND_URL}/api/auth`;
