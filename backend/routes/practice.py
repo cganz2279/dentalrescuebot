@@ -386,6 +386,58 @@ async def assign_procedure_to_patient(
             detail="Failed to assign procedure"
         )
 
+@router.post("/request-procedure")
+async def request_new_procedure(
+    request_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Submit a request for a new procedure to be added"""
+    try:
+        practice_id = current_user["practiceId"]
+        user_id = current_user["userId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Create procedure request
+        procedure_request = {
+            "id": str(uuid.uuid4()),
+            "practiceId": practice_id,
+            "requestedBy": user_id,
+            "requestedByName": f"{current_user.get('firstName', '')} {current_user.get('lastName', '')}".strip(),
+            "practiceName": current_user.get('practiceName', ''),
+            "procedureName": request_data.get("procedureName"),
+            "specialty": request_data.get("specialty"),
+            "description": request_data.get("description"),
+            "reasonForRequest": request_data.get("reasonForRequest"),
+            "urgencyLevel": request_data.get("urgencyLevel", "normal"),
+            "status": "pending",
+            "createdAt": datetime.utcnow(),
+            "updatedAt": datetime.utcnow()
+        }
+        
+        # Store in database
+        await db.procedure_requests.insert_one(procedure_request)
+        
+        return {
+            "success": True,
+            "message": "Procedure request submitted successfully",
+            "requestId": procedure_request["id"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Request procedure error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to submit procedure request"
+        )
+
 @router.get("/doctors")
 async def get_practice_doctors(current_user: dict = Depends(get_current_user)):
     """Get all doctors/staff in the practice"""
