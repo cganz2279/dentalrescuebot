@@ -213,38 +213,35 @@ const PracticeDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Button 
             onClick={() => navigate('/add-patient')}
-            className="bg-blue-600 hover:bg-blue-700 text-white h-20 flex flex-col"
+            className="h-16 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center justify-center space-y-2"
           >
-            <Plus className="h-6 w-6 mb-2" />
-            Add Patient
+            <Plus className="h-6 w-6" />
+            <span className="font-medium">Add Patient</span>
           </Button>
+          
           <Button 
             onClick={() => navigate('/assign-procedure')}
-            variant="outline" 
-            className="h-20 flex flex-col"
+            className="h-16 bg-green-600 hover:bg-green-700 text-white flex flex-col items-center justify-center space-y-2"
           >
-            <FileText className="h-6 w-6 mb-2" />
-            Assign Procedure
+            <FileText className="h-6 w-6" />
+            <span className="font-medium">Assign Procedure</span>
           </Button>
+
+          <Button 
+            onClick={() => navigate('/patient-records')}
+            className="h-16 bg-purple-600 hover:bg-purple-700 text-white flex flex-col items-center justify-center space-y-2"
+          >
+            <FolderOpen className="h-6 w-6" />
+            <span className="font-medium">Patient Records</span>
+          </Button>
+          
           <Button 
             onClick={() => navigate('/practice-settings')}
-            variant="outline" 
-            className="h-20 flex flex-col"
+            variant="outline"
+            className="h-16 flex flex-col items-center justify-center space-y-2"
           >
-            <Settings className="h-6 w-6 mb-2" />
-            Practice Settings
-          </Button>
-          <Button 
-            onClick={() => toast({
-              title: "Coming Soon",
-              description: "Export Data functionality will be available in the next update.",
-              variant: "default",
-            })}
-            variant="outline" 
-            className="h-20 flex flex-col"
-          >
-            <Download className="h-6 w-6 mb-2" />
-            Export Data
+            <Settings className="h-6 w-6" />
+            <span className="font-medium">Practice Settings</span>
           </Button>
         </div>
 
