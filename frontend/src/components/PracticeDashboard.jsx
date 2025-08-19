@@ -29,6 +29,7 @@ const PracticeDashboard = () => {
   const [error, setError] = useState(null);
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [patientSearchTerm, setPatientSearchTerm] = useState('');
+  const [procedureSearchTerm, setProcedureSearchTerm] = useState('');
   const { user, practice, logout } = useAuth();
   const { toast } = useToast();
 
