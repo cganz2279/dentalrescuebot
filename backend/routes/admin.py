@@ -442,3 +442,69 @@ async def get_all_payments(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get payments"
         )
+
+@router.get("/procedure-requests")
+async def get_procedure_requests(admin_data = Depends(verify_admin_token)):
+    """Get all procedure requests for admin review"""
+    try:
+        # Get all procedure requests, newest first
+        requests = await db.procedure_requests.find(
+            {},
+            {"_id": 0}
+        ).sort("createdAt", -1).to_list(length=None)
+        
+        return {
+            "success": True,
+            "data": requests
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Get procedure requests error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get procedure requests"
+        )
+
+@router.put("/procedure-requests/{request_id}")
+async def update_procedure_request_status(
+    request_id: str,
+    update_data: dict,
+    admin_data = Depends(verify_admin_token)
+):
+    """Update procedure request status (approve, reject, in-progress)"""
+    try:
+        # Update the request
+        result = await db.procedure_requests.update_one(
+            {"id": request_id},
+            {
+                "$set": {
+                    "status": update_data.get("status"),
+                    "adminNotes": update_data.get("adminNotes"),
+                    "reviewedBy": admin_data.get("adminEmail", ""),
+                    "reviewedAt": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure request not found"
+            )
+        
+        return {
+            "success": True,
+            "message": "Procedure request updated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Update procedure request error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update procedure request"
+        )
