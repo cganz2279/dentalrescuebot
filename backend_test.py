@@ -681,6 +681,301 @@ class DentalAPITester:
         except Exception as e:
             self.log_test("Update Procedure Assignment 404 Test", False, f"Exception: {str(e)}")
             return False
+
+    def create_test_patient(self):
+        """Create a test patient john.doe@email.com for patient login testing"""
+        if not self.auth_token:
+            self.log_test("Create Test Patient", False, "No authentication token available")
+            return False
+            
+        try:
+            patient_data = {
+                "email": "john.doe@email.com",
+                "firstName": "John",
+                "lastName": "Doe",
+                "phone": "555-0123"
+            }
+            
+            response = self.session.post(f"{self.base_url}/practice/patients", json=patient_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    patient = data["data"]
+                    self.test_patient_john_id = patient.get("id")
+                    self.log_test("Create Test Patient", True, 
+                                f"Created test patient John Doe (john.doe@email.com) with ID: {self.test_patient_john_id}")
+                    return True
+                else:
+                    self.log_test("Create Test Patient", False, "Invalid response format")
+                    return False
+            else:
+                # Patient might already exist, try to find them
+                patients_response = self.session.get(f"{self.base_url}/practice/patients")
+                if patients_response.status_code == 200:
+                    patients_data = patients_response.json()
+                    if patients_data.get("success"):
+                        patients = patients_data.get("data", [])
+                        for patient in patients:
+                            if patient.get("email") == "john.doe@email.com":
+                                self.test_patient_john_id = patient.get("id")
+                                self.log_test("Create Test Patient", True, 
+                                            f"Found existing test patient John Doe (john.doe@email.com) with ID: {self.test_patient_john_id}")
+                                return True
+                
+                self.log_test("Create Test Patient", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Create Test Patient", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_password_setup(self):
+        """Test POST /api/auth/patient-setup endpoint"""
+        try:
+            setup_data = {
+                "email": "john.doe@email.com",
+                "password": "password123"
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/patient-setup", json=setup_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    self.log_test("Patient Password Setup", True, 
+                                f"Successfully set up password for john.doe@email.com")
+                    return True
+                else:
+                    self.log_test("Patient Password Setup", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient Password Setup", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Password Setup", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_login(self):
+        """Test patient login and get patient token"""
+        try:
+            login_data = {
+                "email": "john.doe@email.com",
+                "password": "password123"
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "token" in data:
+                    self.patient_token = data["token"]
+                    user_info = data.get("user", {})
+                    if user_info.get("role") == "patient":
+                        self.log_test("Patient Login", True, 
+                                    f"Patient logged in successfully: {user_info.get('firstName', '')} {user_info.get('lastName', '')} (role: {user_info.get('role', '')})")
+                        return True
+                    else:
+                        self.log_test("Patient Login", False, f"Expected patient role, got: {user_info.get('role', '')}")
+                        return False
+                else:
+                    self.log_test("Patient Login", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient Login", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Login", False, f"Exception: {str(e)}")
+            return False
+
+    def assign_procedure_to_test_patient(self):
+        """Assign a procedure to the test patient for testing patient endpoints"""
+        if not self.auth_token:
+            self.log_test("Assign Procedure to Test Patient", False, "No authentication token available")
+            return False
+            
+        if not hasattr(self, 'test_patient_john_id') or not self.test_patient_john_id:
+            self.log_test("Assign Procedure to Test Patient", False, "No test patient available")
+            return False
+            
+        try:
+            # Get a procedure to assign
+            procedures_response = self.session.get(f"{self.base_url}/procedures")
+            if procedures_response.status_code != 200:
+                self.log_test("Assign Procedure to Test Patient", False, "Could not fetch procedures")
+                return False
+                
+            procedures_data = procedures_response.json()
+            if not procedures_data.get("success") or not procedures_data.get("data"):
+                self.log_test("Assign Procedure to Test Patient", False, "No procedures available")
+                return False
+                
+            procedure = procedures_data["data"][0]  # Use first procedure
+            
+            assignment_data = {
+                "patientId": self.test_patient_john_id,
+                "procedureId": procedure["id"],
+                "procedureName": procedure["name"],
+                "performedDate": "2024-01-15T10:00:00Z",
+                "dentistName": "Dr. John Smith",
+                "practiceNotes": "Test procedure for patient login system",
+                "customInstructions": ["Follow all post-operative instructions", "Contact office if any concerns"],
+                "followUpDate": "2024-01-22T14:00:00Z"
+            }
+            
+            response = self.session.post(f"{self.base_url}/practice/assign-procedure", json=assignment_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    assignment_info = data.get("data", {})
+                    self.test_patient_assignment_id = assignment_info.get("assignmentId")
+                    self.log_test("Assign Procedure to Test Patient", True, 
+                                f"Assigned {assignment_info.get('procedureName', 'procedure')} to test patient (Assignment ID: {self.test_patient_assignment_id})")
+                    return True
+                else:
+                    self.log_test("Assign Procedure to Test Patient", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Assign Procedure to Test Patient", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Assign Procedure to Test Patient", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_dashboard(self):
+        """Test GET /api/patients/dashboard endpoint"""
+        if not hasattr(self, 'patient_token') or not self.patient_token:
+            self.log_test("Patient Dashboard", False, "No patient token available")
+            return False
+            
+        try:
+            # Create a new session with patient token
+            patient_session = requests.Session()
+            patient_session.headers.update({"Authorization": f"Bearer {self.patient_token}"})
+            
+            response = patient_session.get(f"{self.base_url}/patients/dashboard")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    dashboard_data = data["data"]
+                    patient_info = dashboard_data.get("patient", {})
+                    assigned_procedures = dashboard_data.get("assignedProcedures", [])
+                    stats = dashboard_data.get("stats", {})
+                    
+                    self.log_test("Patient Dashboard", True, 
+                                f"Dashboard loaded for {patient_info.get('firstName', '')} {patient_info.get('lastName', '')} with {len(assigned_procedures)} procedures, Stats: {stats}")
+                    return True
+                else:
+                    self.log_test("Patient Dashboard", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient Dashboard", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Dashboard", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_procedure_view(self):
+        """Test GET /api/patients/procedures/{assignment_id} endpoint"""
+        if not hasattr(self, 'patient_token') or not self.patient_token:
+            self.log_test("Patient Procedure View", False, "No patient token available")
+            return False
+            
+        if not hasattr(self, 'test_patient_assignment_id') or not self.test_patient_assignment_id:
+            self.log_test("Patient Procedure View", False, "No test assignment available")
+            return False
+            
+        try:
+            # Create a new session with patient token
+            patient_session = requests.Session()
+            patient_session.headers.update({"Authorization": f"Bearer {self.patient_token}"})
+            
+            response = patient_session.get(f"{self.base_url}/patients/procedures/{self.test_patient_assignment_id}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    procedure_data = data["data"]
+                    assignment = procedure_data.get("assignment", {})
+                    procedure = procedure_data.get("procedure", {})
+                    practice = procedure_data.get("practice", {})
+                    
+                    self.log_test("Patient Procedure View", True, 
+                                f"Retrieved procedure details: {procedure.get('name', '')} for practice {practice.get('name', '')}")
+                    return True
+                else:
+                    self.log_test("Patient Procedure View", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient Procedure View", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Procedure View", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_download_tracking(self):
+        """Test POST /api/patients/procedures/{assignment_id}/download endpoint"""
+        if not hasattr(self, 'patient_token') or not self.patient_token:
+            self.log_test("Patient Download Tracking", False, "No patient token available")
+            return False
+            
+        if not hasattr(self, 'test_patient_assignment_id') or not self.test_patient_assignment_id:
+            self.log_test("Patient Download Tracking", False, "No test assignment available")
+            return False
+            
+        try:
+            # Create a new session with patient token
+            patient_session = requests.Session()
+            patient_session.headers.update({"Authorization": f"Bearer {self.patient_token}"})
+            
+            response = patient_session.post(f"{self.base_url}/patients/procedures/{self.test_patient_assignment_id}/download")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    self.log_test("Patient Download Tracking", True, 
+                                f"Download tracked successfully: {data.get('message', '')}")
+                    return True
+                else:
+                    self.log_test("Patient Download Tracking", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient Download Tracking", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Download Tracking", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_unauthorized_access(self):
+        """Test that patient endpoints require proper authentication"""
+        try:
+            # Test without token
+            response = self.session.get(f"{self.base_url}/patients/dashboard")
+            
+            if response.status_code == 403:  # Forbidden or Unauthorized
+                self.log_test("Patient Unauthorized Access", True, 
+                            "Properly blocked access without patient token")
+                return True
+            elif response.status_code == 401:
+                self.log_test("Patient Unauthorized Access", True, 
+                            "Properly blocked access without patient token (401)")
+                return True
+            else:
+                self.log_test("Patient Unauthorized Access", False, 
+                            f"Expected 401/403, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Unauthorized Access", False, f"Exception: {str(e)}")
+            return False
     
     def run_all_tests(self):
         """Run all backend API tests"""
