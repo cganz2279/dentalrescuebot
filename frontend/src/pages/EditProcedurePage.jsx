@@ -44,27 +44,32 @@ const EditProcedurePage = () => {
       setLoading(true);
       setError(null);
       
-      // Mock data for existing procedure assignment
-      const mockData = {
-        id: procedureId,
-        patientId: 'patient-123',
-        patientName: 'Jane Smith',
-        procedureId: 'root-canal-therapy',
-        procedureName: 'Root Canal Therapy',
-        performedDate: '2025-08-19',
-        followUpDate: '2025-08-26',
-        dentistName: 'Dr. John Smith',
-        practiceNotes: 'Patient responded well to treatment. No complications observed.',
-        customInstructions: 'Take prescribed antibiotics for full 7-day course\nAvoid chewing on treated side for 24 hours\nUse warm salt water rinse 2-3 times daily',
-        status: 'active'
-      };
+      // Fetch real procedure assignment data
+      const response = await practiceApi.getProcedureAssignment(procedureId);
+      const data = response.data;
       
-      setFormData(mockData);
+      // Transform the data for the form
+      setFormData({
+        id: data.assignment.id,
+        patientId: data.assignment.patientId,
+        patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : 'Unknown Patient',
+        procedureId: data.assignment.procedureId,
+        procedureName: data.assignment.procedureName,
+        performedDate: data.assignment.performedDate.split('T')[0], // Extract date part
+        followUpDate: data.assignment.followUpDate ? data.assignment.followUpDate.split('T')[0] : '',
+        dentistName: data.assignment.dentistName,
+        practiceNotes: data.assignment.practiceNotes || '',
+        customInstructions: Array.isArray(data.assignment.customInstructions) 
+          ? data.assignment.customInstructions.join('\n') 
+          : (data.assignment.customInstructions || ''),
+        status: data.assignment.status
+      });
     } catch (err) {
-      setError('Failed to load procedure data');
+      console.error('Load procedure error:', err);
+      setError(err.response?.data?.detail || 'Failed to load procedure data');
       toast({
         title: "Error",
-        description: "Failed to load procedure data",
+        description: err.response?.data?.detail || "Failed to load procedure data",
         variant: "destructive",
       });
     } finally {
