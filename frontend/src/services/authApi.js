@@ -177,6 +177,13 @@ export const practiceApi = {
     return response.data;
   },
 
+  getProcedures: async (specialty = null) => {
+    // Use practiceAxios for authenticated requests
+    const url = specialty ? `/procedures?specialty=${specialty}` : '/procedures';
+    const response = await practiceAxios.get(url);
+    return response.data;
+  },
+
   requestNewProcedure: async (requestData) => {
     const response = await practiceAxios.post('/request-procedure', requestData);
     return response.data;
