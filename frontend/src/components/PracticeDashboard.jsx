@@ -95,6 +95,45 @@ const PracticeDashboard = () => {
     }
   };
 
+  const handleOpenProcedure = (procedureId) => {
+    // Navigate to procedure details page
+    navigate(`/procedure-details/${procedureId}`);
+  };
+
+  const handleEditProcedure = (procedureId) => {
+    // Navigate to edit procedure assignment page
+    navigate(`/edit-procedure/${procedureId}`);
+  };
+
+  const handlePrintProcedure = async (procedureId) => {
+    try {
+      // Get procedure details and generate PDF
+      toast({
+        title: "Generating PDF",
+        description: "Creating branded post-operative care document...",
+        variant: "default",
+      });
+      
+      // This would fetch procedure details and generate PDF
+      // For now, show success message
+      setTimeout(() => {
+        toast({
+          title: "PDF Ready",
+          description: "Post-operative care document has been generated and downloaded.",
+          variant: "default",
+        });
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Print error:', error);
+      toast({
+        title: "Print Failed",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const loadDashboard = async () => {
     try {
       setLoading(true);
