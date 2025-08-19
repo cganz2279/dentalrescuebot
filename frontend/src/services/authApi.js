@@ -152,7 +152,7 @@ export const practiceApi = {
 
   getProcedures: async (specialty = null) => {
     const url = specialty ? `/procedures?specialty=${specialty}` : '/procedures';
-    const response = await authAxios.get(`/api${url}`);
+    const response = await authAxios.get(url);
     return response.data;
   },
 
