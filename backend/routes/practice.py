@@ -24,6 +24,30 @@ db = client[os.environ.get('DB_NAME', 'test_database')]
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-super-secret-jwt-key-change-in-production')
 
+# Helper function to convert datetime objects to ISO strings for JSON serialization
+def serialize_datetime_fields(doc):
+    """Recursively convert datetime objects to ISO strings in a document"""
+    if isinstance(doc, dict):
+        result = {}
+        for key, value in doc.items():
+            if isinstance(value, datetime):
+                result[key] = value.isoformat()
+            elif isinstance(value, dict):
+                result[key] = serialize_datetime_fields(value)
+            elif isinstance(value, list):
+                result[key] = [serialize_datetime_fields(item) if isinstance(item, dict) else 
+                             item.isoformat() if isinstance(item, datetime) else item for item in value]
+            else:
+                result[key] = value
+        return result
+    elif isinstance(doc, list):
+        return [serialize_datetime_fields(item) if isinstance(item, dict) else 
+                item.isoformat() if isinstance(item, datetime) else item for item in doc]
+    elif isinstance(doc, datetime):
+        return doc.isoformat()
+    else:
+        return doc
+
 # Pydantic models
 class BrandingUpdate(BaseModel):
     logo: Optional[str] = None
