@@ -20,6 +20,7 @@ import LoadingSpinner, { LoadingCard, ErrorMessage } from './LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
 
 const PracticeDashboard = () => {
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
