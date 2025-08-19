@@ -372,13 +372,48 @@ const PracticeDashboard = () => {
           {/* Recent Procedures */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="h-5 w-5 mr-2 text-green-600" />
-                Recent Procedures
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-green-600" />
+                  Recent Procedures
+                  {selectedPatientId && (
+                    <Badge variant="outline" className="ml-2">
+                      Patient Filtered
+                    </Badge>
+                  )}
+                  {procedureSearchTerm && (
+                    <Badge variant="outline" className="ml-2">
+                      Search: "{procedureSearchTerm}"
+                    </Badge>
+                  )}
+                </CardTitle>
+                {(selectedPatientId || procedureSearchTerm) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="text-xs"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+              
+              {/* Search Box */}
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search procedures by name, dentist, or patient..."
+                  value={procedureSearchTerm}
+                  onChange={(e) => setProcedureSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </CardHeader>
             <CardContent>
-              {dashboardData?.recentProcedures?.length > 0 ? (
+              {filteredProcedures.length > 0 ? (
                 <div className="space-y-4">
                   {dashboardData.recentProcedures.map((procedure) => (
                     <div key={procedure.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
