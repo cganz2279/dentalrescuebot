@@ -414,7 +414,7 @@ class DentalAPITester:
                 "procedureId": procedure["id"],
                 "procedureName": procedure["name"],
                 "performedDate": "2024-01-15T10:00:00Z",
-                "dentistName": "Dr. Smith",
+                "dentistName": "Dr. John Smith",
                 "practiceNotes": "Standard procedure performed successfully",
                 "customInstructions": ["Take medication as prescribed", "Avoid hard foods for 24 hours"],
                 "followUpDate": "2024-01-22T14:00:00Z"
@@ -426,8 +426,10 @@ class DentalAPITester:
                 data = response.json()
                 if data.get("success"):
                     assignment_info = data.get("data", {})
+                    # Store assignment ID for later tests
+                    self.test_assignment_id = assignment_info.get("assignmentId")
                     self.log_test("Assign Procedure API", True, 
-                                f"Assigned {assignment_info.get('procedureName', 'procedure')} to {assignment_info.get('patientName', 'patient')}")
+                                f"Assigned {assignment_info.get('procedureName', 'procedure')} to {assignment_info.get('patientName', 'patient')} (Assignment ID: {self.test_assignment_id})")
                     return True
                 else:
                     self.log_test("Assign Procedure API", False, "Invalid response format")
