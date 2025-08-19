@@ -507,19 +507,6 @@ const PracticeDashboard = () => {
                         Assign Procedure
                       </Button>
                     </div>
-                  ) : procedureSearchTerm ? (
-                    <div>
-                      <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p>No procedures found matching "{procedureSearchTerm}"</p>
-                      <Button
-                        onClick={() => setProcedureSearchTerm('')}
-                        variant="outline"
-                        className="mt-2"
-                        size="sm"
-                      >
-                        Clear Search
-                      </Button>
-                    </div>
                   ) : (
                     <div>
                       <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
