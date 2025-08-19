@@ -264,6 +264,12 @@ const AssignProcedurePage = () => {
                           </div>
                         </SelectItem>
                       ))}
+                      <SelectItem value="request-new" className="border-t border-gray-200">
+                        <div className="flex items-center text-blue-600">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Request New Procedure...
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.procedureId && (
