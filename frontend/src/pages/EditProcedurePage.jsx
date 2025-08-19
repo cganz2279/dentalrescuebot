@@ -21,6 +21,7 @@ const EditProcedurePage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [doctors, setDoctors] = useState([]);
   
   const [formData, setFormData] = useState({
     patientId: '',
