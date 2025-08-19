@@ -54,9 +54,6 @@ class PracticeRegisterRequest(BaseModel):
     city: Optional[str] = None
     state: Optional[str] = None
     zipCode: Optional[str] = None
-    # Payment info - required upfront
-    payment_method_id: Optional[str] = None  # From Stripe Elements
-    origin_url: str  # For payment flow
 
 class UserResponse(BaseModel):
     id: str
