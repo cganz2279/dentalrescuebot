@@ -115,6 +115,14 @@ export const authApi = {
       }
     );
     return response.data;
+  },
+
+  getProcedures: async (specialty = null) => {
+    // This endpoint doesn't require authentication - use direct axios
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://dental-postcare.preview.emergentagent.com';
+    const url = specialty ? `/api/procedures?specialty=${specialty}` : '/api/procedures';
+    const response = await axios.get(`${BACKEND_URL}${url}`);
+    return response.data;
   }
 };
 
