@@ -242,15 +242,22 @@ const EditProcedurePage = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="dentistName">Dentist Name *</Label>
-                  <Input
-                    id="dentistName"
-                    type="text"
+                  <Label htmlFor="dentistName">Dentist *</Label>
+                  <Select
                     value={formData.dentistName}
-                    onChange={(e) => handleInputChange('dentistName', e.target.value)}
-                    disabled={submitting}
-                    required
-                  />
+                    onValueChange={(value) => handleInputChange('dentistName', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a dentist" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {doctors.map((doctor) => (
+                        <SelectItem key={doctor.id} value={doctor.name}>
+                          {doctor.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div>
