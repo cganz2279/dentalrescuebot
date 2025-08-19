@@ -416,8 +416,40 @@ class DentalAPITester:
                 else:
                     self.log_test("Create Patient API", False, "Invalid response format")
                     return False
+            elif response.status_code == 400:
+                # Check if it's a duplicate email error
+                try:
+                    error_data = response.json()
+                    if "Email already registered" in error_data.get("detail", ""):
+                        # Try with a different email
+                        patient_email = f"patient-{uuid.uuid4().hex[:8]}@example.com"
+                        patient_data["email"] = patient_email
+                        
+                        response = self.session.post(
+                            f"{self.base_url}/practice/patients", 
+                            json=patient_data, 
+                            headers=headers
+                        )
+                        
+                        if response.status_code == 200:
+                            data = response.json()
+                            if data.get("success") and "data" in data:
+                                patient = data["data"]
+                                self.test_patient_id = patient["id"]
+                                self.log_test("Create Patient API", True, 
+                                            f"Patient created after email conflict: {patient['firstName']} {patient['lastName']}")
+                                return True
+                        
+                        self.log_test("Create Patient API", False, f"Still failed after email change: {response.status_code}")
+                        return False
+                    else:
+                        self.log_test("Create Patient API", False, f"400 error: {error_data.get('detail', 'Unknown')}")
+                        return False
+                except:
+                    self.log_test("Create Patient API", False, f"400 error with unparseable response")
+                    return False
             else:
-                self.log_test("Create Patient API", False, f"Status: {response.status_code}")
+                self.log_test("Create Patient API", False, f"Status: {response.status_code}, Response: {response.text[:200]}")
                 return False
                 
         except Exception as e:
