@@ -230,7 +230,7 @@ async def create_patient(
     try:
         practice_id = current_user["practiceId"]
         role = current_user["role"]
-        user_id = current_user["user"]["id"]
+        user_id = current_user["userId"]  # Use userId from JWT instead of user document
         
         if role not in ['practice_admin', 'practice_staff']:
             raise HTTPException(
