@@ -300,7 +300,7 @@ const PracticeDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <Button 
             onClick={() => navigate('/add-patient')}
             className="bg-blue-600 hover:bg-blue-700 text-white h-20 flex flex-col"
@@ -326,13 +326,12 @@ const PracticeDashboard = () => {
           </Button>
           <Button 
             onClick={() => navigate('/patient-management')}
-            className="bg-blue-600 hover:bg-blue-700 text-white h-20 flex flex-col"
+            className="bg-green-600 hover:bg-green-700 text-white h-20 flex flex-col"
           >
             <Users className="h-6 w-6 mb-2" />
             <span className="font-medium">Manage Patients</span>
-            <span className="text-xs opacity-90">Search & View Patient Records</span>
+            <span className="text-xs opacity-90">Search & View Records</span>
           </Button>
-
           <Button 
             onClick={handleExportData}
             variant="outline" 
@@ -340,10 +339,7 @@ const PracticeDashboard = () => {
           >
             <Download className="h-6 w-6 mb-2" />
             <span className="font-medium">Export Data</span>
-            <span className="text-xs text-gray-600">Download CSV Report</span>
-          </Button>
-            <Download className="h-6 w-6 mb-2" />
-            Export Data
+            <span className="text-xs text-gray-600">Download CSV</span>
           </Button>
         </div>
 
