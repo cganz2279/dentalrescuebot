@@ -107,28 +107,62 @@ const PracticeDashboard = () => {
 
   const handlePrintProcedure = async (procedureId) => {
     try {
-      // Get procedure details and generate PDF
+      // Show loading toast
       toast({
         title: "Generating PDF",
         description: "Creating branded post-operative care document...",
         variant: "default",
       });
       
-      // This would fetch procedure details and generate PDF
-      // For now, show success message
-      setTimeout(() => {
+      // Get the full procedure assignment data
+      const response = await practiceApi.getProcedureAssignment(procedureId);
+      const data = response.data;
+      
+      // Import the PDF generator
+      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
+      
+      // Prepare procedure data for PDF generation
+      const procedureForPDF = {
+        id: data.procedure.id,
+        name: data.assignment.procedureName,
+        specialty: data.procedure.specialty,
+        specialtyName: data.procedure.specialtyName,
+        duration: data.procedure.duration,
+        overview: data.procedure.overview,
+        immediateAftercare: data.procedure.immediateAftercare || [],
+        dietRestrictions: data.procedure.dietRestrictions || [],
+        warningSignsToCallDoctor: data.procedure.warningSignsToCallDoctor || [],
+        recoveryTimeline: data.procedure.recoveryTimeline || [],
+        medications: data.procedure.medications || [],
+        // Add practice customization
+        patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : 'Patient',
+        dentistName: data.assignment.dentistName,
+        practiceNotes: data.assignment.practiceNotes,
+        customInstructions: data.assignment.customInstructions || [],
+        practiceName: practice?.name || 'Dental Practice',
+        practicePhone: practice?.phone || '',
+        practiceWebsite: practice?.website || '',
+        performedDate: new Date(data.assignment.performedDate).toLocaleDateString()
+      };
+      
+      // Generate the PDF
+      const success = generateProcedurePDF(procedureForPDF);
+      
+      if (success) {
         toast({
           title: "PDF Ready",
-          description: "Post-operative care document has been generated and downloaded.",
+          description: `${data.assignment.procedureName} post-operative care document has been downloaded.`,
           variant: "default",
         });
-      }, 2000);
+      } else {
+        throw new Error('PDF generation failed');
+      }
       
     } catch (error) {
       console.error('Print error:', error);
       toast({
         title: "Print Failed",
-        description: "Failed to generate PDF. Please try again.",
+        description: error.response?.data?.detail || "Failed to generate PDF. Please try again.",
         variant: "destructive",
       });
     }
