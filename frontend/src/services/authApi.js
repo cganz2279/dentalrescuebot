@@ -150,13 +150,6 @@ export const practiceApi = {
     return response.data;
   },
 
-  getProcedures: async (specialty = null) => {
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://dental-postcare.preview.emergentagent.com';
-    const url = specialty ? `/api/procedures?specialty=${specialty}` : '/api/procedures';
-    const response = await axios.get(`${BACKEND_URL}${url}`);
-    return response.data;
-  },
-
   getExportData: async () => {
     const response = await practiceAxios.get('/export-data');
     return response.data;
