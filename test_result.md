@@ -495,6 +495,11 @@ test_plan:
     - "Practice Management Login"
   test_all: false
   test_priority: "stuck_first"
+  completed_new_features:
+    - "Get Practice Doctors API"
+    - "Get Procedure Assignment API"
+    - "Update Procedure Assignment API"
+    - "Assign Procedure API (Updated)"
 
 agent_communication:
     - agent: "testing"
