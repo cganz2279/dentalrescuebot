@@ -28,45 +28,42 @@ const ProcedureDetailsPage = () => {
     try {
       setLoading(true);
       setError(null);
-      // This would call an API to get procedure assignment details
-      // For now, using mock data
-      const mockData = {
-        id: procedureId,
-        procedureName: "Root Canal Therapy",
-        patientName: "Jane Smith",
-        patientEmail: "jane.smith.demo@example.com",
-        dentistName: "Dr. John Smith",
-        performedDate: "2025-08-19",
-        followUpDate: "2025-08-26",
-        status: "active",
-        practiceNotes: "Patient responded well to treatment. No complications observed.",
-        customInstructions: [
-          "Take prescribed antibiotics for full 7-day course",
-          "Avoid chewing on treated side for 24 hours",
-          "Use warm salt water rinse 2-3 times daily"
-        ],
+      
+      // Fetch real procedure assignment data
+      const response = await practiceApi.getProcedureAssignment(procedureId);
+      const data = response.data;
+      
+      // Transform the data to match our component structure
+      const transformedData = {
+        id: data.assignment.id,
+        procedureName: data.assignment.procedureName,
+        patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : 'Unknown Patient',
+        patientEmail: data.patient ? data.patient.email : '',
+        dentistName: data.assignment.dentistName,
+        performedDate: data.assignment.performedDate.split('T')[0], // Extract date part
+        followUpDate: data.assignment.followUpDate ? data.assignment.followUpDate.split('T')[0] : null,
+        status: data.assignment.status,
+        practiceNotes: data.assignment.practiceNotes,
+        customInstructions: data.assignment.customInstructions || [],
         procedureDetails: {
-          specialty: "Endodontics",
-          duration: "7-10 days recovery",
-          overview: "Root canal therapy removes infected or damaged pulp from inside the tooth.",
-          immediateAftercare: [
-            "Apply ice pack for 15-20 minutes at a time to reduce swelling",
-            "Take prescribed pain medication as directed",
-            "Avoid extremely hot or cold foods and beverages"
-          ],
-          warningSignsToCallDoctor: [
-            "Severe pain that worsens after 2-3 days",
-            "Swelling that increases after 48 hours",
-            "Signs of allergic reaction to medication"
-          ]
+          specialty: data.procedure.specialtyName,
+          duration: data.procedure.duration,
+          overview: data.procedure.overview,
+          immediateAftercare: data.procedure.immediateAftercare || [],
+          dietRestrictions: data.procedure.dietRestrictions || [],
+          warningSignsToCallDoctor: data.procedure.warningSignsToCallDoctor || [],
+          recoveryTimeline: data.procedure.recoveryTimeline || [],
+          medications: data.procedure.medications || []
         }
       };
-      setProcedureData(mockData);
+      
+      setProcedureData(transformedData);
     } catch (err) {
-      setError('Failed to load procedure details');
+      console.error('Load procedure error:', err);
+      setError(err.response?.data?.detail || 'Failed to load procedure details');
       toast({
         title: "Error",
-        description: "Failed to load procedure details",
+        description: err.response?.data?.detail || "Failed to load procedure details",
         variant: "destructive",
       });
     } finally {
