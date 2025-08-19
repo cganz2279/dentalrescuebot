@@ -145,5 +145,15 @@ export const practiceApi = {
   getAssignmentDetails: async (assignmentId) => {
     const response = await practiceAxios.get(`/assignments/${assignmentId}`);
     return response.data;
+  },
+
+  updateAssignment: async (assignmentId, updateData) => {
+    const response = await practiceAxios.put(`/assignments/${assignmentId}`, updateData);
+    return response.data;
+  },
+
+  deleteAssignment: async (assignmentId) => {
+    const response = await practiceAxios.delete(`/assignments/${assignmentId}`);
+    return response.data;
   }
 };
