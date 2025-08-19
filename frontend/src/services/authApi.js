@@ -140,5 +140,10 @@ export const practiceApi = {
   updatePractice: async (updateData) => {
     const response = await practiceAxios.put('/update', updateData);
     return response.data;
+  },
+
+  getAssignmentDetails: async (assignmentId) => {
+    const response = await practiceAxios.get(`/assignments/${assignmentId}`);
+    return response.data;
   }
 };
