@@ -499,10 +499,6 @@ metadata:
 test_plan:
   current_focus:
     - "Practice Management Login"
-    - "Practice Dashboard"
-    - "Add Patient Functionality"
-    - "Assign Procedure Functionality"
-    - "Export Data Functionality"
   stuck_tasks:
     - "Practice Management Login"
   test_all: false
@@ -512,6 +508,13 @@ test_plan:
     - "Get Procedure Assignment API"
     - "Update Procedure Assignment API"
     - "Assign Procedure API (Updated)"
+  post_restart_verification_completed:
+    - "Authentication API (/api/auth/login)"
+    - "Practice Dashboard API (/api/practice/dashboard)"
+    - "Get Patients API (/api/practice/patients)"
+    - "Get Procedures API (/api/procedures)"
+    - "Get Practice Doctors API (/api/practice/doctors)"
+    - "Request Procedure API (/api/practice/request-procedure)"
 
 agent_communication:
     - agent: "testing"
