@@ -110,6 +110,7 @@ function App() {
           <Routes>
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/practice-settings" element={<PracticeSettingsPage />} />
+            <Route path="/practice" element={<AppContent />} />
             <Route path="/*" element={<AppContent />} />
           </Routes>
         </BrowserRouter>
