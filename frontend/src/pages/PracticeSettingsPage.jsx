@@ -151,6 +151,7 @@ const PracticeSettingsPage = () => {
             welcomeMessage: formData.welcomeMessage
           }
         };
+        console.log('Sending branding update:', updateData);
       } else if (section === 'password') {
         if (!formData.newPassword) {
           toast({
