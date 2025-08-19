@@ -378,7 +378,7 @@ const PracticeDashboard = () => {
             <CardContent>
               {filteredPatients.length > 0 ? (
                 <div className="space-y-4">
-                  {dashboardData.recentPatients.map((patient) => (
+                  {filteredPatients.map((patient) => (
                     <div 
                       key={patient.id} 
                       onClick={() => handlePatientClick(patient.id)}
