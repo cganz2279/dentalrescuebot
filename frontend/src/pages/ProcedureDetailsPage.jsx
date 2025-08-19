@@ -355,7 +355,7 @@ const ProcedureDetailsPage = () => {
             />
           )}
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{practice?.name || 'Dental Practice'}</h1>
-          {practice?.address && <p className="text-lg text-gray-700 mb-1">{practice.address}</p>}
+          {practice?.address && <p className="text-lg text-gray-700 mb-1">{String(practice.address)}</p>}
           {practice?.phone && <p className="text-lg text-gray-700 mb-4">Phone: {practice.phone}</p>}
           <hr className="my-4" />
         </div>
