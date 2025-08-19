@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Textarea } from '../components/ui/textarea';
-import { ArrowLeft, FileText, User, Calendar, UserMd, ClipboardList } from 'lucide-react';
+import { ArrowLeft, FileText, User, Calendar, Stethoscope, ClipboardList } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
 import { dentalApi } from '../services/api';
