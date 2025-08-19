@@ -272,36 +272,66 @@ const PatientProcedureView = () => {
             <CardContent>
               <div className="prose max-w-none">
                 {procedure.overview.split('\n').map((line, index) => {
-                  // Handle empty lines
-                  if (line.trim() === '') {
-                    return <br key={index} />;
+                  const trimmedLine = line.trim();
+                  
+                  // Handle empty lines - create spacing
+                  if (trimmedLine === '') {
+                    return <div key={index} className="mb-2"></div>;
                   }
                   
                   // Handle bullet points
-                  if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+                  if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                    const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
                     return (
-                      <div key={index} className="flex items-start mb-2">
-                        <span className="text-blue-600 mr-2 mt-1">•</span>
-                        <span className="flex-1 text-gray-700">{line.replace(/^[•-]\s*/, '').trim()}</span>
+                      <div key={index} className="flex items-start mb-2 ml-4">
+                        <span className="text-blue-600 mr-3 text-lg leading-none">•</span>
+                        <span className="flex-1 text-gray-700">{bulletText}</span>
                       </div>
                     );
                   }
                   
-                  // Handle markdown-style headers
-                  if (line.trim().startsWith('**') && line.trim().endsWith('**')) {
-                    const headerText = line.replace(/\*\*/g, '').trim();
-                    return (
-                      <h4 key={index} className="font-semibold text-gray-900 mt-4 mb-2">
-                        {headerText}
-                      </h4>
-                    );
+                  // Handle markdown-style headers - both single line and inline
+                  if (trimmedLine.includes('**')) {
+                    // If it's a complete header (starts and ends with **)
+                    if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.length > 4) {
+                      const headerText = trimmedLine.replace(/\*\*/g, '');
+                      return (
+                        <h4 key={index} className="font-bold text-gray-900 mt-6 mb-3 text-lg">
+                          {headerText}
+                        </h4>
+                      );
+                    }
+                    // Handle mixed content with headers inline
+                    else {
+                      const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/);
+                      return (
+                        <p key={index} className="mb-3">
+                          {parts.map((part, partIndex) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                              return (
+                                <strong key={partIndex} className="font-semibold text-gray-900">
+                                  {part.replace(/\*\*/g, '')}
+                                </strong>
+                              );
+                            }
+                            return part;
+                          })}
+                        </p>
+                      );
+                    }
                   }
                   
                   // Regular paragraphs
-                  return (
-                    <p key={index} className="text-gray-700 mb-3">{line.trim()}</p>
-                  );
-                })}
+                  if (trimmedLine.length > 0) {
+                    return (
+                      <p key={index} className="mb-3 text-gray-700 leading-relaxed">
+                        {trimmedLine}
+                      </p>
+                    );
+                  }
+                  
+                  return null;
+                }).filter(Boolean)}
               </div>
             </CardContent>
           </Card>
