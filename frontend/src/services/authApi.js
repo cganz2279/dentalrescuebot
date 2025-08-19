@@ -160,5 +160,15 @@ export const practiceApi = {
   getExportData: async () => {
     const response = await practiceAxios.get('/export-data');
     return response.data;
+  },
+
+  getProcedureAssignment: async (assignmentId) => {
+    const response = await practiceAxios.get(`/assignment/${assignmentId}`);
+    return response.data;
+  },
+
+  updateProcedureAssignment: async (assignmentId, updateData) => {
+    const response = await practiceAxios.put(`/assignment/${assignmentId}`, updateData);
+    return response.data;
   }
 };
