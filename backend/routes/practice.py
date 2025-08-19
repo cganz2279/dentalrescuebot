@@ -236,9 +236,12 @@ async def get_practice_patients(current_user: dict = Depends(get_current_user)):
             })
             patient["procedureCount"] = procedure_count
         
+        # Serialize datetime objects for JSON response
+        patients_serialized = serialize_datetime_fields(patients)
+        
         return {
             "success": True,
-            "data": patients
+            "data": patients_serialized
         }
         
     except HTTPException:
