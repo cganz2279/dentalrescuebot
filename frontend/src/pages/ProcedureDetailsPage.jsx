@@ -74,13 +74,30 @@ const ProcedureDetailsPage = () => {
   const handlePrintPDF = () => {
     if (procedureData && procedureData.procedureDetails) {
       const success = generateProcedurePDF({
-        ...procedureData.procedureDetails,
+        // Match the exact format from the procedure details page
+        id: procedureData.id,
         name: procedureData.procedureName,
+        specialty: procedureData.procedureDetails.specialty,
         specialtyName: procedureData.procedureDetails.specialty,
+        overview: procedureData.procedureDetails.overview,
+        immediateAftercare: procedureData.procedureDetails.immediateAftercare || [],
+        dietRestrictions: procedureData.procedureDetails.dietRestrictions || [],
+        warningSignsToCallDoctor: procedureData.procedureDetails.warningSignsToCallDoctor || [],
+        recoveryTimeline: procedureData.procedureDetails.recoveryTimeline || [],
+        medications: procedureData.procedureDetails.medications || [],
+        // Assignment details - exactly as shown on the page
         patientName: procedureData.patientName,
+        patientEmail: procedureData.patientEmail,
         dentistName: procedureData.dentistName,
+        performedDate: new Date(procedureData.performedDate).toLocaleDateString(),
+        followUpDate: procedureData.followUpDate ? new Date(procedureData.followUpDate).toLocaleDateString() : null,
+        status: procedureData.status,
         practiceNotes: procedureData.practiceNotes,
-        customInstructions: procedureData.customInstructions
+        customInstructions: procedureData.customInstructions || [],
+        // Practice info
+        practiceName: practice?.name || 'Dental Practice',
+        practicePhone: practice?.phone || '',
+        practiceWebsite: practice?.website || ''
       });
       
       if (success) {
