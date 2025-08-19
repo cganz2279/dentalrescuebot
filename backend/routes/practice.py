@@ -228,19 +228,24 @@ async def create_patient(
 ):
     """Create a new patient"""
     try:
+        print(f"DEBUG: Starting patient creation for {patient_data.email}")
         practice_id = current_user["practiceId"]
         role = current_user["role"]
         user_id = current_user["userId"]  # Use userId from JWT instead of user document
+        print(f"DEBUG: Got user info - practice_id: {practice_id}, role: {role}, user_id: {user_id}")
         
         if role not in ['practice_admin', 'practice_staff']:
+            print(f"DEBUG: Access denied for role: {role}")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Access denied"
             )
         
+        print(f"DEBUG: Checking for existing email: {patient_data.email.lower()}")
         # Check if email already exists
         existing_user = await db.users.find_one({"email": patient_data.email.lower()})
         if existing_user:
+            print(f"DEBUG: Email already exists")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered"
@@ -248,6 +253,7 @@ async def create_patient(
         
         # Generate patient ID
         patient_id = str(uuid.uuid4())
+        print(f"DEBUG: Generated patient ID: {patient_id}")
         
         # Create patient document
         patient_doc = {
@@ -270,11 +276,14 @@ async def create_patient(
             "updatedAt": datetime.utcnow()
         }
         
+        print(f"DEBUG: About to insert patient document")
         await db.users.insert_one(patient_doc)
+        print(f"DEBUG: Patient document inserted successfully")
         
         # Remove password from response
         del patient_doc["password"]
         
+        print(f"DEBUG: Returning success response")
         return {
             "success": True,
             "message": "Patient created successfully",
@@ -282,9 +291,12 @@ async def create_patient(
         }
         
     except HTTPException:
+        print(f"DEBUG: HTTPException raised")
         raise
     except Exception as e:
         print(f"Create patient error: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to create patient"
