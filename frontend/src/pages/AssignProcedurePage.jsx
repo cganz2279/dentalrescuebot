@@ -275,7 +275,7 @@ const AssignProcedurePage = () => {
               {/* Procedure Details */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                  <UserMd className="h-5 w-5 mr-2 text-purple-600" />
+                  <Stethoscope className="h-5 w-5 mr-2 text-purple-600" />
                   Procedure Details
                 </h3>
                 
