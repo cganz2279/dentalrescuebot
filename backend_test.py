@@ -479,11 +479,11 @@ class DentalAPITester:
         try:
             headers = {"Authorization": f"Bearer {self.auth_token}"}
             
-            # Use a known procedure ID (root-canal from the seeded data)
+            # Use a known procedure ID (root-canal-therapy from the seeded data)
             assignment_data = {
                 "patientId": self.test_patient_id,
-                "procedureId": "root-canal",
-                "procedureName": "Root Canal Treatment",
+                "procedureId": "root-canal-therapy",
+                "procedureName": "Root Canal Therapy",
                 "performedDate": datetime.utcnow().isoformat() + "Z",
                 "dentistName": "Dr. Test Dentist",
                 "practiceNotes": "Test procedure assignment",
