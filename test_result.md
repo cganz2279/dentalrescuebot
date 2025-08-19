@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the dental post-operative care app backend APIs including health check, specialties, procedures, search functionality, and error handling"
+user_problem_statement: "Test the dental application backend functionality including practice management APIs: Add Patient, Get Patients, Assign Procedure, Get Export Data, and Get Procedures with filtering"
 
 backend:
   - task: "Health Check API"
@@ -139,7 +139,7 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "GET /api/specialties/oral-surgery returns specialty details with 3 associated procedures. Proper error handling for invalid IDs"
+          comment: "GET /api/specialties/oral-surgery returns specialty details with 34 associated procedures. Proper error handling for invalid IDs"
 
   - task: "Get All Procedures API"
     implemented: true
@@ -151,7 +151,7 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "GET /api/procedures returns all 8 procedures with required fields (id, name, specialty, specialtyName, duration)"
+          comment: "GET /api/procedures returns all 80 procedures with required fields (id, name, specialty, specialtyName, duration). Filtering by specialty parameter working correctly"
 
   - task: "Get Individual Procedure API"
     implemented: true
@@ -163,7 +163,7 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "GET /api/procedures/root-canal returns detailed procedure information including overview, aftercare, diet restrictions, warning signs, recovery timeline, and medications"
+          comment: "GET /api/procedures/root-canal-therapy returns detailed procedure information including overview, aftercare, diet restrictions, warning signs, recovery timeline, and medications"
 
   - task: "Search Procedures API"
     implemented: true
@@ -178,7 +178,7 @@ backend:
           comment: "Initial test failed due to route ordering issue - /procedures/search was defined after /procedures/{id} causing FastAPI to match 'search' as procedure_id"
         - working: true
           agent: "testing"
-          comment: "Fixed route ordering by moving /procedures/search before /procedures/{id}. Now returns 3 matching procedures for query 'root'"
+          comment: "Fixed route ordering by moving /procedures/search before /procedures/{id}. Now returns 12 matching procedures for query 'root'"
 
   - task: "Error Handling"
     implemented: true
@@ -202,7 +202,82 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "Created Python seeding script to populate MongoDB with 7 specialties and 8 procedures. Database was initially empty, seeding resolved all data-related test failures"
+          comment: "Created Python seeding script to populate MongoDB with 7 specialties and 80 procedures. Database was initially empty, seeding resolved all data-related test failures"
+
+  - task: "Practice Admin Authentication"
+    implemented: true
+    working: true
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "POST /api/auth/login working correctly with admin@smithdental.com credentials. Returns JWT token and user info for practice_admin role"
+
+  - task: "Add Patient API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "Initial test failed with 500 error due to ObjectId serialization issue in response"
+        - working: true
+          agent: "testing"
+          comment: "Fixed ObjectId serialization issue by removing _id field from response. POST /api/practice/patients now creates patients successfully with proper validation"
+
+  - task: "Get Patients API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/practice/patients returns all patients for authenticated practice with procedure counts. Requires valid JWT token"
+
+  - task: "Assign Procedure API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "POST /api/practice/assign-procedure successfully assigns procedures to patients with custom instructions, practice notes, and follow-up dates. Validates patient and procedure existence"
+
+  - task: "Get Export Data API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/practice/export-data returns comprehensive patient data with assigned procedures for CSV export. Includes procedure details and assignment metadata"
+
+  - task: "Get Procedures with Filtering"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/procedures?specialty=oral-surgery correctly filters procedures by specialty, returning 34 oral surgery procedures"
 
 frontend:
   - task: "Homepage Loading & Display"
