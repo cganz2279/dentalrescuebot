@@ -205,6 +205,160 @@ async def update_procedure_overviews():
 • Regular dental cleanings and check-ups every 6 months
 • Special flossing techniques around implant crown
 • Avoid chewing ice, hard candy, or other very hard objects
+        """,
+
+        "Crown Preparation": """
+**Dental Crown Preparation - Complete Care Guide**
+
+**What Was Done:** Your tooth was carefully prepared by removing damaged structure and shaping it to receive a custom crown. A temporary crown was placed to protect the prepared tooth while your permanent crown is being fabricated in the dental laboratory.
+
+**Temporary Crown Care - Critical Instructions:**
+• Your temporary crown is held with temporary cement and requires special care
+• Avoid sticky foods (gum, caramels, taffy) that can pull off the temporary crown
+• Chew on the opposite side when possible
+• If temporary crown comes off, save it and call immediately - tooth must be protected
+• Clean gently around temporary crown - no aggressive flossing that could dislodge it
+
+**Immediate Post-Preparation Care (First 4 Hours):**
+• Local anesthetic will wear off in 2-4 hours - be careful not to bite tongue or cheek
+• Some sensitivity to temperature and pressure is normal with the prepared tooth
+• Take over-the-counter pain medication as needed for mild discomfort
+• Avoid very hot or cold foods/drinks for the first 24 hours
+
+**Managing Tooth Sensitivity:**
+• Sensitivity to cold, heat, or pressure is common after crown preparation
+• Use toothpaste for sensitive teeth (Sensodyne) twice daily
+• Avoid temperature extremes - lukewarm beverages and foods are best
+• If sensitivity is severe, contact our office for desensitizing treatment
+
+**Oral Hygiene with Temporary Crown:**
+• Brush normally but be gentle around the temporary crown
+• When flossing near temporary crown: pull floss out sideways rather than lifting up
+• Use antimicrobial mouth rinse to maintain gum health around preparation
+• Maintain excellent oral hygiene to ensure healthy gums for crown placement
+
+**Diet Modifications During Temporary Phase:**
+• Avoid hard foods: nuts, ice, hard candy, crusty bread
+• Avoid sticky foods: caramel, gum, dried fruit, sticky candy
+• Cut food into smaller pieces and chew on the opposite side
+• Soft foods are ideal: pasta, cooked vegetables, soft fish, dairy products
+
+**Gum Health Maintenance:**
+• Slight gum irritation around preparation site is normal
+• Rinse with warm salt water (½ tsp salt in 8oz warm water) 2-3 times daily
+• If gums become red, swollen, or bleed easily, call our office
+• Healthy gums are essential for proper crown fit and longevity
+
+**What to Expect Before Permanent Crown:**
+• Mild sensitivity may persist throughout temporary crown period
+• Temporary crown may feel different from your natural tooth - this is normal
+• You may need 1-2 days to adjust to the temporary crown's shape and bite
+• Some minor roughness or irregularities with temporary crown are expected
+
+**Emergency Situations - Call Immediately:**
+• Temporary crown falls off completely (save the crown, call ASAP)
+• Severe pain not relieved by over-the-counter pain medication
+• Significant gum swelling or signs of infection
+• Temperature sensitivity that worsens rather than improves
+• Bite feels severely off or uncomfortable
+
+**Preparing for Permanent Crown Placement:**
+• Schedule permanent crown appointment as recommended (typically 2-3 weeks)
+• Continue excellent oral hygiene throughout temporary period
+• Report any concerns about fit, comfort, or sensitivity at crown delivery
+• Avoid delaying permanent crown placement - temporary crowns are not long-term solutions
+
+**Permanent Crown Expectations:**
+• May take a few days to fully adjust to permanent crown
+• Initial mild sensitivity is normal and should resolve within 1-2 weeks
+• Crown should feel comfortable and function like a natural tooth
+• Proper care ensures crown longevity of 10-20+ years
+
+**Long-Term Crown Care:**
+• Brush and floss normally - crowns can still get cavities at the margins
+• Regular dental checkups every 6 months to monitor crown and surrounding teeth
+• Avoid using teeth as tools (opening packages, cracking nuts)
+• Consider a nightguard if you grind or clench your teeth
+        """,
+
+        "Tooth Extraction (Simple)": """
+**Simple Tooth Extraction - Complete Recovery Guide**
+
+**What Was Done:** Your tooth was carefully removed using specialized instruments. The extraction site has been cleaned and may have received stitches to aid healing. A blood clot will form in the socket, which is essential for proper healing.
+
+**Immediate Post-Extraction Care (First 2 Hours):**
+• Bite firmly on gauze pad for 45-60 minutes to control bleeding
+• Do NOT remove gauze frequently to "check" the site - this disrupts clot formation
+• Replace gauze only if it becomes completely soaked with blood
+• Avoid talking, spitting, or unnecessary mouth movements
+
+**Critical First 24 Hours - Protecting the Blood Clot:**
+• ABSOLUTELY NO smoking, drinking through straws, or spitting - can cause dry socket
+• NO rinsing or swishing - gentle drinking is okay but no forceful mouth movements
+• Keep head elevated when lying down to minimize bleeding and swelling
+• Apply ice packs: 20 minutes on, 20 minutes off for first 6 hours
+• Soft, cool foods only: pudding, yogurt, smoothies, lukewarm soup
+
+**Bleeding Management Protocol:**
+• Light oozing mixed with saliva for 24 hours is completely normal
+• If active bleeding occurs: place clean gauze over site, bite firmly for 45 minutes
+• Emergency bleeding control: bite on a moistened tea bag for 30 minutes
+• Avoid hot liquids, alcohol, and physical exertion which promote bleeding
+
+**Pain Control Strategy:**
+• Take prescribed pain medication as directed, before anesthetic wears off
+• Over-the-counter options: Ibuprofen 600-800mg every 6 hours (excellent for extraction pain)
+• Can alternate ibuprofen with acetaminophen for breakthrough pain
+• Most pain peaks at 6-12 hours post-extraction, then gradually improves
+
+**Swelling Prevention and Management:**
+• Ice therapy is crucial: First 24 hours, 20 minutes on/off while awake
+• Maximum swelling occurs at 48-72 hours - this is normal healing response
+• After 48 hours: Switch to warm, moist compresses to promote healing
+• Sleep with head elevated for first 2-3 nights
+
+**Diet Progression Guidelines:**
+• Day 1: Liquids and very soft foods (protein shakes, pudding, lukewarm broth)
+• Days 2-3: Soft foods that require minimal chewing (mashed potatoes, pasta, soft fish)
+• Days 4-7: Gradual return to normal diet, avoiding extraction site when chewing
+• Avoid hard, crunchy, or sticky foods for at least one week
+
+**Oral Hygiene Protocol:**
+• Do NOT brush extraction site for first 24 hours
+• After 24 hours: Gentle salt water rinses (½ tsp salt in 8oz warm water, 3-4 times daily)
+• Resume brushing other teeth normally, carefully avoiding extraction area
+• After 1 week: Very gentle brushing near extraction site as comfort allows
+
+**Normal Healing Timeline:**
+• Days 1-3: Active healing, blood clot formation, peak discomfort
+• Days 4-7: Significant improvement in pain and swelling
+• Weeks 1-2: Soft tissue healing, gradual return to normal function
+• Weeks 3-8: Complete bone healing and socket filling
+
+**Dry Socket Prevention (Critical):**
+• Occurs in 2-5% of extractions when blood clot is lost
+• Prevention: Follow ALL post-operative instructions carefully
+• No smoking, spitting, straws, or vigorous rinsing for 72 hours minimum
+• Take prescribed antibiotics if given to prevent infection
+
+**Warning Signs - Call Office Immediately:**
+• Severe pain starting 2-4 days after extraction (possible dry socket)
+• Heavy bleeding not controlled by pressure after 4-6 hours
+• Signs of infection: fever, increasing pain after day 3, foul taste/smell
+• Excessive swelling, difficulty swallowing, or breathing problems
+• Numbness or tingling persisting beyond expected timeframe
+
+**Follow-Up Care:**
+• Suture removal appointment if stitches were placed (typically 7-10 days)
+• Discuss tooth replacement options during healing period
+• Consider bone grafting for future implant placement if recommended
+• Regular dental checkups to monitor healing and adjacent teeth
+
+**Long-Term Considerations:**
+• Missing tooth may cause adjacent teeth to shift over time
+• Consider replacement options: dental implant, bridge, or partial denture
+• Maintain excellent oral hygiene to protect remaining teeth
+• Regular dental visits become even more important after tooth loss
         """
     }
 
