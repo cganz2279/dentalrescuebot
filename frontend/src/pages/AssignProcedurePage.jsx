@@ -14,8 +14,13 @@ import { useToast } from '../hooks/use-toast';
 
 const AssignProcedurePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, practice } = useAuth();
   const { toast } = useToast();
+  
+  // Get pre-selected patient from URL parameters
+  const preSelectedPatientId = searchParams.get('patientId');
+  const preSelectedPatientName = searchParams.get('patientName');
   
   const [patients, setPatients] = useState([]);
   const [procedures, setProcedures] = useState([]);
@@ -24,7 +29,7 @@ const AssignProcedurePage = () => {
   const [submitting, setSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
-    patientId: '',
+    patientId: preSelectedPatientId || '',
     procedureId: '',
     performedDate: new Date().toISOString().split('T')[0],
     dentistName: user?.firstName ? `${user.firstName} ${user.lastName}` : '',
