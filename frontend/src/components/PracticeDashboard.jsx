@@ -142,6 +142,7 @@ const PracticeDashboard = () => {
         practiceNotes: data.assignment.practiceNotes,
         customInstructions: data.assignment.customInstructions || [],
         practiceName: practice?.name || 'Dental Practice',
+        practiceAddress: practice?.address || practice?.location || '',
         practicePhone: practice?.phone || '',
         practiceWebsite: practice?.website || '',
         performedDate: new Date(data.assignment.performedDate).toLocaleDateString()
