@@ -78,6 +78,7 @@ const RegistrationPage = () => {
     }
 
     try {
+      console.log('Submitting registration data:', formData);
       const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL}/api/auth/register-practice-samcart`, {
         method: 'POST',
         headers: {
@@ -91,6 +92,7 @@ const RegistrationPage = () => {
       });
 
       const data = await response.json();
+      console.log('Registration response:', response.status, data);
 
       if (response.ok && data.success) {
         toast({
