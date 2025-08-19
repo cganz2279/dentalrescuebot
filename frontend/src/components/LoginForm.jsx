@@ -26,19 +26,27 @@ const LoginForm = ({ onSwitchToRegister }) => {
     setError('');
 
     try {
-      const result = await login(formData.email, formData.password);
+      // Make API call to login
+      const response = await authApi.login(formData.email, formData.password);
       
-      if (result.success) {
+      if (response.success) {
+        // Pass the user data, token, and practice to AuthContext
+        login(response.user, response.token, response.practice);
+        
         toast({
           title: "Login Successful",
-          description: `Welcome back, ${result.user.firstName}!`,
+          description: `Welcome back, ${response.user.firstName}!`,
           variant: "default",
         });
       } else {
-        setError(result.error);
+        setError(response.error || 'Login failed');
       }
-    } catch (err) {
-      setError('Login failed. Please try again.');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(
+        error.response?.data?.detail || 
+        'Login failed. Please check your email and password.'
+      );
     } finally {
       setLoading(false);
     }
