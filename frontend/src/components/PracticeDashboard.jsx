@@ -159,22 +159,14 @@ const PracticeDashboard = () => {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Button 
-            onClick={() => toast({
-              title: "Coming Soon",
-              description: "Add Patient functionality will be available in the next update.",
-              variant: "default",
-            })}
+            onClick={() => navigate('/add-patient')}
             className="bg-blue-600 hover:bg-blue-700 text-white h-20 flex flex-col"
           >
             <Plus className="h-6 w-6 mb-2" />
             Add Patient
           </Button>
           <Button 
-            onClick={() => toast({
-              title: "Coming Soon", 
-              description: "Assign Procedure functionality will be available in the next update.",
-              variant: "default",
-            })}
+            onClick={() => navigate('/assign-procedure')}
             variant="outline" 
             className="h-20 flex flex-col"
           >
