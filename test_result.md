@@ -444,14 +444,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Practice Registration System"
-    - "Create Patient API"
-    - "Dashboard button navigation"
-  stuck_tasks: 
-    - "Practice Registration System"
-    - "Create Patient API"
-  test_all: false
-  test_priority: "stuck_first"
+    - "All priority backend APIs tested successfully"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
