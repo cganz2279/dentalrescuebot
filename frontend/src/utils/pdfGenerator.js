@@ -358,7 +358,7 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
     pdf.text(practice.name || 'DENTAL PRACTICE', pageWidth / 2, yPosition, { align: 'center' });
     yPosition += 25;
 
-    // Practice contact information
+    // Practice contact information (centered)
     pdf.setFontSize(11);
     pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(80, 80, 80);
@@ -369,14 +369,14 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
     if (practice.website) contactInfo.push(`Website: ${practice.website}`);
     
     if (contactInfo.length > 0) {
-      pdf.text(contactInfo.join(' | '), leftMargin, yPosition);
+      pdf.text(contactInfo.join(' | '), pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 12;
     }
 
     if (practice.address) {
       const addr = practice.address;
       const addressText = `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
-      pdf.text(addressText, leftMargin, yPosition);
+      pdf.text(addressText, pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
     } else {
       yPosition += 8;
