@@ -14,7 +14,8 @@ import {
   Clock,
   AlertCircle,
   Printer,
-  Edit
+  Edit,
+  Palette
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
