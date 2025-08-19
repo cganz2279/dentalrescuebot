@@ -42,7 +42,7 @@ def test_registration_endpoint():
                 # Try to login with the new user
                 login_data = {
                     "email": registration_data["email"],
-                    "password": registration_data["password"]
+                    "password": registration_data["adminPassword"]
                 }
                 
                 login_response = requests.post(f"{BACKEND_URL}/auth/login", json=login_data)
