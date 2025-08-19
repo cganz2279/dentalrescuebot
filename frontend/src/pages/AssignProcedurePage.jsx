@@ -46,7 +46,7 @@ const AssignProcedurePage = () => {
       // Load essential data first
       const [patientsResponse, proceduresResponse] = await Promise.all([
         practiceApi.getPatients(),
-        authApi.getProcedures()
+        practiceApi.getProcedures()
       ]);
       
       setPatients(patientsResponse.data || []);
