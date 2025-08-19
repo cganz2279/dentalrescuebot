@@ -112,6 +112,42 @@ const PracticeDashboard = () => {
     navigate(`/procedure-details/${procedureId}`);
   };
 
+  const handlePatientClick = (patientId) => {
+    // Toggle patient selection - if same patient clicked, deselect
+    if (selectedPatientId === patientId) {
+      setSelectedPatientId(null);
+    } else {
+      setSelectedPatientId(patientId);
+    }
+    // Clear search when patient is selected
+    setProcedureSearchTerm('');
+  };
+
+  const handleClearFilters = () => {
+    setSelectedPatientId(null);
+    setProcedureSearchTerm('');
+  };
+
+  // Filter procedures based on selected patient and search term
+  const filteredProcedures = dashboardData?.recentProcedures?.filter(procedure => {
+    // Filter by selected patient
+    if (selectedPatientId && procedure.patientId !== selectedPatientId) {
+      return false;
+    }
+    
+    // Filter by search term
+    if (procedureSearchTerm) {
+      const searchLower = procedureSearchTerm.toLowerCase();
+      return (
+        procedure.procedureName.toLowerCase().includes(searchLower) ||
+        procedure.dentistName.toLowerCase().includes(searchLower) ||
+        (procedure.patientName && procedure.patientName.toLowerCase().includes(searchLower))
+      );
+    }
+    
+    return true;
+  }) || [];
+
   const loadDashboard = async () => {
     try {
       setLoading(true);
