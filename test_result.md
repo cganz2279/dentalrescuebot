@@ -399,6 +399,18 @@ backend:
           agent: "testing"
           comment: "Complete patient login system working end-to-end. Successfully tested: (1) Patient creation via practice admin, (2) Password setup via /api/auth/patient-setup, (3) Patient login with JWT token generation, (4) Access to patient-specific endpoints with proper authentication. All security checks and role-based access controls functioning correctly."
 
+  - task: "Procedure Content Formatting Verification"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Procedure formatting fix verification completed successfully. Database contains properly formatted content with bullet points (•), markdown headers (**text**), line breaks, and short paragraphs. API endpoint GET /api/procedures/{id} returns the formatted content correctly. Tested multiple procedures including alveoloplasty, root-canal-therapy, dental-crown-placement, and surgical-tooth-extraction - all have proper formatting. Backend is serving content that frontend components can parse and display with proper formatting."
+
 frontend:
   - task: "Homepage Loading & Display"
     implemented: true
