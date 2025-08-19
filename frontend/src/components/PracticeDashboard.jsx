@@ -94,6 +94,8 @@ const PracticeDashboard = () => {
       });
     }
   };
+
+  const loadDashboard = async () => {
     try {
       setLoading(true);
       setError(null);
