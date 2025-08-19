@@ -555,6 +555,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "POST-RESTART VERIFICATION: Request Procedure API (/api/practice/request-procedure) is working correctly. Successfully submitted custom procedure request 'Custom Dental Implant Procedure' and received request ID. Backend API fully functional after service restart."
+        - working: true
+          agent: "testing"
+          comment: "ASSIGN PROCEDURE FUNCTIONALITY FULLY TESTED: Comprehensive form loads correctly at /assign-procedure with all required fields: Patient dropdown (Select a patient), Procedure dropdown (Select a procedure), Performed Date, Follow-up Date (optional), Dentist dropdown (showing Dr. John Smith), Practice Notes textarea, Custom Instructions textarea. Form includes helpful information section about procedure assignments. All form elements functional and properly styled. Complete procedure assignment workflow available."
 
   - task: "Export Data Functionality"
     implemented: true
