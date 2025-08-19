@@ -7,6 +7,7 @@ import SpecialtyPage from "./pages/SpecialtyPage";
 import ProcedurePage from "./pages/ProcedurePage";
 import RegistrationPage from "./pages/RegistrationPage";
 import PracticeSettingsPage from "./pages/PracticeSettingsPage";
+import AddPatientPage from "./pages/AddPatientPage";
 import LoginForm from "./components/LoginForm";
 import PracticeRegistrationForm from "./components/PracticeRegistrationForm";
 import PracticeDashboard from "./components/PracticeDashboard";
