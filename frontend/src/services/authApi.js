@@ -146,5 +146,10 @@ export const practiceApi = {
     const url = specialty ? `/procedures?specialty=${specialty}` : '/procedures';
     const response = await authAxios.get(`/api${url}`);
     return response.data;
+  },
+
+  getExportData: async () => {
+    const response = await practiceAxios.get('/export-data');
+    return response.data;
   }
 };
