@@ -15,7 +15,8 @@ import {
   AlertCircle,
   Printer,
   Edit,
-  Palette
+  Palette,
+  FolderOpen
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
