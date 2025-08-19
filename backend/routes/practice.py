@@ -428,6 +428,92 @@ async def assign_procedure_to_patient(
             detail="Failed to assign procedure"
         )
 
+@router.get("/assignments/{assignment_id}")
+async def get_assignment_details(
+    assignment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get detailed assignment information for PDF generation"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Get assignment details
+        assignment = await db.patientprocedures.find_one(
+            {
+                "id": assignment_id,
+                "practiceId": practice_id
+            },
+            {"_id": 0}
+        )
+        
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignment not found"
+            )
+        
+        # Get patient details
+        patient = await db.users.find_one(
+            {
+                "id": assignment["patientId"],
+                "practiceId": practice_id
+            },
+            {
+                "_id": 0,
+                "password": 0
+            }
+        )
+        
+        # Get procedure details
+        procedure = await db.procedures.find_one(
+            {"id": assignment["procedureId"]},
+            {"_id": 0}
+        )
+        
+        # Get practice details
+        practice = await db.practices.find_one(
+            {"id": practice_id},
+            {"_id": 0}
+        )
+        
+        if not patient or not procedure or not practice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Required data not found"
+            )
+        
+        # Serialize datetime objects
+        assignment_serialized = serialize_datetime_fields(assignment)
+        patient_serialized = serialize_datetime_fields(patient)
+        procedure_serialized = serialize_datetime_fields(procedure)
+        practice_serialized = serialize_datetime_fields(practice)
+        
+        return {
+            "success": True,
+            "data": {
+                "assignment": assignment_serialized,
+                "patient": patient_serialized,
+                "procedure": procedure_serialized,
+                "practice": practice_serialized
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Get assignment details error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get assignment details"
+        )
+
 @router.put("/branding")
 async def update_practice_branding(
     branding: BrandingUpdate,
