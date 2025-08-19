@@ -277,25 +277,32 @@ async def create_patient(
         }
         
         print(f"DEBUG: About to insert patient document")
-        await db.users.insert_one(patient_doc)
-        print(f"DEBUG: Patient document inserted successfully")
+        result = await db.users.insert_one(patient_doc)
+        print(f"DEBUG: Patient document inserted successfully with _id: {result.inserted_id}")
         
-        # Remove password from response and convert datetime objects to strings
-        del patient_doc["password"]
-        
-        # Convert datetime objects to ISO strings for JSON serialization
-        if "invitedAt" in patient_doc:
-            patient_doc["invitedAt"] = patient_doc["invitedAt"].isoformat()
-        if "createdAt" in patient_doc:
-            patient_doc["createdAt"] = patient_doc["createdAt"].isoformat()
-        if "updatedAt" in patient_doc:
-            patient_doc["updatedAt"] = patient_doc["updatedAt"].isoformat()
+        # Create response document without MongoDB-specific fields
+        response_patient = {
+            "id": patient_doc["id"],
+            "email": patient_doc["email"],
+            "firstName": patient_doc["firstName"],
+            "lastName": patient_doc["lastName"],
+            "role": patient_doc["role"],
+            "practiceId": patient_doc["practiceId"],
+            "isActive": patient_doc["isActive"],
+            "isEmailVerified": patient_doc["isEmailVerified"],
+            "invitedBy": patient_doc["invitedBy"],
+            "invitedAt": patient_doc["invitedAt"].isoformat(),
+            "loginCount": patient_doc["loginCount"],
+            "patientInfo": patient_doc["patientInfo"],
+            "createdAt": patient_doc["createdAt"].isoformat(),
+            "updatedAt": patient_doc["updatedAt"].isoformat()
+        }
         
         print(f"DEBUG: Returning success response")
         return {
             "success": True,
             "message": "Patient created successfully",
-            "data": patient_doc
+            "data": response_patient
         }
         
     except HTTPException:
