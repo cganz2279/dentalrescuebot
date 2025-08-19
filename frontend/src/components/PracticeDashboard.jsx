@@ -307,6 +307,15 @@ const PracticeDashboard = () => {
                           {procedure.status}
                         </Badge>
                         <Button
+                          onClick={() => handleEditAssignment(procedure.id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center space-x-1"
+                        >
+                          <Edit className="h-4 w-4" />
+                          <span>Edit</span>
+                        </Button>
+                        <Button
                           onClick={() => handleGeneratePDF(procedure.id)}
                           variant="outline"
                           size="sm"
