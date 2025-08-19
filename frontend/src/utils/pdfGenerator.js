@@ -272,6 +272,7 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
       const contentHeight = contentLines.length * 4.4;
       const totalBoxHeight = titleHeight + contentHeight + (boxPadding * 2);
       
+      // Ensure info box stays together on same page
       checkPageBreak(totalBoxHeight);
       
       // Box background
