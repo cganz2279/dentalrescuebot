@@ -134,5 +134,10 @@ export const practiceApi = {
   updateBranding: async (brandingData) => {
     const response = await practiceAxios.put('/branding', brandingData);
     return response.data;
+  },
+
+  updatePractice: async (updateData) => {
+    const response = await practiceAxios.put('/update', updateData);
+    return response.data;
   }
 };
