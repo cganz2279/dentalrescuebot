@@ -1,8 +1,14 @@
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const AUTH_BASE_URL = `${BACKEND_URL}/auth`;
-const PRACTICE_BASE_URL = `${BACKEND_URL}/practice`;
+// Get backend URL with fallback
+const BACKEND_URL = import.meta.env?.REACT_APP_BACKEND_URL || 
+                    process.env?.REACT_APP_BACKEND_URL || 
+                    'https://postcare-dental.preview.emergentagent.com';
+
+const AUTH_BASE_URL = `${BACKEND_URL}/api/auth`;
+const PRACTICE_BASE_URL = `${BACKEND_URL}/api/practice`;
+
+console.log('Auth API using backend URL:', BACKEND_URL);
 
 // Create axios instance for auth
 const authAxios = axios.create({
