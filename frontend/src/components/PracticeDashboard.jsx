@@ -428,13 +428,8 @@ const PracticeDashboard = () => {
                       Patient Filtered
                     </Badge>
                   )}
-                  {procedureSearchTerm && (
-                    <Badge variant="outline" className="ml-2">
-                      Search: "{procedureSearchTerm}"
-                    </Badge>
-                  )}
                 </CardTitle>
-                {(selectedPatientId || procedureSearchTerm) && (
+                {selectedPatientId && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -442,21 +437,9 @@ const PracticeDashboard = () => {
                     className="text-xs"
                   >
                     <X className="h-3 w-3 mr-1" />
-                    Clear Filters
+                    Clear Filter
                   </Button>
                 )}
-              </div>
-              
-              {/* Search Box */}
-              <div className="relative mt-4">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search procedures by name, dentist, or patient..."
-                  value={procedureSearchTerm}
-                  onChange={(e) => setProcedureSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
               </div>
             </CardHeader>
             <CardContent>
