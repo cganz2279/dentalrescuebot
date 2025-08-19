@@ -58,7 +58,7 @@ class ProcedureFormattingTester:
     
     def test_database_procedure_formatting(self, procedure_id: str = "alveoloplasty"):
         """Test procedure formatting directly from database"""
-        if not self.db:
+        if self.db is None:
             self.log_test(f"Database Procedure Formatting ({procedure_id})", False, "No database connection")
             return False
             
