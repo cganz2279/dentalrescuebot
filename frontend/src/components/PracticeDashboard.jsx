@@ -465,10 +465,45 @@ const PracticeDashboard = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No procedures assigned yet</p>
-                  <p className="text-sm text-gray-500">Assign post-op care to patients</p>
+                <div className="text-center py-8 text-gray-500">
+                  {selectedPatientId ? (
+                    <div>
+                      <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p>No procedures found for selected patient</p>
+                      <Button
+                        onClick={() => navigate('/assign-procedure')}
+                        className="mt-2"
+                        size="sm"
+                      >
+                        Assign Procedure
+                      </Button>
+                    </div>
+                  ) : procedureSearchTerm ? (
+                    <div>
+                      <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p>No procedures found matching "{procedureSearchTerm}"</p>
+                      <Button
+                        onClick={() => setProcedureSearchTerm('')}
+                        variant="outline"
+                        className="mt-2"
+                        size="sm"
+                      >
+                        Clear Search
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p>No procedures assigned yet</p>
+                      <Button
+                        onClick={() => navigate('/assign-procedure')}
+                        className="mt-2"
+                        size="sm"
+                      >
+                        Assign First Procedure
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
