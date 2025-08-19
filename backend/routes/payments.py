@@ -8,6 +8,12 @@ from datetime import datetime, timedelta
 import uuid
 from typing import Optional, Dict, Any
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent.parent
+load_dotenv(ROOT_DIR / '.env')
 
 router = APIRouter(prefix="/api/payments/v1", tags=["payments"])
 security = HTTPBearer()
