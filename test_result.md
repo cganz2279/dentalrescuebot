@@ -327,6 +327,78 @@ backend:
           agent: "testing"
           comment: "POST /api/practice/assign-procedure works correctly with doctor names from doctors dropdown. Successfully assigns procedures with proper doctor name formatting and returns assignment ID for further operations"
 
+  - task: "Patient Password Setup API"
+    implemented: true
+    working: true
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "POST /api/auth/patient-setup working correctly. Successfully allows patients to set up their password for first-time login with email and new password. Validates password strength and updates patient account to active status."
+
+  - task: "Patient Dashboard API"
+    implemented: true
+    working: true
+    file: "backend/routes/patients.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/patients/dashboard working correctly with proper JWT token authentication. Returns patient info, practice details, assigned procedures with full procedure details, and statistics (total, active, completed procedures). Requires patient role token."
+
+  - task: "Patient Procedure View API"
+    implemented: true
+    working: true
+    file: "backend/routes/patients.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/patients/procedures/{assignment_id} working correctly with proper authentication. Verifies patient ownership of assignment, returns detailed procedure information, practice branding, and increments view count for analytics. Proper 404 handling for invalid assignments."
+
+  - task: "Patient Download Tracking API"
+    implemented: true
+    working: true
+    file: "backend/routes/patients.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "POST /api/patients/procedures/{assignment_id}/download working correctly. Tracks PDF downloads for analytics by incrementing download count. Verifies patient ownership of assignment and provides proper authentication checks."
+
+  - task: "Patient Authentication & Authorization"
+    implemented: true
+    working: true
+    file: "backend/routes/patients.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Patient JWT token authentication working correctly. Properly validates patient role tokens, blocks unauthorized access (401/403), and ensures patients can only access their own data. Token includes patientId, practiceId, and role verification."
+
+  - task: "Patient Login System Integration"
+    implemented: true
+    working: true
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Complete patient login system working end-to-end. Successfully tested: (1) Patient creation via practice admin, (2) Password setup via /api/auth/patient-setup, (3) Patient login with JWT token generation, (4) Access to patient-specific endpoints with proper authentication. All security checks and role-based access controls functioning correctly."
+
 frontend:
   - task: "Homepage Loading & Display"
     implemented: true
