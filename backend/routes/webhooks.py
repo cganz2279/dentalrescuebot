@@ -3,6 +3,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from datetime import datetime, timedelta
 from emergentintegrations.payments.stripe.checkout import StripeCheckout
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent.parent
+load_dotenv(ROOT_DIR / '.env')
 
 router = APIRouter(prefix="/api/webhook", tags=["webhooks"])
 
