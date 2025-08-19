@@ -326,13 +326,43 @@ const PracticeDashboard = () => {
           {/* Recent Patients */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="h-5 w-5 mr-2 text-blue-600" />
-                Recent Patients
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <Users className="h-5 w-5 mr-2 text-blue-600" />
+                  Recent Patients
+                  {patientSearchTerm && (
+                    <Badge variant="outline" className="ml-2">
+                      Search: "{patientSearchTerm}"
+                    </Badge>
+                  )}
+                </CardTitle>
+                {patientSearchTerm && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPatientSearchTerm('')}
+                    className="text-xs"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Clear Search
+                  </Button>
+                )}
+              </div>
+              
+              {/* Search Box */}
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search patients by name or email..."
+                  value={patientSearchTerm}
+                  onChange={(e) => setPatientSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </CardHeader>
             <CardContent>
-              {dashboardData?.recentPatients?.length > 0 ? (
+              {filteredPatients.length > 0 ? (
                 <div className="space-y-4">
                   {dashboardData.recentPatients.map((patient) => (
                     <div 
