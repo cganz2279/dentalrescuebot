@@ -107,6 +107,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/register" element={<RegistrationPage />} />
             <Route path="/*" element={<AppContent />} />
           </Routes>
         </BrowserRouter>
