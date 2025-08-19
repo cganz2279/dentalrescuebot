@@ -376,7 +376,7 @@ async def update_practice_branding(
 ):
     """Update practice branding"""
     try:
-        practice_id = current_user["practice_id"]
+        practice_id = current_user["practiceId"]
         role = current_user["role"]
         
         if role != 'practice_admin':
