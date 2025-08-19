@@ -16,6 +16,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 const AssignProcedurePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const preSelectedPatientId = searchParams.get('patientId');
   const { user } = useAuth();
   const { toast } = useToast();
 
