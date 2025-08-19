@@ -248,15 +248,18 @@ backend:
 
   - task: "Get Practice Patients API"
     implemented: true
-    working: "NA"
+    working: false
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "GET /api/practice/patients endpoint implemented. Returns all patients for the authenticated practice with procedure counts. Needs testing."
+        - working: false
+          agent: "testing"
+          comment: "❌ API FAILING: Returns 403 Forbidden when accessed without authentication. During testing, browser console shows failed requests to /api/practice/patients with 403 status. Authentication required but registration system has issues."
 
 frontend:
   - task: "Homepage Loading & Display"
