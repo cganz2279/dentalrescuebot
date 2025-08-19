@@ -7,7 +7,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://postopcare.preview.emergentagent.com/api"
+BACKEND_URL = "https://careflow-dental.preview.emergentagent.com/api"
 
 def test_registration_endpoint():
     """Test the registration endpoint"""
