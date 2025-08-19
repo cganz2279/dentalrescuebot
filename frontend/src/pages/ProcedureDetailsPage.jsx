@@ -86,7 +86,7 @@ const ProcedureDetailsPage = () => {
         practiceNotes: transformedData.practiceNotes || '',
         customInstructions: Array.isArray(transformedData.customInstructions) 
           ? transformedData.customInstructions.join('\n')
-          : (transformedData.customInstructions || ''),
+          : '',
         status: transformedData.status
       });
       
