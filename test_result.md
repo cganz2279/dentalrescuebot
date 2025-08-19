@@ -239,11 +239,11 @@ backend:
 
   - task: "Assign Procedure API"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
@@ -251,6 +251,9 @@ backend:
         - working: "NA"
           agent: "testing"
           comment: "Cannot test due to authentication issues preventing access to dashboard. API endpoint exists but requires valid authentication token. Same ObjectId serialization issue likely affects this endpoint."
+        - working: true
+          agent: "testing"
+          comment: "✅ API WORKING: Assign Procedure API working perfectly! Successfully assigned 'Root Canal Therapy to John Doe' with proper authentication. Creates assignment in patientprocedures collection with all required fields: assignmentId, patientId, practiceId, procedureId, performedDate, dentistName, practiceNotes, customInstructions, followUpDate. No ObjectId serialization issues."
 
   - task: "Get Practice Patients API"
     implemented: true
