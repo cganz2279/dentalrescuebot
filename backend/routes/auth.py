@@ -264,83 +264,103 @@ async def register_practice(request: PracticeRegisterRequest):
             detail="Registration failed"
         )
 
-@router.post("/setup-payment-method")
-async def setup_payment_method(
-    practice_id: str,
-    origin_url: str
-):
-    """Setup payment method for trial activation - redirects to Stripe"""
+@router.post("/register-practice-samcart")
+async def register_practice_samcart(request: PracticeRegisterRequest):
+    """Register practice after SamCart payment verification"""
     try:
-        # Find practice
-        practice = await db.practices.find_one({"id": practice_id})
-        if not practice:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Practice not found"
-            )
-        
-        if practice["subscription"]["status"] != "trial_pending_payment":
+        # Validate password
+        if not validate_password(request.adminPassword):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Practice already has payment method setup"
+                detail="Password must be at least 6 characters with letters and numbers"
             )
         
-        # Create Stripe checkout for payment method setup (with $0.50 authorization)
-        from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
+        # Check if email already exists
+        existing_user = await db.users.find_one({"email": request.email.lower()})
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
         
-        STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
-        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=f"{origin_url}/api/webhook/stripe")
+        # Generate IDs
+        practice_id = str(uuid.uuid4())
+        admin_user_id = str(uuid.uuid4())
         
-        # Setup URLs
-        success_url = f"{origin_url}/payment-setup-success?session_id={{CHECKOUT_SESSION_ID}}&practice_id={practice_id}"
-        cancel_url = f"{origin_url}/payment-setup-cancelled?practice_id={practice_id}"
-        
-        # Create metadata for payment method setup
-        metadata = {
-            "purpose": "payment_method_setup",
-            "practice_id": practice_id,
-            "practice_name": practice["name"],
-            "charge_amount": "49.00",
-            "charge_date": practice["subscription"]["chargeDate"].isoformat()
+        # Create practice document - ACTIVE since payment already processed
+        practice_doc = {
+            "id": practice_id,
+            "name": request.practiceName,
+            "email": request.email.lower(),
+            "phone": request.phone,
+            "website": request.website,
+            "address": {
+                "street": request.street,
+                "city": request.city,
+                "state": request.state,
+                "zipCode": request.zipCode
+            },
+            "branding": {
+                "primaryColor": "#2563eb",
+                "secondaryColor": "#1e40af",
+                "welcomeMessage": f"Welcome to {request.practiceName}'s post-operative care portal"
+            },
+            "subscription": {
+                "plan": "basic",
+                "status": "active",  # Already paid via SamCart
+                "paymentSource": "samcart",
+                "monthlyAmount": 49.0,
+                "activatedAt": datetime.utcnow(),
+                "nextBillingDate": datetime.utcnow() + timedelta(days=30)
+            },
+            "settings": {
+                "allowPatientRegistration": False,
+                "requirePatientApproval": True,
+                "customProcedures": []
+            },
+            "isActive": True,  # Immediately active
+            "createdAt": datetime.utcnow(),
+            "updatedAt": datetime.utcnow()
         }
         
-        # Create $0.50 authorization (will be refunded immediately)
-        checkout_request = CheckoutSessionRequest(
-            amount=0.50,  # Small authorization charge
-            currency="usd",
-            success_url=success_url,
-            cancel_url=cancel_url,
-            metadata=metadata
-        )
-        
-        session = await stripe_checkout.create_checkout_session(checkout_request)
-        
-        # Store session for tracking
-        payment_setup = {
-            "id": str(uuid.uuid4()),
-            "practice_id": practice_id,
-            "session_id": session.session_id,
-            "purpose": "payment_method_setup",
-            "amount": 0.50,
-            "currency": "usd",
-            "status": "pending",
-            "created_at": datetime.utcnow()
+        # Create admin user document
+        admin_user_doc = {
+            "id": admin_user_id,
+            "email": request.email.lower(),
+            "password": hash_password(request.adminPassword),
+            "firstName": request.adminFirstName,
+            "lastName": request.adminLastName,
+            "role": "practice_admin",
+            "practiceId": practice_id,
+            "isActive": True,  # Immediately active
+            "isEmailVerified": True,
+            "loginCount": 0,
+            "createdAt": datetime.utcnow(),
+            "updatedAt": datetime.utcnow()
         }
         
-        await db.payment_setups.insert_one(payment_setup)
+        # Insert both documents
+        await db.practices.insert_one(practice_doc)
+        await db.users.insert_one(admin_user_doc)
         
         return {
             "success": True,
-            "checkout_url": session.url,
-            "session_id": session.session_id,
-            "message": "Redirecting to payment method setup"
+            "message": "Registration completed successfully - account is active",
+            "practice": {
+                "id": practice_id,
+                "name": request.practiceName,
+                "email": request.email,
+                "status": "active"
+            }
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"Payment setup error: {e}")
+        print(f"SamCart registration error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to setup payment method"
+            detail="Registration failed"
         )
 
 @router.post("/invite-patient")
