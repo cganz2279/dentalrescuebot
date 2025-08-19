@@ -416,7 +416,7 @@ const PracticeDashboard = () => {
             <CardContent>
               {filteredProcedures.length > 0 ? (
                 <div className="space-y-4">
-                  {dashboardData.recentProcedures.map((procedure) => (
+                  {filteredProcedures.map((procedure) => (
                     <div key={procedure.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div className="flex-1">
                         <p className="font-medium">{procedure.procedureName}</p>
