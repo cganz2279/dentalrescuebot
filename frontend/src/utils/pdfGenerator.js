@@ -201,7 +201,8 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
     const addSectionHeader = (title, addSpaceBefore = true) => {
       if (addSpaceBefore) yPosition += 8;
       
-      checkPageBreak(25);
+      // Check if header would be orphaned (prevent header alone at bottom of page)
+      checkSectionPageBreak(25, 35);
       
       // Header line
       pdf.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
