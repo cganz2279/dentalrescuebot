@@ -78,10 +78,20 @@ const AddPatientPage = () => {
         phone: formData.phone.trim() || null
       });
       
+      const patientName = `${formData.firstName} ${formData.lastName}`;
+      
       toast({
         title: "Success!",
-        description: `Patient ${formData.firstName} ${formData.lastName} has been added successfully.`,
+        description: `Patient ${patientName} has been added successfully.`,
         variant: "default",
+        action: {
+          altText: "Assign Procedure",
+          label: "Assign Procedure",
+          onClick: () => {
+            // Navigate to assign procedure page with the new patient pre-selected
+            navigate(`/assign-procedure?patientId=${response.data.patientId}&patientName=${encodeURIComponent(patientName)}`);
+          }
+        }
       });
       
       // Reset form
@@ -92,10 +102,10 @@ const AddPatientPage = () => {
         phone: ''
       });
       
-      // Navigate back to dashboard after short delay
+      // Navigate back to dashboard after delay, unless user clicks "Assign Procedure"
       setTimeout(() => {
         navigate('/');
-      }, 1500);
+      }, 4000);
       
     } catch (error) {
       console.error('Create patient error:', error);
