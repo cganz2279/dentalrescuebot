@@ -221,7 +221,7 @@ backend:
 
   - task: "Create Patient API"
     implemented: true
-    working: false
+    working: true
     file: "backend/routes/practice.py"
     stuck_count: 1
     priority: "high"
@@ -233,6 +233,9 @@ backend:
         - working: false
           agent: "testing"
           comment: "❌ API FAILING: Backend logs show 500 Internal Server Error for POST /api/practice/patients. Error: ValueError: [TypeError(\"'ObjectId' object is not iterable\"), TypeError('vars() argument must have __dict__ attribute')]. Patient creation succeeds in database but response serialization fails due to ObjectId serialization issue."
+        - working: true
+          agent: "testing"
+          comment: "✅ API WORKING: Create Patient API now working perfectly! ObjectId serialization issue resolved. Successfully created patient 'John Doe (patient-19c79986@example.com)' with proper JSON response. Patient document created in database with UUID, proper role assignment, and practice linking. Response includes all required fields: id, email, firstName, lastName, role, practiceId, isActive, invitedAt, createdAt, updatedAt."
 
   - task: "Assign Procedure API"
     implemented: true
