@@ -117,6 +117,7 @@ function App() {
             <Route path="/add-patient" element={<AddPatientPage />} />
             <Route path="/assign-procedure" element={<AssignProcedurePage />} />
             <Route path="/edit-assignment/:assignmentId" element={<EditAssignmentPage />} />
+            <Route path="/customize-pdf/:assignmentId" element={<CustomizePDFPage />} />
             <Route path="/*" element={<AppContent />} />
           </Routes>
         </BrowserRouter>
