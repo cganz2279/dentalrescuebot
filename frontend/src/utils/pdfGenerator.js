@@ -255,7 +255,11 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
       // Title
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(isEmergency ? 185, 28, 28 : primaryColor[0], primaryColor[1], primaryColor[2]);
+      if (isEmergency) {
+        pdf.setTextColor(185, 28, 28);
+      } else {
+        pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      }
       pdf.text(title, leftMargin + boxPadding, yPosition + titleHeight);
       
       // Content
