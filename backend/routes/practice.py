@@ -228,7 +228,7 @@ async def create_patient(
 ):
     """Create a new patient"""
     try:
-        practice_id = current_user["practice_id"]
+        practice_id = current_user["practiceId"]
         role = current_user["role"]
         user_id = current_user["user"]["id"]
         
