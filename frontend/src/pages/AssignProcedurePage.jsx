@@ -43,14 +43,16 @@ const AssignProcedurePage = () => {
     try {
       setLoading(true);
       
-      // Load patients and procedures simultaneously
-      const [patientsResponse, proceduresResponse] = await Promise.all([
+      // Load patients, procedures, and doctors simultaneously
+      const [patientsResponse, proceduresResponse, doctorsResponse] = await Promise.all([
         practiceApi.getPatients(),
-        practiceApi.getProcedures()
+        practiceApi.getProcedures(),
+        practiceApi.getPracticeDoctors()
       ]);
       
       setPatients(patientsResponse.data || []);
       setProcedures(proceduresResponse.data || []);
+      setDoctors(doctorsResponse.data || []);
       
     } catch (error) {
       console.error('Load data error:', error);
