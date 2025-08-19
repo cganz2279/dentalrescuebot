@@ -250,9 +250,9 @@ async def register_practice(request: PracticeRegisterRequest):
             "practice": {
                 "id": practice_id,
                 "name": request.practiceName,
-                "email": request.email,
-                "trialEndsAt": practice_doc["subscription"]["trialEndsAt"],
-                "chargeDate": practice_doc["subscription"]["chargeDate"]
+                "email": request.email.lower(),
+                "trialEndsAt": practice_doc["subscription"]["trialEndsAt"].isoformat(),
+                "chargeDate": practice_doc["subscription"]["chargeDate"].isoformat()
             },
             "requiresPaymentSetup": True,
             "nextStep": "setup_payment_method"
