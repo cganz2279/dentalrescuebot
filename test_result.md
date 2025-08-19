@@ -261,6 +261,18 @@ backend:
           agent: "testing"
           comment: "❌ API FAILING: Returns 403 Forbidden when accessed without authentication. During testing, browser console shows failed requests to /api/practice/patients with 403 status. Authentication required but registration system has issues."
 
+  - task: "Practice Registration System"
+    implemented: true
+    working: false
+    file: "backend/routes/auth.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ REGISTRATION FAILING: Practice registration consistently fails with 'Registration failed. Please try again.' error. This prevents users from accessing the dashboard to test Add Patient and Assign Procedure buttons. Backend may have ObjectId serialization issues affecting registration response."
+
 frontend:
   - task: "Homepage Loading & Display"
     implemented: true
