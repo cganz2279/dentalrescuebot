@@ -707,7 +707,12 @@ class DentalAPITester:
             self.test_add_patient,
             self.test_add_patient_validation,
             self.test_assign_procedure,
-            self.test_get_export_data
+            self.test_get_export_data,
+            self.test_get_practice_doctors,
+            self.test_get_procedure_assignment,
+            self.test_get_procedure_assignment_404,
+            self.test_update_procedure_assignment,
+            self.test_update_procedure_assignment_404
         ]
         
         all_tests = basic_tests + practice_tests
