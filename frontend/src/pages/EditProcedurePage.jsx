@@ -45,9 +45,14 @@ const EditProcedurePage = () => {
       setLoading(true);
       setError(null);
       
-      // Fetch real procedure assignment data
-      const response = await practiceApi.getProcedureAssignment(procedureId);
-      const data = response.data;
+      // Fetch procedure assignment data and doctors simultaneously
+      const [assignmentResponse, doctorsResponse] = await Promise.all([
+        practiceApi.getProcedureAssignment(procedureId),
+        practiceApi.getPracticeDoctors()
+      ]);
+      
+      const data = assignmentResponse.data;
+      setDoctors(doctorsResponse.data || []);
       
       // Transform the data for the form
       setFormData({
