@@ -123,31 +123,33 @@ const PracticeDashboard = () => {
       setSelectedPatientId(patientId);
     }
     // Clear search when patient is selected
-    setProcedureSearchTerm('');
+    setPatientSearchTerm('');
   };
 
   const handleClearFilters = () => {
     setSelectedPatientId(null);
-    setProcedureSearchTerm('');
+    setPatientSearchTerm('');
   };
 
-  // Filter procedures based on selected patient and search term
+  // Filter patients based on search term
+  const filteredPatients = dashboardData?.recentPatients?.filter(patient => {
+    if (patientSearchTerm) {
+      const searchLower = patientSearchTerm.toLowerCase();
+      return (
+        patient.firstName.toLowerCase().includes(searchLower) ||
+        patient.lastName.toLowerCase().includes(searchLower) ||
+        patient.email.toLowerCase().includes(searchLower)
+      );
+    }
+    return true;
+  }) || [];
+
+  // Filter procedures based on selected patient only (no search on procedures)
   const filteredProcedures = dashboardData?.recentProcedures?.filter(procedure => {
-    // Filter by selected patient
+    // Filter by selected patient only
     if (selectedPatientId && procedure.patientId !== selectedPatientId) {
       return false;
     }
-    
-    // Filter by search term
-    if (procedureSearchTerm) {
-      const searchLower = procedureSearchTerm.toLowerCase();
-      return (
-        procedure.procedureName.toLowerCase().includes(searchLower) ||
-        procedure.dentistName.toLowerCase().includes(searchLower) ||
-        (procedure.patientName && procedure.patientName.toLowerCase().includes(searchLower))
-      );
-    }
-    
     return true;
   }) || [];
 
