@@ -117,7 +117,7 @@ const ProcedureDetailsPage = () => {
       practiceNotes: procedureData.practiceNotes || '',
       customInstructions: Array.isArray(procedureData.customInstructions) 
         ? procedureData.customInstructions.join('\n')
-        : (procedureData.customInstructions || ''),
+        : '',
       status: procedureData.status
     });
   };
