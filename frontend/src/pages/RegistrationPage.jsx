@@ -108,8 +108,8 @@ const RegistrationPage = () => {
           variant: "default",
         });
 
-        // Redirect to login page
-        navigate('/login?registered=true');
+        // Redirect to main page (which will show login form)
+        navigate('/?registered=true');
       } else {
         setError(data.detail || data.message || 'Registration failed');
       }
