@@ -85,6 +85,8 @@ const PracticeSettingsPage = () => {
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log('File selected:', file.name, file.size, file.type);
+      
       if (file.size > 2 * 1024 * 1024) { // 2MB limit
         toast({
           title: "File Too Large",
@@ -96,11 +98,28 @@ const PracticeSettingsPage = () => {
 
       const reader = new FileReader();
       reader.onload = (e) => {
+        console.log('File loaded, data URL length:', e.target.result.length);
         setFormData({
           ...formData,
           logo: e.target.result
         });
+        
+        toast({
+          title: "Logo Uploaded",
+          description: "Logo uploaded successfully! Click 'Save Branding' to save changes.",
+          variant: "default",
+        });
       };
+      
+      reader.onerror = (e) => {
+        console.error('FileReader error:', e);
+        toast({
+          title: "Upload Failed",
+          description: "Failed to read the selected file.",
+          variant: "destructive",
+        });
+      };
+      
       reader.readAsDataURL(file);
     }
   };
