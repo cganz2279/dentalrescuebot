@@ -387,12 +387,15 @@ const PracticeSettingsPage = () => {
                       onChange={handleLogoUpload}
                       className="hidden"
                     />
-                    <label htmlFor="logo-upload">
-                      <Button variant="outline" className="cursor-pointer" type="button">
-                        <Upload className="h-4 w-4 mr-2" />
-                        {formData.logo ? 'Change Logo' : 'Upload Logo'}
-                      </Button>
-                    </label>
+                    <Button 
+                      variant="outline" 
+                      type="button"
+                      onClick={() => document.getElementById('logo-upload').click()}
+                      className="cursor-pointer"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      {formData.logo ? 'Change Logo' : 'Upload Logo'}
+                    </Button>
                     <p className="text-sm text-gray-600 mt-1">PNG, JPG up to 2MB. This appears on all patient instructions.</p>
                   </div>
                 </div>
