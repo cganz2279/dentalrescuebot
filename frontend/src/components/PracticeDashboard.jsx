@@ -121,6 +121,11 @@ const PracticeDashboard = () => {
     }
   };
 
+  const handleEditAssignment = (assignmentId) => {
+    // Navigate to edit assignment page
+    navigate(`/edit-assignment/${assignmentId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Header */}
