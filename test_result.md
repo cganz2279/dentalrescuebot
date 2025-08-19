@@ -242,6 +242,9 @@ backend:
         - working: "NA"
           agent: "main"
           comment: "POST /api/practice/assign-procedure endpoint implemented. Accepts ProcedureAssignment model with patientId, procedureId, performedDate, dentistName, optional notes and custom instructions. Creates assignment in patientprocedures collection. Needs testing."
+        - working: "NA"
+          agent: "testing"
+          comment: "Cannot test due to authentication issues preventing access to dashboard. API endpoint exists but requires valid authentication token. Same ObjectId serialization issue likely affects this endpoint."
 
   - task: "Get Practice Patients API"
     implemented: true
