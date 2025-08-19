@@ -46,7 +46,7 @@ const AssignProcedurePage = () => {
       // Load patients, procedures, and doctors simultaneously
       const [patientsResponse, proceduresResponse, doctorsResponse] = await Promise.all([
         practiceApi.getPatients(),
-        practiceApi.getProcedures(),
+        authApi.getProcedures(),
         practiceApi.getPracticeDoctors()
       ]);
       
