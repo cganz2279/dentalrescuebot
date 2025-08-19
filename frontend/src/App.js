@@ -13,9 +13,12 @@ import ProcedureDetailsPage from "./pages/ProcedureDetailsPage";
 import EditProcedurePage from "./pages/EditProcedurePage";
 import PatientManagementPage from "./pages/PatientManagementPage";
 import RequestProcedurePage from "./pages/RequestProcedurePage";
+import PatientLoginPage from "./pages/PatientLoginPage";
+import PatientProcedureView from "./pages/PatientProcedureView";
 import LoginForm from "./components/LoginForm";
 import PracticeRegistrationForm from "./components/PracticeRegistrationForm";
 import PracticeDashboard from "./components/PracticeDashboard";
+import PatientDashboard from "./components/PatientDashboard";
 import { Toaster } from "./components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
 
