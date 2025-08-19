@@ -413,7 +413,7 @@ frontend:
           comment: "Initial testing failed due to import path error for use-toast component in HomePage, SpecialtyPage, and ProcedurePage"
         - working: true
           agent: "testing"
-          comment: "Fixed import paths from '../components/ui/use-toast' to '../hooks/use-toast'. Backend integration now working seamlessly with real data from https://dentalcarebot.preview.emergentagent.com/api. All API endpoints functioning correctly with proper error handling and loading states."
+          comment: "Fixed import paths from '../components/ui/use-toast' to '../hooks/use-toast'. Backend integration now working seamlessly with real data from https://dental-postcare.preview.emergentagent.com/api. All API endpoints functioning correctly with proper error handling and loading states."
 
   - task: "Practice Management Login"
     implemented: true
@@ -425,7 +425,7 @@ frontend:
     status_history:
         - working: false
           agent: "testing"
-          comment: "CRITICAL ISSUE: Login functionality failing due to backend URL mismatch. Frontend is connecting to 'https://da85708e-0b69-420c-8455-1047378667a9.preview.emergentagent.com' instead of correct URL 'https://dentalcarebot.preview.emergentagent.com'. Backend APIs work correctly when tested directly. Login credentials admin@smithdental.com/password123 are valid. Issue persists after rebuilding frontend with correct environment variables."
+          comment: "CRITICAL ISSUE: Login functionality failing due to backend URL mismatch. Frontend is connecting to 'https://dental-postcare.preview.emergentagent.com' instead of correct URL 'https://dental-postcare.preview.emergentagent.com'. Backend APIs work correctly when tested directly. Login credentials admin@smithdental.com/password123 are valid. Issue persists after rebuilding frontend with correct environment variables."
         - working: false
           agent: "testing"
           comment: "DEPLOYMENT ISSUE IDENTIFIED: After extensive testing including fresh builds and cache clearing, discovered that TWO different JavaScript bundles are loading: (1) Correct: dentalcarebot.preview.emergentagent.com/static/js/bundle.js with correct backend URL, (2) Incorrect: postcare-dental.preview.emergentagent.com/static/js/bundle.js with wrong backend URL 'da85708e-0b69-420c-8455-1047378667a9.preview.emergentagent.com'. The authentication logic is using the incorrect bundle. This is a deployment/infrastructure issue where multiple versions of the app are running on different domains. Environment variables are correct in code but wrong bundle takes precedence."

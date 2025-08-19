@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Get backend URL with fallback
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 
-                    'https://dentalcarebot.preview.emergentagent.com';
+                    'https://dental-postcare.preview.emergentagent.com';
 
 const AUTH_BASE_URL = `${BACKEND_URL}/api/auth`;
 const PRACTICE_BASE_URL = `${BACKEND_URL}/api/practice`;
@@ -151,7 +151,7 @@ export const practiceApi = {
   },
 
   getProcedures: async (specialty = null) => {
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://dentalcarebot.preview.emergentagent.com';
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://dental-postcare.preview.emergentagent.com';
     const url = specialty ? `/api/procedures?specialty=${specialty}` : '/api/procedures';
     const response = await axios.get(`${BACKEND_URL}${url}`);
     return response.data;
