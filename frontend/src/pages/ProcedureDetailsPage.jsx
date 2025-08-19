@@ -229,6 +229,28 @@ const ProcedureDetailsPage = () => {
           }
           .print-header {
             display: block !important;
+            margin-bottom: 2rem;
+          }
+          .print-header img {
+            max-height: 80px;
+            width: auto;
+            display: block !important;
+            margin: 0 auto 1rem auto;
+          }
+          .print-header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: black;
+          }
+          .print-header p {
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+            color: black;
+          }
+          .print-header hr {
+            border-top: 2px solid black;
+            margin: 1rem 0;
           }
         }
         .print-header {
