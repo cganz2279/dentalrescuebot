@@ -79,12 +79,12 @@ def test_jones_registration():
     try:
         registration_data = {
             "email": "jones@gmail.com",
-            "password": "password123",
-            "firstName": "Jones",
-            "lastName": "User",
             "practiceName": "Jones Practice",
             "phone": "555-0123",
-            "address": "123 Jones St",
+            "adminFirstName": "Jones",
+            "adminLastName": "User",
+            "adminPassword": "password123",
+            "street": "123 Jones St",
             "city": "Jones City",
             "state": "JS",
             "zipCode": "12345"
