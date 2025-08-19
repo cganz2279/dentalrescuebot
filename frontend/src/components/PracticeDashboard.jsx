@@ -125,6 +125,7 @@ const PracticeDashboard = () => {
     }
     // Clear search when patient is selected
     setPatientSearchTerm('');
+    setProcedureSearchTerm('');
   };
 
   const handleClearFilters = () => {
