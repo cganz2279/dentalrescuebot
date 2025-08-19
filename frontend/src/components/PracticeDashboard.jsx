@@ -127,6 +127,11 @@ const PracticeDashboard = () => {
     navigate(`/edit-assignment/${assignmentId}`);
   };
 
+  const handleCustomizePDF = (assignmentId) => {
+    // Navigate to customize PDF content page
+    navigate(`/customize-pdf/${assignmentId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Header */}
