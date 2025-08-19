@@ -39,6 +39,7 @@ const PracticeDashboard = () => {
 
   useEffect(() => {
     loadDashboard();
+    loadAllPatients();
   }, []);
 
   const loadDashboard = async () => {
@@ -56,6 +57,20 @@ const PracticeDashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAllPatients = async () => {
+    try {
+      const response = await practiceApi.getPatients();
+      
+      if (response.success) {
+        setAllPatients(response.data);
+      } else {
+        console.error('Failed to load patients:', response.message);
+      }
+    } catch (err) {
+      console.error('Error loading patients:', err);
     }
   };
 
