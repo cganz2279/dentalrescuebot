@@ -418,7 +418,10 @@ async def get_practice_doctors(current_user: dict = Depends(get_current_user)):
         # Format doctor names
         doctor_list = []
         for doctor in doctors:
-            doctor_name = f"Dr. {doctor['firstName']} {doctor['lastName']}"
+            # Remove existing Dr. prefix if present to avoid duplication
+            first_name = doctor['firstName'].replace('Dr. ', '').replace('Dr.', '').strip()
+            last_name = doctor['lastName']
+            doctor_name = f"Dr. {first_name} {last_name}"
             doctor_list.append({
                 "id": doctor["id"],
                 "name": doctor_name,
