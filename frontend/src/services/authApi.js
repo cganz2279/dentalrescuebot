@@ -66,8 +66,17 @@ practiceAxios.interceptors.response.use(
 export const authApi = {
   // Authentication endpoints
   login: async (email, password) => {
-    const response = await authAxios.post('/login', { email, password });
-    return response.data;
+    console.log('Login attempt - Backend URL:', BACKEND_URL);
+    console.log('Login attempt - Full URL:', `${AUTH_BASE_URL}/login`);
+    try {
+      const response = await authAxios.post('/login', { email, password });
+      console.log('Login successful:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Login error:', error.response?.data || error.message);
+      console.error('Login error - URL attempted:', error.config?.url);
+      throw error;
+    }
   },
 
   registerPractice: async (practiceData) => {
