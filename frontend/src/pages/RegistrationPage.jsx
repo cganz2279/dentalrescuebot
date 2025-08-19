@@ -43,7 +43,7 @@ const RegistrationPage = () => {
 
   // Check if payment was verified
   useEffect(() => {
-    if (!paymentVerified) {
+    if (paymentVerified !== 'true') {
       setError('Payment verification required. Please complete payment first.');
     }
   }, [paymentVerified]);
