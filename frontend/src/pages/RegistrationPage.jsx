@@ -249,11 +249,11 @@ const RegistrationPage = () => {
                     <Input
                       id="website"
                       name="website"
-                      type="url"
+                      type="text"
                       value={formData.website}
                       onChange={handleInputChange}
                       className="pl-10"
-                      placeholder="www.yourpractice.com"
+                      placeholder="yourpractice.com"
                     />
                   </div>
                 </div>
