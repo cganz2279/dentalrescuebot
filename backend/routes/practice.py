@@ -386,6 +386,59 @@ async def assign_procedure_to_patient(
             detail="Failed to assign procedure"
         )
 
+@router.get("/doctors")
+async def get_practice_doctors(current_user: dict = Depends(get_current_user)):
+    """Get all doctors/staff in the practice"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Get all practice staff and admins
+        doctors = await db.users.find(
+            {
+                "practiceId": practice_id,
+                "role": {"$in": ["practice_admin", "practice_staff"]},
+                "isActive": True
+            },
+            {
+                "_id": 0,
+                "id": 1,
+                "firstName": 1,
+                "lastName": 1,
+                "role": 1
+            }
+        ).to_list(length=None)
+        
+        # Format doctor names
+        doctor_list = []
+        for doctor in doctors:
+            doctor_name = f"Dr. {doctor['firstName']} {doctor['lastName']}"
+            doctor_list.append({
+                "id": doctor["id"],
+                "name": doctor_name,
+                "role": doctor["role"]
+            })
+        
+        return {
+            "success": True,
+            "data": doctor_list
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Get doctors error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get practice doctors"
+        )
+
 @router.get("/assignment/{assignment_id}")
 async def get_procedure_assignment(
     assignment_id: str,
