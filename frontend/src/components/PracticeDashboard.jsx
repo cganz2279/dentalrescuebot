@@ -82,6 +82,44 @@ const PracticeDashboard = () => {
     }
   };
 
+  const handleGeneratePDF = async (assignmentId) => {
+    try {
+      toast({
+        title: "Generating PDF...",
+        description: "Please wait while we prepare your branded document.",
+        variant: "default",
+      });
+
+      // Get assignment details
+      const response = await practiceApi.getAssignmentDetails(assignmentId);
+      if (response.success) {
+        const { assignment, patient, procedure, practice } = response.data;
+        
+        // Generate the branded PDF
+        const success = await generateBrandedPatientPDF(assignment, procedure, patient, practice);
+        
+        if (success) {
+          toast({
+            title: "PDF Generated Successfully!",
+            description: `Post-operative guide for ${patient.firstName} ${patient.lastName} has been downloaded.`,
+            variant: "default",
+          });
+        } else {
+          throw new Error("PDF generation failed");
+        }
+      } else {
+        throw new Error(response.message || "Failed to get assignment details");
+      }
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      toast({
+        title: "PDF Generation Failed",
+        description: err.message || "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Header */}
