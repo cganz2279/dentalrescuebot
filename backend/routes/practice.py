@@ -145,11 +145,26 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
             }
         ).sort("createdAt", -1).limit(10).to_list(length=None)
         
-        # Get recent procedures (last 10)
+        # Get recent procedures (last 10) with patient names
         recent_procedures = await db.patientprocedures.find(
             {"practiceId": practice_id},
             {"_id": 0}
         ).sort("performedDate", -1).limit(10).to_list(length=None)
+        
+        # Add patient names to recent procedures
+        for procedure in recent_procedures:
+            patient = await db.users.find_one(
+                {
+                    "id": procedure.get("patientId"),
+                    "practiceId": practice_id,
+                    "role": "patient"
+                },
+                {"firstName": 1, "lastName": 1, "_id": 0}
+            )
+            if patient:
+                procedure["patientName"] = f"{patient['firstName']} {patient['lastName']}"
+            else:
+                procedure["patientName"] = "Unknown Patient"
         
         return {
             "success": True,
