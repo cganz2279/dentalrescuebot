@@ -627,6 +627,61 @@ async def delete_assignment(
             detail="Failed to delete assignment"
         )
 
+@router.get("/patients/{patient_id}/procedures")
+async def get_patient_procedures(
+    patient_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all procedures for a specific patient"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Verify patient belongs to this practice
+        patient = await db.users.find_one({
+            "id": patient_id,
+            "practiceId": practice_id,
+            "role": "patient"
+        })
+        
+        if not patient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+        
+        # Get all procedures for this patient
+        procedures = await db.patientprocedures.find(
+            {
+                "patientId": patient_id,
+                "practiceId": practice_id
+            },
+            {"_id": 0}
+        ).sort("performedDate", -1).to_list(length=None)
+        
+        # Serialize datetime objects
+        procedures_serialized = serialize_datetime_fields(procedures)
+        
+        return {
+            "success": True,
+            "data": procedures_serialized
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Get patient procedures error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get patient procedures"
+        )
+
 @router.put("/branding")
 async def update_practice_branding(
     branding: BrandingUpdate,
