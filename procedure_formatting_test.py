@@ -47,9 +47,9 @@ class ProcedureFormattingTester:
             self.client = MongoClient(self.mongo_url)
             self.db = self.client[self.db_name]
             
-            # Test connection
-            self.db.admin.command('ping')
-            self.log_test("MongoDB Connection", True, f"Connected to {self.mongo_url}/{self.db_name}")
+            # Test connection by listing collections
+            collections = self.db.list_collection_names()
+            self.log_test("MongoDB Connection", True, f"Connected to {self.mongo_url}/{self.db_name}, found {len(collections)} collections")
             return True
             
         except Exception as e:
