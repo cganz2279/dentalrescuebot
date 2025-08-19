@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { Building, Mail, Phone, Globe, User, Lock, MapPin } from 'lucide-react';
+import { Building, Mail, Phone, Globe, User, Lock, MapPin, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 
 const RegistrationPage = () => {
