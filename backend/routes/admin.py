@@ -8,6 +8,12 @@ import jwt
 from datetime import datetime, timedelta
 import uuid
 from typing import Optional, List, Dict, Any
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent.parent
+load_dotenv(ROOT_DIR / '.env')
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 security = HTTPBearer()
