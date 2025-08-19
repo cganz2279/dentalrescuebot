@@ -314,9 +314,27 @@ const ProcedureDetailsPage = () => {
       <div className="max-w-4xl mx-auto px-4 py-8 printable-content">
         {/* Practice Header for Print */}
         <div className="print-header mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">{practice?.name || 'Dental Practice'}</h1>
-          {practice?.address && <p className="text-lg text-gray-700">{practice.address}</p>}
-          {practice?.phone && <p className="text-lg text-gray-700">Phone: {practice.phone}</p>}
+          {practice?.logo && (
+            <img 
+              src={practice.logo} 
+              alt="Practice Logo" 
+              className="h-16 w-auto mx-auto mb-4"
+              onError={(e) => {
+                // Fallback to default logo if practice logo fails
+                e.target.src = "https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png";
+              }}
+            />
+          )}
+          {!practice?.logo && (
+            <img 
+              src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png"
+              alt="DentalRescueBot Logo"
+              className="h-16 w-auto mx-auto mb-4"
+            />
+          )}
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{practice?.name || 'Dental Practice'}</h1>
+          {practice?.address && <p className="text-lg text-gray-700 mb-1">{practice.address}</p>}
+          {practice?.phone && <p className="text-lg text-gray-700 mb-4">Phone: {practice.phone}</p>}
           <hr className="my-4" />
         </div>
 
