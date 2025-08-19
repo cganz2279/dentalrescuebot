@@ -371,13 +371,16 @@ frontend:
     implemented: true
     working: false
     file: "frontend/src/components/LoginForm.jsx"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
           comment: "CRITICAL ISSUE: Login functionality failing due to backend URL mismatch. Frontend is connecting to 'https://da85708e-0b69-420c-8455-1047378667a9.preview.emergentagent.com' instead of correct URL 'https://dentalcarebot.preview.emergentagent.com'. Backend APIs work correctly when tested directly. Login credentials admin@smithdental.com/password123 are valid. Issue persists after rebuilding frontend with correct environment variables."
+        - working: false
+          agent: "testing"
+          comment: "DEPLOYMENT ISSUE IDENTIFIED: After extensive testing including fresh builds and cache clearing, discovered that TWO different JavaScript bundles are loading: (1) Correct: dentalcarebot.preview.emergentagent.com/static/js/bundle.js with correct backend URL, (2) Incorrect: postcare-dental.preview.emergentagent.com/static/js/bundle.js with wrong backend URL 'da85708e-0b69-420c-8455-1047378667a9.preview.emergentagent.com'. The authentication logic is using the incorrect bundle. This is a deployment/infrastructure issue where multiple versions of the app are running on different domains. Environment variables are correct in code but wrong bundle takes precedence."
 
   - task: "Practice Dashboard"
     implemented: true
