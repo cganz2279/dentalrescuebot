@@ -153,6 +153,35 @@ const PracticeDashboard = () => {
     navigate(`/customize-pdf/${assignmentId}`);
   };
 
+  const handlePatientSelect = async (patient) => {
+    try {
+      setLoadingPatientData(true);
+      setSelectedPatient(patient);
+      
+      const response = await practiceApi.getPatientProcedures(patient.id);
+      if (response.success) {
+        setPatientProcedures(response.data);
+      } else {
+        setPatientProcedures([]);
+        toast({
+          title: "Error",
+          description: "Failed to load patient procedures",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      setPatientProcedures([]);
+      console.error('Error loading patient procedures:', err);
+    } finally {
+      setLoadingPatientData(false);
+    }
+  };
+
+  const filteredPatients = allPatients.filter(patient =>
+    `${patient.firstName} ${patient.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    patient.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Header */}
