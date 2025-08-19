@@ -11,6 +11,7 @@ import AddPatientPage from "./pages/AddPatientPage";
 import AssignProcedurePage from "./pages/AssignProcedurePage";
 import ProcedureDetailsPage from "./pages/ProcedureDetailsPage";
 import EditProcedurePage from "./pages/EditProcedurePage";
+import PatientManagementPage from "./pages/PatientManagementPage";
 import LoginForm from "./components/LoginForm";
 import PracticeRegistrationForm from "./components/PracticeRegistrationForm";
 import PracticeDashboard from "./components/PracticeDashboard";
