@@ -297,7 +297,7 @@ async def assign_procedure_to_patient(
 ):
     """Assign a procedure to a patient"""
     try:
-        practice_id = current_user["practice_id"]
+        practice_id = current_user["practiceId"]
         role = current_user["role"]
         
         if role not in ['practice_admin', 'practice_staff']:
