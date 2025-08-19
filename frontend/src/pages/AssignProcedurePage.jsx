@@ -43,16 +43,31 @@ const AssignProcedurePage = () => {
     try {
       setLoading(true);
       
-      // Load patients, procedures, and doctors simultaneously
-      const [patientsResponse, proceduresResponse, doctorsResponse] = await Promise.all([
+      // Load essential data first
+      const [patientsResponse, proceduresResponse] = await Promise.all([
         practiceApi.getPatients(),
-        authApi.getProcedures(),
-        practiceApi.getPracticeDoctors()
+        authApi.getProcedures()
       ]);
       
       setPatients(patientsResponse.data || []);
       setProcedures(proceduresResponse.data || []);
-      setDoctors(doctorsResponse.data || []);
+      
+      // Try to load doctors, but don't fail if it doesn't work
+      try {
+        const doctorsResponse = await practiceApi.getPracticeDoctors();
+        setDoctors(doctorsResponse.data || []);
+      } catch (doctorsError) {
+        console.warn('Failed to load doctors:', doctorsError);
+        // Set default doctor from current user
+        if (user?.firstName && user?.lastName) {
+          setDoctors([{
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`,
+            firstName: user.firstName,
+            lastName: user.lastName
+          }]);
+        }
+      }
       
     } catch (error) {
       console.error('Load data error:', error);
