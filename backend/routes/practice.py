@@ -426,3 +426,80 @@ async def update_practice_branding(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update branding"
         )
+
+@router.put("/update")
+async def update_practice(
+    update_data: PracticeUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update practice information, branding, or password"""
+    try:
+        practice_id = current_user["practiceId"]
+        user_id = current_user["userId"]
+        role = current_user["role"]
+        
+        if role != 'practice_admin':
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only practice admins can update practice settings"
+            )
+        
+        # Build practice update document
+        practice_update = {"updatedAt": datetime.utcnow()}
+        
+        # Update basic practice info
+        if update_data.name is not None:
+            practice_update["name"] = update_data.name
+        if update_data.phone is not None:
+            practice_update["phone"] = update_data.phone
+        if update_data.website is not None:
+            practice_update["website"] = update_data.website
+            
+        # Update address if provided
+        if hasattr(update_data, 'address') and update_data.address:
+            practice_update["address"] = update_data.address
+            
+        # Update branding if provided
+        if update_data.branding is not None:
+            if update_data.branding.logo is not None:
+                practice_update["branding.logo"] = update_data.branding.logo
+            if update_data.branding.primaryColor is not None:
+                practice_update["branding.primaryColor"] = update_data.branding.primaryColor
+            if update_data.branding.secondaryColor is not None:
+                practice_update["branding.secondaryColor"] = update_data.branding.secondaryColor
+            if update_data.branding.welcomeMessage is not None:
+                practice_update["branding.welcomeMessage"] = update_data.branding.welcomeMessage
+        
+        # Update practice if there are changes
+        if len(practice_update) > 1:  # More than just updatedAt
+            await db.practices.update_one(
+                {"id": practice_id},
+                {"$set": practice_update}
+            )
+        
+        # Handle password update separately
+        if hasattr(update_data, 'newPassword') and update_data.newPassword:
+            import bcrypt
+            hashed_password = bcrypt.hashpw(update_data.newPassword.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            await db.users.update_one(
+                {"id": user_id},
+                {"$set": {
+                    "password": hashed_password,
+                    "updatedAt": datetime.utcnow()
+                }}
+            )
+        
+        return {
+            "success": True,
+            "message": "Practice settings updated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Update practice error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update practice settings"
+        )
