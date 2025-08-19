@@ -115,8 +115,10 @@ const PracticeDashboard = () => {
       });
       
       // Get the full procedure assignment data
+      console.log('Fetching procedure data for ID:', procedureId);
       const response = await practiceApi.getProcedureAssignment(procedureId);
       const data = response.data;
+      console.log('Procedure data received:', data);
       
       // Import the PDF generator
       const { generateProcedurePDF } = await import('../utils/pdfGenerator');
@@ -145,8 +147,11 @@ const PracticeDashboard = () => {
         performedDate: new Date(data.assignment.performedDate).toLocaleDateString()
       };
       
+      console.log('Generating PDF with data:', procedureForPDF);
+      
       // Generate the PDF
       const success = generateProcedurePDF(procedureForPDF);
+      console.log('PDF generation result:', success);
       
       if (success) {
         toast({
