@@ -280,8 +280,16 @@ async def create_patient(
         await db.users.insert_one(patient_doc)
         print(f"DEBUG: Patient document inserted successfully")
         
-        # Remove password from response
+        # Remove password from response and convert datetime objects to strings
         del patient_doc["password"]
+        
+        # Convert datetime objects to ISO strings for JSON serialization
+        if "invitedAt" in patient_doc:
+            patient_doc["invitedAt"] = patient_doc["invitedAt"].isoformat()
+        if "createdAt" in patient_doc:
+            patient_doc["createdAt"] = patient_doc["createdAt"].isoformat()
+        if "updatedAt" in patient_doc:
+            patient_doc["updatedAt"] = patient_doc["updatedAt"].isoformat()
         
         print(f"DEBUG: Returning success response")
         return {
