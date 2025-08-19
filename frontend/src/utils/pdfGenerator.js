@@ -120,10 +120,11 @@ export const generateProcedurePDF = (procedure) => {
 export const generateBrandedPatientPDF = async (assignment, procedure, patient, practice) => {
   try {
     const pdf = new jsPDF();
-    let yPosition = 20;
     const pageWidth = pdf.internal.pageSize.width;
-    const margin = 20;
+    const pageHeight = pdf.internal.pageSize.height;
+    const margin = 25;
     const contentWidth = pageWidth - (margin * 2);
+    let yPosition = margin;
 
     // Helper function to convert hex color to RGB
     const hexToRgb = (hex) => {
@@ -132,177 +133,345 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
         parseInt(result[1], 16),
         parseInt(result[2], 16),
         parseInt(result[3], 16)
-      ] : [37, 99, 235]; // Default blue
+      ] : [25, 83, 161]; // Professional blue
     };
 
     // Get practice brand colors
     const primaryColor = practice.branding?.primaryColor ? 
-      hexToRgb(practice.branding.primaryColor) : [37, 99, 235];
+      hexToRgb(practice.branding.primaryColor) : [25, 83, 161];
     const secondaryColor = practice.branding?.secondaryColor ? 
-      hexToRgb(practice.branding.secondaryColor) : [31, 41, 55];
+      hexToRgb(practice.branding.secondaryColor) : [51, 65, 85];
+    const accentColor = [59, 130, 246]; // Light blue for accents
 
-    // Helper function to add text with word wrapping
-    const addText = (text, fontSize = 12, isBold = false, color = primaryColor) => {
+    // Helper function to draw a professional header box
+    const drawHeaderBox = () => {
+      // Main header background
+      pdf.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      pdf.rect(0, 0, pageWidth, 55, 'F');
+      
+      // White accent stripe
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, 45, pageWidth, 3, 'F');
+    };
+
+    // Helper function to add professional text
+    const addText = (text, fontSize = 11, isBold = false, color = [51, 65, 85], align = 'left') => {
       pdf.setFontSize(fontSize);
       pdf.setTextColor(color[0], color[1], color[2]);
       
       if (isBold) {
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
       } else {
-        pdf.setFont(undefined, 'normal');
+        pdf.setFont('helvetica', 'normal');
       }
 
       const lines = pdf.splitTextToSize(text, contentWidth);
       
       // Check if we need a new page
-      if (yPosition + (lines.length * fontSize * 0.5) > pdf.internal.pageSize.height - 20) {
+      if (yPosition + (lines.length * fontSize * 0.4) > pageHeight - 30) {
         pdf.addPage();
-        yPosition = 20;
+        yPosition = margin;
       }
       
-      pdf.text(lines, margin, yPosition);
-      yPosition += lines.length * fontSize * 0.5 + 5;
+      if (align === 'center') {
+        pdf.text(lines, pageWidth / 2, yPosition, { align: 'center' });
+      } else if (align === 'right') {
+        pdf.text(lines, pageWidth - margin, yPosition, { align: 'right' });
+      } else {
+        pdf.text(lines, margin, yPosition);
+      }
+      
+      yPosition += lines.length * fontSize * 0.4;
+      return yPosition;
     };
 
-    // Add practice logo if available (placeholder for now)
-    // TODO: Implement actual logo loading from practice.branding.logo
-    
-    // Practice Header
-    addText(practice.name || 'Dental Practice', 18, true, primaryColor);
-    if (practice.phone) {
-      addText(`Phone: ${practice.phone}`, 12, false, [75, 85, 99]);
-    }
-    if (practice.website) {
-      addText(`Website: ${practice.website}`, 12, false, [75, 85, 99]);
-    }
-    yPosition += 15;
+    // Helper function to add section with professional styling
+    const addSection = (title, content, isWarning = false, isHighlight = false) => {
+      // Add some spacing before section
+      yPosition += 8;
+      
+      // Section header with background
+      const headerColor = isWarning ? [239, 68, 68] : isHighlight ? accentColor : primaryColor;
+      pdf.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+      pdf.rect(margin - 5, yPosition - 3, contentWidth + 10, 15, 'F');
+      
+      // Section title in white
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(title, margin, yPosition + 7);
+      yPosition += 20;
+      
+      // Content with better formatting
+      if (Array.isArray(content)) {
+        content.forEach((item, index) => {
+          const bullet = isWarning ? '⚠️' : '●';
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(51, 65, 85);
+          
+          const bulletLines = pdf.splitTextToSize(`${bullet} ${item}`, contentWidth - 10);
+          
+          // Check for page break
+          if (yPosition + (bulletLines.length * 4) > pageHeight - 30) {
+            pdf.addPage();
+            yPosition = margin;
+          }
+          
+          pdf.text(bulletLines, margin + 5, yPosition);
+          yPosition += bulletLines.length * 4 + 3;
+        });
+      } else {
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(51, 65, 85);
+        
+        const contentLines = pdf.splitTextToSize(content, contentWidth - 10);
+        
+        // Check for page break
+        if (yPosition + (contentLines.length * 4) > pageHeight - 30) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        
+        pdf.text(contentLines, margin + 5, yPosition);
+        yPosition += contentLines.length * 4;
+      }
+      
+      yPosition += 5;
+    };
 
-    // Patient Information Section
-    addText('Patient Information', 14, true, secondaryColor);
-    addText(`Patient: ${patient.firstName} ${patient.lastName}`, 12, true, [31, 41, 55]);
-    addText(`Email: ${patient.email}`, 12, false, [75, 85, 99]);
-    if (assignment.performedDate) {
-      const performedDate = new Date(assignment.performedDate).toLocaleDateString();
-      addText(`Procedure Date: ${performedDate}`, 12, false, [75, 85, 99]);
+    // Helper function to add info box
+    const addInfoBox = (title, content, backgroundColor = [248, 250, 252]) => {
+      const boxHeight = 35;
+      
+      // Check for page break
+      if (yPosition + boxHeight > pageHeight - 30) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+      
+      // Background box
+      pdf.setFillColor(backgroundColor[0], backgroundColor[1], backgroundColor[2]);
+      pdf.rect(margin, yPosition, contentWidth, boxHeight, 'F');
+      
+      // Border
+      pdf.setDrawColor(203, 213, 225);
+      pdf.setLineWidth(0.5);
+      pdf.rect(margin, yPosition, contentWidth, boxHeight);
+      
+      // Title
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      pdf.text(title, margin + 8, yPosition + 12);
+      
+      // Content
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(51, 65, 85);
+      const contentLines = pdf.splitTextToSize(content, contentWidth - 16);
+      pdf.text(contentLines, margin + 8, yPosition + 22);
+      
+      yPosition += boxHeight + 10;
+    };
+
+    // START DOCUMENT CREATION
+
+    // Professional Header
+    drawHeaderBox();
+    
+    // Practice name and info in header
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(255, 255, 255);
+    pdf.text(practice.name || 'Dental Practice', margin, 25);
+    
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'normal');
+    const practiceInfo = [
+      practice.phone ? `Phone: ${practice.phone}` : '',
+      practice.website ? `Website: ${practice.website}` : '',
+      practice.email ? `Email: ${practice.email}` : ''
+    ].filter(info => info).join(' • ');
+    
+    pdf.text(practiceInfo, margin, 35);
+    
+    // Document title
+    yPosition = 70;
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    pdf.text('POST-OPERATIVE CARE INSTRUCTIONS', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 20;
+
+    // Patient Information Box
+    const patientInfoContent = [
+      `Patient: ${patient.firstName} ${patient.lastName}`,
+      `Email: ${patient.email}`,
+      assignment.performedDate ? `Procedure Date: ${new Date(assignment.performedDate).toLocaleDateString('en-US', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+      })}` : '',
+      assignment.dentistName ? `Treating Dentist: ${assignment.dentistName}` : '',
+      assignment.followUpDate ? `Follow-up Scheduled: ${new Date(assignment.followUpDate).toLocaleDateString('en-US', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+      })}` : ''
+    ].filter(info => info).join('\n');
+    
+    addInfoBox('PATIENT INFORMATION', patientInfoContent, [239, 246, 255]);
+
+    // Procedure Information
+    yPosition += 5;
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    pdf.text(`Procedure: ${assignment.procedureName || procedure.name}`, margin, yPosition);
+    yPosition += 10;
+    
+    if (procedure.specialtyName) {
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(107, 114, 128);
+      pdf.text(`Specialty: ${procedure.specialtyName}`, margin, yPosition);
+      yPosition += 15;
     }
-    if (assignment.dentistName) {
-      addText(`Dentist: ${assignment.dentistName}`, 12, false, [75, 85, 99]);
-    }
-    yPosition += 15;
 
     // Custom welcome message
     if (practice.branding?.welcomeMessage) {
-      addText(practice.branding.welcomeMessage, 12, false, [31, 41, 55]);
-      yPosition += 10;
+      addInfoBox('MESSAGE FROM YOUR DENTAL TEAM', practice.branding.welcomeMessage, [254, 249, 195]);
     }
 
-    // Procedure title and details
-    addText(assignment.procedureName || procedure.name, 16, true, primaryColor);
-    addText(`Specialty: ${procedure.specialtyName}`, 12, false, [107, 114, 126]);
-    if (procedure.duration) {
-      addText(`Recovery Duration: ${procedure.duration}`, 12, false, [107, 114, 126]);
-    }
-    yPosition += 15;
-
-    // Custom Practice Notes (if any)
+    // Custom Practice Notes
     if (assignment.practiceNotes) {
-      addText('Special Instructions from Your Dentist', 14, true, secondaryColor);
-      addText(assignment.practiceNotes, 11, false, [31, 41, 55]);
-      yPosition += 15;
+      addSection('SPECIAL INSTRUCTIONS FROM YOUR DENTIST', assignment.practiceNotes, false, true);
     }
 
-    // Custom Instructions (if any)
+    // Custom Instructions
     if (assignment.customInstructions && assignment.customInstructions.length > 0) {
-      addText('Additional Instructions', 14, true, secondaryColor);
-      assignment.customInstructions.forEach((instruction) => {
-        addText(`• ${instruction}`, 11, false, [31, 41, 55]);
-      });
-      yPosition += 15;
+      addSection('ADDITIONAL CARE INSTRUCTIONS', assignment.customInstructions, false, true);
     }
 
-    // Overview
+    // Emergency Notice - Prominent styling
+    yPosition += 10;
+    pdf.setFillColor(254, 226, 226);
+    pdf.rect(margin, yPosition, contentWidth, 40, 'F');
+    pdf.setDrawColor(239, 68, 68);
+    pdf.setLineWidth(2);
+    pdf.rect(margin, yPosition, contentWidth, 40);
+    
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(185, 28, 28);
+    pdf.text('🚨 EMERGENCY NOTICE', margin + 10, yPosition + 15);
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(153, 27, 27);
+    const emergencyText = 'If you experience severe bleeding, difficulty breathing, severe swelling, or signs of allergic reaction, call 911 immediately. For urgent dental concerns, contact our office emergency line.';
+    const emergencyLines = pdf.splitTextToSize(emergencyText, contentWidth - 20);
+    pdf.text(emergencyLines, margin + 10, yPosition + 25);
+    yPosition += 50;
+
+    // Main Content Sections
     if (procedure.overview) {
-      addText('Overview', 14, true, primaryColor);
-      addText(procedure.overview, 11);
-      yPosition += 15;
+      addSection('PROCEDURE OVERVIEW', procedure.overview);
     }
 
-    // Emergency notice
-    addText('⚠️ EMERGENCY NOTICE', 12, true, [220, 38, 38]);
-    addText('If you experience severe bleeding, difficulty breathing, or signs of severe allergic reaction, call 911 immediately.', 11, false, [153, 27, 27]);
-    yPosition += 15;
+    if (procedure.immediateAftercare) {
+      addSection('IMMEDIATE AFTERCARE (First 24 Hours)', procedure.immediateAftercare);
+    }
 
-    // Helper function to add a section
-    const addSection = (title, items, isWarning = false) => {
-      if (!items || items.length === 0) return;
-      
-      const titleColor = isWarning ? [220, 38, 38] : primaryColor;
-      addText(title, 14, true, titleColor);
-      yPosition += 5;
-      
-      items.forEach((item) => {
-        const bullet = isWarning ? '⚠️' : '•';
-        addText(`${bullet} ${item}`, 11);
-      });
-      yPosition += 10;
-    };
+    if (procedure.dietRestrictions) {
+      addSection('DIETARY GUIDELINES', procedure.dietRestrictions);
+    }
 
-    // Procedure sections
-    addSection('Immediate Aftercare Instructions', procedure.immediateAftercare);
-    addSection('Diet Restrictions', procedure.dietRestrictions);
-    addSection('⚠️ Warning Signs - Call Your Dentist Immediately', procedure.warningSignsToCallDoctor, true);
+    if (procedure.warningSignsToCallDoctor) {
+      addSection('⚠️ WARNING SIGNS - CALL US IMMEDIATELY', procedure.warningSignsToCallDoctor, true);
+    }
 
-    // Recovery Timeline
+    // Recovery Timeline with professional styling
     if (procedure.recoveryTimeline && procedure.recoveryTimeline.length > 0) {
-      addText('Recovery Timeline', 14, true, primaryColor);
-      yPosition += 5;
-      procedure.recoveryTimeline.forEach((timeline) => {
-        addText(`Day ${timeline.day}: ${timeline.activity}`, 11);
+      addSection('RECOVERY TIMELINE', '');
+      yPosition -= 5; // Adjust spacing
+      
+      procedure.recoveryTimeline.forEach((timeline, index) => {
+        // Timeline item box
+        pdf.setFillColor(249, 250, 251);
+        pdf.rect(margin, yPosition, contentWidth, 18, 'F');
+        pdf.setDrawColor(229, 231, 235);
+        pdf.setLineWidth(0.5);
+        pdf.rect(margin, yPosition, contentWidth, 18);
+        
+        // Day indicator
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        pdf.text(`Day ${timeline.day}`, margin + 8, yPosition + 12);
+        
+        // Activity
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(51, 65, 85);
+        const activityLines = pdf.splitTextToSize(timeline.activity, contentWidth - 80);
+        pdf.text(activityLines, margin + 60, yPosition + 12);
+        
+        yPosition += 20;
       });
-      yPosition += 15;
+      yPosition += 5;
     }
 
-    addSection('Medications', procedure.medications);
-
-    // Follow-up Information
-    if (assignment.followUpDate) {
-      const followUpDate = new Date(assignment.followUpDate).toLocaleDateString();
-      addText('Follow-up Appointment', 14, true, primaryColor);
-      addText(`Scheduled follow-up: ${followUpDate}`, 12, false, [31, 41, 55]);
-      yPosition += 15;
+    if (procedure.medications) {
+      addSection('MEDICATION INSTRUCTIONS', procedure.medications);
     }
 
-    // Practice Contact Information
-    addText('Contact Your Dental Office', 14, true, primaryColor);
-    addText(`${practice.name}`, 12, true, [31, 41, 55]);
+    // Contact Information Section
+    yPosition += 10;
+    pdf.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    pdf.rect(margin, yPosition, contentWidth, 50, 'F');
+    
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(255, 255, 255);
+    pdf.text('CONTACT YOUR DENTAL OFFICE', margin + 10, yPosition + 15);
+    
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(255, 255, 255);
+    
+    let contactY = yPosition + 25;
+    pdf.text(practice.name || 'Dental Practice', margin + 10, contactY);
+    contactY += 8;
+    
     if (practice.phone) {
-      addText(`Phone: ${practice.phone}`, 11);
-    }
-    if (practice.email) {
-      addText(`Email: ${practice.email}`, 11);
-    }
-    if (practice.address) {
-      const addr = practice.address;
-      const addressLine = `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
-      addText(`Address: ${addressLine}`, 11);
-    }
-    yPosition += 15;
-
-    // Footer
-    if (yPosition > pdf.internal.pageSize.height - 40) {
-      pdf.addPage();
-      yPosition = 20;
+      pdf.text(`📞 ${practice.phone}`, margin + 10, contactY);
+      contactY += 6;
     }
     
-    yPosition = pdf.internal.pageSize.height - 30;
-    pdf.setFontSize(8);
-    pdf.setTextColor(107, 114, 126);
-    pdf.text('Generated by DentalRescueBot - www.theoncallbot.com', margin, yPosition);
-    pdf.text(`Copyright © The OnCall Bot LLC 2025`, margin, yPosition + 10);
-    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, yPosition + 20);
+    if (practice.address) {
+      const addr = practice.address;
+      const addressText = `📍 ${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
+      pdf.text(addressText, margin + 10, contactY);
+    }
+    
+    yPosition += 60;
 
-    // Save the PDF
-    const fileName = `${patient.firstName}_${patient.lastName}_${assignment.procedureName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_post_op.pdf`;
+    // Professional Footer
+    pdf.setFillColor(248, 250, 252);
+    pdf.rect(0, pageHeight - 25, pageWidth, 25, 'F');
+    
+    pdf.setFontSize(8);
+    pdf.setTextColor(107, 114, 128);
+    pdf.text('Powered by DentalRescueBot • www.theoncallbot.com', margin, pageHeight - 15);
+    pdf.text(`Generated on ${new Date().toLocaleDateString('en-US', { 
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    })} at ${new Date().toLocaleTimeString('en-US')}`, margin, pageHeight - 8);
+    
+    // Copyright and disclaimer
+    pdf.text('© 2025 The OnCall Bot LLC. This document contains general post-operative care guidelines.', pageWidth - margin, pageHeight - 15, { align: 'right' });
+    pdf.text('Always follow your dentist\'s specific instructions and contact them with any concerns.', pageWidth - margin, pageHeight - 8, { align: 'right' });
+
+    // Save the PDF with professional naming
+    const fileName = `${practice.name?.replace(/[^a-z0-9]/gi, '_') || 'Practice'}_PostOp_${patient.firstName}_${patient.lastName}_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}.pdf`;
     pdf.save(fileName);
     
     return true;
