@@ -178,7 +178,7 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
 async def get_practice_patients(current_user: dict = Depends(get_current_user)):
     """Get all patients for the practice"""
     try:
-        practice_id = current_user["practice_id"]
+        practice_id = current_user["practiceId"]
         role = current_user["role"]
         
         if role not in ['practice_admin', 'practice_staff']:
