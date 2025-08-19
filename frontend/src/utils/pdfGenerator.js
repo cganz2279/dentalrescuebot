@@ -222,26 +222,46 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
     const addBulletList = (items, indent = 0) => {
       if (!items || items.length === 0) return;
       
-      items.forEach((item) => {
-        const bulletX = leftMargin + indent;
-        const textX = bulletX + 10;
-        const textWidth = contentWidth - indent - 10;
+      // Estimate space needed for bullet list to keep it together
+      const estimatedHeight = items.length * 15; // rough estimate
+      if (estimatedHeight > 50) {
+        // For long lists, just check normal page break
+        items.forEach((item) => {
+          const bulletX = leftMargin + indent;
+          const textX = bulletX + 10;
+          const textWidth = contentWidth - indent - 10;
+          
+          const lines = pdf.splitTextToSize(item, textWidth);
+          const itemHeight = lines.length * 4.4 + 2;
+          checkPageBreak(itemHeight);
+          
+          pdf.setFontSize(11);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(60, 60, 60);
+          pdf.text('•', bulletX, yPosition);
+          pdf.text(lines, textX, yPosition);
+          yPosition += itemHeight;
+        });
+      } else {
+        // For shorter lists, try to keep together
+        checkPageBreak(estimatedHeight);
         
-        // Check if we need page break
-        const lines = pdf.splitTextToSize(item, textWidth);
-        const itemHeight = lines.length * 4.4 + 2;
-        checkPageBreak(itemHeight);
-        
-        // Add bullet
-        pdf.setFontSize(11);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(60, 60, 60);
-        pdf.text('•', bulletX, yPosition);
-        
-        // Add text
-        pdf.text(lines, textX, yPosition);
-        yPosition += itemHeight;
-      });
+        items.forEach((item) => {
+          const bulletX = leftMargin + indent;
+          const textX = bulletX + 10;
+          const textWidth = contentWidth - indent - 10;
+          
+          const lines = pdf.splitTextToSize(item, textWidth);
+          const itemHeight = lines.length * 4.4 + 2;
+          
+          pdf.setFontSize(11);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(60, 60, 60);
+          pdf.text('•', bulletX, yPosition);
+          pdf.text(lines, textX, yPosition);
+          yPosition += itemHeight;
+        });
+      }
     };
 
     // Helper function to add info box
