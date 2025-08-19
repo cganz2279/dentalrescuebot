@@ -12,12 +12,14 @@ import {
   Download,
   Activity,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Printer
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
 import LoadingSpinner, { LoadingCard, ErrorMessage } from './LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
+import { generateBrandedPatientPDF } from '../utils/pdfGenerator';
 
 const PracticeDashboard = () => {
   const navigate = useNavigate();
