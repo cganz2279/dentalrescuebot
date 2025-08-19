@@ -32,6 +32,7 @@ const practiceAxios = axios.create({
 practiceAxios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('dentalToken');
+    console.log('Token from localStorage:', token ? token.substring(0, 50) + '...' : 'No token found');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
