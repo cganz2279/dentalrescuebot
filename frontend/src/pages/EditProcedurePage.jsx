@@ -89,8 +89,20 @@ const EditProcedurePage = () => {
     setSubmitting(true);
     
     try {
-      // This would call an API to update the procedure assignment
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock API call
+      // Prepare update data
+      const updateData = {
+        performedDate: formData.performedDate,
+        followUpDate: formData.followUpDate || null,
+        dentistName: formData.dentistName,
+        practiceNotes: formData.practiceNotes,
+        customInstructions: formData.customInstructions 
+          ? formData.customInstructions.split('\n').filter(line => line.trim())
+          : [],
+        status: formData.status
+      };
+      
+      // Call API to update procedure assignment
+      await practiceApi.updateProcedureAssignment(procedureId, updateData);
       
       toast({
         title: "Success!",
@@ -105,7 +117,7 @@ const EditProcedurePage = () => {
       console.error('Update error:', error);
       toast({
         title: "Error",
-        description: "Failed to update procedure assignment. Please try again.",
+        description: error.response?.data?.detail || "Failed to update procedure assignment. Please try again.",
         variant: "destructive",
       });
     } finally {
