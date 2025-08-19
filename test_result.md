@@ -279,6 +279,54 @@ backend:
           agent: "testing"
           comment: "GET /api/procedures?specialty=oral-surgery correctly filters procedures by specialty, returning 34 oral surgery procedures"
 
+  - task: "Get Practice Doctors API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/practice/doctors returns list of doctors with proper name formatting (no double 'Dr.' prefix). Retrieved 1 doctor with correct formatting: 'Dr. John Smith'"
+
+  - task: "Get Procedure Assignment API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "GET /api/practice/assignment/{assignment_id} successfully retrieves full procedure assignment with patient and procedure details. Proper 404 handling for invalid assignment IDs"
+
+  - task: "Update Procedure Assignment API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "PUT /api/practice/assignment/{assignment_id} successfully updates dentist name, dates, status, and notes. Validates allowed fields only and returns proper 404 for invalid assignment IDs"
+
+  - task: "Assign Procedure API (Updated)"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "POST /api/practice/assign-procedure works correctly with doctor names from doctors dropdown. Successfully assigns procedures with proper doctor name formatting and returns assignment ID for further operations"
+
 frontend:
   - task: "Homepage Loading & Display"
     implemented: true
