@@ -325,10 +325,13 @@ const PracticeDashboard = () => {
             Practice Settings
           </Button>
           <Button 
-            onClick={handleExportData}
-            variant="outline" 
-            className="h-20 flex flex-col"
+            onClick={() => navigate('/patient-management')}
+            className="bg-blue-600 hover:bg-blue-700 text-white h-20 flex flex-col"
           >
+            <Users className="h-6 w-6 mb-2" />
+            <span className="font-medium">Manage Patients</span>
+            <span className="text-xs opacity-90">Search & View Patient Records</span>
+          </Button>
             <Download className="h-6 w-6 mb-2" />
             Export Data
           </Button>
