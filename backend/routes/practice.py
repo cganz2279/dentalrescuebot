@@ -514,6 +514,119 @@ async def get_assignment_details(
             detail="Failed to get assignment details"
         )
 
+@router.put("/assignments/{assignment_id}")
+async def update_assignment(
+    assignment_id: str,
+    assignment_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update an existing assignment"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Check if assignment exists and belongs to this practice
+        existing_assignment = await db.patientprocedures.find_one({
+            "id": assignment_id,
+            "practiceId": practice_id
+        })
+        
+        if not existing_assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignment not found"
+            )
+        
+        # Build update document
+        update_doc = {"updatedAt": datetime.utcnow()}
+        
+        if assignment_data.get("performedDate"):
+            update_doc["performedDate"] = datetime.fromisoformat(assignment_data["performedDate"].replace('Z', '+00:00'))
+        if assignment_data.get("dentistName"):
+            update_doc["dentistName"] = assignment_data["dentistName"]
+        if "practiceNotes" in assignment_data:
+            update_doc["practiceNotes"] = assignment_data["practiceNotes"]
+        if "customInstructions" in assignment_data:
+            update_doc["customInstructions"] = assignment_data["customInstructions"] or []
+        if assignment_data.get("followUpDate"):
+            update_doc["followUpDate"] = datetime.fromisoformat(assignment_data["followUpDate"].replace('Z', '+00:00'))
+        elif "followUpDate" in assignment_data and assignment_data["followUpDate"] is None:
+            update_doc["followUpDate"] = None
+        
+        # Update the assignment
+        result = await db.patientprocedures.update_one(
+            {"id": assignment_id, "practiceId": practice_id},
+            {"$set": update_doc}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignment not found"
+            )
+        
+        return {
+            "success": True,
+            "message": "Assignment updated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Update assignment error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update assignment"
+        )
+
+@router.delete("/assignments/{assignment_id}")
+async def delete_assignment(
+    assignment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete an assignment"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Delete the assignment
+        result = await db.patientprocedures.delete_one({
+            "id": assignment_id,
+            "practiceId": practice_id
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignment not found"
+            )
+        
+        return {
+            "success": True,
+            "message": "Assignment deleted successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Delete assignment error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete assignment"
+        )
+
 @router.put("/branding")
 async def update_practice_branding(
     branding: BrandingUpdate,
