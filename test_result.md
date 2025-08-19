@@ -571,15 +571,20 @@ metadata:
 test_plan:
   current_focus:
     - "Practice Management Login"
-  stuck_tasks:
-    - "Practice Management Login"
+  stuck_tasks: []
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
   completed_new_features:
     - "Get Practice Doctors API"
     - "Get Procedure Assignment API"
     - "Update Procedure Assignment API"
     - "Assign Procedure API (Updated)"
+    - "Patient Password Setup API"
+    - "Patient Dashboard API"
+    - "Patient Procedure View API"
+    - "Patient Download Tracking API"
+    - "Patient Authentication & Authorization"
+    - "Patient Login System Integration"
   post_restart_verification_completed:
     - "Authentication API (/api/auth/login)"
     - "Practice Dashboard API (/api/practice/dashboard)"
@@ -587,6 +592,13 @@ test_plan:
     - "Get Procedures API (/api/procedures)"
     - "Get Practice Doctors API (/api/practice/doctors)"
     - "Request Procedure API (/api/practice/request-procedure)"
+  patient_login_system_testing_completed:
+    - "Patient Password Setup API (/api/auth/patient-setup)"
+    - "Patient Dashboard API (/api/patients/dashboard)"
+    - "Patient Procedure View API (/api/patients/procedures/{assignment_id})"
+    - "Patient Download Tracking API (/api/patients/procedures/{assignment_id}/download)"
+    - "Patient Authentication & JWT Token Validation"
+    - "Patient Role-Based Access Control"
 
 agent_communication:
     - agent: "testing"
