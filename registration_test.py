@@ -16,12 +16,12 @@ def test_registration_endpoint():
         timestamp = str(int(time.time()))
         registration_data = {
             "email": f"test{timestamp}@example.com",
-            "password": "password123",
-            "firstName": "Test",
-            "lastName": "User",
             "practiceName": f"Test Practice {timestamp}",
             "phone": "555-0123",
-            "address": "123 Test St",
+            "adminFirstName": "Test",
+            "adminLastName": "User",
+            "adminPassword": "password123",
+            "street": "123 Test St",
             "city": "Test City",
             "state": "TS",
             "zipCode": "12345"
