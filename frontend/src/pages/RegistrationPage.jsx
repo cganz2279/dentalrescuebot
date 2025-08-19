@@ -79,7 +79,15 @@ const RegistrationPage = () => {
 
     try {
       console.log('Submitting registration data:', formData);
-      const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL}/api/auth/register-practice-samcart`, {
+      
+      // Get backend URL with fallback
+      const backendUrl = import.meta.env?.REACT_APP_BACKEND_URL || 
+                        process.env?.REACT_APP_BACKEND_URL || 
+                        'https://postcare-dental.preview.emergentagent.com';
+      
+      console.log('Using backend URL:', backendUrl);
+      
+      const response = await fetch(`${backendUrl}/api/auth/register-practice-samcart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
