@@ -228,6 +228,21 @@ const AssignProcedurePage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {preSelectedPatientName && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center">
+                  <UserCheck className="h-5 w-5 text-green-600 mr-2" />
+                  <div>
+                    <p className="text-sm font-medium text-green-800">
+                      Patient Pre-selected
+                    </p>
+                    <p className="text-sm text-green-700">
+                      Ready to assign a procedure to <span className="font-semibold">{preSelectedPatientName}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
