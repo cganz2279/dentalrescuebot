@@ -212,6 +212,7 @@ app.include_router(practice_router)
 app.include_router(payments_router)
 app.include_router(webhooks_router)
 app.include_router(admin_router)
+app.include_router(patients_router)
 
 app.add_middleware(
     CORSMiddleware,
