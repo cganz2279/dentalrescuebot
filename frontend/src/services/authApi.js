@@ -175,5 +175,10 @@ export const practiceApi = {
   getPracticeDoctors: async () => {
     const response = await practiceAxios.get('/doctors');
     return response.data;
+  },
+
+  requestNewProcedure: async (requestData) => {
+    const response = await practiceAxios.post('/request-procedure', requestData);
+    return response.data;
   }
 };
