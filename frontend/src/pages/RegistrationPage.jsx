@@ -76,7 +76,7 @@ const RegistrationPage = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL}/auth/register-practice-samcart`, {
+      const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL}/api/auth/register-practice-samcart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
