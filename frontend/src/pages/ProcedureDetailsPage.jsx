@@ -94,8 +94,9 @@ const ProcedureDetailsPage = () => {
         status: procedureData.status,
         practiceNotes: procedureData.practiceNotes,
         customInstructions: procedureData.customInstructions || [],
-        // Practice info
+        // Practice info with full details
         practiceName: practice?.name || 'Dental Practice',
+        practiceAddress: practice?.address || practice?.location || '',
         practicePhone: practice?.phone || '',
         practiceWebsite: practice?.website || ''
       });
