@@ -16,10 +16,10 @@ load_dotenv(ROOT_DIR / '.env')
 async def update_procedure_overviews():
     """Update all procedure overviews with comprehensive content"""
     
-    # Connect to MongoDB
-    mongo_url = os.environ['MONGO_URL']
+    # Connect to MongoDB directly
+    mongo_url = "mongodb://localhost:27017"
     client = AsyncIOMotorClient(mongo_url)
-    db = client[os.environ.get('DB_NAME', 'test_database')]
+    db = client["test_database"]
     
     comprehensive_overviews = {
         "Root Canal Therapy": """
