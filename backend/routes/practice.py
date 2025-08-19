@@ -371,6 +371,153 @@ async def assign_procedure_to_patient(
             detail="Failed to assign procedure"
         )
 
+@router.get("/assignment/{assignment_id}")
+async def get_procedure_assignment(
+    assignment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get detailed procedure assignment with full procedure content"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Get procedure assignment
+        assignment = await db.patientprocedures.find_one(
+            {
+                "id": assignment_id,
+                "practiceId": practice_id
+            },
+            {"_id": 0}
+        )
+        
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure assignment not found"
+            )
+        
+        # Get patient details
+        patient = await db.users.find_one(
+            {
+                "id": assignment["patientId"],
+                "practiceId": practice_id,
+                "role": "patient"
+            },
+            {"_id": 0, "password": 0}
+        )
+        
+        # Get full procedure details from procedures collection
+        procedure = await db.procedures.find_one(
+            {"id": assignment["procedureId"]},
+            {"_id": 0}
+        )
+        
+        if not procedure:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure details not found"
+            )
+        
+        # Combine assignment with full procedure details
+        result = {
+            "assignment": assignment,
+            "patient": {
+                "id": patient["id"],
+                "firstName": patient["firstName"],
+                "lastName": patient["lastName"],
+                "email": patient["email"]
+            } if patient else None,
+            "procedure": procedure
+        }
+        
+        return {
+            "success": True,
+            "data": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Get procedure assignment error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get procedure assignment"
+        )
+
+@router.put("/assignment/{assignment_id}")
+async def update_procedure_assignment(
+    assignment_id: str,
+    update_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update procedure assignment details"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Verify assignment belongs to this practice
+        assignment = await db.patientprocedures.find_one({
+            "id": assignment_id,
+            "practiceId": practice_id
+        })
+        
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure assignment not found"
+            )
+        
+        # Build update document
+        update_doc = {"updatedAt": datetime.utcnow()}
+        
+        # Update allowed fields
+        allowed_fields = ['performedDate', 'followUpDate', 'dentistName', 'practiceNotes', 'customInstructions', 'status']
+        for field in allowed_fields:
+            if field in update_data:
+                if field in ['performedDate', 'followUpDate'] and update_data[field]:
+                    # Parse date strings
+                    update_doc[field] = datetime.fromisoformat(update_data[field].replace('Z', '+00:00'))
+                else:
+                    update_doc[field] = update_data[field]
+        
+        # Update the assignment
+        result = await db.patientprocedures.update_one(
+            {"id": assignment_id},
+            {"$set": update_doc}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure assignment not found"
+            )
+        
+        return {
+            "success": True,
+            "message": "Procedure assignment updated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Update procedure assignment error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update procedure assignment"
+        )
+
 @router.get("/export-data")
 async def get_export_data(current_user: dict = Depends(get_current_user)):
     """Get data for exporting (patients with their assigned procedures)"""
