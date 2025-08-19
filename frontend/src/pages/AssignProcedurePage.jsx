@@ -8,7 +8,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { ArrowLeft, FileText, User, Calendar, UserCheck, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { practiceApi } from '../services/authApi';
+import { practiceApi, authApi } from '../services/authApi';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
 
