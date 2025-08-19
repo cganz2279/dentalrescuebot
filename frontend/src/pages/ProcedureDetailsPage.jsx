@@ -530,7 +530,69 @@ const ProcedureDetailsPage = () => {
             <div className="space-y-4">
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Overview</h4>
-                <p className="text-gray-700">{procedureData.procedureDetails.overview}</p>
+                <div className="text-gray-700 leading-relaxed">
+                  {procedureData.procedureDetails.overview.split('\n').map((line, index) => {
+                    const trimmedLine = line.trim();
+                    
+                    // Handle empty lines - create spacing
+                    if (trimmedLine === '') {
+                      return <div key={index} className="mb-2"></div>;
+                    }
+                    
+                    // Handle bullet points
+                    if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                      const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
+                      return (
+                        <div key={index} className="flex items-start mb-2 ml-4">
+                          <span className="text-blue-600 mr-3 text-lg leading-none">•</span>
+                          <span className="flex-1 text-gray-700">{bulletText}</span>
+                        </div>
+                      );
+                    }
+                    
+                    // Handle markdown-style headers - both single line and inline
+                    if (trimmedLine.includes('**')) {
+                      // If it's a complete header (starts and ends with **)
+                      if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.length > 4) {
+                        const headerText = trimmedLine.replace(/\*\*/g, '');
+                        return (
+                          <h4 key={index} className="font-bold text-gray-900 mt-6 mb-3 text-lg">
+                            {headerText}
+                          </h4>
+                        );
+                      }
+                      // Handle mixed content with headers inline
+                      else {
+                        const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/);
+                        return (
+                          <p key={index} className="mb-3">
+                            {parts.map((part, partIndex) => {
+                              if (part.startsWith('**') && part.endsWith('**')) {
+                                return (
+                                  <strong key={partIndex} className="font-semibold text-gray-900">
+                                    {part.replace(/\*\*/g, '')}
+                                  </strong>
+                                );
+                              }
+                              return part;
+                            })}
+                          </p>
+                        );
+                      }
+                    }
+                    
+                    // Regular paragraphs
+                    if (trimmedLine.length > 0) {
+                      return (
+                        <p key={index} className="mb-3 text-gray-700 leading-relaxed">
+                          {trimmedLine}
+                        </p>
+                      );
+                    }
+                    
+                    return null;
+                  }).filter(Boolean)}
+                </div>
               </div>
               
               <div>
