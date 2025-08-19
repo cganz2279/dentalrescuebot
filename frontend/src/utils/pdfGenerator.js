@@ -10,9 +10,9 @@ export const generateProcedurePDF = (procedure) => {
     const contentWidth = pageWidth - (margin * 2);
 
     // Helper function to add text with word wrapping
-    const addText = (text, fontSize = 12, isBold = false, color = [0, 0, 0]) => {
+    const addText = (text, fontSize = 12, isBold = false) => {
       pdf.setFontSize(fontSize);
-      pdf.setTextColor(color[0], color[1], color[2]);
+      pdf.setTextColor(0, 0, 0); // Always black text
       
       if (isBold) {
         pdf.setFont(undefined, 'bold');
@@ -23,90 +23,138 @@ export const generateProcedurePDF = (procedure) => {
       const lines = pdf.splitTextToSize(text, contentWidth);
       
       // Check if we need a new page
-      if (yPosition + (lines.length * fontSize * 0.5) > pdf.internal.pageSize.height - 20) {
+      if (yPosition + (lines.length * fontSize * 0.5) > pdf.internal.pageSize.height - 30) {
         pdf.addPage();
         yPosition = 20;
       }
       
       pdf.text(lines, margin, yPosition);
-      yPosition += lines.length * fontSize * 0.5 + 5;
+      yPosition += lines.length * fontSize * 0.5 + 3;
     };
 
-    // Helper function to add a section
-    const addSection = (title, items, isWarning = false) => {
-      const titleColor = isWarning ? [220, 38, 38] : [37, 99, 235]; // Red for warnings, blue for others
-      addText(title, 14, true, titleColor);
-      yPosition += 5;
-      
-      items.forEach((item, index) => {
-        const bullet = isWarning ? '⚠️' : '•';
-        addText(`${bullet} ${item}`, 11);
+    // Helper function to add spacing
+    const addSpace = (space = 10) => {
+      yPosition += space;
+    };
+
+    // Header - Clean and simple
+    addText('Procedure Details', 18, true);
+    addText(`${procedure.name} for ${procedure.patientName}`, 14, true);
+    addSpace(15);
+
+    // Assignment Information Section
+    addText('Assignment Information', 14, true);
+    addSpace(5);
+    
+    addText('Patient Details', 12, true);
+    addText(`${procedure.patientName}`, 11);
+    if (procedure.patientEmail) {
+      addText(`${procedure.patientEmail}`, 11);
+    }
+    addSpace(8);
+    
+    addText('Treatment Details', 12, true);
+    addText(`Performed: ${procedure.performedDate}`, 11);
+    if (procedure.followUpDate) {
+      addText(`Follow-up: ${new Date(procedure.followUpDate).toLocaleDateString()}`, 11);
+    }
+    addText(`Dentist: ${procedure.dentistName}`, 11);
+    addText(`Status: ${procedure.status || 'active'}`, 11);
+    addSpace(15);
+
+    // Practice Notes Section
+    if (procedure.practiceNotes) {
+      addText('Practice Notes', 14, true);
+      addSpace(5);
+      addText(procedure.practiceNotes, 11);
+      addSpace(15);
+    }
+
+    // Custom Instructions Section
+    if (procedure.customInstructions && procedure.customInstructions.length > 0) {
+      addText('Custom Instructions', 14, true);
+      addSpace(5);
+      procedure.customInstructions.forEach((instruction) => {
+        addText(`• ${instruction}`, 11);
       });
-      yPosition += 10;
-    };
+      addSpace(15);
+    }
 
-    // Header with company branding
-    addText('DentalRescueBot', 18, true, [37, 99, 235]);
-    addText('Post-Operative Care Guide', 16, true, [75, 85, 99]);
-    yPosition += 10;
-
-    // Procedure title and details
-    addText(procedure.name, 16, true, [31, 41, 55]);
-    addText(`Specialty: ${procedure.specialtyName}`, 12, false, [107, 114, 126]);
-    addText(`Recovery Duration: ${procedure.duration}`, 12, false, [107, 114, 126]);
-    yPosition += 15;
-
+    // Post-Operative Care Instructions Section
+    addText('Post-Operative Care Instructions', 14, true);
+    addSpace(8);
+    
     // Overview
-    addText('Overview', 14, true, [37, 99, 235]);
-    addText(procedure.overview, 11);
-    yPosition += 15;
-
-    // Emergency notice
-    addText('⚠️ EMERGENCY NOTICE', 12, true, [220, 38, 38]);
-    addText('If you experience severe bleeding, difficulty breathing, or signs of severe allergic reaction, call 911 immediately.', 11, false, [153, 27, 27]);
-    yPosition += 15;
-
-    // Immediate Aftercare
-    addSection('Immediate Aftercare Instructions', procedure.immediateAftercare);
-
-    // Diet Restrictions
-    addSection('Diet Restrictions', procedure.dietRestrictions);
-
-    // Warning Signs (highlighted in red)
-    addSection('⚠️ Warning Signs - Call Your Dentist Immediately', procedure.warningSignsToCallDoctor, true);
-
-    // Recovery Timeline
-    addText('Recovery Timeline', 14, true, [37, 99, 235]);
-    yPosition += 5;
-    procedure.recoveryTimeline.forEach((timeline) => {
-      addText(`Day ${timeline.day}: ${timeline.activity}`, 11);
-    });
-    yPosition += 15;
-
-    // Medications
-    addSection('Medications', procedure.medications);
-
-    // Contact Information
-    addText('Need Help?', 14, true, [37, 99, 235]);
-    addText('Office Hours: Contact your dental office during regular business hours', 11);
-    addText('After Hours: Follow your dentist\'s emergency contact instructions', 11);
-    yPosition += 15;
-
-    // Footer
-    if (yPosition > pdf.internal.pageSize.height - 40) {
-      pdf.addPage();
-      yPosition = 20;
+    if (procedure.overview) {
+      addText('Overview', 12, true);
+      addSpace(3);
+      addText(procedure.overview, 11);
+      addSpace(10);
     }
     
-    yPosition = pdf.internal.pageSize.height - 30;
-    pdf.setFontSize(8);
-    pdf.setTextColor(107, 114, 126);
-    pdf.text('Generated by DentalRescueBot - www.theoncallbot.com', margin, yPosition);
-    pdf.text(`Copyright © The OnCall Bot LLC 2025`, margin, yPosition + 10);
-    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, yPosition + 20);
+    // Immediate Aftercare
+    if (procedure.immediateAftercare && procedure.immediateAftercare.length > 0) {
+      addText('Immediate Aftercare', 12, true);
+      addSpace(3);
+      procedure.immediateAftercare.forEach((instruction) => {
+        addText(`• ${instruction}`, 11);
+      });
+      addSpace(10);
+    }
 
-    // Save the PDF
-    const fileName = `${procedure.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_post_op_guide.pdf`;
+    // Diet Restrictions
+    if (procedure.dietRestrictions && procedure.dietRestrictions.length > 0) {
+      addText('Diet Restrictions', 12, true);
+      addSpace(3);
+      procedure.dietRestrictions.forEach((restriction) => {
+        addText(`• ${restriction}`, 11);
+      });
+      addSpace(10);
+    }
+
+    // Warning Signs
+    if (procedure.warningSignsToCallDoctor && procedure.warningSignsToCallDoctor.length > 0) {
+      addText('⚠️ Warning Signs - Call Your Dentist Immediately', 12, true);
+      addSpace(3);
+      procedure.warningSignsToCallDoctor.forEach((warning) => {
+        addText(`• ${warning}`, 11);
+      });
+      addSpace(10);
+    }
+
+    // Recovery Timeline
+    if (procedure.recoveryTimeline && procedure.recoveryTimeline.length > 0) {
+      addText('Recovery Timeline', 12, true);
+      addSpace(3);
+      procedure.recoveryTimeline.forEach((timeline) => {
+        addText(`Day ${timeline.day}: ${timeline.activity}`, 11);
+      });
+      addSpace(10);
+    }
+
+    // Medications
+    if (procedure.medications && procedure.medications.length > 0) {
+      addText('Medications', 12, true);
+      addSpace(3);
+      procedure.medications.forEach((medication) => {
+        addText(`• ${medication}`, 11);
+      });
+      addSpace(15);
+    }
+
+    // Contact Information - Simple footer
+    addText('Contact Information', 12, true);
+    addSpace(3);
+    if (procedure.practiceName) {
+      addText(`Practice: ${procedure.practiceName}`, 11);
+    }
+    if (procedure.practicePhone) {
+      addText(`Phone: ${procedure.practicePhone}`, 11);
+    }
+    addText('For emergencies, contact your dentist immediately or call 911.', 11);
+
+    // Save the PDF with clean filename
+    const fileName = `${procedure.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${procedure.patientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_postop_care.pdf`;
     pdf.save(fileName);
     
     return true;
