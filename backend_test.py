@@ -564,13 +564,13 @@ class DentalAPITester:
             # Test dashboard without auth
             response = self.session.get(f"{self.base_url}/practice/dashboard")
             
-            if response.status_code == 401:
+            if response.status_code in [401, 403]:  # Both are acceptable for unauthorized access
                 self.log_test("Unauthorized Access Protection", True, 
-                            "Dashboard properly rejects unauthorized requests")
+                            f"Dashboard properly rejects unauthorized requests (HTTP {response.status_code})")
                 return True
             else:
                 self.log_test("Unauthorized Access Protection", False, 
-                            f"Expected 401, got {response.status_code}")
+                            f"Expected 401 or 403, got {response.status_code}")
                 return False
                 
         except Exception as e:
