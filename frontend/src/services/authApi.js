@@ -155,5 +155,10 @@ export const practiceApi = {
   deleteAssignment: async (assignmentId) => {
     const response = await practiceAxios.delete(`/assignments/${assignmentId}`);
     return response.data;
+  },
+
+  getPatientProcedures: async (patientId) => {
+    const response = await practiceAxios.get(`/patients/${patientId}/procedures`);
+    return response.data;
   }
 };
