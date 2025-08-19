@@ -170,15 +170,80 @@ export const practiceApi = {
     return response.data;
   },
 
-  getProcedures: async (specialty = null) => {
-    // Use practiceAxios for authenticated requests
-    const url = specialty ? `/procedures?specialty=${specialty}` : '/procedures';
-    const response = await practiceAxios.get(url);
+  requestNewProcedure: async (requestData) => {
+    const response = await practiceAxios.post('/request-procedure', requestData);
+    return response.data;
+  }
+};
+
+export const authApi = {
+  // Authentication endpoints
+  login: async (email, password) => {
+    console.log('Login attempt - Backend URL:', BACKEND_URL);
+    console.log('Login attempt - Full URL:', `${AUTH_BASE_URL}/login`);
+    try {
+      const response = await authAxios.post('/login', {
+        email: email.toLowerCase(),
+        password
+      });
+      
+      console.log('Login response:', response.status, response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Login API error:', error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  register: async (practiceData) => {
+    const response = await authAxios.post('/register-practice-samcart', {
+      // Practice info
+      practiceName: practiceData.practiceName,
+      email: practiceData.email.toLowerCase(),
+      phone: practiceData.phone,
+      website: practiceData.website,
+      
+      // Admin info
+      adminFirstName: practiceData.adminFirstName,
+      adminLastName: practiceData.adminLastName,
+      password: practiceData.password,
+      
+      // Address
+      street: practiceData.street,
+      city: practiceData.city,
+      state: practiceData.state,
+      zipCode: practiceData.zipCode
+    });
     return response.data;
   },
 
-  requestNewProcedure: async (requestData) => {
-    const response = await practiceAxios.post('/request-procedure', requestData);
+  getCurrentUser: async (token) => {
+    const response = await authAxios.get('/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  },
+
+  invitePatient: async (email, firstName, lastName) => {
+    const token = localStorage.getItem('dentalToken');
+    const response = await authAxios.post('/invite-patient', 
+      { email, firstName, lastName },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  },
+
+  getProcedures: async (specialty = null) => {
+    // This endpoint doesn't require authentication
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://dental-postcare.preview.emergentagent.com';
+    const url = specialty ? `/api/procedures?specialty=${specialty}` : '/api/procedures';
+    const response = await axios.get(`${BACKEND_URL}${url}`);
     return response.data;
   }
 };
