@@ -272,13 +272,15 @@ async def create_patient(
         
         await db.users.insert_one(patient_doc)
         
-        # Remove password from response
-        del patient_doc["password"]
+        # Remove password and _id from response (if present)
+        response_doc = patient_doc.copy()
+        response_doc.pop("password", None)
+        response_doc.pop("_id", None)
         
         return {
             "success": True,
             "message": "Patient created successfully",
-            "data": patient_doc
+            "data": response_doc
         }
         
     except HTTPException:
