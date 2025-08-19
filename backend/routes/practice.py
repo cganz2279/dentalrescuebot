@@ -369,7 +369,78 @@ async def assign_procedure_to_patient(
             detail="Failed to assign procedure"
         )
 
-@router.put("/branding")
+@router.get("/export-data")
+async def get_export_data(current_user: dict = Depends(get_current_user)):
+    """Get data for exporting (patients with their assigned procedures)"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Get all patients with their assigned procedures
+        patients_with_procedures = []
+        
+        # Get all patients for this practice
+        patients = await db.users.find(
+            {
+                "practiceId": practice_id,
+                "role": "patient",
+                "isActive": True
+            },
+            {
+                "_id": 0,
+                "id": 1,
+                "firstName": 1,
+                "lastName": 1,
+                "email": 1,
+                "createdAt": 1
+            }
+        ).to_list(length=None)
+        
+        # For each patient, get their procedures
+        for patient in patients:
+            procedures = await db.patientprocedures.find(
+                {
+                    "practiceId": practice_id,
+                    "patientId": patient["id"]
+                },
+                {"_id": 0}
+            ).sort("performedDate", -1).to_list(length=None)
+            
+            # Get full procedure details for each assignment
+            for proc_assignment in procedures:
+                procedure_details = await db.procedures.find_one(
+                    {"id": proc_assignment["procedureId"]},
+                    {"_id": 0, "name": 1, "specialty": 1, "specialtyName": 1}
+                )
+                if procedure_details:
+                    proc_assignment["procedureDetails"] = procedure_details
+            
+            patient["assignedProcedures"] = procedures
+            patients_with_procedures.append(patient)
+        
+        return {
+            "success": True,
+            "data": {
+                "patients": patients_with_procedures,
+                "exportedAt": datetime.utcnow().isoformat(),
+                "practiceId": practice_id
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Export data error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get export data"
+        )
 async def update_practice_branding(
     branding: BrandingUpdate,
     current_user: dict = Depends(get_current_user)
