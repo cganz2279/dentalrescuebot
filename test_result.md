@@ -210,11 +210,14 @@ backend:
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
           comment: "GET /api/practice/dashboard endpoint exists and returns practice stats, recent patients, and recent procedures. Confirmed API implementation is complete."
+        - working: true
+          agent: "testing"
+          comment: "✅ API WORKING: Dashboard API tested successfully. Returns proper JSON with practice stats (0 patients, 0 active procedures), recent patients, and recent procedures. Datetime serialization working correctly with serialize_datetime_fields function. No ObjectId serialization errors."
 
   - task: "Create Patient API"
     implemented: true
