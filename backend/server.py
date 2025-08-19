@@ -205,7 +205,7 @@ async def get_procedure(procedure_id: str):
 # Include the router in the main app
 app.include_router(api_router)
 
-# Include auth, practice management, payment, webhook, and admin routes directly
+# Include auth, practice management, payment, webhook, admin, and patient routes directly
 app.include_router(auth_router)
 app.include_router(practice_router)
 app.include_router(payments_router)
