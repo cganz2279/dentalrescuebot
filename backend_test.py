@@ -504,7 +504,7 @@ class DentalAPITester:
                     required_fields = ["assignmentId", "patientName", "procedureName"]
                     
                     if all(field in assignment for field in required_fields):
-                        if assignment["procedureName"] == "Root Canal Treatment":
+                        if assignment["procedureName"] == "Root Canal Therapy":
                             self.log_test("Assign Procedure API", True, 
                                         f"Procedure assigned: {assignment['procedureName']} to {assignment['patientName']}")
                             return True
