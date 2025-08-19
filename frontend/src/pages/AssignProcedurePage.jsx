@@ -67,6 +67,13 @@ const AssignProcedurePage = () => {
   };
 
   const handleInputChange = (field, value) => {
+    // Special handling for procedure selection
+    if (field === 'procedureId' && value === 'request-new') {
+      // Navigate to request procedure page
+      navigate('/request-procedure');
+      return;
+    }
+    
     setFormData(prev => ({
       ...prev,
       [field]: value
