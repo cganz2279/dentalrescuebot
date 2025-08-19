@@ -1010,7 +1010,19 @@ class DentalAPITester:
             self.test_update_procedure_assignment_404
         ]
         
-        all_tests = basic_tests + practice_tests
+        # Patient login system tests (require practice admin authentication first)
+        patient_tests = [
+            self.create_test_patient,
+            self.test_patient_password_setup,
+            self.test_patient_login,
+            self.assign_procedure_to_test_patient,
+            self.test_patient_dashboard,
+            self.test_patient_procedure_view,
+            self.test_patient_download_tracking,
+            self.test_patient_unauthorized_access
+        ]
+        
+        all_tests = basic_tests + practice_tests + patient_tests
         passed = 0
         total = len(all_tests)
         
@@ -1022,6 +1034,12 @@ class DentalAPITester:
         
         print("🏥 Running Practice Management Tests...")
         for test in practice_tests:
+            if test():
+                passed += 1
+            print()  # Add spacing between tests
+        
+        print("👤 Running Patient Login System Tests...")
+        for test in patient_tests:
             if test():
                 passed += 1
             print()  # Add spacing between tests
