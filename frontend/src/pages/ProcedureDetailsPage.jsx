@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { ArrowLeft, FileText, User, Calendar, Download, Edit, Printer } from 'lucide-react';
+import { ArrowLeft, FileText, User, Calendar, Edit, Save, X, Printer } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
-import { generateProcedurePDF } from '../utils/pdfGenerator';
 
 const ProcedureDetailsPage = () => {
   const { procedureId } = useParams();
@@ -19,6 +21,18 @@ const ProcedureDetailsPage = () => {
   const [procedureData, setProcedureData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [doctors, setDoctors] = useState([]);
+  
+  const [editData, setEditData] = useState({
+    performedDate: '',
+    followUpDate: '',
+    dentistName: '',
+    practiceNotes: '',
+    customInstructions: '',
+    status: 'active'
+  });
 
   useEffect(() => {
     loadProcedureDetails();
@@ -29,9 +43,14 @@ const ProcedureDetailsPage = () => {
       setLoading(true);
       setError(null);
       
-      // Fetch real procedure assignment data
-      const response = await practiceApi.getProcedureAssignment(procedureId);
-      const data = response.data;
+      // Fetch procedure assignment data and doctors simultaneously
+      const [assignmentResponse, doctorsResponse] = await Promise.all([
+        practiceApi.getProcedureAssignment(procedureId),
+        practiceApi.getPracticeDoctors()
+      ]);
+      
+      const data = assignmentResponse.data;
+      setDoctors(doctorsResponse.data || []);
       
       // Transform the data to match our component structure
       const transformedData = {
@@ -58,6 +77,19 @@ const ProcedureDetailsPage = () => {
       };
       
       setProcedureData(transformedData);
+      
+      // Initialize edit data
+      setEditData({
+        performedDate: transformedData.performedDate,
+        followUpDate: transformedData.followUpDate || '',
+        dentistName: transformedData.dentistName,
+        practiceNotes: transformedData.practiceNotes || '',
+        customInstructions: Array.isArray(transformedData.customInstructions) 
+          ? transformedData.customInstructions.join('\n')
+          : (transformedData.customInstructions || ''),
+        status: transformedData.status
+      });
+      
     } catch (err) {
       console.error('Load procedure error:', err);
       setError(err.response?.data?.detail || 'Failed to load procedure details');
@@ -71,50 +103,85 @@ const ProcedureDetailsPage = () => {
     }
   };
 
-  const handlePrintPDF = () => {
-    if (procedureData && procedureData.procedureDetails) {
-      const success = generateProcedurePDF({
-        // Match the exact format from the procedure details page
-        id: procedureData.id,
-        name: procedureData.procedureName,
-        specialty: procedureData.procedureDetails.specialty,
-        specialtyName: procedureData.procedureDetails.specialty,
-        overview: procedureData.procedureDetails.overview,
-        immediateAftercare: procedureData.procedureDetails.immediateAftercare || [],
-        dietRestrictions: procedureData.procedureDetails.dietRestrictions || [],
-        warningSignsToCallDoctor: procedureData.procedureDetails.warningSignsToCallDoctor || [],
-        recoveryTimeline: procedureData.procedureDetails.recoveryTimeline || [],
-        medications: procedureData.procedureDetails.medications || [],
-        // Assignment details - exactly as shown on the page
-        patientName: procedureData.patientName,
-        patientEmail: procedureData.patientEmail,
-        dentistName: procedureData.dentistName,
-        performedDate: new Date(procedureData.performedDate).toLocaleDateString(),
-        followUpDate: procedureData.followUpDate ? new Date(procedureData.followUpDate).toLocaleDateString() : null,
-        status: procedureData.status,
-        practiceNotes: procedureData.practiceNotes,
-        customInstructions: procedureData.customInstructions || [],
-        // Practice info with full details
-        practiceName: practice?.name || 'Dental Practice',
-        practiceAddress: practice?.address || practice?.location || '',
-        practicePhone: practice?.phone || '',
-        practiceWebsite: practice?.website || ''
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    // Reset edit data to original values
+    setEditData({
+      performedDate: procedureData.performedDate,
+      followUpDate: procedureData.followUpDate || '',
+      dentistName: procedureData.dentistName,
+      practiceNotes: procedureData.practiceNotes || '',
+      customInstructions: Array.isArray(procedureData.customInstructions) 
+        ? procedureData.customInstructions.join('\n')
+        : (procedureData.customInstructions || ''),
+      status: procedureData.status
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      
+      // Prepare update data
+      const updateData = {
+        performedDate: editData.performedDate,
+        followUpDate: editData.followUpDate || null,
+        dentistName: editData.dentistName,
+        practiceNotes: editData.practiceNotes,
+        customInstructions: editData.customInstructions 
+          ? editData.customInstructions.split('\n').filter(line => line.trim())
+          : [],
+        status: editData.status
+      };
+      
+      // Call API to update procedure assignment
+      await practiceApi.updateProcedureAssignment(procedureId, updateData);
+      
+      // Update local state
+      setProcedureData(prev => ({
+        ...prev,
+        performedDate: editData.performedDate,
+        followUpDate: editData.followUpDate,
+        dentistName: editData.dentistName,
+        practiceNotes: editData.practiceNotes,
+        customInstructions: editData.customInstructions.split('\n').filter(line => line.trim()),
+        status: editData.status
+      }));
+      
+      setIsEditing(false);
+      
+      toast({
+        title: "Success!",
+        description: "Procedure details have been updated successfully.",
+        variant: "default",
       });
       
-      if (success) {
-        toast({
-          title: "PDF Generated",
-          description: "Post-operative care document has been downloaded.",
-          variant: "default",
-        });
-      } else {
-        toast({
-          title: "PDF Failed",
-          description: "Failed to generate PDF. Please try again.",
-          variant: "destructive",
-        });
-      }
+    } catch (error) {
+      console.error('Save error:', error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to save changes. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
     }
+  };
+
+  const handlePrint = () => {
+    // Use browser's built-in print functionality to print this exact page
+    window.print();
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   if (loading) {
@@ -142,8 +209,35 @@ const ProcedureDetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      {/* Print Styles */}
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .printable-content, .printable-content * {
+            visibility: visible;
+          }
+          .printable-content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .print-header {
+            display: block !important;
+          }
+        }
+        .print-header {
+          display: none;
+        }
+      `}</style>
+
+      {/* Header - Hidden in print */}
+      <div className="bg-white shadow-sm border-b no-print">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -164,29 +258,75 @@ const ProcedureDetailsPage = () => {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Button
-                variant="outline"
-                onClick={() => navigate(`/edit-procedure/${procedureId}`)}
-                className="flex items-center"
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-              <Button
-                onClick={handlePrintPDF}
-                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center"
-              >
-                <Printer className="h-4 w-4 mr-2" />
-                Print PDF
-              </Button>
+              {!isEditing ? (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={handleEdit}
+                    className="flex items-center"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={handlePrint}
+                    className="bg-blue-600 hover:bg-blue-700 text-white flex items-center"
+                  >
+                    <Printer className="h-4 w-4 mr-2" />
+                    Print Page
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={handleCancel}
+                    disabled={saving}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {saving ? (
+                      <>
+                        <LoadingSpinner size="sm" className="mr-2" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Procedure Assignment Info */}
+      {/* Main Content - This gets printed */}
+      <div className="max-w-4xl mx-auto px-4 py-8 printable-content">
+        {/* Practice Header for Print */}
+        <div className="print-header mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900">{practice?.name || 'Dental Practice'}</h1>
+          {practice?.address && <p className="text-lg text-gray-700">{practice.address}</p>}
+          {practice?.phone && <p className="text-lg text-gray-700">Phone: {practice.phone}</p>}
+          <hr className="my-4" />
+        </div>
+
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">Procedure Details</h2>
+          <h3 className="text-xl text-gray-700">{procedureData.procedureName} for {procedureData.patientName}</h3>
+        </div>
+
+        {/* Assignment Information */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -206,51 +346,135 @@ const ProcedureDetailsPage = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Treatment Details</h3>
-                <p className="text-sm text-gray-600">
+                
+                {/* Performed Date - Editable */}
+                <div className="text-sm text-gray-600 mb-1">
                   <Calendar className="h-4 w-4 inline mr-2" />
-                  Performed: {new Date(procedureData.performedDate).toLocaleDateString()}
-                </p>
-                {procedureData.followUpDate && (
-                  <p className="text-sm text-gray-600">
-                    Follow-up: {new Date(procedureData.followUpDate).toLocaleDateString()}
-                  </p>
+                  Performed: {isEditing ? (
+                    <Input
+                      type="date"
+                      value={editData.performedDate}
+                      onChange={(e) => handleInputChange('performedDate', e.target.value)}
+                      className="inline-block w-auto ml-2"
+                      size="sm"
+                    />
+                  ) : (
+                    new Date(procedureData.performedDate).toLocaleDateString()
+                  )}
+                </div>
+                
+                {/* Follow-up Date - Editable */}
+                {(procedureData.followUpDate || isEditing) && (
+                  <div className="text-sm text-gray-600 mb-1">
+                    Follow-up: {isEditing ? (
+                      <Input
+                        type="date"
+                        value={editData.followUpDate}
+                        onChange={(e) => handleInputChange('followUpDate', e.target.value)}
+                        className="inline-block w-auto ml-2"
+                        size="sm"
+                      />
+                    ) : (
+                      procedureData.followUpDate ? new Date(procedureData.followUpDate).toLocaleDateString() : 'Not set'
+                    )}
+                  </div>
                 )}
-                <p className="text-sm text-gray-600">Dentist: {procedureData.dentistName}</p>
-                <Badge variant="outline" className="mt-2">{procedureData.status}</Badge>
+                
+                {/* Dentist Name - Editable */}
+                <div className="text-sm text-gray-600 mb-2">
+                  Dentist: {isEditing ? (
+                    <Select
+                      value={editData.dentistName}
+                      onValueChange={(value) => handleInputChange('dentistName', value)}
+                    >
+                      <SelectTrigger className="inline-block w-auto ml-2 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {doctors.map((doctor) => (
+                          <SelectItem key={doctor.id} value={doctor.name}>
+                            {doctor.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    procedureData.dentistName
+                  )}
+                </div>
+                
+                {/* Status - Editable */}
+                <div>
+                  Status: {isEditing ? (
+                    <Select
+                      value={editData.status}
+                      onValueChange={(value) => handleInputChange('status', value)}
+                    >
+                      <SelectTrigger className="inline-block w-auto ml-2 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant="outline" className="ml-2">{procedureData.status}</Badge>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Practice Notes */}
-        {procedureData.practiceNotes && (
+        {/* Practice Notes - Editable */}
+        {(procedureData.practiceNotes || isEditing) && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Practice Notes</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700">{procedureData.practiceNotes}</p>
+              {isEditing ? (
+                <Textarea
+                  value={editData.practiceNotes}
+                  onChange={(e) => handleInputChange('practiceNotes', e.target.value)}
+                  placeholder="Add practice notes..."
+                  rows={3}
+                />
+              ) : (
+                <p className="text-gray-700">{procedureData.practiceNotes}</p>
+              )}
             </CardContent>
           </Card>
         )}
 
-        {/* Custom Instructions */}
-        {procedureData.customInstructions && procedureData.customInstructions.length > 0 && (
+        {/* Custom Instructions - Editable */}
+        {(procedureData.customInstructions?.length > 0 || isEditing) && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Custom Instructions</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="list-disc list-inside space-y-2">
-                {procedureData.customInstructions.map((instruction, index) => (
-                  <li key={index} className="text-gray-700">{instruction}</li>
-                ))}
-              </ul>
+              {isEditing ? (
+                <Textarea
+                  value={editData.customInstructions}
+                  onChange={(e) => handleInputChange('customInstructions', e.target.value)}
+                  placeholder="Add custom instructions, one per line..."
+                  rows={4}
+                />
+              ) : (
+                <ul className="list-disc list-inside space-y-2">
+                  {procedureData.customInstructions.map((instruction, index) => (
+                    <li key={index} className="text-gray-700">{instruction}</li>
+                  ))}
+                </ul>
+              )}
             </CardContent>
           </Card>
         )}
 
-        {/* Procedure Details */}
+        {/* Post-Operative Care Instructions - Read Only */}
         <Card>
           <CardHeader>
             <CardTitle>Post-Operative Care Instructions</CardTitle>
