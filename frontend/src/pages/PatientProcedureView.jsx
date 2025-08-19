@@ -271,9 +271,37 @@ const PatientProcedureView = () => {
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
-                {procedure.overview.split('\n').map((paragraph, index) => (
-                  <p key={index} className="text-gray-700 mb-3">{paragraph}</p>
-                ))}
+                {procedure.overview.split('\n').map((line, index) => {
+                  // Handle empty lines
+                  if (line.trim() === '') {
+                    return <br key={index} />;
+                  }
+                  
+                  // Handle bullet points
+                  if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+                    return (
+                      <div key={index} className="flex items-start mb-2">
+                        <span className="text-blue-600 mr-2 mt-1">•</span>
+                        <span className="flex-1 text-gray-700">{line.replace(/^[•-]\s*/, '').trim()}</span>
+                      </div>
+                    );
+                  }
+                  
+                  // Handle markdown-style headers
+                  if (line.trim().startsWith('**') && line.trim().endsWith('**')) {
+                    const headerText = line.replace(/\*\*/g, '').trim();
+                    return (
+                      <h4 key={index} className="font-semibold text-gray-900 mt-4 mb-2">
+                        {headerText}
+                      </h4>
+                    );
+                  }
+                  
+                  // Regular paragraphs
+                  return (
+                    <p key={index} className="text-gray-700 mb-3">{line.trim()}</p>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
