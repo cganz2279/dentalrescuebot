@@ -429,15 +429,14 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Practice Registration System"
     - "Create Patient API"
-    - "Assign Procedure API"
-    - "Get Practice Patients API"
-    - "Add Patient Page functionality"
-    - "Assign Procedure Page functionality"
     - "Dashboard button navigation"
-  stuck_tasks: []
+  stuck_tasks: 
+    - "Practice Registration System"
+    - "Create Patient API"
   test_all: false
-  test_priority: "high_first"
+  test_priority: "stuck_first"
 
 agent_communication:
     - agent: "testing"
