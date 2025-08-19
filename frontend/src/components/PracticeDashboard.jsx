@@ -332,19 +332,28 @@ const PracticeDashboard = () => {
               {dashboardData?.recentPatients?.length > 0 ? (
                 <div className="space-y-4">
                   {dashboardData.recentPatients.map((patient) => (
-                    <div key={patient.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div 
+                      key={patient.id} 
+                      onClick={() => handlePatientClick(patient.id)}
+                      className={`flex justify-between items-center p-3 rounded-lg cursor-pointer transition-colors ${
+                        selectedPatientId === patient.id 
+                          ? 'bg-blue-100 border-2 border-blue-300' 
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                    >
                       <div>
                         <p className="font-medium">{patient.firstName} {patient.lastName}</p>
                         <p className="text-sm text-gray-600">{patient.email}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500">
-                          Added {new Date(patient.createdAt).toLocaleDateString()}
-                        </p>
                         {patient.lastLoginAt && (
                           <p className="text-xs text-gray-400">
                             Last login: {new Date(patient.lastLoginAt).toLocaleDateString()}
                           </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <Users className={`h-4 w-4 ${selectedPatientId === patient.id ? 'text-blue-600' : 'text-gray-400'}`} />
+                        {selectedPatientId === patient.id && (
+                          <p className="text-xs text-blue-600 mt-1">Selected</p>
                         )}
                       </div>
                     </div>
