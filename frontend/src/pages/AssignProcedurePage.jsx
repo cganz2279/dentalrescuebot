@@ -28,7 +28,7 @@ const AssignProcedurePage = () => {
   const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
-    patientId: '',
+    patientId: preSelectedPatientId || '',
     procedureId: '',
     procedureName: '',
     performedDate: new Date().toISOString().split('T')[0], // Today's date
