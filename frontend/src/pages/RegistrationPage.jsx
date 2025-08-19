@@ -117,7 +117,7 @@ const RegistrationPage = () => {
     });
   };
 
-  if (!paymentVerified) {
+  if (paymentVerified !== 'true') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
