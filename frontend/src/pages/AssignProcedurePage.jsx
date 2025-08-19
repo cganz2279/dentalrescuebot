@@ -307,24 +307,36 @@ const AssignProcedurePage = () => {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="dentistName">Dentist Name *</Label>
-                <div className="relative">
-                  <UserCheck className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="dentistName"
-                    type="text"
+                <div>
+                  <Label htmlFor="dentistName">Dentist *</Label>
+                  <Select
                     value={formData.dentistName}
-                    onChange={(e) => handleInputChange('dentistName', e.target.value)}
-                    placeholder="Enter dentist name"
-                    disabled={submitting}
-                    className={`pl-10 ${errors.dentistName ? 'border-red-500' : ''}`}
-                  />
+                    onValueChange={(value) => handleInputChange('dentistName', value)}
+                  >
+                    <SelectTrigger className={errors.dentistName ? 'border-red-500' : ''}>
+                      <SelectValue placeholder="Select a dentist" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {doctors.length > 0 ? (
+                        doctors.map((doctor) => (
+                          <SelectItem key={doctor.id} value={doctor.name}>
+                            <div className="flex items-center">
+                              <UserCheck className="h-4 w-4 mr-2" />
+                              {doctor.name}
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-doctors" disabled>
+                          No doctors found
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {errors.dentistName && (
+                    <p className="text-sm text-red-500 mt-1">{errors.dentistName}</p>
+                  )}
                 </div>
-                {errors.dentistName && (
-                  <p className="text-sm text-red-500 mt-1">{errors.dentistName}</p>
-                )}
-              </div>
 
               <div>
                 <Label htmlFor="practiceNotes">Practice Notes (Optional)</Label>
