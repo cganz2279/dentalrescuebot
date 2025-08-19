@@ -289,17 +289,26 @@ const PracticeDashboard = () => {
                 <div className="space-y-4">
                   {dashboardData.recentProcedures.map((procedure) => (
                     <div key={procedure.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
+                      <div className="flex-1">
                         <p className="font-medium">{procedure.procedureName}</p>
                         <p className="text-sm text-gray-600">Dr. {procedure.dentistName}</p>
-                      </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className="mb-1">
-                          {procedure.status}
-                        </Badge>
                         <p className="text-xs text-gray-400">
                           {new Date(procedure.performedDate).toLocaleDateString()}
                         </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="mb-1">
+                          {procedure.status}
+                        </Badge>
+                        <Button
+                          onClick={() => handleGeneratePDF(procedure.id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center space-x-1"
+                        >
+                          <Printer className="h-4 w-4" />
+                          <span>PDF</span>
+                        </Button>
                       </div>
                     </div>
                   ))}
