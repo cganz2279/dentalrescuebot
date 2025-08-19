@@ -115,3 +115,199 @@ export const generateProcedurePDF = (procedure) => {
     return false;
   }
 };
+
+// NEW: Generate branded PDF for assigned patient procedures
+export const generateBrandedPatientPDF = async (assignment, procedure, patient, practice) => {
+  try {
+    const pdf = new jsPDF();
+    let yPosition = 20;
+    const pageWidth = pdf.internal.pageSize.width;
+    const margin = 20;
+    const contentWidth = pageWidth - (margin * 2);
+
+    // Helper function to convert hex color to RGB
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+      ] : [37, 99, 235]; // Default blue
+    };
+
+    // Get practice brand colors
+    const primaryColor = practice.branding?.primaryColor ? 
+      hexToRgb(practice.branding.primaryColor) : [37, 99, 235];
+    const secondaryColor = practice.branding?.secondaryColor ? 
+      hexToRgb(practice.branding.secondaryColor) : [31, 41, 55];
+
+    // Helper function to add text with word wrapping
+    const addText = (text, fontSize = 12, isBold = false, color = primaryColor) => {
+      pdf.setFontSize(fontSize);
+      pdf.setTextColor(color[0], color[1], color[2]);
+      
+      if (isBold) {
+        pdf.setFont(undefined, 'bold');
+      } else {
+        pdf.setFont(undefined, 'normal');
+      }
+
+      const lines = pdf.splitTextToSize(text, contentWidth);
+      
+      // Check if we need a new page
+      if (yPosition + (lines.length * fontSize * 0.5) > pdf.internal.pageSize.height - 20) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.text(lines, margin, yPosition);
+      yPosition += lines.length * fontSize * 0.5 + 5;
+    };
+
+    // Add practice logo if available (placeholder for now)
+    // TODO: Implement actual logo loading from practice.branding.logo
+    
+    // Practice Header
+    addText(practice.name || 'Dental Practice', 18, true, primaryColor);
+    if (practice.phone) {
+      addText(`Phone: ${practice.phone}`, 12, false, [75, 85, 99]);
+    }
+    if (practice.website) {
+      addText(`Website: ${practice.website}`, 12, false, [75, 85, 99]);
+    }
+    yPosition += 15;
+
+    // Patient Information Section
+    addText('Patient Information', 14, true, secondaryColor);
+    addText(`Patient: ${patient.firstName} ${patient.lastName}`, 12, true, [31, 41, 55]);
+    addText(`Email: ${patient.email}`, 12, false, [75, 85, 99]);
+    if (assignment.performedDate) {
+      const performedDate = new Date(assignment.performedDate).toLocaleDateString();
+      addText(`Procedure Date: ${performedDate}`, 12, false, [75, 85, 99]);
+    }
+    if (assignment.dentistName) {
+      addText(`Dentist: ${assignment.dentistName}`, 12, false, [75, 85, 99]);
+    }
+    yPosition += 15;
+
+    // Custom welcome message
+    if (practice.branding?.welcomeMessage) {
+      addText(practice.branding.welcomeMessage, 12, false, [31, 41, 55]);
+      yPosition += 10;
+    }
+
+    // Procedure title and details
+    addText(assignment.procedureName || procedure.name, 16, true, primaryColor);
+    addText(`Specialty: ${procedure.specialtyName}`, 12, false, [107, 114, 126]);
+    if (procedure.duration) {
+      addText(`Recovery Duration: ${procedure.duration}`, 12, false, [107, 114, 126]);
+    }
+    yPosition += 15;
+
+    // Custom Practice Notes (if any)
+    if (assignment.practiceNotes) {
+      addText('Special Instructions from Your Dentist', 14, true, secondaryColor);
+      addText(assignment.practiceNotes, 11, false, [31, 41, 55]);
+      yPosition += 15;
+    }
+
+    // Custom Instructions (if any)
+    if (assignment.customInstructions && assignment.customInstructions.length > 0) {
+      addText('Additional Instructions', 14, true, secondaryColor);
+      assignment.customInstructions.forEach((instruction) => {
+        addText(`• ${instruction}`, 11, false, [31, 41, 55]);
+      });
+      yPosition += 15;
+    }
+
+    // Overview
+    if (procedure.overview) {
+      addText('Overview', 14, true, primaryColor);
+      addText(procedure.overview, 11);
+      yPosition += 15;
+    }
+
+    // Emergency notice
+    addText('⚠️ EMERGENCY NOTICE', 12, true, [220, 38, 38]);
+    addText('If you experience severe bleeding, difficulty breathing, or signs of severe allergic reaction, call 911 immediately.', 11, false, [153, 27, 27]);
+    yPosition += 15;
+
+    // Helper function to add a section
+    const addSection = (title, items, isWarning = false) => {
+      if (!items || items.length === 0) return;
+      
+      const titleColor = isWarning ? [220, 38, 38] : primaryColor;
+      addText(title, 14, true, titleColor);
+      yPosition += 5;
+      
+      items.forEach((item) => {
+        const bullet = isWarning ? '⚠️' : '•';
+        addText(`${bullet} ${item}`, 11);
+      });
+      yPosition += 10;
+    };
+
+    // Procedure sections
+    addSection('Immediate Aftercare Instructions', procedure.immediateAftercare);
+    addSection('Diet Restrictions', procedure.dietRestrictions);
+    addSection('⚠️ Warning Signs - Call Your Dentist Immediately', procedure.warningSignsToCallDoctor, true);
+
+    // Recovery Timeline
+    if (procedure.recoveryTimeline && procedure.recoveryTimeline.length > 0) {
+      addText('Recovery Timeline', 14, true, primaryColor);
+      yPosition += 5;
+      procedure.recoveryTimeline.forEach((timeline) => {
+        addText(`Day ${timeline.day}: ${timeline.activity}`, 11);
+      });
+      yPosition += 15;
+    }
+
+    addSection('Medications', procedure.medications);
+
+    // Follow-up Information
+    if (assignment.followUpDate) {
+      const followUpDate = new Date(assignment.followUpDate).toLocaleDateString();
+      addText('Follow-up Appointment', 14, true, primaryColor);
+      addText(`Scheduled follow-up: ${followUpDate}`, 12, false, [31, 41, 55]);
+      yPosition += 15;
+    }
+
+    // Practice Contact Information
+    addText('Contact Your Dental Office', 14, true, primaryColor);
+    addText(`${practice.name}`, 12, true, [31, 41, 55]);
+    if (practice.phone) {
+      addText(`Phone: ${practice.phone}`, 11);
+    }
+    if (practice.email) {
+      addText(`Email: ${practice.email}`, 11);
+    }
+    if (practice.address) {
+      const addr = practice.address;
+      const addressLine = `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
+      addText(`Address: ${addressLine}`, 11);
+    }
+    yPosition += 15;
+
+    // Footer
+    if (yPosition > pdf.internal.pageSize.height - 40) {
+      pdf.addPage();
+      yPosition = 20;
+    }
+    
+    yPosition = pdf.internal.pageSize.height - 30;
+    pdf.setFontSize(8);
+    pdf.setTextColor(107, 114, 126);
+    pdf.text('Generated by DentalRescueBot - www.theoncallbot.com', margin, yPosition);
+    pdf.text(`Copyright © The OnCall Bot LLC 2025`, margin, yPosition + 10);
+    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, yPosition + 20);
+
+    // Save the PDF
+    const fileName = `${patient.firstName}_${patient.lastName}_${assignment.procedureName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_post_op.pdf`;
+    pdf.save(fileName);
+    
+    return true;
+  } catch (error) {
+    console.error('Error generating branded PDF:', error);
+    return false;
+  }
+};
