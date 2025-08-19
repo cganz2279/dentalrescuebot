@@ -246,11 +246,7 @@ const PracticeDashboard = () => {
             Practice Settings
           </Button>
           <Button 
-            onClick={() => toast({
-              title: "Coming Soon",
-              description: "Export Data functionality will be available in the next update.",
-              variant: "default",
-            })}
+            onClick={handleExportData}
             variant="outline" 
             className="h-20 flex flex-col"
           >
