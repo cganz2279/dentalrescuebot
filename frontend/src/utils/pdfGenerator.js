@@ -166,6 +166,19 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
       return false;
     };
 
+    // Helper function to check if section header needs page break (prevent orphan headers)
+    const checkSectionPageBreak = (headerHeight = 25, minContentSpace = 30) => {
+      const totalNeeded = headerHeight + minContentSpace;
+      if (yPosition + totalNeeded > pageHeight - bottomMargin) {
+        addPageNumber();
+        pdf.addPage();
+        currentPage++;
+        yPosition = topMargin;
+        return true;
+      }
+      return false;
+    };
+
     // Helper function to add standardized text
     const addText = (text, fontSize = 11, style = 'normal', color = [60, 60, 60], spacing = 5) => {
       pdf.setFontSize(fontSize);
