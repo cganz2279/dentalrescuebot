@@ -537,6 +537,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "POST-RESTART VERIFICATION: Get Patients API (/api/practice/patients) is working correctly. Successfully retrieved 6 patients with complete information including all required fields (id, firstName, lastName, email). Backend API fully functional after service restart."
+        - working: true
+          agent: "testing"
+          comment: "ADD PATIENT FUNCTIONALITY FULLY TESTED: Form loads correctly at /add-patient with all required fields: First Name, Last Name, Email Address (required), Phone Number (optional). Successfully filled out form with test data (Jane Smith, jane.smith@example.com, 555-123-4567). Form submission works correctly. Patient Access information section explains patient login capabilities. Navigation back to dashboard working. Complete patient creation workflow functional."
 
   - task: "Assign Procedure Functionality"
     implemented: true
