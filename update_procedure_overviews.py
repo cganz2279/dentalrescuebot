@@ -291,6 +291,156 @@ async def update_procedure_overviews():
 • Regular dental checkups every 6 months
 • Avoid using teeth as tools
 • Consider a nightguard if you grind or clench your teeth
+        """,
+
+        "Tooth Extraction (Simple)": """
+**Simple Tooth Extraction - Complete Recovery Guide**
+
+**What Was Done:** Your tooth was carefully removed using specialized instruments. The extraction site has been cleaned and may have received stitches to aid healing. A blood clot will form in the socket, which is essential for proper healing.
+
+**Immediate Post-Extraction Care (First 2 Hours):**
+• Bite firmly on gauze pad for 45-60 minutes to control bleeding
+• Do NOT remove gauze frequently to "check" the site - this disrupts clot formation
+• Replace gauze only if it becomes completely soaked with blood
+• Avoid talking, spitting, or unnecessary mouth movements
+
+**Critical First 24 Hours - Protecting the Blood Clot:**
+• ABSOLUTELY NO smoking, drinking through straws, or spitting - can cause dry socket
+• NO rinsing or swishing - gentle drinking is okay but no forceful mouth movements
+• Keep head elevated when lying down to minimize bleeding and swelling
+• Apply ice packs: 20 minutes on, 20 minutes off for first 6 hours
+• Soft, cool foods only: pudding, yogurt, smoothies, lukewarm soup
+
+**Warning Signs - Call Office Immediately:**
+• Severe pain starting 2-4 days after extraction (possible dry socket)
+• Heavy bleeding not controlled by pressure after 4-6 hours
+• Signs of infection: fever, increasing pain after day 3, foul taste/smell
+• Excessive swelling, difficulty swallowing, or breathing problems
+        """,
+
+        "Dental Crown Placement": """
+**Dental Crown Placement - Complete Care Guide**
+
+**What Was Done:** Your custom-fabricated permanent crown has been cemented over your prepared tooth. The crown restores your tooth's function, strength, and appearance, and should last 10-20+ years with proper care.
+
+**Immediate Post-Placement Care (First 4 Hours):**
+• Local anesthetic will wear off in 2-4 hours - be careful not to bite tongue or cheek
+• Avoid chewing on the crown side until numbness completely wears off
+• Some sensitivity to temperature and pressure is normal for several days to weeks
+• Take over-the-counter pain medication as needed for mild discomfort
+
+**Crown Adjustment Period (First Week):**
+• Your bite may feel slightly different - this is normal and usually self-adjusts within a few days
+• Crown may feel "high" initially - most bite issues resolve naturally as you chew
+• Mild sensitivity to hot/cold is common and should gradually decrease
+• If significant bite discomfort persists beyond 1 week, contact office for adjustment
+
+**Managing Initial Sensitivity:**
+• Temperature sensitivity (hot/cold) is normal for 1-4 weeks after crown placement
+• Use toothpaste for sensitive teeth (Sensodyne) if sensitivity persists
+• Avoid temperature extremes initially - lukewarm beverages are best
+• Sensitivity should gradually improve - contact office if it worsens
+
+**Oral Hygiene with New Crown:**
+• Resume normal brushing and flossing within 24 hours
+• Crown margins (where crown meets tooth) require extra attention to prevent decay
+• Floss daily around the crown - crowns can get cavities at the margins
+• Use fluoride toothpaste to protect natural tooth structure under crown
+
+**Diet and Lifestyle Considerations:**
+• After 24 hours: Resume normal diet gradually
+• Avoid chewing ice, hard candy, or using teeth as tools
+• Minimize sticky, hard, or overly chewy foods that could damage crown
+• Consider a nightguard if you grind or clench your teeth (protects crown investment)
+
+**Normal vs. Concerning Symptoms:**
+*NORMAL:* Mild sensitivity, slight bite changes, minor discomfort when chewing initially
+*CALL OFFICE IF:* Severe pain, crown feels loose or high after 1 week, persistent severe sensitivity, crown chips or breaks
+
+**Long-Term Crown Care:**
+• Crowns require the same care as natural teeth - brush twice daily, floss daily
+• Regular dental checkups every 6 months to monitor crown and surrounding tissues
+• Professional cleanings remove plaque from crown margins where decay commonly starts
+• Avoid habits that could damage crown: chewing ice, opening packages with teeth
+
+**Crown Longevity Factors:**
+• Excellent oral hygiene is the #1 factor in crown longevity
+• Regular dental visits for professional cleaning and monitoring
+• Avoiding destructive habits (grinding, clenching, ice chewing)
+• Maintaining healthy gums around crown margins
+
+**When to Contact Our Office:**
+• Crown feels loose, shifts, or falls out
+• Persistent sensitivity that worsens rather than improves
+• Pain when biting that doesn't resolve within 1-2 weeks
+• Gum irritation or swelling around crown margins
+• Any chips, cracks, or damage to the crown surface
+        """,
+
+        "Root Canal Therapy": """
+**Root Canal Therapy - Complete Post-Operative Guide**
+
+**What Was Done:** Infected or inflamed pulp tissue was removed from inside your tooth's root canals. The canals were cleaned, disinfected, shaped, and sealed with biocompatible material. This procedure saves your natural tooth and eliminates infection.
+
+**Immediate Post-Treatment (First 4 Hours):**
+• Keep the temporary filling intact - avoid chewing on treated tooth until permanent restoration
+• Numbness from local anesthetic will wear off in 2-4 hours - be careful not to bite tongue/cheek
+• Some pressure sensation is normal as anesthetic wears off
+• Take prescribed pain medication BEFORE numbness wears off for better pain control
+
+**First 24-48 Hours - Critical Period:**
+• Mild to moderate discomfort is completely normal and expected
+• Tooth may feel "different" or slightly elevated - this is temporary tissue inflammation
+• Avoid hard, crunchy, or sticky foods on the treated side
+• Continue normal oral hygiene but be gentle around treated area
+• Sleep with head slightly elevated to reduce any swelling
+
+**Pain Management Protocol:**
+• Take prescribed pain medication as directed - don't wait for pain to become severe
+• Over-the-counter options: Ibuprofen 600-800mg every 6 hours is highly effective
+• Can alternate ibuprofen with acetaminophen every 3 hours for severe pain
+• Apply cold compress for 20 minutes on/off during first 24 hours
+• After 48 hours, warm compresses may be more beneficial
+
+**What to Expect - Healing Timeline:**
+• Days 1-3: Mild to moderate discomfort, sensitivity to biting pressure
+• Days 4-7: Gradual improvement, occasional tenderness when chewing
+• Week 2: Most discomfort should be resolved
+• Week 3-4: Complete healing, ready for permanent restoration
+
+**CRITICAL Follow-Up Care:**
+• MUST return for permanent crown/filling within 2-4 weeks to prevent reinfection
+• Temporary filling is NOT permanent - tooth will fail without proper restoration
+• Root canal treated teeth are more brittle and require crown protection
+• Schedule follow-up appointment immediately if not already done
+
+**Oral Hygiene After Root Canal:**
+• Continue normal brushing and flossing - root canal treated teeth still need care
+• Be gentle around temporary filling - avoid aggressive brushing of that area
+• Use antimicrobial mouth rinse to maintain gum health
+• Maintain excellent oral hygiene to prevent reinfection
+
+**Diet Modifications:**
+• Avoid chewing on treated tooth until permanent restoration is placed
+• Soft foods are ideal during initial healing: pasta, cooked vegetables, soft proteins
+• Avoid temperature extremes initially - lukewarm foods and beverages
+• Once permanent restoration is placed, normal diet can be resumed
+
+**Normal vs. Concerning Symptoms:**
+*NORMAL:* Mild pain, sensitivity to pressure, slight swelling, temporary taste changes, feeling of fullness
+*CALL IMMEDIATELY:* Severe uncontrolled pain, significant facial swelling, fever over 101°F, allergic reaction to medications, temporary filling falls out completely
+
+**Success of Root Canal Treatment:**
+• Root canal therapy has a 85-95% success rate when properly completed
+• Success depends on getting permanent restoration placed promptly
+• Most root canal treated teeth function normally for many years
+• Regular dental checkups monitor the treated tooth and surrounding tissues
+
+**Long-Term Care:**
+• Root canal treated teeth should function like normal teeth once properly restored
+• May be slightly more brittle - avoid chewing very hard objects
+• Regular dental visits every 6 months to monitor treated tooth
+• Report any unusual symptoms promptly (pain, swelling, sensitivity)
         """
     }
 
