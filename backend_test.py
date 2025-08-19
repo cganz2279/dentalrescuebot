@@ -585,7 +585,8 @@ class DentalAPITester:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 70)
         
-        tests = [
+        # Basic API tests
+        basic_tests = [
             self.test_health_check,
             self.test_get_specialties,
             self.test_get_specialty_by_id,
@@ -595,10 +596,30 @@ class DentalAPITester:
             self.test_error_handling
         ]
         
-        passed = 0
-        total = len(tests)
+        # Practice Management API tests (require authentication)
+        practice_tests = [
+            self.setup_test_practice,
+            self.test_practice_dashboard,
+            self.test_create_patient,
+            self.test_get_practice_patients,
+            self.test_assign_procedure,
+            self.test_unauthorized_access,
+            self.test_invalid_data_handling
+        ]
         
-        for test in tests:
+        all_tests = basic_tests + practice_tests
+        
+        passed = 0
+        total = len(all_tests)
+        
+        print("🔍 Running Basic API Tests...")
+        for test in basic_tests:
+            if test():
+                passed += 1
+            print()  # Add spacing between tests
+        
+        print("🏥 Running Practice Management API Tests...")
+        for test in practice_tests:
             if test():
                 passed += 1
             print()  # Add spacing between tests
