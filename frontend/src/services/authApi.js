@@ -151,8 +151,9 @@ export const practiceApi = {
   },
 
   getProcedures: async (specialty = null) => {
-    const url = specialty ? `/procedures?specialty=${specialty}` : '/procedures';
-    const response = await authAxios.get(url);
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://dentalcarebot.preview.emergentagent.com';
+    const url = specialty ? `/api/procedures?specialty=${specialty}` : '/api/procedures';
+    const response = await axios.get(`${BACKEND_URL}${url}`);
     return response.data;
   },
 
