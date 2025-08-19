@@ -144,19 +144,18 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
     const primaryColor = practice.branding?.primaryColor ? 
       hexToRgb(practice.branding.primaryColor) : [0, 51, 102];
 
-    // Helper function to add practice logo
+    // Helper function to add practice logo (first page only)
     const addLogo = async () => {
       if (practice.branding?.logo) {
         try {
           // If logo is a data URL (base64), use it directly
           if (practice.branding.logo.startsWith('data:image')) {
-            const logoWidth = 40;
-            const logoHeight = 30;
-            pdf.addImage(practice.branding.logo, 'JPEG', pageWidth - rightMargin - logoWidth, yPosition, logoWidth, logoHeight);
-            return logoHeight + 5;
+            const logoWidth = 50;
+            const logoHeight = 40;
+            const logoX = (pageWidth - logoWidth) / 2; // Center the logo
+            pdf.addImage(practice.branding.logo, 'JPEG', logoX, yPosition, logoWidth, logoHeight);
+            return logoHeight + 10; // Return space used plus some padding
           }
-          // If logo is a URL, we'd need to fetch it (more complex in browser environment)
-          // For now, we'll show a placeholder
           return 0;
         } catch (error) {
           console.warn('Could not load logo:', error);
@@ -176,12 +175,9 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
       }
     };
 
-    // Helper function to add header with logo on each page
+    // Helper function to add simple header on subsequent pages (no logo)
     const addPageHeader = () => {
       if (currentPage > 1) {
-        // Add logo on subsequent pages
-        addLogo();
-        
         // Add practice name in smaller font
         pdf.setFontSize(12);
         pdf.setFont('helvetica', 'bold');
