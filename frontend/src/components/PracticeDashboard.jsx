@@ -31,7 +31,69 @@ const PracticeDashboard = () => {
     loadDashboard();
   }, []);
 
-  const loadDashboard = async () => {
+  const handleExportData = async () => {
+    try {
+      const response = await practiceApi.getExportData();
+      const exportData = response.data;
+      
+      // Create CSV content
+      let csvContent = "Patient Name,Email,Procedure,Performed Date,Dentist,Status,Notes\n";
+      
+      exportData.patients.forEach(patient => {
+        if (patient.assignedProcedures && patient.assignedProcedures.length > 0) {
+          patient.assignedProcedures.forEach(proc => {
+            const row = [
+              `"${patient.firstName} ${patient.lastName}"`,
+              `"${patient.email}"`,
+              `"${proc.procedureName}"`,
+              `"${new Date(proc.performedDate).toLocaleDateString()}"`,
+              `"${proc.dentistName}"`,
+              `"${proc.status}"`,
+              `"${proc.practiceNotes || ''}"`
+            ].join(',');
+            csvContent += row + "\n";
+          });
+        } else {
+          // Patient with no procedures
+          const row = [
+            `"${patient.firstName} ${patient.lastName}"`,
+            `"${patient.email}"`,
+            `"No procedures assigned"`,
+            `""`,
+            `""`,
+            `""`,
+            `""`
+          ].join(',');
+          csvContent += row + "\n";
+        }
+      });
+      
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `practice_data_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Export Complete",
+        description: "Practice data has been exported to CSV file.",
+        variant: "default",
+      });
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to export data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
     try {
       setLoading(true);
       setError(null);
