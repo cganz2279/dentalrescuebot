@@ -130,6 +130,7 @@ const PracticeDashboard = () => {
   const handleClearFilters = () => {
     setSelectedPatientId(null);
     setPatientSearchTerm('');
+    setProcedureSearchTerm('');
   };
 
   // Filter patients based on search term
