@@ -275,15 +275,18 @@ backend:
 
   - task: "Practice Registration System"
     implemented: true
-    working: false
+    working: true
     file: "backend/routes/auth.py"
     stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
           comment: "❌ REGISTRATION FAILING: Practice registration consistently fails with 'Registration failed. Please try again.' error. This prevents users from accessing the dashboard to test Add Patient and Assign Procedure buttons. Backend may have ObjectId serialization issues affecting registration response."
+        - working: true
+          agent: "testing"
+          comment: "✅ REGISTRATION WORKING: Practice registration via POST /api/auth/register-practice-samcart working perfectly! Successfully registered test practice with ID '1321adfe-a00d-440d-8cdd-26e8a9452b2d'. Authentication system working, login successful, JWT token generation working. Datetime serialization issues resolved. Complete workflow: register → login → dashboard → create patient → assign procedure all working."
 
 frontend:
   - task: "Homepage Loading & Display"
