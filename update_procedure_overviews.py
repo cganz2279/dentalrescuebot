@@ -268,6 +268,115 @@ No pressure or chewing forces on implant during healing. Temporary tooth replace
 
 **Warning Signs:**
 Contact our office immediately for severe pain not controlled by prescribed medication, signs of infection (fever, increasing pain after day 3, pus), or if the implant feels loose or mobile.
+        """,
+
+        "Surgical Tooth Extraction": """
+**Surgical Tooth Extraction - Complete Recovery Guide**
+
+**What Was Done:**
+Your tooth was surgically removed, requiring gum incision and/or bone removal. This more complex procedure allows access to teeth that cannot be removed with simple extraction techniques.
+
+**Immediate Post-Surgery:**
+Bite firmly on gauze pack for 1 hour, then remove and assess bleeding. DO NOT disturb the surgical site with tongue, fingers, or toothpicks.
+
+Take prescribed pain medication before anesthetic wears off. Begin ice therapy immediately: 20 minutes on, 10 minutes off.
+
+**Critical First 24 Hours:**
+ABSOLUTELY NO smoking, drinking through straws, or spitting - can cause dry socket. NO rinsing or swishing - gentle drinking is okay but no forceful mouth movements.
+
+Keep head elevated when lying down to minimize bleeding and swelling. Apply ice packs continuously for first 6-8 hours while awake.
+
+Soft, cool foods only: pudding, yogurt, smoothies, lukewarm soup.
+
+**Managing Bleeding:**
+Moderate bleeding is expected for 6-12 hours after surgical extraction. If active bleeding occurs: place clean gauze over site, bite firmly for 45 minutes.
+
+Emergency bleeding control: bite on a moistened tea bag for 30 minutes. Avoid hot liquids, alcohol, and physical exertion which promote bleeding.
+
+**Controlling Swelling:**
+Significant swelling is normal after surgical extraction. Maximum swelling occurs at 48-72 hours - this is expected healing response.
+
+Ice therapy is crucial: First 24 hours continuously while awake. After 48 hours: Switch to warm, moist compresses to promote healing.
+
+Sleep with head elevated for first 2-3 nights.
+
+**Pain Management:**
+Surgical extractions typically cause more discomfort than simple extractions. Take prescribed pain medication as directed - stay ahead of pain.
+
+Ibuprofen 600-800mg every 6 hours is excellent for surgical inflammation. You can alternate with prescribed narcotic for breakthrough pain.
+
+Most pain peaks at 12-24 hours post-surgery, then gradually improves.
+
+**Diet Progression:**
+Day 1: Liquids and very soft foods only (protein shakes, pudding, lukewarm broth). Days 2-4: Soft foods that require minimal chewing (mashed potatoes, pasta, scrambled eggs).
+
+Days 5-7: Gradual return to normal diet, avoiding surgical site when chewing. Avoid hard, crunchy, or sticky foods for at least two weeks.
+
+**Oral Hygiene:**
+Do NOT brush surgical site for first 48 hours. After 24 hours: Very gentle salt water rinses (½ tsp salt in 8oz warm water, 3-4 times daily).
+
+Resume brushing other teeth normally, carefully avoiding surgical area. After 1 week: Very gentle cleaning near surgical site as comfort allows.
+
+**Healing Timeline:**
+Days 1-4: Peak discomfort and swelling, restricted diet, careful oral hygiene. Days 5-10: Significant improvement in pain and swelling.
+
+Weeks 2-3: Soft tissue healing complete, comfortable chewing away from site. Weeks 4-8: Complete bone healing and socket filling.
+
+**Warning Signs:**
+Call immediately for severe pain starting 2-4 days after extraction (possible dry socket), heavy bleeding not controlled by pressure after 6 hours, or signs of infection (fever, increasing pain after day 3, foul taste/smell).
+        """,
+
+        "Scaling and Root Planing": """
+**Deep Cleaning (Scaling and Root Planing) - Complete Care Guide**
+
+**What Was Done:**
+Deep cleaning involved removing bacteria, plaque, and tartar from below the gum line and smoothing tooth root surfaces. This treatment helps gums reattach to teeth and reduces pocket depths caused by gum disease.
+
+**Immediate Post-Treatment:**
+Local anesthetic will wear off in 2-4 hours - be careful not to bite your tongue, cheek, or lips. Some sensitivity to temperature and pressure is normal for several days.
+
+Your gums may feel tender and appear slightly swollen - this is a normal healing response. Take over-the-counter pain medication as needed for discomfort.
+
+**First 24-48 Hours:**
+Mild to moderate gum discomfort is completely normal and expected. Your gums are healing from the deep cleaning procedure.
+
+Avoid very hot or cold foods/beverages as sensitivity is common initially. Stick to lukewarm or room temperature items for the first day.
+
+Some light bleeding when brushing is normal for the first few days as your gums heal.
+
+**Managing Sensitivity:**
+Tooth sensitivity to cold, heat, or touch is common for 1-2 weeks after deep cleaning. Use toothpaste for sensitive teeth twice daily.
+
+Avoid temperature extremes - lukewarm beverages and foods are best initially. If sensitivity is severe or persistent, contact our office.
+
+**Oral Hygiene Protocol:**
+Continue brushing twice daily with a soft-bristled toothbrush - clean teeth are essential for healing. Be extra gentle around treated areas for the first week.
+
+Resume flossing within 24-48 hours - this is crucial for preventing reinfection. Start gently and gradually return to normal pressure.
+
+Use prescribed antimicrobial mouth rinse as directed to reduce bacteria and promote healing.
+
+**Diet Guidelines:**
+Avoid hard, crunchy, or sticky foods for the first few days that could irritate healing gums. Soft foods are ideal: pasta, cooked vegetables, soft proteins, dairy products.
+
+Stay well-hydrated and maintain good nutrition to support gum healing. Avoid alcohol and tobacco which delay healing and promote infection.
+
+**What to Expect:**
+Days 1-3: Mild discomfort, some sensitivity, possible light bleeding when cleaning. Days 4-7: Gradual improvement in comfort and sensitivity.
+
+Weeks 2-4: Gums become pinker and firmer as healing progresses. You may notice less bleeding during brushing and flossing.
+
+Months 1-3: Continued improvement in gum health with proper home care and follow-up visits.
+
+**Follow-Up Care:**
+Return for periodontal maintenance cleaning in 3-4 months as recommended. This is shorter than normal cleaning intervals to ensure gum disease doesn't return.
+
+Daily oral hygiene is critical - gum disease will return without excellent home care. Continue using prescribed mouth rinse as directed.
+
+Regular dental visits every 3-4 months help maintain the benefits of your deep cleaning treatment.
+
+**Warning Signs:**
+Contact our office for severe pain not relieved by over-the-counter medication, excessive bleeding that doesn't improve after 3-4 days, or signs of infection (fever, pus, severe swelling).
         """
     }
 
