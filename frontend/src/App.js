@@ -125,6 +125,12 @@ function App() {
             <Route path="/patient-management" element={<PatientManagementPage />} />
             <Route path="/procedure-details/:procedureId" element={<ProcedureDetailsPage />} />
             <Route path="/edit-procedure/:procedureId" element={<EditProcedurePage />} />
+            
+            {/* Patient Routes */}
+            <Route path="/patient/login" element={<PatientLoginPage />} />
+            <Route path="/patient/dashboard" element={<PatientDashboard />} />
+            <Route path="/patient/procedure/:assignmentId" element={<PatientProcedureView />} />
+            
             <Route path="/practice" element={<AppContent />} />
             <Route path="/*" element={<AppContent />} />
           </Routes>
