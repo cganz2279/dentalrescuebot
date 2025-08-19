@@ -175,17 +175,22 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
             {"_id": 0}
         ).sort("performedDate", -1).limit(10).to_list(length=None)
         
+        # Serialize datetime objects for JSON response
+        practice_serialized = serialize_datetime_fields(practice) if practice else None
+        recent_patients_serialized = serialize_datetime_fields(recent_patients)
+        recent_procedures_serialized = serialize_datetime_fields(recent_procedures)
+        
         return {
             "success": True,
             "data": {
-                "practice": practice,
+                "practice": practice_serialized,
                 "stats": {
                     "patientCount": patient_count,
                     "activeProcedures": active_procedures,
-                    "subscriptionStatus": practice.get("subscription", {}).get("status", "unknown")
+                    "subscriptionStatus": practice.get("subscription", {}).get("status", "unknown") if practice else "unknown"
                 },
-                "recentPatients": recent_patients,
-                "recentProcedures": recent_procedures
+                "recentPatients": recent_patients_serialized,
+                "recentProcedures": recent_procedures_serialized
             }
         }
         
