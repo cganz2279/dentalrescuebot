@@ -332,6 +332,16 @@ const PracticeDashboard = () => {
             <span className="font-medium">Manage Patients</span>
             <span className="text-xs opacity-90">Search & View Patient Records</span>
           </Button>
+
+          <Button 
+            onClick={handleExportData}
+            variant="outline" 
+            className="h-20 flex flex-col"
+          >
+            <Download className="h-6 w-6 mb-2" />
+            <span className="font-medium">Export Data</span>
+            <span className="text-xs text-gray-600">Download CSV Report</span>
+          </Button>
             <Download className="h-6 w-6 mb-2" />
             Export Data
           </Button>
