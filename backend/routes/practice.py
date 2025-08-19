@@ -93,7 +93,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 async def get_practice_dashboard(current_user: dict = Depends(get_current_user)):
     """Get practice dashboard data"""
     try:
-        practice_id = current_user["practice_id"]
+        practice_id = current_user["practiceId"]
         role = current_user["role"]
         
         if role not in ['practice_admin', 'practice_staff']:
