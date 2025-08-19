@@ -182,3 +182,41 @@ export const practiceApi = {
     return response.data;
   }
 };
+
+export const patientsApi = {
+  // Patient-specific endpoints
+  getDashboard: async () => {
+    const token = localStorage.getItem('dentalToken');
+    const response = await axios.get(`${BACKEND_URL}/api/patients/dashboard`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  },
+
+  getProcedure: async (assignmentId) => {
+    const token = localStorage.getItem('dentalToken');
+    const response = await axios.get(`${BACKEND_URL}/api/patients/procedures/${assignmentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  },
+
+  trackDownload: async (assignmentId) => {
+    const token = localStorage.getItem('dentalToken');
+    const response = await axios.post(`${BACKEND_URL}/api/patients/procedures/${assignmentId}/download`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  },
+
+  setupPassword: async (setupData) => {
+    const response = await axios.post(`${BACKEND_URL}/api/auth/patient-setup`, setupData);
+    return response.data;
+  }
+};
