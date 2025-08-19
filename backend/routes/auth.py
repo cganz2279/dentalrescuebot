@@ -445,6 +445,63 @@ async def invite_patient(
             detail="Invitation failed"
         )
 
+@router.post("/patient-setup")
+async def patient_setup_password(request: dict):
+    """Patient sets up their password for first-time login"""
+    try:
+        email = request.get("email")
+        new_password = request.get("password")
+        invitation_code = request.get("invitationCode", "")  # Optional for validation
+        
+        if not email or not new_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email and password are required"
+            )
+        
+        # Validate password
+        if not validate_password(new_password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password must be at least 6 characters with letters and numbers"
+            )
+        
+        # Find patient
+        patient = await db.users.find_one({"email": email.lower(), "role": "patient"})
+        if not patient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+        
+        # Update password and activate account
+        hashed_password = hash_password(new_password)
+        await db.users.update_one(
+            {"id": patient["id"]},
+            {
+                "$set": {
+                    "password": hashed_password,
+                    "isActive": True,
+                    "isEmailVerified": True,
+                    "updatedAt": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Password setup successful. You can now login."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Patient setup error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password setup failed"
+        )
+
 @router.get("/me")
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get current authenticated user info"""
