@@ -264,6 +264,320 @@ class DentalAPITester:
         except Exception as e:
             self.log_test("Error Handling (Invalid Specialty ID)", False, f"Exception: {str(e)}")
             return False
+
+    def setup_test_practice(self):
+        """Setup a test practice and admin user for authentication"""
+        try:
+            # Generate unique test data
+            test_email = f"test-practice-{uuid.uuid4().hex[:8]}@example.com"
+            
+            practice_data = {
+                "practiceName": "Test Dental Practice",
+                "email": test_email,
+                "phone": "555-123-4567",
+                "adminFirstName": "Test",
+                "adminLastName": "Admin",
+                "adminPassword": "testpass123",
+                "street": "123 Test St",
+                "city": "Test City",
+                "state": "CA",
+                "zipCode": "12345"
+            }
+            
+            # Register practice using SamCart endpoint (active immediately)
+            response = self.session.post(
+                f"{self.base_url}/auth/register-practice-samcart",
+                json=practice_data
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    self.test_practice_id = data["practice"]["id"]
+                    
+                    # Now login to get auth token
+                    login_data = {
+                        "email": test_email,
+                        "password": "testpass123"
+                    }
+                    
+                    login_response = self.session.post(
+                        f"{self.base_url}/auth/login",
+                        json=login_data
+                    )
+                    
+                    if login_response.status_code == 200:
+                        login_result = login_response.json()
+                        if login_result.get("success"):
+                            self.auth_token = login_result["token"]
+                            self.log_test("Setup Test Practice & Authentication", True, 
+                                        f"Practice ID: {self.test_practice_id}")
+                            return True
+                    
+                    self.log_test("Setup Test Practice & Authentication", False, 
+                                f"Login failed: {login_response.status_code}")
+                    return False
+                else:
+                    self.log_test("Setup Test Practice & Authentication", False, 
+                                f"Registration failed: {data}")
+                    return False
+            else:
+                self.log_test("Setup Test Practice & Authentication", False, 
+                            f"Registration status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Setup Test Practice & Authentication", False, f"Exception: {str(e)}")
+            return False
+
+    def test_practice_dashboard(self):
+        """Test GET /api/practice/dashboard endpoint"""
+        if not self.auth_token:
+            self.log_test("Practice Dashboard API", False, "No auth token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            response = self.session.get(f"{self.base_url}/practice/dashboard", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    dashboard_data = data["data"]
+                    required_fields = ["practice", "stats", "recentPatients", "recentProcedures"]
+                    
+                    if all(field in dashboard_data for field in required_fields):
+                        stats = dashboard_data["stats"]
+                        if "patientCount" in stats and "activeProcedures" in stats:
+                            self.log_test("Practice Dashboard API", True, 
+                                        f"Dashboard loaded with {stats['patientCount']} patients, {stats['activeProcedures']} active procedures")
+                            return True
+                        else:
+                            self.log_test("Practice Dashboard API", False, "Missing stats fields")
+                            return False
+                    else:
+                        missing_fields = [f for f in required_fields if f not in dashboard_data]
+                        self.log_test("Practice Dashboard API", False, f"Missing fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_test("Practice Dashboard API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Practice Dashboard API", False, f"Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Practice Dashboard API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_create_patient(self):
+        """Test POST /api/practice/patients endpoint"""
+        if not self.auth_token:
+            self.log_test("Create Patient API", False, "No auth token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            
+            # Generate unique patient data
+            patient_email = f"patient-{uuid.uuid4().hex[:8]}@example.com"
+            patient_data = {
+                "email": patient_email,
+                "firstName": "John",
+                "lastName": "Doe",
+                "phone": "555-987-6543"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/practice/patients", 
+                json=patient_data, 
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    patient = data["data"]
+                    required_fields = ["id", "email", "firstName", "lastName", "role", "practiceId"]
+                    
+                    if all(field in patient for field in required_fields):
+                        if patient["email"] == patient_email and patient["role"] == "patient":
+                            self.test_patient_id = patient["id"]  # Store for later tests
+                            self.log_test("Create Patient API", True, 
+                                        f"Patient created: {patient['firstName']} {patient['lastName']} ({patient['email']})")
+                            return True
+                        else:
+                            self.log_test("Create Patient API", False, "Patient data mismatch")
+                            return False
+                    else:
+                        missing_fields = [f for f in required_fields if f not in patient]
+                        self.log_test("Create Patient API", False, f"Missing fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_test("Create Patient API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Create Patient API", False, f"Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Create Patient API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_get_practice_patients(self):
+        """Test GET /api/practice/patients endpoint"""
+        if not self.auth_token:
+            self.log_test("Get Practice Patients API", False, "No auth token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            response = self.session.get(f"{self.base_url}/practice/patients", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    patients = data["data"]
+                    
+                    if isinstance(patients, list):
+                        # Should have at least the patient we created
+                        if len(patients) > 0:
+                            sample_patient = patients[0]
+                            required_fields = ["id", "email", "firstName", "lastName", "role", "procedureCount"]
+                            
+                            if all(field in sample_patient for field in required_fields):
+                                self.log_test("Get Practice Patients API", True, 
+                                            f"Retrieved {len(patients)} patients with procedure counts")
+                                return True
+                            else:
+                                missing_fields = [f for f in required_fields if f not in sample_patient]
+                                self.log_test("Get Practice Patients API", False, f"Missing fields: {missing_fields}")
+                                return False
+                        else:
+                            self.log_test("Get Practice Patients API", True, "No patients found (empty practice)")
+                            return True
+                    else:
+                        self.log_test("Get Practice Patients API", False, "Patients data is not a list")
+                        return False
+                else:
+                    self.log_test("Get Practice Patients API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Get Practice Patients API", False, f"Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Practice Patients API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_assign_procedure(self):
+        """Test POST /api/practice/assign-procedure endpoint"""
+        if not self.auth_token or not self.test_patient_id:
+            self.log_test("Assign Procedure API", False, "No auth token or patient ID available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            
+            # Use a known procedure ID (root-canal from the seeded data)
+            assignment_data = {
+                "patientId": self.test_patient_id,
+                "procedureId": "root-canal",
+                "procedureName": "Root Canal Treatment",
+                "performedDate": datetime.utcnow().isoformat() + "Z",
+                "dentistName": "Dr. Test Dentist",
+                "practiceNotes": "Test procedure assignment",
+                "customInstructions": ["Take prescribed medication", "Avoid hard foods"],
+                "followUpDate": (datetime.utcnow() + timedelta(days=7)).isoformat() + "Z"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/practice/assign-procedure", 
+                json=assignment_data, 
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    assignment = data["data"]
+                    required_fields = ["assignmentId", "patientName", "procedureName"]
+                    
+                    if all(field in assignment for field in required_fields):
+                        if assignment["procedureName"] == "Root Canal Treatment":
+                            self.log_test("Assign Procedure API", True, 
+                                        f"Procedure assigned: {assignment['procedureName']} to {assignment['patientName']}")
+                            return True
+                        else:
+                            self.log_test("Assign Procedure API", False, "Procedure name mismatch")
+                            return False
+                    else:
+                        missing_fields = [f for f in required_fields if f not in assignment]
+                        self.log_test("Assign Procedure API", False, f"Missing fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_test("Assign Procedure API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Assign Procedure API", False, f"Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Assign Procedure API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_unauthorized_access(self):
+        """Test that endpoints properly reject unauthorized requests"""
+        try:
+            # Test dashboard without auth
+            response = self.session.get(f"{self.base_url}/practice/dashboard")
+            
+            if response.status_code == 401:
+                self.log_test("Unauthorized Access Protection", True, 
+                            "Dashboard properly rejects unauthorized requests")
+                return True
+            else:
+                self.log_test("Unauthorized Access Protection", False, 
+                            f"Expected 401, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Unauthorized Access Protection", False, f"Exception: {str(e)}")
+            return False
+
+    def test_invalid_data_handling(self):
+        """Test API endpoints with invalid data"""
+        if not self.auth_token:
+            self.log_test("Invalid Data Handling", False, "No auth token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            
+            # Test creating patient with missing required fields
+            invalid_patient_data = {
+                "firstName": "Test"
+                # Missing lastName and email
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/practice/patients", 
+                json=invalid_patient_data, 
+                headers=headers
+            )
+            
+            if response.status_code == 422:  # Validation error
+                self.log_test("Invalid Data Handling", True, 
+                            "API properly validates required fields")
+                return True
+            else:
+                self.log_test("Invalid Data Handling", False, 
+                            f"Expected 422 validation error, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Invalid Data Handling", False, f"Exception: {str(e)}")
+            return False
     
     def run_all_tests(self):
         """Run all backend API tests"""
