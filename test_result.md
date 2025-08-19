@@ -435,11 +435,15 @@ metadata:
 
 test_plan:
   current_focus:
-    - "All backend API testing completed successfully"
-    - "Practice management functionality fully tested"
-  stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+    - "Practice Management Login"
+    - "Practice Dashboard"
+    - "Add Patient Functionality"
+    - "Assign Procedure Functionality"
+    - "Export Data Functionality"
+  stuck_tasks:
+    - "Practice Management Login"
+  test_all: false
+  test_priority: "stuck_first"
 
 agent_communication:
     - agent: "testing"
