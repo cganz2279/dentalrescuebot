@@ -354,7 +354,7 @@ const ProcedureDetailsPage = () => {
               className="h-16 w-auto mx-auto mb-4"
             />
           )}
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{practice?.name || 'Dental Practice'}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{String(practice?.name || 'Dental Practice')}</h1>
           {practice?.address && <p className="text-lg text-gray-700 mb-1">{String(practice.address)}</p>}
           {practice?.phone && <p className="text-lg text-gray-700 mb-4">Phone: {String(practice.phone)}</p>}
           <hr className="my-4" />
