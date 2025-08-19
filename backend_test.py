@@ -17,6 +17,7 @@ class DentalAPITester:
         self.base_url = base_url
         self.session = requests.Session()
         self.test_results = []
+        self.auth_token = None
         
     def log_test(self, test_name: str, success: bool, details: str = ""):
         """Log test results"""
