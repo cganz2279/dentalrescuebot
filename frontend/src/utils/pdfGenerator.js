@@ -347,13 +347,15 @@ export const generateBrandedPatientPDF = async (assignment, procedure, patient, 
 
     // START DOCUMENT CREATION
 
-    // Header - Practice Information with Logo
+    // Header - Practice Logo (centered, first page only)
     const logoHeight = await addLogo();
+    yPosition += logoHeight;
     
+    // Practice name (centered below logo)
     pdf.setFontSize(20);
     pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    pdf.text(practice.name || 'DENTAL PRACTICE', leftMargin, yPosition);
+    pdf.text(practice.name || 'DENTAL PRACTICE', pageWidth / 2, yPosition, { align: 'center' });
     yPosition += 25;
 
     // Practice contact information
