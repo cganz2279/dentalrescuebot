@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { 
   Users, 
@@ -16,7 +17,10 @@ import {
   Printer,
   Edit,
   Palette,
-  FolderOpen
+  FolderOpen,
+  Search,
+  Mail,
+  Phone
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
