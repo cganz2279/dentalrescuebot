@@ -367,6 +367,66 @@ frontend:
           agent: "testing"
           comment: "Fixed import paths from '../components/ui/use-toast' to '../hooks/use-toast'. Backend integration now working seamlessly with real data from https://dentalcarebot.preview.emergentagent.com/api. All API endpoints functioning correctly with proper error handling and loading states."
 
+  - task: "Practice Management Login"
+    implemented: true
+    working: false
+    file: "frontend/src/components/LoginForm.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL ISSUE: Login functionality failing due to backend URL mismatch. Frontend is connecting to 'https://da85708e-0b69-420c-8455-1047378667a9.preview.emergentagent.com' instead of correct URL 'https://dentalcarebot.preview.emergentagent.com'. Backend APIs work correctly when tested directly. Login credentials admin@smithdental.com/password123 are valid. Issue persists after rebuilding frontend with correct environment variables."
+
+  - task: "Practice Dashboard"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/PracticeDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Cannot test dashboard functionality due to login issue. Dashboard component appears well-implemented with stats cards, action buttons (Add Patient, Assign Procedure, Practice Settings, Export Data), and recent patients/procedures sections. Requires login fix to test properly."
+
+  - task: "Add Patient Functionality"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/AddPatientPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Cannot test Add Patient functionality due to login issue. Form appears well-implemented with proper validation for firstName, lastName, email (required) and phone (optional). Navigation and form structure look correct. Requires login fix to test properly."
+
+  - task: "Assign Procedure Functionality"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/AssignProcedurePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Cannot test Assign Procedure functionality due to login issue. Form appears comprehensive with patient selection, procedure selection, performed date, dentist name, practice notes, and custom instructions fields. Requires login fix to test properly."
+
+  - task: "Export Data Functionality"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/PracticeDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Cannot test Export Data functionality due to login issue. Export function appears well-implemented with CSV generation and download functionality. Requires login fix to test properly."
+
 metadata:
   created_by: "testing_agent"
   version: "1.2"
