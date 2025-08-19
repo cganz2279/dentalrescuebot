@@ -372,15 +372,18 @@ frontend:
 
   - task: "Assign Procedure Page Routing"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Added missing route for /assign-procedure in App.js. Added import for AssignProcedurePage and created route. Dashboard 'Assign Procedure' button should now navigate correctly."
+        - working: true
+          agent: "testing"
+          comment: "✅ ROUTING WORKING: Direct navigation to /assign-procedure loads correctly. Page renders with comprehensive form including patient selection, procedure selection, procedure details, and custom instructions. Route configuration in App.js (line 116) is correct."
 
   - task: "Assign Procedure Page Component"
     implemented: true
