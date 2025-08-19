@@ -8,6 +8,8 @@ import requests
 import json
 import sys
 from typing import Dict, Any, List
+from datetime import datetime, timedelta
+import uuid
 
 # Get backend URL from frontend .env file
 BACKEND_URL = "https://dentalnotes.preview.emergentagent.com/api"
