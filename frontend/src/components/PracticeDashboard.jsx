@@ -407,10 +407,33 @@ const PracticeDashboard = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No patients yet</p>
-                  <p className="text-sm text-gray-500">Start by adding your first patient</p>
+                <div className="text-center py-8 text-gray-500">
+                  {patientSearchTerm ? (
+                    <div>
+                      <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p>No patients found matching "{patientSearchTerm}"</p>
+                      <Button
+                        onClick={() => setPatientSearchTerm('')}
+                        variant="outline"
+                        className="mt-2"
+                        size="sm"
+                      >
+                        Clear Search
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p>No patients added yet</p>
+                      <Button
+                        onClick={() => navigate('/add-patient')}
+                        className="mt-2"
+                        size="sm"
+                      >
+                        Add First Patient
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
