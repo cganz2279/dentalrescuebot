@@ -498,6 +498,187 @@ class DentalAPITester:
         except Exception as e:
             self.log_test("Get Procedures with Filter", False, f"Exception: {str(e)}")
             return False
+
+    def test_get_practice_doctors(self):
+        """Test GET /api/practice/doctors endpoint"""
+        if not self.auth_token:
+            self.log_test("Get Practice Doctors API", False, "No authentication token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/practice/doctors")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    doctors = data["data"]
+                    # Check if doctors have proper formatting (no double "Dr.")
+                    properly_formatted = True
+                    for doctor in doctors:
+                        name = doctor.get("name", "")
+                        if "Dr. Dr." in name:
+                            properly_formatted = False
+                            break
+                    
+                    if properly_formatted:
+                        self.log_test("Get Practice Doctors API", True, 
+                                    f"Retrieved {len(doctors)} doctors with proper name formatting")
+                        return True
+                    else:
+                        self.log_test("Get Practice Doctors API", False, 
+                                    "Doctor names have double 'Dr.' prefix")
+                        return False
+                else:
+                    self.log_test("Get Practice Doctors API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Get Practice Doctors API", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Practice Doctors API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_get_procedure_assignment(self):
+        """Test GET /api/practice/assignment/{assignment_id} endpoint"""
+        if not self.auth_token:
+            self.log_test("Get Procedure Assignment API", False, "No authentication token available")
+            return False
+            
+        if not hasattr(self, 'test_assignment_id') or not self.test_assignment_id:
+            self.log_test("Get Procedure Assignment API", False, "No test assignment available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/practice/assignment/{self.test_assignment_id}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    assignment_data = data["data"]
+                    required_keys = ["assignment", "patient", "procedure"]
+                    
+                    if all(key in assignment_data for key in required_keys):
+                        assignment = assignment_data["assignment"]
+                        patient = assignment_data["patient"]
+                        procedure = assignment_data["procedure"]
+                        
+                        self.log_test("Get Procedure Assignment API", True, 
+                                    f"Retrieved assignment for patient {patient.get('firstName', '')} {patient.get('lastName', '')} - {procedure.get('name', '')}")
+                        return True
+                    else:
+                        self.log_test("Get Procedure Assignment API", False, 
+                                    "Missing required keys in response")
+                        return False
+                else:
+                    self.log_test("Get Procedure Assignment API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Get Procedure Assignment API", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Procedure Assignment API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_get_procedure_assignment_404(self):
+        """Test GET /api/practice/assignment/{assignment_id} with invalid ID"""
+        if not self.auth_token:
+            self.log_test("Get Procedure Assignment 404 Test", False, "No authentication token available")
+            return False
+            
+        try:
+            invalid_id = "invalid-assignment-id-12345"
+            response = self.session.get(f"{self.base_url}/practice/assignment/{invalid_id}")
+            
+            if response.status_code == 404:
+                data = response.json()
+                if "detail" in data:
+                    self.log_test("Get Procedure Assignment 404 Test", True, 
+                                f"Properly returned 404 for invalid assignment ID: {data['detail']}")
+                    return True
+                else:
+                    self.log_test("Get Procedure Assignment 404 Test", False, 
+                                "404 status but missing error detail")
+                    return False
+            else:
+                self.log_test("Get Procedure Assignment 404 Test", False, 
+                            f"Expected 404, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Procedure Assignment 404 Test", False, f"Exception: {str(e)}")
+            return False
+
+    def test_update_procedure_assignment(self):
+        """Test PUT /api/practice/assignment/{assignment_id} endpoint"""
+        if not self.auth_token:
+            self.log_test("Update Procedure Assignment API", False, "No authentication token available")
+            return False
+            
+        if not hasattr(self, 'test_assignment_id') or not self.test_assignment_id:
+            self.log_test("Update Procedure Assignment API", False, "No test assignment available")
+            return False
+            
+        try:
+            update_data = {
+                "dentistName": "Dr. Jane Smith",
+                "practiceNotes": "Updated notes - procedure went well",
+                "status": "completed"
+            }
+            
+            response = self.session.put(f"{self.base_url}/practice/assignment/{self.test_assignment_id}", json=update_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    self.log_test("Update Procedure Assignment API", True, 
+                                "Successfully updated procedure assignment")
+                    return True
+                else:
+                    self.log_test("Update Procedure Assignment API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Update Procedure Assignment API", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Update Procedure Assignment API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_update_procedure_assignment_404(self):
+        """Test PUT /api/practice/assignment/{assignment_id} with invalid ID"""
+        if not self.auth_token:
+            self.log_test("Update Procedure Assignment 404 Test", False, "No authentication token available")
+            return False
+            
+        try:
+            invalid_id = "invalid-assignment-id-12345"
+            update_data = {
+                "dentistName": "Dr. Test",
+                "practiceNotes": "Test update"
+            }
+            
+            response = self.session.put(f"{self.base_url}/practice/assignment/{invalid_id}", json=update_data)
+            
+            if response.status_code == 404:
+                data = response.json()
+                if "detail" in data:
+                    self.log_test("Update Procedure Assignment 404 Test", True, 
+                                f"Properly returned 404 for invalid assignment ID: {data['detail']}")
+                    return True
+                else:
+                    self.log_test("Update Procedure Assignment 404 Test", False, 
+                                "404 status but missing error detail")
+                    return False
+            else:
+                self.log_test("Update Procedure Assignment 404 Test", False, 
+                            f"Expected 404, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Update Procedure Assignment 404 Test", False, f"Exception: {str(e)}")
+            return False
     
     def run_all_tests(self):
         """Run all backend API tests"""
