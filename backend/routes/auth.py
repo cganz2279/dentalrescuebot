@@ -563,3 +563,226 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get user info"
         )
+
+@router.post("/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    """Initiate password reset process"""
+    try:
+        email = request.email.lower()
+        
+        # Find user by email
+        user = await db.users.find_one({"email": email})
+        
+        # Always return success to prevent email enumeration attacks
+        if not user:
+            return {
+                "success": True,
+                "message": "If an account with this email exists, password reset instructions have been sent."
+            }
+        
+        # Generate reset token
+        reset_token = str(uuid.uuid4())
+        reset_expires = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
+        
+        # Store reset token in database
+        await db.password_resets.insert_one({
+            "id": str(uuid.uuid4()),
+            "user_id": user["id"],
+            "email": email,
+            "reset_token": reset_token,
+            "expires_at": reset_expires,
+            "used": False,
+            "created_at": datetime.utcnow()
+        })
+        
+        # In a real application, you would send an email here
+        # For now, we'll return the token for testing purposes
+        # TODO: Implement email sending service
+        
+        return {
+            "success": True,
+            "message": "If an account with this email exists, password reset instructions have been sent.",
+            "reset_token": reset_token,  # Remove this in production
+            "reset_link": f"https://www.theoncallbot.com/practice-notes/reset-password?token={reset_token}"  # Remove in production
+        }
+        
+    except Exception as e:
+        print(f"Forgot password error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset request failed"
+        )
+
+@router.post("/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    """Reset password using reset token"""
+    try:
+        reset_token = request.reset_token
+        new_password = request.new_password
+        
+        # Validate password
+        if not validate_password(new_password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password must be at least 6 characters with letters and numbers"
+            )
+        
+        # Find valid reset token
+        reset_record = await db.password_resets.find_one({
+            "reset_token": reset_token,
+            "used": False,
+            "expires_at": {"$gt": datetime.utcnow()}
+        })
+        
+        if not reset_record:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token"
+            )
+        
+        # Find user
+        user = await db.users.find_one({"id": reset_record["user_id"]})
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Update password
+        hashed_password = hash_password(new_password)
+        await db.users.update_one(
+            {"id": user["id"]},
+            {
+                "$set": {
+                    "password": hashed_password,
+                    "updatedAt": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Mark reset token as used
+        await db.password_resets.update_one(
+            {"id": reset_record["id"]},
+            {
+                "$set": {
+                    "used": True,
+                    "used_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Password reset successful. You can now login with your new password."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Reset password error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset failed"
+        )
+
+@router.post("/forgot-username")
+async def forgot_username(request: ForgotUsernameRequest):
+    """Help user recover their username/email"""
+    try:
+        practice_name = request.practice_name.strip()
+        phone = request.phone.strip() if request.phone else None
+        
+        if not practice_name:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Practice name is required"
+            )
+        
+        # Build search query
+        query = {"name": {"$regex": practice_name, "$options": "i"}}
+        if phone:
+            # Remove any non-digit characters for phone comparison
+            clean_phone = re.sub(r'\D', '', phone)
+            if clean_phone:
+                query["phone"] = {"$regex": clean_phone}
+        
+        # Find practice
+        practice = await db.practices.find_one(query)
+        
+        # Always return success to prevent information disclosure
+        if not practice:
+            return {
+                "success": True,
+                "message": "If a practice with these details exists, username recovery information has been sent."
+            }
+        
+        # Find admin user for this practice
+        admin_user = await db.users.find_one({
+            "practiceId": practice["id"],
+            "role": "practice_admin"
+        })
+        
+        if not admin_user:
+            return {
+                "success": True,
+                "message": "If a practice with these details exists, username recovery information has been sent."
+            }
+        
+        # In a real application, you would send an email here
+        # For now, we'll return the information for testing
+        # TODO: Implement email sending with username recovery
+        
+        return {
+            "success": True,
+            "message": "If a practice with these details exists, username recovery information has been sent.",
+            "practice_name": practice["name"],  # Remove in production
+            "email": admin_user["email"],  # Remove in production
+            "login_url": "https://www.theoncallbot.com/practice-notes"  # Remove in production
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Forgot username error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Username recovery request failed"
+        )
+
+@router.get("/validate-reset-token/{token}")
+async def validate_reset_token(token: str):
+    """Validate if a reset token is valid and not expired"""
+    try:
+        reset_record = await db.password_resets.find_one({
+            "reset_token": token,
+            "used": False,
+            "expires_at": {"$gt": datetime.utcnow()}
+        })
+        
+        if not reset_record:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token"
+            )
+        
+        # Get user info (without sensitive data)
+        user = await db.users.find_one(
+            {"id": reset_record["user_id"]},
+            {"_id": 0, "email": 1, "firstName": 1, "lastName": 1}
+        )
+        
+        return {
+            "success": True,
+            "valid": True,
+            "user": user,
+            "expires_at": reset_record["expires_at"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Validate token error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Token validation failed"
+        )
