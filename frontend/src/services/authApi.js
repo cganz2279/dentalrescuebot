@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Get backend URL with fallback
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 
-                    'https://practice-notes.preview.emergentagent.com';
+                    'https://dental-assist-4.preview.emergentagent.com';
 
 const AUTH_BASE_URL = `${BACKEND_URL}/api/auth`;
 const PRACTICE_BASE_URL = `${BACKEND_URL}/api/practice`;
@@ -119,7 +119,7 @@ export const authApi = {
 
   getProcedures: async (specialty = null) => {
     // This endpoint doesn't require authentication - use direct axios
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://practice-notes.preview.emergentagent.com';
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://dental-assist-4.preview.emergentagent.com';
     const url = specialty ? `/api/procedures?specialty=${specialty}` : '/api/procedures';
     const response = await axios.get(`${BACKEND_URL}${url}`);
     return response.data;

@@ -7,7 +7,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://practice-notes.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-assist-4.preview.emergentagent.com/api"
 
 def test_registration_endpoint():
     """Test the registration endpoint"""

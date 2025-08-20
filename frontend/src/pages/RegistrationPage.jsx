@@ -82,7 +82,7 @@ const RegistrationPage = () => {
       
       // Get backend URL with fallback
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 
-                        'https://practice-notes.preview.emergentagent.com';
+                        'https://dental-assist-4.preview.emergentagent.com';
       
       console.log('Using backend URL:', backendUrl);
       
