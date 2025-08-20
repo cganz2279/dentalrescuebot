@@ -1,0 +1,585 @@
+<style>
+.practice-login-container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.practice-login-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.practice-form-group {
+    margin-bottom: 20px;
+}
+
+.practice-form-label {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+}
+
+.practice-form-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.practice-form-input:focus {
+    border-color: #3c7ab7;
+    outline: none;
+}
+
+.practice-login-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    background: #3c7ab7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.practice-login-button:hover {
+    background: #2c5a87;
+}
+
+.practice-login-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.practice-error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    display: none;
+}
+
+.practice-success-message {
+    background: #e8f5e8;
+    color: #2e7d32;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    display: none;
+}
+
+.practice-help-links {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.practice-help-link {
+    color: #3c7ab7;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.practice-help-link:hover {
+    text-decoration: underline;
+}
+
+.practice-form-section {
+    display: none;
+}
+
+.practice-form-section.active {
+    display: block;
+}
+
+.practice-back-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.practice-back-link:hover {
+    color: #3c7ab7;
+    text-decoration: underline;
+}
+
+.practice-info-text {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+</style>
+
+<div class="practice-login-container">
+    <!-- Login Form -->
+    <div id="loginSection" class="practice-form-section active">
+        <h3 class="practice-login-title">Practice Notes Login</h3>
+        
+        <div id="practiceErrorMessage" class="practice-error-message"></div>
+        <div id="practiceSuccessMessage" class="practice-success-message"></div>
+        
+        <form id="practiceLoginForm">
+            <div class="practice-form-group">
+                <label for="practiceEmail" class="practice-form-label">Email:</label>
+                <input type="email" id="practiceEmail" class="practice-form-input" required>
+            </div>
+            
+            <div class="practice-form-group">
+                <label for="practicePassword" class="practice-form-label">Password:</label>
+                <input type="password" id="practicePassword" class="practice-form-input" required>
+            </div>
+            
+            <button type="submit" id="practiceLoginButton" class="practice-login-button">
+                <span id="practiceButtonText">Login</span>
+            </button>
+        </form>
+        
+        <div class="practice-help-links">
+            <a href="#" id="forgotPasswordLink" class="practice-help-link">Forgot Password?</a>
+            <a href="#" id="forgotUsernameLink" class="practice-help-link">Forgot Username?</a>
+        </div>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div id="forgotPasswordSection" class="practice-form-section">
+        <a href="#" id="backToLogin1" class="practice-back-link">← Back to Login</a>
+        <h3 class="practice-login-title">Reset Password</h3>
+        
+        <div class="practice-info-text">
+            Enter your email address and we'll send you instructions to reset your password.
+        </div>
+        
+        <div id="resetErrorMessage" class="practice-error-message"></div>
+        <div id="resetSuccessMessage" class="practice-success-message"></div>
+        
+        <form id="forgotPasswordForm">
+            <div class="practice-form-group">
+                <label for="resetEmail" class="practice-form-label">Email Address:</label>
+                <input type="email" id="resetEmail" class="practice-form-input" required>
+            </div>
+            
+            <button type="submit" id="resetPasswordButton" class="practice-login-button">
+                <span id="resetButtonText">Send Reset Instructions</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Forgot Username Form -->
+    <div id="forgotUsernameSection" class="practice-form-section">
+        <a href="#" id="backToLogin2" class="practice-back-link">← Back to Login</a>
+        <h3 class="practice-login-title">Recover Username</h3>
+        
+        <div class="practice-info-text">
+            Enter your practice name to recover your login email address.
+        </div>
+        
+        <div id="usernameErrorMessage" class="practice-error-message"></div>
+        <div id="usernameSuccessMessage" class="practice-success-message"></div>
+        
+        <form id="forgotUsernameForm">
+            <div class="practice-form-group">
+                <label for="practiceName" class="practice-form-label">Practice Name:</label>
+                <input type="text" id="practiceName" class="practice-form-input" required>
+            </div>
+            
+            <div class="practice-form-group">
+                <label for="practicePhone" class="practice-form-label">Phone Number (Optional):</label>
+                <input type="tel" id="practicePhone" class="practice-form-input" placeholder="For verification">
+            </div>
+            
+            <button type="submit" id="usernameRecoveryButton" class="practice-login-button">
+                <span id="usernameButtonText">Recover Username</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Reset Password Form (shown when coming from email link) -->
+    <div id="resetPasswordSection" class="practice-form-section">
+        <h3 class="practice-login-title">Set New Password</h3>
+        
+        <div class="practice-info-text">
+            Enter your new password below.
+        </div>
+        
+        <div id="newPasswordErrorMessage" class="practice-error-message"></div>
+        <div id="newPasswordSuccessMessage" class="practice-success-message"></div>
+        
+        <form id="resetPasswordForm">
+            <input type="hidden" id="resetToken" value="">
+            
+            <div class="practice-form-group">
+                <label for="newPassword" class="practice-form-label">New Password:</label>
+                <input type="password" id="newPassword" class="practice-form-input" required minlength="6">
+            </div>
+            
+            <div class="practice-form-group">
+                <label for="confirmPassword" class="practice-form-label">Confirm Password:</label>
+                <input type="password" id="confirmPassword" class="practice-form-input" required minlength="6">
+            </div>
+            
+            <button type="submit" id="newPasswordButton" class="practice-login-button">
+                <span id="newPasswordButtonText">Update Password</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+(function() {
+    const API_BASE = 'https://careflow-dental.preview.emergentagent.com/api';
+    
+    // DOM Elements
+    const elements = {
+        // Sections
+        loginSection: document.getElementById('loginSection'),
+        forgotPasswordSection: document.getElementById('forgotPasswordSection'),
+        forgotUsernameSection: document.getElementById('forgotUsernameSection'),
+        resetPasswordSection: document.getElementById('resetPasswordSection'),
+        
+        // Login form
+        loginForm: document.getElementById('practiceLoginForm'),
+        emailInput: document.getElementById('practiceEmail'),
+        passwordInput: document.getElementById('practicePassword'),
+        loginButton: document.getElementById('practiceLoginButton'),
+        buttonText: document.getElementById('practiceButtonText'),
+        errorMessage: document.getElementById('practiceErrorMessage'),
+        successMessage: document.getElementById('practiceSuccessMessage'),
+        
+        // Navigation links
+        forgotPasswordLink: document.getElementById('forgotPasswordLink'),
+        forgotUsernameLink: document.getElementById('forgotUsernameLink'),
+        backToLogin1: document.getElementById('backToLogin1'),
+        backToLogin2: document.getElementById('backToLogin2'),
+        
+        // Forgot password form
+        forgotPasswordForm: document.getElementById('forgotPasswordForm'),
+        resetEmailInput: document.getElementById('resetEmail'),
+        resetPasswordButton: document.getElementById('resetPasswordButton'),
+        resetButtonText: document.getElementById('resetButtonText'),
+        resetErrorMessage: document.getElementById('resetErrorMessage'),
+        resetSuccessMessage: document.getElementById('resetSuccessMessage'),
+        
+        // Forgot username form
+        forgotUsernameForm: document.getElementById('forgotUsernameForm'),
+        practiceNameInput: document.getElementById('practiceName'),
+        practicePhoneInput: document.getElementById('practicePhone'),
+        usernameRecoveryButton: document.getElementById('usernameRecoveryButton'),
+        usernameButtonText: document.getElementById('usernameButtonText'),
+        usernameErrorMessage: document.getElementById('usernameErrorMessage'),
+        usernameSuccessMessage: document.getElementById('usernameSuccessMessage'),
+        
+        // Reset password form
+        resetPasswordForm: document.getElementById('resetPasswordForm'),
+        resetTokenInput: document.getElementById('resetToken'),
+        newPasswordInput: document.getElementById('newPassword'),
+        confirmPasswordInput: document.getElementById('confirmPassword'),
+        newPasswordButton: document.getElementById('newPasswordButton'),
+        newPasswordButtonText: document.getElementById('newPasswordButtonText'),
+        newPasswordErrorMessage: document.getElementById('newPasswordErrorMessage'),
+        newPasswordSuccessMessage: document.getElementById('newPasswordSuccessMessage')
+    };
+    
+    // Utility functions
+    const utils = {
+        showError(message, container) {
+            container.textContent = message;
+            container.style.display = 'block';
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 5000);
+        },
+        
+        showSuccess(message, container) {
+            container.textContent = message;
+            container.style.display = 'block';
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 8000);
+        },
+        
+        hideMessages() {
+            document.querySelectorAll('.practice-error-message, .practice-success-message').forEach(el => {
+                el.style.display = 'none';
+            });
+        },
+        
+        showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.practice-form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show requested section
+            document.getElementById(sectionName).classList.add('active');
+            this.hideMessages();
+        },
+        
+        setLoading(button, textElement, loading, originalText, loadingText) {
+            button.disabled = loading;
+            textElement.textContent = loading ? loadingText : originalText;
+        }
+    };
+    
+    // Section navigation
+    elements.forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        utils.showSection('forgotPasswordSection');
+        elements.resetEmailInput.focus();
+    });
+    
+    elements.forgotUsernameLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        utils.showSection('forgotUsernameSection');
+        elements.practiceNameInput.focus();
+    });
+    
+    elements.backToLogin1.addEventListener('click', (e) => {
+        e.preventDefault();
+        utils.showSection('loginSection');
+        elements.emailInput.focus();
+    });
+    
+    elements.backToLogin2.addEventListener('click', (e) => {
+        e.preventDefault();
+        utils.showSection('loginSection');
+        elements.emailInput.focus();
+    });
+    
+    // Login form handler
+    elements.loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = elements.emailInput.value.trim();
+        const password = elements.passwordInput.value;
+        
+        if (!email || !password) {
+            utils.showError('Please enter both email and password', elements.errorMessage);
+            return;
+        }
+        
+        utils.setLoading(elements.loginButton, elements.buttonText, true, 'Login', 'Logging in...');
+        
+        try {
+            const response = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                if (data.token) localStorage.setItem('authToken', data.token);
+                if (data.user) localStorage.setItem('userData', JSON.stringify(data.user));
+                
+                elements.buttonText.textContent = 'Success! Redirecting...';
+                setTimeout(() => {
+                    window.location.href = 'https://careflow-dental.preview.emergentagent.com/';
+                }, 1000);
+            } else {
+                utils.showError(data.message || 'Invalid email or password', elements.errorMessage);
+            }
+        } catch (error) {
+            utils.showError('Connection error. Please try again.', elements.errorMessage);
+        } finally {
+            utils.setLoading(elements.loginButton, elements.buttonText, false, 'Login', 'Logging in...');
+        }
+    });
+    
+    // Forgot password form handler
+    elements.forgotPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = elements.resetEmailInput.value.trim();
+        
+        if (!email) {
+            utils.showError('Please enter your email address', elements.resetErrorMessage);
+            return;
+        }
+        
+        utils.setLoading(elements.resetPasswordButton, elements.resetButtonText, true, 'Send Reset Instructions', 'Sending...');
+        
+        try {
+            const response = await fetch(`${API_BASE}/auth/forgot-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                utils.showSuccess(data.message, elements.resetSuccessMessage);
+                
+                // For development - show reset link
+                if (data.reset_link) {
+                    setTimeout(() => {
+                        const linkMessage = `Development mode: Reset link: ${data.reset_link}`;
+                        utils.showSuccess(linkMessage, elements.resetSuccessMessage);
+                    }, 2000);
+                }
+                
+                elements.forgotPasswordForm.reset();
+            } else {
+                utils.showError(data.message || 'Failed to send reset instructions', elements.resetErrorMessage);
+            }
+        } catch (error) {
+            utils.showError('Connection error. Please try again.', elements.resetErrorMessage);
+        } finally {
+            utils.setLoading(elements.resetPasswordButton, elements.resetButtonText, false, 'Send Reset Instructions', 'Sending...');
+        }
+    });
+    
+    // Forgot username form handler
+    elements.forgotUsernameForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const practiceName = elements.practiceNameInput.value.trim();
+        const phone = elements.practicePhoneInput.value.trim();
+        
+        if (!practiceName) {
+            utils.showError('Please enter your practice name', elements.usernameErrorMessage);
+            return;
+        }
+        
+        utils.setLoading(elements.usernameRecoveryButton, elements.usernameButtonText, true, 'Recover Username', 'Searching...');
+        
+        try {
+            const response = await fetch(`${API_BASE}/auth/forgot-username`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ practice_name: practiceName, phone })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                utils.showSuccess(data.message, elements.usernameSuccessMessage);
+                
+                // For development - show found email
+                if (data.email) {
+                    setTimeout(() => {
+                        const emailMessage = `Development mode: Your login email is: ${data.email}`;
+                        utils.showSuccess(emailMessage, elements.usernameSuccessMessage);
+                    }, 2000);
+                }
+                
+                elements.forgotUsernameForm.reset();
+            } else {
+                utils.showError(data.message || 'Failed to recover username', elements.usernameErrorMessage);
+            }
+        } catch (error) {
+            utils.showError('Connection error. Please try again.', elements.usernameErrorMessage);
+        } finally {
+            utils.setLoading(elements.usernameRecoveryButton, elements.usernameButtonText, false, 'Recover Username', 'Searching...');
+        }
+    });
+    
+    // Reset password form handler
+    elements.resetPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const token = elements.resetTokenInput.value;
+        const newPassword = elements.newPasswordInput.value;
+        const confirmPassword = elements.confirmPasswordInput.value;
+        
+        if (!newPassword || !confirmPassword) {
+            utils.showError('Please fill in both password fields', elements.newPasswordErrorMessage);
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            utils.showError('Passwords do not match', elements.newPasswordErrorMessage);
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            utils.showError('Password must be at least 6 characters', elements.newPasswordErrorMessage);
+            return;
+        }
+        
+        utils.setLoading(elements.newPasswordButton, elements.newPasswordButtonText, true, 'Update Password', 'Updating...');
+        
+        try {
+            const response = await fetch(`${API_BASE}/auth/reset-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reset_token: token, new_password: newPassword })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                utils.showSuccess(data.message, elements.newPasswordSuccessMessage);
+                elements.resetPasswordForm.reset();
+                
+                // Redirect to login after success
+                setTimeout(() => {
+                    utils.showSection('loginSection');
+                    elements.emailInput.focus();
+                }, 3000);
+            } else {
+                utils.showError(data.message || 'Failed to reset password', elements.newPasswordErrorMessage);
+            }
+        } catch (error) {
+            utils.showError('Connection error. Please try again.', elements.newPasswordErrorMessage);
+        } finally {
+            utils.setLoading(elements.newPasswordButton, elements.newPasswordButtonText, false, 'Update Password', 'Updating...');
+        }
+    });
+    
+    // Check if we're coming from a password reset link
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get('token');
+    
+    if (resetToken) {
+        // Validate token first
+        fetch(`${API_BASE}/auth/validate-reset-token/${resetToken}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.valid) {
+                    elements.resetTokenInput.value = resetToken;
+                    utils.showSection('resetPasswordSection');
+                    elements.newPasswordInput.focus();
+                } else {
+                    utils.showError('Invalid or expired reset link', elements.errorMessage);
+                    utils.showSection('loginSection');
+                }
+            })
+            .catch(error => {
+                utils.showError('Error validating reset link', elements.errorMessage);
+                utils.showSection('loginSection');
+            });
+    }
+    
+    // Auto-focus email field on page load (if not reset password flow)
+    if (!resetToken) {
+        setTimeout(() => {
+            if (elements.emailInput) elements.emailInput.focus();
+        }, 100);
+    }
+})();
+</script>
