@@ -278,7 +278,7 @@ class UrgentLoginInvestigator:
     
     def check_account_status(self):
         """Check if ganzseth559@gmail.com exists but is inactive/disabled"""
-        if not self.db:
+        if self.db is None:
             return False
             
         try:
