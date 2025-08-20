@@ -518,15 +518,18 @@ backend:
 
   - task: "Admin Procedure Requests API"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/admin.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Procedure requests management API implemented to view all custom procedure requests from practices and update their status (approve/reject/in-progress)."
+        - working: true
+          agent: "testing"
+          comment: "Admin procedure requests API working correctly. Successfully tested GET /api/admin/procedure-requests and retrieved 1 procedure request for admin review. API returns all procedure requests with practice name, procedure name, status, and dates as expected. Proper admin authentication required."
 
 frontend:
   - task: "Homepage Loading & Display"
