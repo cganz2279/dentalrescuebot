@@ -1079,6 +1079,109 @@
             `);
         };
 
+        window.viewRequestDetails = async function(requestId, procedureName, practiceName, specialty, urgencyLevel, status, createdAt, requestedByName) {
+            try {
+                // Get full request details from API
+                const response = await utils.apiRequest(`/admin/procedure-requests`);
+                if (response && response.success) {
+                    const request = response.data.find(r => r.id === requestId);
+                    if (request) {
+                        const modalContent = `
+                            <div style="max-width: 600px;">
+                                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #333;">${procedureName}</h4>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                                        <div>
+                                            <strong>Practice:</strong> ${practiceName}<br>
+                                            <strong>Specialty:</strong> ${specialty}<br>
+                                            <strong>Requested by:</strong> ${requestedByName}
+                                        </div>
+                                        <div>
+                                            <strong>Priority:</strong> <span style="text-transform: uppercase; font-weight: 600; color: ${urgencyLevel === 'urgent' ? '#dc3545' : urgencyLevel === 'high' ? '#ffc107' : '#17a2b8'};">${urgencyLevel}</span><br>
+                                            <strong>Status:</strong> ${utils.getStatusBadge(status)}<br>
+                                            <strong>Date:</strong> ${createdAt}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <h5 style="margin-bottom: 10px; color: #333; border-bottom: 2px solid #3c7ab7; padding-bottom: 5px;">Procedure Description</h5>
+                                    <div style="background: white; padding: 15px; border-radius: 6px; border: 1px solid #e9ecef; white-space: pre-wrap; line-height: 1.5;">
+${request.description || 'No description provided'}
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <h5 style="margin-bottom: 10px; color: #333; border-bottom: 2px solid #3c7ab7; padding-bottom: 5px;">Reason for Request</h5>
+                                    <div style="background: #fff3cd; padding: 15px; border-radius: 6px; border: 1px solid #ffeaa7; white-space: pre-wrap; line-height: 1.5;">
+${request.reasonForRequest || 'No reason provided'}
+                                    </div>
+                                </div>
+                                
+                                ${request.adminNotes ? `
+                                <div style="margin-bottom: 20px;">
+                                    <h5 style="margin-bottom: 10px; color: #333; border-bottom: 2px solid #28a745; padding-bottom: 5px;">Admin Notes</h5>
+                                    <div style="background: #d4edda; padding: 15px; border-radius: 6px; border: 1px solid #c3e6cb; white-space: pre-wrap; line-height: 1.5;">
+${request.adminNotes}
+                                    </div>
+                                    <small style="color: #666;">Reviewed by: ${request.reviewedBy} on ${utils.formatDate(request.reviewedAt)}</small>
+                                </div>
+                                ` : ''}
+                                
+                                ${status === 'pending' ? `
+                                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                                    <h5 style="margin-bottom: 15px; color: #333;">Admin Actions</h5>
+                                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                        <button class="btn btn-success" onclick="approveRequestWithNotes('${requestId}')">Approve Request</button>
+                                        <button class="btn btn-danger" onclick="rejectRequestWithNotes('${requestId}')">Reject Request</button>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Admin Notes (optional):</label>
+                                        <textarea id="adminNotes_${requestId}" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Add any notes about this decision..."></textarea>
+                                    </div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        utils.showModal('Procedure Request Details', modalContent);
+                    }
+                }
+            } catch (error) {
+                utils.showModal('Error', '<div class="error">Failed to load request details</div>');
+            }
+        };
+
+        window.approveRequestWithNotes = async function(requestId) {
+            const adminNotes = document.getElementById(`adminNotes_${requestId}`).value;
+            await updateRequestStatusWithNotes(requestId, 'approved', adminNotes);
+        };
+
+        window.rejectRequestWithNotes = async function(requestId) {
+            const adminNotes = document.getElementById(`adminNotes_${requestId}`).value;
+            await updateRequestStatusWithNotes(requestId, 'rejected', adminNotes);
+        };
+
+        window.updateRequestStatusWithNotes = async function(requestId, status, adminNotes) {
+            try {
+                const data = await utils.apiRequest(`/admin/procedure-requests/${requestId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        status: status,
+                        adminNotes: adminNotes || `Request ${status} by admin`
+                    })
+                });
+
+                if (data && data.success) {
+                    utils.showSuccess(`Request ${status} successfully`, document.getElementById('requestsContent'));
+                    dashboard.loadProcedureRequests();
+                    utils.hideModal();
+                }
+            } catch (error) {
+                utils.showError(`Failed to ${status} request`);
+            }
+        };
+
         window.managePractice = async function(practiceId, action) {
             try {
                 const data = await utils.apiRequest('/admin/manage-practice', {
