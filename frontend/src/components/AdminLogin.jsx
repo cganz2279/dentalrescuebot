@@ -100,6 +100,10 @@ const AdminLogin = () => {
     });
   };
 
+  const viewPracticeDetails = (practice) => {
+    alert(`Practice Details:\n\nName: ${practice.name}\nEmail: ${practice.email}\nStatus: ${practice.subscription?.status || 'unknown'}\nCreated: ${formatDate(practice.createdAt)}`);
+  };
+
   // If logged in, show dashboard
   if (adminToken && dashboardData) {
     const { stats, recent_practices, expiring_trials } = dashboardData;
