@@ -19,6 +19,7 @@ import LoginForm from "./components/LoginForm";
 import PracticeRegistrationForm from "./components/PracticeRegistrationForm";
 import PracticeDashboard from "./components/PracticeDashboard";
 import PatientDashboard from "./components/PatientDashboard";
+import AdminLogin from "./components/AdminLogin";
 import { Toaster } from "./components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
 
