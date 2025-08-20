@@ -456,20 +456,65 @@ backend:
           agent: "testing"
           comment: "POST /api/auth/reset-password working correctly. Tested with valid reset token - successfully resets password and marks token as used. Tested with invalid token - properly rejects with 400 error. Tested with weak password (less than 6 chars, no numbers) - properly validates password strength and rejects with appropriate error message. Password reset flow is secure and functional."
 
-  - task: "Token Validation API"
+  - task: "Super Admin Login API"
     implemented: true
-    working: true
-    file: "backend/routes/auth.py"
+    working: "NA"
+    file: "backend/routes/admin.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented GET /api/auth/validate-reset-token/{token} endpoint to validate reset tokens and return user information for password reset forms."
-        - working: true
-          agent: "testing"
-          comment: "GET /api/auth/validate-reset-token/{token} working correctly. Tested with valid reset token - returns success=true, valid=true, user info (email, firstName, lastName), and expiration time. Tested with invalid token - properly rejects with 400 error and 'Invalid or expired reset token' message. Token validation is secure and provides necessary user context for password reset forms."
+          comment: "Configured super admin credentials (cganz/Dentist1#) and implemented comprehensive admin system with login, dashboard, practice management, payments, and procedure requests functionality."
+
+  - task: "Admin Dashboard API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Admin dashboard API implemented with statistics (total practices, active practices, trial practices, revenue), recent practices, and expiring trials data."
+
+  - task: "Admin Practice Management API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Practice management APIs implemented for viewing all practices with filtering/pagination, activating/deactivating practices, canceling subscriptions, and extending trials."
+
+  - task: "Admin Payment Management API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Payment management API implemented to view all payment transactions with filtering by practice and status, includes pagination and practice information."
+
+  - task: "Admin Procedure Requests API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/admin.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Procedure requests management API implemented to view all custom procedure requests from practices and update their status (approve/reject/in-progress)."
 
 frontend:
   - task: "Homepage Loading & Display"
