@@ -127,6 +127,9 @@ function App() {
             <Route path="/procedure-details/:procedureId" element={<ProcedureDetailsPage />} />
             <Route path="/edit-procedure/:procedureId" element={<EditProcedurePage />} />
             
+            {/* Admin Route */}
+            <Route path="/admin" element={<AdminLogin />} />
+            
             {/* Patient Routes */}
             <Route path="/patient/login" element={<PatientLoginPage />} />
             <Route path="/patient/dashboard" element={<PatientDashboard />} />
