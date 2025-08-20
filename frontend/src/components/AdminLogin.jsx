@@ -83,10 +83,6 @@ const AdminLogin = () => {
     setCredentials({ email: '', password: '' });
   };
 
-  const viewPracticeDetails = (practice) => {
-    alert(`Practice Details:\n\nName: ${practice.name}\nEmail: ${practice.email}\nStatus: ${practice.subscription?.status || 'unknown'}\nCreated: ${formatDate(practice.createdAt)}`);
-  };
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
