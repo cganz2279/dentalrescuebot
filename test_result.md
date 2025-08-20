@@ -641,7 +641,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Forgot Password API"
+    - "Forgot Username API"
+    - "Reset Password API"
+    - "Token Validation API"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
