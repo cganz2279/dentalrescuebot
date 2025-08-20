@@ -1335,7 +1335,20 @@ class DentalAPITester:
             self.test_patient_unauthorized_access
         ]
         
-        all_tests = basic_tests + practice_tests + patient_tests
+        # Password reset and username recovery tests
+        password_reset_tests = [
+            self.test_forgot_password_valid_email,
+            self.test_forgot_password_invalid_email,
+            self.test_forgot_username_valid_practice,
+            self.test_forgot_username_invalid_practice,
+            self.test_validate_reset_token_valid,
+            self.test_validate_reset_token_invalid,
+            self.test_reset_password_valid_token,
+            self.test_reset_password_invalid_token,
+            self.test_reset_password_weak_password
+        ]
+        
+        all_tests = basic_tests + practice_tests + patient_tests + password_reset_tests
         passed = 0
         total = len(all_tests)
         
