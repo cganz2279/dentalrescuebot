@@ -74,7 +74,7 @@ class AuthTester:
     
     def check_database_practices(self):
         """Check what practices exist in the database"""
-        if not self.db:
+        if self.db is None:
             self.log_test("Database Practice Check", False, "No database connection")
             return False
             
