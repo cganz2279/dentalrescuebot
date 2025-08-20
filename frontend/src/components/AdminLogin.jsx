@@ -276,6 +276,392 @@ const AdminLogin = () => {
     const { stats, recent_practices, expiring_trials } = dashboardData;
     
     return (
+      <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ 
+          background: 'linear-gradient(135deg, #3c7ab7 0%, #2c5a87 100%)',
+          color: 'white',
+          padding: '20px',
+          borderRadius: '10px',
+          marginBottom: '30px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', margin: 0 }}>
+            Practice Notes Admin Console
+          </h1>
+          <button 
+            onClick={handleLogout}
+            style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              padding: '10px 20px',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div style={{
+          display: 'flex',
+          borderBottom: '2px solid #e9ecef',
+          marginBottom: '30px',
+          gap: '0'
+        }}>
+          {[
+            { id: 'dashboard', label: '📊 Dashboard' },
+            { id: 'practices', label: '🏥 Practices' },
+            { id: 'requests', label: '📋 Procedure Requests' },
+            { id: 'payments', label: '💰 Payments' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                padding: '12px 24px',
+                border: 'none',
+                background: activeTab === tab.id ? '#3c7ab7' : 'transparent',
+                color: activeTab === tab.id ? 'white' : '#3c7ab7',
+                borderRadius: '8px 8px 0 0',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '600',
+                borderBottom: activeTab === tab.id ? 'none' : '2px solid transparent'
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Dashboard Tab */}
+        {activeTab === 'dashboard' && (
+          <>
+            {/* Stats Grid */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+              gap: '20px',
+              marginBottom: '30px'
+            }}>
+              <div style={{ 
+                background: 'white', 
+                borderRadius: '10px', 
+                padding: '25px', 
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '36px', fontWeight: '700', color: '#3c7ab7', marginBottom: '5px' }}>
+                  {stats.total_practices}
+                </div>
+                <div style={{ fontSize: '16px', color: '#666', fontWeight: '500' }}>Total Practices</div>
+              </div>
+              
+              <div style={{ 
+                background: 'white', 
+                borderRadius: '10px', 
+                padding: '25px', 
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '36px', fontWeight: '700', color: '#3c7ab7', marginBottom: '5px' }}>
+                  {stats.active_practices}
+                </div>
+                <div style={{ fontSize: '16px', color: '#666', fontWeight: '500' }}>Active Practices</div>
+              </div>
+              
+              <div style={{ 
+                background: 'white', 
+                borderRadius: '10px', 
+                padding: '25px', 
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '36px', fontWeight: '700', color: '#3c7ab7', marginBottom: '5px' }}>
+                  {procedureRequests.length}
+                </div>
+                <div style={{ fontSize: '16px', color: '#666', fontWeight: '500' }}>Procedure Requests</div>
+              </div>
+              
+              <div style={{ 
+                background: 'white', 
+                borderRadius: '10px', 
+                padding: '25px', 
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '36px', fontWeight: '700', color: '#28a745', marginBottom: '5px' }}>
+                  {formatCurrency(stats.total_revenue)}
+                </div>
+                <div style={{ fontSize: '16px', color: '#666', fontWeight: '500' }}>Total Revenue</div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Practices Tab */}
+        {activeTab === 'practices' && (
+          <div style={{ 
+            background: 'white', 
+            borderRadius: '10px', 
+            padding: '20px', 
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ marginBottom: '20px', color: '#333' }}>Practice Management ({practicesData.length})</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8f9fa' }}>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Practice Name</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Email</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Status</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Created</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {practicesData.map((practice, index) => (
+                    <tr key={index}>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{practice.name}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{practice.email}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          background: practice.isActive ? '#d4edda' : '#f8d7da',
+                          color: practice.isActive ? '#155724' : '#721c24'
+                        }}>
+                          {practice.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{formatDate(practice.createdAt)}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
+                        <button 
+                          onClick={() => viewPracticeDetails(practice)}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#3c7ab7',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            marginRight: '5px'
+                          }}
+                        >
+                          View Details
+                        </button>
+                        {practice.isActive ? (
+                          <button 
+                            onClick={() => managePractice(practice.id, 'deactivate')}
+                            style={{
+                              padding: '6px 12px',
+                              background: '#dc3545',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '12px',
+                              marginRight: '5px'
+                            }}
+                          >
+                            Deactivate
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => managePractice(practice.id, 'activate')}
+                            style={{
+                              padding: '6px 12px',
+                              background: '#28a745',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '12px',
+                              marginRight: '5px'
+                            }}
+                          >
+                            Activate
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Procedure Requests Tab */}
+        {activeTab === 'requests' && (
+          <div style={{ 
+            background: 'white', 
+            borderRadius: '10px', 
+            padding: '20px', 
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ marginBottom: '20px', color: '#333' }}>Procedure Requests ({procedureRequests.length})</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8f9fa' }}>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Practice</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Procedure</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Priority</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Status</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Date</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {procedureRequests.map((request, index) => (
+                    <tr key={index}>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{request.practiceName}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}><strong>{request.procedureName}</strong></td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
+                        <span style={{
+                          padding: '4px 8px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          background: request.urgencyLevel === 'urgent' ? '#dc354520' : '#17a2b820',
+                          color: request.urgencyLevel === 'urgent' ? '#dc3545' : '#17a2b8'
+                        }}>
+                          {request.urgencyLevel || 'normal'}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          background: request.status === 'approved' ? '#d4edda' : request.status === 'rejected' ? '#f8d7da' : '#fff3cd',
+                          color: request.status === 'approved' ? '#155724' : request.status === 'rejected' ? '#721c24' : '#856404'
+                        }}>
+                          {request.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{formatDate(request.createdAt)}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
+                        <button 
+                          onClick={() => viewRequestDetails(request)}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#3c7ab7',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            marginRight: '5px'
+                          }}
+                        >
+                          View Details
+                        </button>
+                        {request.status === 'pending' && (
+                          <>
+                            <button 
+                              onClick={() => updateRequestStatus(request.id, 'approved')}
+                              style={{
+                                padding: '6px 12px',
+                                background: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                marginRight: '5px'
+                              }}
+                            >
+                              Approve
+                            </button>
+                            <button 
+                              onClick={() => updateRequestStatus(request.id, 'rejected')}
+                              style={{
+                                padding: '6px 12px',
+                                background: '#dc3545',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Payments Tab */}
+        {activeTab === 'payments' && (
+          <div style={{ 
+            background: 'white', 
+            borderRadius: '10px', 
+            padding: '20px', 
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ marginBottom: '20px', color: '#333' }}>Payment Transactions ({paymentsData.length})</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8f9fa' }}>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Practice</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Amount</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Status</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Date</th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>Transaction ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paymentsData.map((payment, index) => (
+                    <tr key={index}>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{payment.practice_name || 'Unknown'}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{formatCurrency(payment.amount)}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          background: payment.payment_status === 'paid' ? '#d4edda' : '#f8d7da',
+                          color: payment.payment_status === 'paid' ? '#155724' : '#721c24'
+                        }}>
+                          {payment.payment_status || 'unknown'}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>{formatDate(payment.created_at)}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef', fontFamily: 'monospace', fontSize: '12px' }}>
+                        {payment.transaction_id || 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+    
+    return (
       <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ 
           background: 'linear-gradient(135deg, #3c7ab7 0%, #2c5a87 100%)',
