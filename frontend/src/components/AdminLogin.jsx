@@ -101,7 +101,37 @@ const AdminLogin = () => {
   };
 
   const viewPracticeDetails = (practice) => {
-    alert(`Practice Details:\n\nName: ${practice.name}\nEmail: ${practice.email}\nStatus: ${practice.subscription?.status || 'unknown'}\nCreated: ${formatDate(practice.createdAt)}`);
+    const details = [
+      `🏥 PRACTICE INFORMATION`,
+      `Name: ${practice.name || 'Not provided'}`,
+      `Email: ${practice.email || 'Not provided'}`,
+      `Phone: ${practice.phone || 'Not provided'}`,
+      `Address: ${practice.address || 'Not provided'}`,
+      `Website: ${practice.website || 'Not provided'}`,
+      ``,
+      `📊 STATUS & SUBSCRIPTION`,
+      `Active: ${practice.isActive ? 'Yes' : 'No'}`,
+      `Subscription Status: ${practice.subscription?.status || 'Unknown'}`,
+      `Subscription Plan: ${practice.subscription?.plan || 'Not specified'}`,
+      `Auto Renew: ${practice.subscription?.autoRenew ? 'Yes' : 'No'}`,
+      `Trial Ends: ${practice.subscription?.trialEndsAt ? formatDate(practice.subscription.trialEndsAt) : 'N/A'}`,
+      `Next Billing: ${practice.subscription?.nextBillingDate ? formatDate(practice.subscription.nextBillingDate) : 'N/A'}`,
+      ``,
+      `📅 DATES`,
+      `Created: ${formatDate(practice.createdAt)}`,
+      `Last Updated: ${formatDate(practice.updatedAt)}`,
+      ``,
+      `🔧 TECHNICAL INFO`,
+      `Practice ID: ${practice.id}`,
+      `Database ID: ${practice._id || 'N/A'}`,
+      ``,
+      `💼 ADMIN INFO`,
+      `Admin Password Set: ${practice.adminPassword ? 'Yes' : 'No'}`,
+      `Email Verified: ${practice.emailVerified ? 'Yes' : 'No'}`,
+      `Setup Complete: ${practice.setupComplete ? 'Yes' : 'No'}`
+    ];
+    
+    alert(details.join('\n'));
   };
 
   // If logged in, show dashboard
