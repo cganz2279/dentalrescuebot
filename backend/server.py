@@ -207,6 +207,19 @@ async def get_procedure(procedure_id: str):
 # Include the router in the main app
 app.include_router(api_router)
 
+# Serve the full HTML admin dashboard
+@app.get("/admin-dashboard", response_class=HTMLResponse)
+async def get_admin_dashboard():
+    """Serve the complete HTML admin dashboard"""
+    try:
+        admin_html_path = Path(__file__).parent.parent / "admin-dashboard.html"
+        if admin_html_path.exists():
+            return admin_html_path.read_text()
+        else:
+            raise HTTPException(status_code=404, detail="Admin dashboard not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to load admin dashboard")
+
 # Include auth, practice management, payment, webhook, admin, and patient routes directly
 app.include_router(auth_router)
 app.include_router(practice_router)
