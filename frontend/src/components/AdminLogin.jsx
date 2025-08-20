@@ -9,14 +9,39 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken'));
   const [dashboardData, setDashboardData] = useState(null);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [practicesData, setPracticesData] = useState([]);
+  const [procedureRequests, setProcedureRequests] = useState([]);
+  const [paymentsData, setPaymentsData] = useState([]);
 
   const API_BASE = `${process.env.REACT_APP_BACKEND_URL || 'https://practice-notes.preview.emergentagent.com'}/api`;
 
   useEffect(() => {
     if (adminToken) {
       loadDashboard();
+      loadPractices();
+      loadProcedureRequests();  
+      loadPayments();
     }
   }, [adminToken]);
+
+  const apiRequest = async (endpoint, options = {}) => {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${adminToken}`,
+        ...options.headers
+      }
+    });
+
+    if (response.status === 401) {
+      handleLogout();
+      return null;
+    }
+
+    return await response.json();
+  };
 
   const handleInputChange = (e) => {
     setCredentials({
@@ -57,22 +82,45 @@ const AdminLogin = () => {
 
   const loadDashboard = async () => {
     try {
-      const response = await fetch(`${API_BASE}/admin/dashboard`, {
-        headers: {
-          'Authorization': `Bearer ${adminToken || localStorage.getItem('adminToken')}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setDashboardData(data);
-        }
-      } else if (response.status === 401) {
-        handleLogout();
+      const data = await apiRequest('/admin/dashboard');
+      if (data && data.success) {
+        setDashboardData(data);
       }
     } catch (err) {
       console.error('Failed to load dashboard:', err);
+    }
+  };
+
+  const loadPractices = async () => {
+    try {
+      const data = await apiRequest('/admin/practices?limit=100');
+      if (data && data.success) {
+        setPracticesData(data.practices);
+      }
+    } catch (err) {
+      console.error('Failed to load practices:', err);
+    }
+  };
+
+  const loadProcedureRequests = async () => {
+    try {
+      const data = await apiRequest('/admin/procedure-requests');
+      if (data && data.success) {
+        setProcedureRequests(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to load procedure requests:', err);
+    }
+  };
+
+  const loadPayments = async () => {
+    try {
+      const data = await apiRequest('/admin/payments?limit=50');
+      if (data && data.success) {
+        setPaymentsData(data.transactions);
+      }
+    } catch (err) {
+      console.error('Failed to load payments:', err);
     }
   };
 
@@ -81,6 +129,49 @@ const AdminLogin = () => {
     setAdminToken(null);
     setDashboardData(null);
     setCredentials({ email: '', password: '' });
+    setActiveTab('dashboard');
+  };
+
+  const managePractice = async (practiceId, action) => {
+    try {
+      const data = await apiRequest('/admin/manage-practice', {
+        method: 'POST',
+        body: JSON.stringify({
+          practice_id: practiceId,
+          action: action
+        })
+      });
+
+      if (data && data.success) {
+        alert(`Practice ${action} successful!`);
+        loadPractices(); // Reload practices
+      } else {
+        alert(`Failed to ${action} practice`);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const updateRequestStatus = async (requestId, status) => {
+    try {
+      const data = await apiRequest(`/admin/procedure-requests/${requestId}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          status: status,
+          adminNotes: `Request ${status} by admin`
+        })
+      });
+
+      if (data && data.success) {
+        alert(`Request ${status} successfully!`);
+        loadProcedureRequests(); // Reload requests
+      } else {
+        alert(`Failed to ${status} request`);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
   };
 
   const formatCurrency = (amount) => {
