@@ -48,6 +48,17 @@ class PracticeRegisterRequest(BaseModel):
     # Admin user info
     adminFirstName: str
     adminLastName: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    reset_token: str
+    new_password: str
+
+class ForgotUsernameRequest(BaseModel):
+    practice_name: str
+    phone: Optional[str] = None
     adminPassword: str
     # Address
     street: Optional[str] = None
