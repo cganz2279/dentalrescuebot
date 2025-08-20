@@ -713,12 +713,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Super Admin Login API"
-    - "Admin Dashboard API"
-    - "Admin Practice Management API"
-    - "Admin Payment Management API"
-    - "Admin Procedure Requests API"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -733,6 +728,11 @@ test_plan:
     - "Patient Download Tracking API"
     - "Patient Authentication & Authorization"
     - "Patient Login System Integration"
+    - "Super Admin Login API"
+    - "Admin Dashboard API"
+    - "Admin Practice Management API"
+    - "Admin Payment Management API"
+    - "Admin Procedure Requests API"
   post_restart_verification_completed:
     - "Authentication API (/api/auth/login)"
     - "Practice Dashboard API (/api/practice/dashboard)"
