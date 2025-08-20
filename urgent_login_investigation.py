@@ -46,7 +46,7 @@ class UrgentLoginInvestigator:
     
     def investigate_database_accounts(self):
         """Check what accounts exist in the database"""
-        if not self.db:
+        if self.db is None:
             self.log_test("Database Account Investigation", False, "No database connection")
             return False
             
