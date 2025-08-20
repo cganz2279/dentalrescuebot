@@ -1370,6 +1370,12 @@ class DentalAPITester:
                 passed += 1
             print()  # Add spacing between tests
         
+        print("🔐 Running Password Reset & Username Recovery Tests...")
+        for test in password_reset_tests:
+            if test():
+                passed += 1
+            print()  # Add spacing between tests
+        
         print("=" * 70)
         print(f"📊 Test Results: {passed}/{total} tests passed")
         
