@@ -34,34 +34,31 @@ async def cleanup_practices():
             print(f"  - {practice['name']} ({practice['email']})")
         
         if practices_to_delete:
-            confirm = input(f"\nDelete {len(practices_to_delete)} test practices? (y/N): ")
-            if confirm.lower() == 'y':
-                # Get practice IDs to delete
-                practice_ids = [p['id'] for p in practices_to_delete]
-                
-                # Delete practices
-                result = await db.practices.delete_many({"id": {"$in": practice_ids}})
-                print(f"✅ Deleted {result.deleted_count} practices")
-                
-                # Delete associated users
-                users_result = await db.users.delete_many({"practiceId": {"$in": practice_ids}})
-                print(f"✅ Deleted {users_result.deleted_count} users")
-                
-                # Delete associated patients
-                patients_result = await db.patients.delete_many({"practiceId": {"$in": practice_ids}})
-                print(f"✅ Deleted {patients_result.deleted_count} patients")
-                
-                # Delete associated patient procedures
-                procedures_result = await db.patient_procedures.delete_many({"practiceId": {"$in": practice_ids}})
-                print(f"✅ Deleted {procedures_result.deleted_count} patient procedures")
-                
-                # Delete associated payment transactions
-                payments_result = await db.payment_transactions.delete_many({"practice_id": {"$in": practice_ids}})
-                print(f"✅ Deleted {payments_result.deleted_count} payment transactions")
-                
-                print(f"\n🎉 Cleanup complete! Only {keep_email} practice remains.")
-            else:
-                print("❌ Cleanup cancelled")
+            print(f"\nAutomatically deleting {len(practices_to_delete)} test practices...")
+            # Get practice IDs to delete
+            practice_ids = [p['id'] for p in practices_to_delete]
+            
+            # Delete practices
+            result = await db.practices.delete_many({"id": {"$in": practice_ids}})
+            print(f"✅ Deleted {result.deleted_count} practices")
+            
+            # Delete associated users
+            users_result = await db.users.delete_many({"practiceId": {"$in": practice_ids}})
+            print(f"✅ Deleted {users_result.deleted_count} users")
+            
+            # Delete associated patients
+            patients_result = await db.patients.delete_many({"practiceId": {"$in": practice_ids}})
+            print(f"✅ Deleted {patients_result.deleted_count} patients")
+            
+            # Delete associated patient procedures
+            procedures_result = await db.patient_procedures.delete_many({"practiceId": {"$in": practice_ids}})
+            print(f"✅ Deleted {procedures_result.deleted_count} patient procedures")
+            
+            # Delete associated payment transactions
+            payments_result = await db.payment_transactions.delete_many({"practice_id": {"$in": practice_ids}})
+            print(f"✅ Deleted {payments_result.deleted_count} payment transactions")
+            
+            print(f"\n🎉 Cleanup complete! Only {keep_email} practice remains.")
         else:
             print(f"✅ Already clean - only {keep_email} practice exists")
         
