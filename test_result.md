@@ -413,51 +413,63 @@ backend:
 
   - task: "Forgot Password API"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST /api/auth/forgot-password endpoint with email validation, reset token generation, and secure response (no email enumeration). Returns reset token for testing purposes."
+        - working: true
+          agent: "testing"
+          comment: "POST /api/auth/forgot-password working correctly. Tested with valid email (admin@smithdental.com) - generates reset token and returns secure message. Tested with invalid email (nonexistent@example.com) - properly prevents email enumeration by returning same message. Security feature confirmed: no information disclosure about account existence."
 
   - task: "Forgot Username API"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST /api/auth/forgot-username endpoint with practice name and phone verification. Returns username recovery information securely."
+        - working: true
+          agent: "testing"
+          comment: "POST /api/auth/forgot-username working correctly. Tested with valid practice (Smith Dental Practice + phone + adminPassword) - processes username recovery request securely. Tested with invalid practice details - properly prevents information disclosure by returning same message. Requires adminPassword field for verification as designed."
 
   - task: "Reset Password API"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST /api/auth/reset-password endpoint with token validation, password strength validation, and secure password reset functionality."
+        - working: true
+          agent: "testing"
+          comment: "POST /api/auth/reset-password working correctly. Tested with valid reset token - successfully resets password and marks token as used. Tested with invalid token - properly rejects with 400 error. Tested with weak password (less than 6 chars, no numbers) - properly validates password strength and rejects with appropriate error message. Password reset flow is secure and functional."
 
   - task: "Token Validation API"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented GET /api/auth/validate-reset-token/{token} endpoint to validate reset tokens and return user information for password reset forms."
+        - working: true
+          agent: "testing"
+          comment: "GET /api/auth/validate-reset-token/{token} working correctly. Tested with valid reset token - returns success=true, valid=true, user info (email, firstName, lastName), and expiration time. Tested with invalid token - properly rejects with 400 error and 'Invalid or expired reset token' message. Token validation is secure and provides necessary user context for password reset forms."
 
 frontend:
   - task: "Homepage Loading & Display"
