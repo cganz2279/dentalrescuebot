@@ -909,6 +909,8 @@
                             <tr>
                                 <th>Practice</th>
                                 <th>Procedure Name</th>
+                                <th>Specialty</th>
+                                <th>Priority</th>
                                 <th>Status</th>
                                 <th>Requested</th>
                                 <th>Actions</th>
@@ -918,16 +920,43 @@
                 `;
 
                 requests.forEach(request => {
+                    const priorityColors = {
+                        'low': '#6c757d',
+                        'normal': '#17a2b8', 
+                        'high': '#ffc107',
+                        'urgent': '#dc3545'
+                    };
+                    
+                    const priorityColor = priorityColors[request.urgencyLevel] || '#17a2b8';
+                    
                     html += `
                         <tr>
-                            <td>${request.practiceName}</td>
-                            <td>${request.procedureName}</td>
+                            <td>${request.practiceName || 'Unknown'}</td>
+                            <td><strong>${request.procedureName}</strong></td>
+                            <td>${request.specialty || 'N/A'}</td>
+                            <td>
+                                <span style="
+                                    padding: 3px 8px; 
+                                    border-radius: 12px; 
+                                    font-size: 11px; 
+                                    font-weight: 500; 
+                                    text-transform: uppercase;
+                                    background: ${priorityColor}20;
+                                    color: ${priorityColor};
+                                    border: 1px solid ${priorityColor}40;
+                                ">
+                                    ${request.urgencyLevel || 'normal'}
+                                </span>
+                            </td>
                             <td>${utils.getStatusBadge(request.status || 'pending')}</td>
                             <td>${utils.formatDate(request.createdAt)}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-success btn-sm" onclick="updateRequestStatus('${request.id}', 'approved')">Approve</button>
-                                    <button class="btn btn-danger btn-sm" onclick="updateRequestStatus('${request.id}', 'rejected')">Reject</button>
+                                    <button class="btn btn-primary btn-sm" onclick="viewRequestDetails('${request.id}', '${request.procedureName}', '${request.practiceName}', '${request.specialty}', '${request.urgencyLevel}', '${request.status}', '${utils.formatDate(request.createdAt)}', '${request.requestedByName}')">View Details</button>
+                                    ${request.status === 'pending' ? `
+                                        <button class="btn btn-success btn-sm" onclick="updateRequestStatus('${request.id}', 'approved')">Approve</button>
+                                        <button class="btn btn-danger btn-sm" onclick="updateRequestStatus('${request.id}', 'rejected')">Reject</button>
+                                    ` : ''}
                                 </div>
                             </td>
                         </tr>
