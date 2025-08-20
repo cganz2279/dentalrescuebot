@@ -1048,7 +1048,8 @@ class DentalAPITester:
         try:
             request_data = {
                 "practice_name": "Smith Dental Practice",
-                "phone": "555-123-4567"
+                "phone": "555-123-4567",
+                "adminPassword": "password123"  # Required field for verification
             }
             
             response = self.session.post(f"{self.base_url}/auth/forgot-username", json=request_data)
@@ -1081,7 +1082,8 @@ class DentalAPITester:
         try:
             request_data = {
                 "practice_name": "Nonexistent Dental Practice",
-                "phone": "555-999-9999"
+                "phone": "555-999-9999",
+                "adminPassword": "somepassword"  # Required field
             }
             
             response = self.session.post(f"{self.base_url}/auth/forgot-username", json=request_data)
