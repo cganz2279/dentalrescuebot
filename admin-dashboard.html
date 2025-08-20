@@ -903,6 +903,9 @@
                     return;
                 }
 
+                // Store requests data globally for access in modal functions
+                window.procedureRequestsData = requests;
+
                 let html = `
                     <table class="table">
                         <thead>
@@ -952,7 +955,7 @@
                             <td>${utils.formatDate(request.createdAt)}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-primary btn-sm" onclick="viewRequestDetails('${request.id}', '${request.procedureName}', '${request.practiceName}', '${request.specialty}', '${request.urgencyLevel}', '${request.status}', '${utils.formatDate(request.createdAt)}', '${request.requestedByName}')">View Details</button>
+                                    <button class="btn btn-primary btn-sm" onclick="viewRequestDetailsById('${request.id}')">View Details</button>
                                     ${request.status === 'pending' ? `
                                         <button class="btn btn-success btn-sm" onclick="updateRequestStatus('${request.id}', 'approved')">Approve</button>
                                         <button class="btn btn-danger btn-sm" onclick="updateRequestStatus('${request.id}', 'rejected')">Reject</button>
