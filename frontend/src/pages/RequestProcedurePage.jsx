@@ -310,13 +310,18 @@ const RequestProcedurePage = () => {
                 <AlertCircle className="h-5 w-5 text-blue-600" />
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-900">About Procedure Requests</h3>
+                <h3 className="text-sm font-medium text-blue-900">How to Submit an Effective Request</h3>
                 <div className="mt-1 text-sm text-blue-800">
-                  <p>• Your request will be reviewed by our clinical team</p>
-                  <p>• We typically respond within 3-5 business days</p>
-                  <p>• High priority and urgent requests are reviewed first</p>
-                  <p>• Once approved, the procedure will be available for all practices</p>
-                  <p>• You'll be notified when the procedure is added to the system</p>
+                  <p className="font-semibold mb-2">✅ <strong>Detailed requests get approved faster:</strong></p>
+                  <p>• Be specific about the procedure steps and post-op care needed</p>
+                  <p>• Explain the clinical importance and frequency of use</p>
+                  <p>• Include any special patient education requirements</p>
+                  <p>• Mention if you have reference materials or examples</p>
+                  <div className="mt-3 pt-2 border-t border-blue-300">
+                    <p><strong>Review Process:</strong> Clinical team reviews within 3-5 business days</p>
+                    <p><strong>Priority:</strong> High/urgent requests with detailed justification reviewed first</p>
+                    <p><strong>Approval:</strong> Once approved, procedure is available to all practices</p>
+                  </div>
                 </div>
               </div>
             </div>
