@@ -36,7 +36,7 @@ class AdminAPITester:
         """Test POST /api/admin/login endpoint with configured credentials"""
         try:
             login_data = {
-                "email": "cganz",
+                "email": "cganz@admin.com",
                 "password": "Dentist1#"
             }
             
