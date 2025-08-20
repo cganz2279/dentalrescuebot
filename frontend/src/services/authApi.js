@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Get backend URL with fallback
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 
-                    'https://dental-assist-4.preview.emergentagent.com';
+                    'https://practice-notes.preview.emergentagent.com';
 
 const AUTH_BASE_URL = `${BACKEND_URL}/api/auth`;
 const PRACTICE_BASE_URL = `${BACKEND_URL}/api/practice`;
