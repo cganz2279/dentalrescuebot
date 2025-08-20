@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Notes Login - The OnCall Bot</title>
+    <meta name="description" content="Access your dental practice post-operative care management system. Secure login for dental professionals.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #3c7ab7;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+        
+        .main-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            max-width: 520px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header-brand {
+            background: linear-gradient(135deg, #3c7ab7 0%, #2c5a87 100%);
+            padding: 40px 50px;
+            text-align: center;
+            color: white;
+        }
+        
+        .brand-logo {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .brand-tagline {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .login-content {
+            padding: 50px;
+        }
+        
+        .app-info {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .app-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .app-subtitle {
+            font-size: 18px;
+            color: #4a5568;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+        
+        .form-container {
+            margin-bottom: 35px;
+        }
+        
+        .error-alert {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            display: none;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 28px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 400;
+            color: #2d3748;
+            background: #ffffff;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: #3c7ab7;
+            box-shadow: 0 0 0 3px rgba(60, 122, 183, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3c7ab7 0%, #2c5a87 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            letter-spacing: 0.3px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(60, 122, 183, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .forgot-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .forgot-link a {
+            color: #3c7ab7;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .forgot-link a:hover {
+            color: #2c5a87;
+            text-decoration: underline;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 40px 0;
+        }
+        
+        .features-section {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .features-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .features-grid {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: #3c7ab7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .signup-section {
+            text-align: center;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .signup-text {
+            font-size: 17px;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        
+        .signup-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #38a169;
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 17px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.2px;
+        }
+        
+        .signup-btn:hover {
+            background: #2f855a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 161, 105, 0.3);
+        }
+        
+        .signup-btn::before {
+            content: '🚀';
+            font-size: 18px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .header-brand {
+                padding: 30px 25px;
+            }
+            
+            .brand-logo {
+                font-size: 30px;
+            }
+            
+            .brand-tagline {
+                font-size: 16px;
+            }
+            
+            .login-content {
+                padding: 35px 25px;
+            }
+            
+            .app-title {
+                font-size: 28px;
+            }
+            
+            .app-subtitle {
+                font-size: 16px;
+            }
+            
+            .features-section {
+                padding: 25px 20px;
+            }
+        }
+        
+        /* Focus states for accessibility */
+        .form-input:focus,
+        .login-btn:focus,
+        .forgot-link a:focus,
+        .signup-btn:focus {
+            outline: 2px solid #3c7ab7;
+            outline-offset: 2px;
+        }
+        
+        /* Improved text rendering */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-brand">
+            <div class="brand-logo">The OnCall Bot</div>
+            <div class="brand-tagline">Professional Dental Solutions</div>
+        </div>
+        
+        <!-- Login Content -->
+        <div class="login-content">
+            <div class="app-info">
+                <h1 class="app-title">Practice Notes</h1>
+                <p class="app-subtitle">Post-Operative Care Management System</p>
+            </div>
+            
+            <div class="form-container">
+                <div id="errorAlert" class="error-alert"></div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="Enter your practice email"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+                    
+                    <button type="submit" class="login-btn" id="loginBtn">
+                        <div class="btn-content" id="btnContent">
+                            <span id="btnText">Access Dashboard</span>
+                        </div>
+                    </button>
+                </form>
+                
+                <div class="forgot-link">
+                    <a href="#" id="forgotLink">Forgot your password?</a>
+                </div>
+            </div>
+            
+            <div class="features-section">
+                <h2 class="features-header">What's Included</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <div>80+ comprehensive post-operative care guides</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <div>Complete patient management system</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <div>Branded PDF downloads for your practice</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <div>Procedure assignment and tracking tools</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="signup-section">
+                <div class="signup-text">Don't have a practice account?</div>
+                <a href="https://www.theoncallbot.com" class="signup-btn">
+                    Start Free 15-Day Trial
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application Configuration
+        const APP_CONFIG = {
+            API_ENDPOINT: 'https://careflow-dental.preview.emergentagent.com/api',
+            DASHBOARD_URL: 'https://careflow-dental.preview.emergentagent.com/',
+            ERROR_TIMEOUT: 5000
+        };
+        
+        // DOM Element References
+        const UI = {
+            form: document.getElementById('loginForm'),
+            emailInput: document.getElementById('email'),
+            passwordInput: document.getElementById('password'),
+            loginBtn: document.getElementById('loginBtn'),
+            btnContent: document.getElementById('btnContent'),
+            btnText: document.getElementById('btnText'),
+            errorAlert: document.getElementById('errorAlert'),
+            forgotLink: document.getElementById('forgotLink')
+        };
+        
+        // Application State
+        const state = {
+            isLoading: false
+        };
+        
+        // Utility Functions
+        const utils = {
+            showError(message) {
+                UI.errorAlert.textContent = message;
+                UI.errorAlert.style.display = 'block';
+                UI.errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                setTimeout(() => {
+                    UI.errorAlert.style.display = 'none';
+                }, APP_CONFIG.ERROR_TIMEOUT);
+            },
+            
+            hideError() {
+                UI.errorAlert.style.display = 'none';
+            },
+            
+            setLoadingState(loading) {
+                state.isLoading = loading;
+                UI.loginBtn.disabled = loading;
+                
+                if (loading) {
+                    UI.btnContent.innerHTML = `
+                        <div class="loading-spinner"></div>
+                        <span>Signing In...</span>
+                    `;
+                } else {
+                    UI.btnContent.innerHTML = `
+                        <span>Access Dashboard</span>
+                    `;
+                }
+            },
+            
+            validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            },
+            
+            validateForm(email, password) {
+                if (!email.trim()) {
+                    this.showError('Please enter your email address.');
+                    UI.emailInput.focus();
+                    return false;
+                }
+                
+                if (!this.validateEmail(email)) {
+                    this.showError('Please enter a valid email address.');
+                    UI.emailInput.focus();
+                    return false;
+                }
+                
+                if (!password) {
+                    this.showError('Please enter your password.');
+                    UI.passwordInput.focus();
+                    return false;
+                }
+                
+                return true;
+            }
+        };
+        
+        // API Functions
+        const api = {
+            async login(email, password) {
+                try {
+                    const response = await fetch(`${APP_CONFIG.API_ENDPOINT}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    return { 
+                        success: response.ok && data.success, 
+                        data, 
+                        status: response.status 
+                    };
+                } catch (error) {
+                    console.error('Login API Error:', error);
+                    throw new Error('Unable to connect to the server. Please check your connection and try again.');
+                }
+            }
+        };
+        
+        // Event Handlers
+        const handlers = {
+            async handleLogin(event) {
+                event.preventDefault();
+                
+                if (state.isLoading) return;
+                
+                const email = UI.emailInput.value.trim();
+                const password = UI.passwordInput.value;
+                
+                if (!utils.validateForm(email, password)) {
+                    return;
+                }
+                
+                utils.setLoadingState(true);
+                utils.hideError();
+                
+                try {
+                    const result = await api.login(email, password);
+                    
+                    if (result.success) {
+                        // Store authentication data
+                        if (result.data.token) {
+                            localStorage.setItem('authToken', result.data.token);
+                        }
+                        if (result.data.user) {
+                            localStorage.setItem('userData', JSON.stringify(result.data.user));
+                        }
+                        
+                        // Show success and redirect
+                        UI.btnContent.innerHTML = `
+                            <span>✅ Success! Redirecting...</span>
+                        `;
+                        
+                        setTimeout(() => {
+                            window.location.href = APP_CONFIG.DASHBOARD_URL;
+                        }, 1200);
+                        
+                    } else {
+                        // Handle login failure
+                        let errorMsg = 'Login failed. Please try again.';
+                        
+                        if (result.status === 401) {
+                            errorMsg = 'Invalid email or password. Please check your credentials.';
+                        } else if (result.status === 429) {
+                            errorMsg = 'Too many login attempts. Please wait before trying again.';
+                        } else if (result.status >= 500) {
+                            errorMsg = 'Server error. Please try again in a moment.';
+                        } else if (result.data.message) {
+                            errorMsg = result.data.message;
+                        }
+                        
+                        utils.showError(errorMsg);
+                    }
+                } catch (error) {
+                    utils.showError(error.message);
+                } finally {
+                    utils.setLoadingState(false);
+                }
+            },
+            
+            handleForgotPassword(event) {
+                event.preventDefault();
+                
+                const email = UI.emailInput.value.trim();
+                if (!email) {
+                    utils.showError('Please enter your email address first, then click "Forgot your password?"');
+                    UI.emailInput.focus();
+                    return;
+                }
+                
+                if (!utils.validateEmail(email)) {
+                    utils.showError('Please enter a valid email address first.');
+                    UI.emailInput.focus();
+                    return;
+                }
+                
+                utils.showError(`Password reset instructions will be sent to ${email}. Please check your inbox and spam folder.`);
+            },
+            
+            handleInputChange() {
+                if (UI.errorAlert.style.display === 'block') {
+                    utils.hideError();
+                }
+            }
+        };
+        
+        // Initialize Application
+        function initializeApp() {
+            // Event listeners
+            UI.form.addEventListener('submit', handlers.handleLogin);
+            UI.forgotLink.addEventListener('click', handlers.handleForgotPassword);
+            
+            // Clear errors on input
+            [UI.emailInput, UI.passwordInput].forEach(input => {
+                input.addEventListener('input', handlers.handleInputChange);
+            });
+            
+            // Focus email field on load
+            window.addEventListener('load', () => {
+                UI.emailInput.focus();
+            });
+            
+            // Handle Enter key
+            UI.passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !state.isLoading) {
+                    UI.form.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+        
+        // Start the application
+        initializeApp();
+    </script>
+</body>
+</html>
