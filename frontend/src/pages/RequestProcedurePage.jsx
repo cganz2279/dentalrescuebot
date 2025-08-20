@@ -204,38 +204,53 @@ const RequestProcedurePage = () => {
               </div>
 
               <div>
-                <Label htmlFor="description">Procedure Description *</Label>
+                <Label htmlFor="description">Detailed Procedure Description *</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Provide a detailed description of the procedure, including what it involves and typical post-operative care needed..."
+                  placeholder="Provide a comprehensive description of the procedure including:
+• What the procedure involves step-by-step
+• Typical duration of the procedure
+• Equipment or materials used
+• Expected patient experience during the procedure
+• Any variations or complications that may occur
+• Specific post-operative care instructions needed..."
                   disabled={submitting}
-                  rows={4}
+                  rows={6}
                   className={errors.description ? 'border-red-500' : ''}
                 />
                 {errors.description && (
                   <p className="text-sm text-red-500 mt-1">{errors.description}</p>
                 )}
                 <p className="text-xs text-gray-500 mt-1">
-                  Include details about the procedure and any specific post-operative instructions
+                  <strong>Be as detailed as possible.</strong> This information helps our team understand exactly what post-operative instructions to create.
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="reasonForRequest">Why do you need this procedure? *</Label>
+                <Label htmlFor="reasonForRequest">Detailed Justification & Clinical Need *</Label>
                 <Textarea
                   id="reasonForRequest"
                   value={formData.reasonForRequest}
                   onChange={(e) => handleInputChange('reasonForRequest', e.target.value)}
-                  placeholder="e.g., We frequently perform this procedure and need proper post-op instructions for patients..."
+                  placeholder="Please provide detailed information about:
+• How frequently you perform this procedure (daily, weekly, monthly)
+• Why existing procedures in our database don't meet your needs
+• What specific patient education materials you're currently lacking
+• How this addition would improve patient care in your practice
+• Any unique aspects of your patient population that require this procedure
+• Expected patient volume for this procedure..."
                   disabled={submitting}
-                  rows={3}
+                  rows={5}
                   className={errors.reasonForRequest ? 'border-red-500' : ''}
                 />
                 {errors.reasonForRequest && (
                   <p className="text-sm text-red-500 mt-1">{errors.reasonForRequest}</p>
                 )}
+                <p className="text-xs text-gray-500 mt-1">
+                  <strong>This helps us prioritize requests.</strong> Explain the clinical importance and frequency of use.
+                </p>
               </div>
 
               <div>
