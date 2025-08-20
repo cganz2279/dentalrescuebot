@@ -1077,184 +1077,67 @@
         // Global Functions for Actions
         window.viewPractice = async function(practiceId) {
             try {
-                // Show loading modal first
-                utils.showModal('Loading Practice Details', '<div class="loading">Loading practice information...</div>');
+                console.log('viewPractice called with ID:', practiceId);
+                utils.showModal('Practice Details', '<div class="loading">Loading practice information...</div>');
                 
-                console.log('Loading practice details for ID:', practiceId);
-                
-                // Get all practices to find this one
+                // Get practice details
                 const response = await utils.apiRequest('/admin/practices?limit=1000');
-                console.log('Practices API response:', response);
+                console.log('API response:', response);
                 
                 if (response && response.success && response.practices) {
                     const practice = response.practices.find(p => p.id === practiceId);
                     console.log('Found practice:', practice);
                     
                     if (practice) {
-                        // Get additional details
-                        let users = [];
-                        let transactions = [];
-                        
-                        try {
-                            // Get practice users
-                            const usersResponse = await utils.apiRequest(`/admin/users/${practiceId}`);
-                            if (usersResponse && usersResponse.success) {
-                                users = usersResponse.users;
-                            }
-                        } catch (e) {
-                            console.log('Could not load users:', e);
-                        }
-                        
-                        // Create detailed modal content
                         const modalContent = `
-                            <div style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
-                                <!-- Practice Header -->
-                                <div style="margin-bottom: 25px; padding: 25px; background: linear-gradient(135deg, #3c7ab7 0%, #2c5a87 100%); color: white; border-radius: 12px;">
-                                    <h3 style="margin: 0 0 15px 0; font-size: 24px; font-weight: 700;">${practice.name}</h3>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 16px;">
-                                        <div>
-                                            <p style="margin: 8px 0;"><strong>📧 Email:</strong> ${practice.email}</p>
-                                            <p style="margin: 8px 0;"><strong>📞 Phone:</strong> ${practice.phone || 'Not provided'}</p>
-                                            <p style="margin: 8px 0;"><strong>🏢 Address:</strong> ${practice.address || 'Not provided'}</p>
-                                        </div>
-                                        <div>
-                                            <p style="margin: 8px 0;"><strong>📊 Status:</strong> ${utils.getStatusBadge(practice.subscription?.status || 'unknown')}</p>
-                                            <p style="margin: 8px 0;"><strong>📅 Created:</strong> ${utils.formatDate(practice.createdAt)}</p>
-                                            <p style="margin: 8px 0;"><strong>🔄 Updated:</strong> ${utils.formatDate(practice.updatedAt)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Subscription Details -->
-                                <div style="margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #17a2b8;">
-                                    <h4 style="margin: 0 0 15px 0; color: #2c5a87; font-size: 18px;">💳 Subscription Information</h4>
+                            <div style="max-width: 600px;">
+                                <h4 style="color: #2c5a87; margin-bottom: 20px;">${practice.name}</h4>
+                                
+                                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                         <div>
-                                            <p style="margin: 5px 0;"><strong>Plan:</strong> ${practice.subscription?.plan || 'Not specified'}</p>
-                                            <p style="margin: 5px 0;"><strong>Status:</strong> ${practice.subscription?.status || 'Unknown'}</p>
-                                            <p style="margin: 5px 0;"><strong>Active:</strong> ${practice.isActive ? '✅ Yes' : '❌ No'}</p>
+                                            <p><strong>📧 Email:</strong> ${practice.email}</p>
+                                            <p><strong>📞 Phone:</strong> ${practice.phone || 'Not provided'}</p>
+                                            <p><strong>📅 Created:</strong> ${utils.formatDate(practice.createdAt)}</p>
                                         </div>
                                         <div>
-                                            ${practice.subscription?.trialEndsAt ? `<p style="margin: 5px 0;"><strong>Trial Ends:</strong> ${utils.formatDate(practice.subscription.trialEndsAt)}</p>` : ''}
-                                            ${practice.subscription?.nextBillingDate ? `<p style="margin: 5px 0;"><strong>Next Billing:</strong> ${utils.formatDate(practice.subscription.nextBillingDate)}</p>` : ''}
-                                            <p style="margin: 5px 0;"><strong>Auto Renew:</strong> ${practice.subscription?.autoRenew ? '✅ Yes' : '❌ No'}</p>
+                                            <p><strong>📊 Status:</strong> ${utils.getStatusBadge(practice.subscription?.status || 'active')}</p>
+                                            <p><strong>🔄 Updated:</strong> ${utils.formatDate(practice.updatedAt)}</p>
+                                            <p><strong>✅ Active:</strong> ${practice.isActive ? 'Yes' : 'No'}</p>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Users Section -->
-                                <div style="margin-bottom: 25px; padding: 20px; background: white; border-radius: 10px; border: 1px solid #e9ecef;">
-                                    <h4 style="margin: 0 0 15px 0; color: #2c5a87; font-size: 18px;">👥 Practice Users (${users.length})</h4>
-                                    ${users.length > 0 ? `
-                                        <div style="overflow-x: auto;">
-                                            <table style="width: 100%; border-collapse: collapse;">
-                                                <thead>
-                                                    <tr style="background: #f8f9fa;">
-                                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Name</th>
-                                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Email</th>
-                                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Role</th>
-                                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    ${users.map(user => `
-                                                        <tr>
-                                                            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;">
-                                                                ${user.firstName} ${user.lastName}
-                                                            </td>
-                                                            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;">
-                                                                ${user.email}
-                                                            </td>
-                                                            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;">
-                                                                <span style="text-transform: capitalize;">${user.role?.replace('_', ' ') || 'User'}</span>
-                                                            </td>
-                                                            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;">
-                                                                ${user.isActive ? '✅ Active' : '❌ Inactive'}
-                                                            </td>
-                                                        </tr>
-                                                    `).join('')}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    ` : '<p style="color: #6c757d; font-style: italic;">No users found for this practice.</p>'}
+                                
+                                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                    <h5 style="margin-bottom: 10px; color: #1976d2;">Subscription Info</h5>
+                                    <p><strong>Plan:</strong> ${practice.subscription?.plan || 'Standard'}</p>
+                                    <p><strong>Status:</strong> ${practice.subscription?.status || 'active'}</p>
+                                    ${practice.subscription?.trialEndsAt ? `<p><strong>Trial Ends:</strong> ${utils.formatDate(practice.subscription.trialEndsAt)}</p>` : ''}
                                 </div>
-
-                                <!-- Recent Transactions -->
-                                ${practice.recent_transactions && practice.recent_transactions.length > 0 ? `
-                                <div style="margin-bottom: 25px; padding: 20px; background: white; border-radius: 10px; border: 1px solid #e9ecef;">
-                                    <h4 style="margin: 0 0 15px 0; color: #2c5a87; font-size: 18px;">💰 Recent Transactions</h4>
-                                    <div style="overflow-x: auto;">
-                                        <table style="width: 100%; border-collapse: collapse;">
-                                            <thead>
-                                                <tr style="background: #f8f9fa;">
-                                                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Amount</th>
-                                                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Status</th>
-                                                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Date</th>
-                                                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6;">Transaction ID</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${practice.recent_transactions.map(transaction => `
-                                                    <tr>
-                                                        <td style="padding: 8px; border-bottom: 1px solid #dee2e6;">
-                                                            ${utils.formatCurrency(transaction.amount || 0)}
-                                                        </td>
-                                                        <td style="padding: 8px; border-bottom: 1px solid #dee2e6;">
-                                                            ${utils.getStatusBadge(transaction.payment_status || 'unknown')}
-                                                        </td>
-                                                        <td style="padding: 8px; border-bottom: 1px solid #dee2e6;">
-                                                            ${utils.formatDate(transaction.created_at)}
-                                                        </td>
-                                                        <td style="padding: 8px; border-bottom: 1px solid #dee2e6; font-family: monospace; font-size: 12px;">
-                                                            ${transaction.transaction_id || 'N/A'}
-                                                        </td>
-                                                    </tr>
-                                                `).join('')}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                ` : ''}
-
-                                <!-- Admin Actions -->
-                                <div style="margin-top: 30px; padding: 25px; border-top: 2px solid #e9ecef; background: #f8f9fa; border-radius: 8px;">
-                                    <h5 style="margin-bottom: 20px; color: #2c5a87; font-size: 16px;">⚙️ Admin Actions</h5>
+                                
+                                <div style="padding-top: 20px; border-top: 1px solid #e9ecef;">
+                                    <h5 style="margin-bottom: 15px; color: #2c5a87;">Admin Actions</h5>
                                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                        ${practice.isActive ? `
-                                            <button class="btn btn-warning" onclick="managePractice('${practice.id}', 'deactivate'); utils.hideModal();" style="padding: 8px 16px;">
-                                                ⏸️ Deactivate Practice
-                                            </button>
-                                        ` : `
-                                            <button class="btn btn-success" onclick="managePractice('${practice.id}', 'activate'); utils.hideModal();" style="padding: 8px 16px;">
-                                                ▶️ Activate Practice
-                                            </button>
-                                        `}
-                                        
-                                        ${practice.subscription?.status === 'trial' ? `
-                                            <button class="btn btn-primary" onclick="managePractice('${practice.id}', 'extend_trial'); utils.hideModal();" style="padding: 8px 16px;">
-                                                ⏰ Extend Trial
-                                            </button>
-                                        ` : ''}
-                                        
-                                        <button class="btn btn-danger" onclick="if(confirm('Are you sure you want to cancel this practice subscription?')) { managePractice('${practice.id}', 'cancel_subscription'); utils.hideModal(); }" style="padding: 8px 16px;">
-                                            🚫 Cancel Subscription
-                                        </button>
+                                        ${practice.isActive ? 
+                                            `<button class="btn btn-warning" onclick="managePractice('${practice.id}', 'deactivate'); utils.hideModal();">Deactivate</button>` :
+                                            `<button class="btn btn-success" onclick="managePractice('${practice.id}', 'activate'); utils.hideModal();">Activate</button>`
+                                        }
+                                        <button class="btn btn-danger" onclick="if(confirm('Cancel subscription?')) { managePractice('${practice.id}', 'cancel_subscription'); utils.hideModal(); }">Cancel Subscription</button>
                                     </div>
                                 </div>
                             </div>
                         `;
                         
-                        utils.showModal(`Practice Details: ${practice.name}`, modalContent);
+                        utils.showModal(`Practice: ${practice.name}`, modalContent);
                     } else {
                         utils.showModal('Error', '<div class="error">Practice not found</div>');
                     }
                 } else {
-                    console.error('Invalid API response:', response);
                     utils.showModal('Error', '<div class="error">Failed to load practice details</div>');
                 }
             } catch (error) {
-                console.error('Error loading practice details:', error);
-                utils.showModal('Error', '<div class="error">Failed to load practice details: ' + error.message + '</div>');
+                console.error('Error in viewPractice:', error);
+                utils.showModal('Error', '<div class="error">Error: ' + error.message + '</div>');
             }
         };
 
