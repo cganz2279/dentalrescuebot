@@ -272,7 +272,7 @@ const AdminLogin = () => {
   };
 
   // If logged in, show dashboard
-  if (adminToken && dashboardData) {
+  if (adminToken) {
     const { stats, recent_practices, expiring_trials } = dashboardData;
     
     return (
