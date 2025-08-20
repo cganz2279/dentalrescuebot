@@ -47,7 +47,7 @@ class AuthTester:
     
     def check_database_users(self):
         """Check what users exist in the database"""
-        if not self.db:
+        if self.db is None:
             self.log_test("Database User Check", False, "No database connection")
             return False
             
