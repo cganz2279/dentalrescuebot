@@ -248,6 +248,29 @@ const AdminLogin = () => {
     alert(details.join('\n'));
   };
 
+  const viewRequestDetails = (request) => {
+    const details = [
+      `📋 PROCEDURE REQUEST DETAILS`,
+      `Procedure: ${request.procedureName}`,
+      `Practice: ${request.practiceName}`,
+      `Requested by: ${request.requestedByName}`,
+      `Specialty: ${request.specialty || 'N/A'}`,
+      `Priority: ${request.urgencyLevel || 'Normal'}`,
+      `Status: ${request.status}`,
+      `Date: ${formatDate(request.createdAt)}`,
+      ``,
+      `📝 DESCRIPTION:`,
+      `${request.description || 'No description provided'}`,
+      ``,
+      `💬 REASON FOR REQUEST:`,
+      `${request.reasonForRequest || 'No reason provided'}`,
+      ``,
+      `${request.adminNotes ? `📝 ADMIN NOTES:\n${request.adminNotes}` : ''}`
+    ];
+    
+    alert(details.join('\n'));
+  };
+
   // If logged in, show dashboard
   if (adminToken && dashboardData) {
     const { stats, recent_practices, expiring_trials } = dashboardData;
