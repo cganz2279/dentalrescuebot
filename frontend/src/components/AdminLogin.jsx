@@ -10,7 +10,7 @@ const AdminLogin = () => {
   const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken'));
   const [dashboardData, setDashboardData] = useState(null);
 
-  const API_BASE = process.env.REACT_APP_BACKEND_URL || 'https://practice-notes.preview.emergentagent.com/api';
+  const API_BASE = `${process.env.REACT_APP_BACKEND_URL || 'https://practice-notes.preview.emergentagent.com'}/api`;
 
   useEffect(() => {
     if (adminToken) {
