@@ -217,7 +217,7 @@ class UrgentLoginInvestigator:
     
     def test_alternative_ganz_emails(self):
         """Test login with alternative ganz emails found in database"""
-        if not self.db:
+        if self.db is None:
             return False
             
         try:
