@@ -119,7 +119,7 @@ export const authApi = {
 
   getProcedures: async (specialty = null) => {
     // This endpoint doesn't require authentication - use direct axios
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://practice-notes.preview.emergentagent.com';
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
     const url = specialty ? `/api/procedures?specialty=${specialty}` : '/api/procedures';
     const response = await axios.get(`${BACKEND_URL}${url}`);
     return response.data;
