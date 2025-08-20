@@ -411,6 +411,54 @@ backend:
           agent: "testing"
           comment: "Procedure formatting fix verification completed successfully. Database contains properly formatted content with bullet points (•), markdown headers (**text**), line breaks, and short paragraphs. API endpoint GET /api/procedures/{id} returns the formatted content correctly. Tested multiple procedures including alveoloplasty, root-canal-therapy, dental-crown-placement, and surgical-tooth-extraction - all have proper formatting. Backend is serving content that frontend components can parse and display with proper formatting."
 
+  - task: "Forgot Password API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented POST /api/auth/forgot-password endpoint with email validation, reset token generation, and secure response (no email enumeration). Returns reset token for testing purposes."
+
+  - task: "Forgot Username API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented POST /api/auth/forgot-username endpoint with practice name and phone verification. Returns username recovery information securely."
+
+  - task: "Reset Password API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented POST /api/auth/reset-password endpoint with token validation, password strength validation, and secure password reset functionality."
+
+  - task: "Token Validation API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented GET /api/auth/validate-reset-token/{token} endpoint to validate reset tokens and return user information for password reset forms."
+
 frontend:
   - task: "Homepage Loading & Display"
     implemented: true
