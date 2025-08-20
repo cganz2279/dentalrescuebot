@@ -240,6 +240,9 @@ const AdminLogin = () => {
                     <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>
                       Actions
                     </th>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e9ecef' }}>
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
