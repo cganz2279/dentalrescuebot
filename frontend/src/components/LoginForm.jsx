@@ -144,7 +144,30 @@ const LoginForm = ({ onSwitchToRegister }) => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          {/* Forgot Password and Forgot Username Links */}
+          <div className="mt-4 text-center space-y-2">
+            <p className="text-sm">
+              <a 
+                href="https://www.theoncallbot.com/practice-notes/forgot-password/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Forgot Password?
+              </a>
+              {' | '}
+              <a 
+                href="https://www.theoncallbot.com/practice-notes/forgot-username/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Forgot Username?
+              </a>
+            </p>
+          </div>
+
+          <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Don't have a practice account?{' '}
               <button
