@@ -177,7 +177,7 @@ class AuthTester:
     
     def test_other_potential_users(self):
         """Test login with other potential users from database"""
-        if not self.db:
+        if self.db is None:
             self.log_test("Test Other Users", False, "No database connection")
             return False
             
