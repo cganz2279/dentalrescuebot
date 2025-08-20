@@ -444,6 +444,19 @@ async def get_all_payments(
             detail="Failed to get payments"
         )
 
+@router.get("/dashboard-html", response_class=HTMLResponse)
+async def get_admin_dashboard_html():
+    """Serve the complete HTML admin dashboard"""
+    try:
+        admin_html_path = Path(__file__).parent.parent.parent / "admin-dashboard.html"
+        if admin_html_path.exists():
+            return admin_html_path.read_text()
+        else:
+            raise HTTPException(status_code=404, detail="Admin dashboard HTML not found")
+    except Exception as e:
+        print(f"Admin dashboard HTML error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load admin dashboard HTML")
+
 @router.get("/procedure-requests")
 async def get_procedure_requests(admin_data = Depends(verify_admin_token)):
     """Get all procedure requests for admin review"""
