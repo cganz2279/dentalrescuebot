@@ -1082,6 +1082,130 @@
             `);
         };
 
+        window.viewRequestDetailsById = function(requestId) {
+            try {
+                console.log('Looking for request ID:', requestId);
+                console.log('Available requests:', window.procedureRequestsData);
+                
+                if (!window.procedureRequestsData) {
+                    utils.showModal('Error', '<div class="error">Request data not available. Please refresh the page.</div>');
+                    return;
+                }
+                
+                const request = window.procedureRequestsData.find(r => r.id === requestId);
+                
+                if (!request) {
+                    utils.showModal('Error', '<div class="error">Request not found.</div>');
+                    return;
+                }
+                
+                const priorityColors = {
+                    'low': '#6c757d',
+                    'normal': '#17a2b8', 
+                    'high': '#ffc107',
+                    'urgent': '#dc3545'
+                };
+                
+                const priorityColor = priorityColors[request.urgencyLevel] || '#17a2b8';
+                
+                const modalContent = `
+                    <div style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+                        <div style="margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px; border-left: 4px solid #3c7ab7;">
+                            <h4 style="margin: 0 0 15px 0; color: #2c5a87; font-size: 20px;">${request.procedureName}</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div>
+                                    <p style="margin: 5px 0;"><strong>🏥 Practice:</strong> ${request.practiceName || 'Not specified'}</p>
+                                    <p style="margin: 5px 0;"><strong>🔬 Specialty:</strong> ${request.specialty || 'Not specified'}</p>
+                                    <p style="margin: 5px 0;"><strong>👨‍⚕️ Requested by:</strong> ${request.requestedByName || 'Not specified'}</p>
+                                </div>
+                                <div>
+                                    <p style="margin: 5px 0;"><strong>⚡ Priority:</strong> 
+                                        <span style="
+                                            padding: 4px 12px; 
+                                            border-radius: 15px; 
+                                            font-size: 12px; 
+                                            font-weight: 600; 
+                                            text-transform: uppercase;
+                                            background: ${priorityColor}25;
+                                            color: ${priorityColor};
+                                            border: 1px solid ${priorityColor}50;
+                                        ">${request.urgencyLevel}</span>
+                                    </p>
+                                    <p style="margin: 5px 0;"><strong>📊 Status:</strong> ${utils.getStatusBadge(request.status)}</p>
+                                    <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${utils.formatDate(request.createdAt)}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h5 style="margin-bottom: 12px; color: #2c5a87; font-size: 16px; border-bottom: 2px solid #3c7ab7; padding-bottom: 8px;">
+                                📋 Procedure Description
+                            </h5>
+                            <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e3e6ea; line-height: 1.6; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                ${request.description ? request.description.replace(/\n/g, '<br>') : '<em style="color: #6c757d;">No description provided</em>'}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h5 style="margin-bottom: 12px; color: #2c5a87; font-size: 16px; border-bottom: 2px solid #3c7ab7; padding-bottom: 8px;">
+                                💬 Reason & Justification
+                            </h5>
+                            <div style="background: #fff8e1; padding: 20px; border-radius: 8px; border: 1px solid #ffecb3; line-height: 1.6; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                ${request.reasonForRequest ? request.reasonForRequest.replace(/\n/g, '<br>') : '<em style="color: #6c757d;">No reason provided</em>'}
+                            </div>
+                        </div>
+                        
+                        ${request.adminNotes ? `
+                        <div style="margin-bottom: 25px;">
+                            <h5 style="margin-bottom: 12px; color: #155724; font-size: 16px; border-bottom: 2px solid #28a745; padding-bottom: 8px;">
+                                📝 Admin Notes
+                            </h5>
+                            <div style="background: #d4edda; padding: 20px; border-radius: 8px; border: 1px solid #c3e6cb; line-height: 1.6;">
+                                ${request.adminNotes.replace(/\n/g, '<br>')}
+                            </div>
+                            <small style="color: #6c757d; margin-top: 8px; display: block;">
+                                Reviewed by: ${request.reviewedBy} on ${utils.formatDate(request.reviewedAt)}
+                            </small>
+                        </div>
+                        ` : ''}
+                        
+                        ${request.status === 'pending' ? `
+                        <div style="margin-top: 30px; padding: 25px; border-top: 2px solid #e9ecef; background: #f8f9fa; border-radius: 8px;">
+                            <h5 style="margin-bottom: 20px; color: #2c5a87; font-size: 16px;">⚙️ Admin Actions</h5>
+                            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                                <button class="btn btn-success" onclick="approveRequestWithNotes('${request.id}')" style="padding: 10px 20px; font-weight: 600;">
+                                    ✅ Approve Request
+                                </button>
+                                <button class="btn btn-danger" onclick="rejectRequestWithNotes('${request.id}')" style="padding: 10px 20px; font-weight: 600;">
+                                    ❌ Reject Request
+                                </button>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">
+                                    📝 Admin Notes (optional):
+                                </label>
+                                <textarea id="adminNotes_${request.id}" rows="4" style="
+                                    width: 100%; 
+                                    padding: 12px; 
+                                    border: 1px solid #ced4da; 
+                                    border-radius: 6px; 
+                                    font-family: inherit;
+                                    resize: vertical;
+                                " placeholder="Add any notes about this decision, feedback for the practice, or implementation details..."></textarea>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                utils.showModal(`Procedure Request: ${request.procedureName}`, modalContent);
+                
+            } catch (error) {
+                console.error('Error in viewRequestDetailsById:', error);
+                utils.showModal('Error', '<div class="error">Failed to display request details: ' + error.message + '</div>');
+            }
+        };
+
         window.viewRequestDetails = async function(requestId, procedureName, practiceName, specialty, urgencyLevel, status, createdAt, requestedByName) {
             try {
                 // Show loading modal first
