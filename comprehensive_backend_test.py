@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://careflow-dental.preview.emergentagent.com/api"
+BACKEND_URL = "https://practice-notes.preview.emergentagent.com/api"
 
 class ComprehensiveBackendTester:
     def __init__(self):

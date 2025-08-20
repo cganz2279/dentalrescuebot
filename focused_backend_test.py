@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any
 
 # Backend URL from the review request
-BACKEND_URL = "https://careflow-dental.preview.emergentagent.com/api"
+BACKEND_URL = "https://practice-notes.preview.emergentagent.com/api"
 
 class FocusedDentalAPITester:
     def __init__(self, base_url: str):

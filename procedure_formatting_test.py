@@ -16,7 +16,7 @@ MONGO_URL = "mongodb://localhost:27017"
 DB_NAME = "test_database"
 
 # Backend URL
-BACKEND_URL = "https://careflow-dental.preview.emergentagent.com/api"
+BACKEND_URL = "https://practice-notes.preview.emergentagent.com/api"
 
 class ProcedureFormattingTester:
     def __init__(self, mongo_url: str, db_name: str, backend_url: str):
