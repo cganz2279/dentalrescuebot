@@ -14,7 +14,7 @@ const AdminLogin = () => {
   const [procedureRequests, setProcedureRequests] = useState([]);
   const [paymentsData, setPaymentsData] = useState([]);
 
-  const API_BASE = `${process.env.REACT_APP_BACKEND_URL || 'https://practice-notes.preview.emergentagent.com'}/api`;
+  const API_BASE = `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}/api`;
 
   useEffect(() => {
     if (adminToken) {
