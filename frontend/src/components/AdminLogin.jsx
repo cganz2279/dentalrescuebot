@@ -267,6 +267,23 @@ const AdminLogin = () => {
                       <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
                         {formatDate(practice.createdAt)}
                       </td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #e9ecef' }}>
+                        <button 
+                          onClick={() => viewPracticeDetails(practice)}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#3c7ab7',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            marginRight: '5px'
+                          }}
+                        >
+                          View Details
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
