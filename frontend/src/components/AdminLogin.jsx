@@ -432,19 +432,6 @@ const AdminLogin = () => {
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
-      
-      <div style={{ 
-        marginTop: '20px', 
-        padding: '15px', 
-        background: '#d1ecf1', 
-        color: '#0c5460', 
-        borderRadius: '6px', 
-        fontSize: '14px' 
-      }}>
-        <strong>Admin Credentials:</strong><br />
-        Email: cganz@admin.com<br />
-        Password: Dentist1#
-      </div>
     </div>
   );
 };
