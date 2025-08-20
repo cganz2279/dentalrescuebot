@@ -1,0 +1,167 @@
+<style>
+.practice-login-container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.practice-login-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.practice-form-group {
+    margin-bottom: 20px;
+}
+
+.practice-form-label {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+}
+
+.practice-form-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.practice-form-input:focus {
+    border-color: #3c7ab7;
+    outline: none;
+}
+
+.practice-login-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    background: #3c7ab7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.practice-login-button:hover {
+    background: #2c5a87;
+}
+
+.practice-login-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.practice-error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    display: none;
+}
+</style>
+
+<div class="practice-login-container">
+    <h3 class="practice-login-title">Practice Notes Login</h3>
+    
+    <div id="practiceErrorMessage" class="practice-error-message"></div>
+    
+    <form id="practiceLoginForm">
+        <div class="practice-form-group">
+            <label for="practiceEmail" class="practice-form-label">Email:</label>
+            <input type="email" id="practiceEmail" class="practice-form-input" required>
+        </div>
+        
+        <div class="practice-form-group">
+            <label for="practicePassword" class="practice-form-label">Password:</label>
+            <input type="password" id="practicePassword" class="practice-form-input" required>
+        </div>
+        
+        <button type="submit" id="practiceLoginButton" class="practice-login-button">
+            <span id="practiceButtonText">Login</span>
+        </button>
+    </form>
+</div>
+
+<script>
+(function() {
+    const form = document.getElementById('practiceLoginForm');
+    const emailInput = document.getElementById('practiceEmail');
+    const passwordInput = document.getElementById('practicePassword');
+    const loginButton = document.getElementById('practiceLoginButton');
+    const buttonText = document.getElementById('practiceButtonText');
+    const errorMessage = document.getElementById('practiceErrorMessage');
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    function setLoading(loading) {
+        loginButton.disabled = loading;
+        buttonText.textContent = loading ? 'Logging in...' : 'Login';
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+            showError('Please enter both email and password');
+            return;
+        }
+        
+        setLoading(true);
+        
+        try {
+            const response = await fetch('https://careflow-dental.preview.emergentagent.com/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                if (data.token) localStorage.setItem('authToken', data.token);
+                if (data.user) localStorage.setItem('userData', JSON.stringify(data.user));
+                
+                buttonText.textContent = 'Success! Redirecting...';
+                setTimeout(() => {
+                    window.location.href = 'https://careflow-dental.preview.emergentagent.com/';
+                }, 1000);
+            } else {
+                showError(data.message || 'Invalid email or password');
+            }
+        } catch (error) {
+            showError('Connection error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    // Focus email field on load
+    setTimeout(() => {
+        if (emailInput) emailInput.focus();
+    }, 100);
+})();
+</script>
