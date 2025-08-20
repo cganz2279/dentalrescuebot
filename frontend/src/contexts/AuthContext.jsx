@@ -40,10 +40,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData, authToken, practiceData = null) => {
+    console.log('Login called with:', { userData, authToken: authToken?.substring(0, 50) + '...', practiceData });
     setUser(userData);
     setPractice(practiceData);
     setToken(authToken);
     localStorage.setItem('dentalToken', authToken);
+    
+    // Force a small delay to ensure state updates are processed
+    setTimeout(() => {
+      console.log('After login - user:', userData?.email, 'token exists:', !!authToken);
+    }, 100);
+    
     return { success: true };
   };
 
