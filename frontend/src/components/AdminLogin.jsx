@@ -101,12 +101,35 @@ const AdminLogin = () => {
   };
 
   const viewPracticeDetails = (practice) => {
+    // Handle address object properly
+    let addressText = 'Not provided';
+    if (practice.address) {
+      if (typeof practice.address === 'string') {
+        addressText = practice.address;
+      } else if (typeof practice.address === 'object') {
+        // Handle address as object
+        const addressParts = [];
+        if (practice.address.street) addressParts.push(practice.address.street);
+        if (practice.address.city) addressParts.push(practice.address.city);
+        if (practice.address.state) addressParts.push(practice.address.state);
+        if (practice.address.zipCode || practice.address.zip) addressParts.push(practice.address.zipCode || practice.address.zip);
+        if (practice.address.country) addressParts.push(practice.address.country);
+        
+        if (addressParts.length > 0) {
+          addressText = addressParts.join(', ');
+        } else {
+          // If object but no recognizable fields, show formatted object
+          addressText = JSON.stringify(practice.address, null, 2).replace(/[{}",]/g, '').trim();
+        }
+      }
+    }
+
     const details = [
       `🏥 PRACTICE INFORMATION`,
       `Name: ${practice.name || 'Not provided'}`,
       `Email: ${practice.email || 'Not provided'}`,
       `Phone: ${practice.phone || 'Not provided'}`,
-      `Address: ${practice.address || 'Not provided'}`,
+      `Address: ${addressText}`,
       `Website: ${practice.website || 'Not provided'}`,
       ``,
       `📊 STATUS & SUBSCRIPTION`,
