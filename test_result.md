@@ -698,7 +698,12 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Super Admin Login API"
+    - "Admin Dashboard API"
+    - "Admin Practice Management API"
+    - "Admin Payment Management API"
+    - "Admin Procedure Requests API"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
