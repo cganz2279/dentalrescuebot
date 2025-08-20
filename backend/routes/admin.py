@@ -562,6 +562,24 @@ async def get_admin_dashboard_html():
         print(f"Admin dashboard HTML error: {e}")
         raise HTTPException(status_code=500, detail="Failed to load admin dashboard HTML")
 
+@router.get("/guide-pdf")
+async def get_admin_guide_pdf():
+    """Serve the admin guide PDF"""
+    try:
+        from fastapi.responses import FileResponse
+        pdf_path = Path(__file__).parent.parent.parent / "Practice_Notes_Admin_Guide.pdf"
+        if pdf_path.exists():
+            return FileResponse(
+                path=str(pdf_path),
+                media_type='application/pdf',
+                filename="Practice_Notes_Admin_Guide.pdf"
+            )
+        else:
+            raise HTTPException(status_code=404, detail="Admin guide PDF not found")
+    except Exception as e:
+        print(f"Admin guide PDF error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load admin guide PDF")
+
 @router.get("/procedure-requests")
 async def get_procedure_requests(admin_data = Depends(verify_admin_token)):
     """Get all procedure requests for admin review"""
