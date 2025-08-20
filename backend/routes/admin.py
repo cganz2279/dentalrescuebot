@@ -390,6 +390,110 @@ async def get_practice_users(
             detail="Failed to get practice users"
         )
 
+@router.get("/monitoring")
+async def get_monitoring_data(admin_data = Depends(verify_admin_token)):
+    """Get system monitoring data with actual statistics"""
+    try:
+        # Get practice statistics
+        total_practices = await db.practices.count_documents({})
+        active_practices = await db.practices.count_documents({"subscription.status": "active"})
+        
+        # Get user statistics
+        total_users = await db.users.count_documents({})
+        practice_admins = await db.users.count_documents({"role": "practice_admin"})
+        patients = await db.patients.count_documents({})
+        
+        # Get procedure statistics
+        total_procedures_assigned = await db.patient_procedures.count_documents({})
+        completed_procedures = await db.patient_procedures.count_documents({"status": "completed"})
+        active_procedures = await db.patient_procedures.count_documents({"status": "active"})
+        
+        # Get procedure requests statistics
+        total_requests = await db.procedure_requests.count_documents({})
+        pending_requests = await db.procedure_requests.count_documents({"status": "pending"})
+        approved_requests = await db.procedure_requests.count_documents({"status": "approved"})
+        
+        # Get recent activity (last 7 days)
+        from datetime import datetime, timedelta
+        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        
+        recent_practices = await db.practices.count_documents({
+            "createdAt": {"$gte": seven_days_ago}
+        })
+        
+        recent_procedures = await db.patient_procedures.count_documents({
+            "createdAt": {"$gte": seven_days_ago}
+        })
+        
+        # Get most active practice
+        pipeline = [
+            {"$group": {
+                "_id": "$practiceId",
+                "procedure_count": {"$sum": 1}
+            }},
+            {"$sort": {"procedure_count": -1}},
+            {"$limit": 1}
+        ]
+        most_active_result = await db.patient_procedures.aggregate(pipeline).to_list(1)
+        most_active_practice = None
+        
+        if most_active_result:
+            practice_id = most_active_result[0]["_id"]
+            practice = await db.practices.find_one({"id": practice_id})
+            if practice:
+                most_active_practice = {
+                    "name": practice["name"],
+                    "procedure_count": most_active_result[0]["procedure_count"]
+                }
+        
+        # Get practices with recent activity
+        practices_with_activity = await db.practices.find(
+            {},
+            {"_id": 0, "id": 1, "name": 1, "email": 1, "createdAt": 1, "updatedAt": 1}
+        ).sort("updatedAt", -1).limit(20).to_list(20)
+        
+        # Add patient and procedure counts for each practice
+        for practice in practices_with_activity:
+            # Get patient count
+            patient_count = await db.patients.count_documents({"practiceId": practice["id"]})
+            practice["patient_count"] = patient_count
+            
+            # Get procedure count
+            procedure_count = await db.patient_procedures.count_documents({"practiceId": practice["id"]})
+            practice["procedure_count"] = procedure_count
+            
+            # Get user count
+            user_count = await db.users.count_documents({"practiceId": practice["id"]})
+            practice["user_count"] = user_count
+        
+        return {
+            "success": True,
+            "system_stats": {
+                "total_practices": total_practices,
+                "active_practices": active_practices,
+                "total_users": total_users,
+                "practice_admins": practice_admins,
+                "total_patients": patients,
+                "total_procedures_assigned": total_procedures_assigned,
+                "completed_procedures": completed_procedures,
+                "active_procedures": active_procedures,
+                "total_requests": total_requests,
+                "pending_requests": pending_requests,
+                "approved_requests": approved_requests,
+                "recent_practices_7days": recent_practices,
+                "recent_procedures_7days": recent_procedures,
+                "most_active_practice": most_active_practice
+            },
+            "practices_activity": practices_with_activity
+        }
+        
+    except Exception as e:
+        print(f"Monitoring data error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to load monitoring data"
+        )
+
 @router.get("/payments")
 async def get_all_payments(
     admin_data = Depends(verify_admin_token),
