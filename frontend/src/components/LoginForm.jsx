@@ -135,16 +135,32 @@ const LoginForm = ({ onSwitchToRegister, onSwitchToPatientLogin }) => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have a practice account?{' '}
-              <button
-                onClick={onSwitchToRegister}
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Register Your Practice
-              </button>
-            </p>
+          <div className="mt-6 space-y-4">
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Don't have a practice account?{' '}
+                <button
+                  onClick={onSwitchToRegister}
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Register Your Practice
+                </button>
+              </p>
+            </div>
+            
+            <div className="border-t pt-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-2">
+                  Are you a patient?
+                </p>
+                <button
+                  onClick={onSwitchToPatientLogin}
+                  className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                >
+                  Patient Login
+                </button>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
