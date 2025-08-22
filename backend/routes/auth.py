@@ -575,3 +575,70 @@ async def get_patient_dashboard(credentials: HTTPAuthorizationCredentials = Depe
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get patient dashboard"
         )
+
+@router.post("/set-patient-password")
+async def set_patient_password(
+    email: EmailStr,
+    newPassword: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Allow patient to set their password on first login or reset"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        user_id = payload['userId']
+        role = payload['role']
+        
+        # Find patient by email  
+        patient = await db.users.find_one({
+            "email": email.lower(),
+            "role": "patient"
+        })
+        
+        if not patient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+        
+        # Validate password
+        if not validate_password(newPassword):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password must be at least 6 characters with letters and numbers"
+            )
+        
+        # Update password
+        hashed_password = hash_password(newPassword)
+        await db.users.update_one(
+            {"id": patient["id"]},
+            {
+                "$set": {
+                    "password": hashed_password,
+                    "isEmailVerified": True,
+                    "updatedAt": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Password updated successfully"
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Set patient password error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update password"
+        )
