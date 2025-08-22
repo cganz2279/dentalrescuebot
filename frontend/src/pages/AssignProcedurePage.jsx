@@ -61,6 +61,10 @@ const AssignProcedurePage = () => {
         setProcedures(proceduresResponse.data);
       }
       
+      if (dentistsResponse.success) {
+        setDentists(dentistsResponse.data);
+      }
+      
     } catch (err) {
       setError('Failed to load data. Please try again.');
       console.error('Load data error:', err);
