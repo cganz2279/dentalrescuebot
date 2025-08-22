@@ -25,6 +25,13 @@ db = client[os.environ.get('DB_NAME', 'test_database')]
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-super-secret-jwt-key-change-in-production')
 
+# Helper functions
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def generate_temp_password() -> str:
+    return str(uuid.uuid4()).replace('-', '')[:12]
+
 # Pydantic models
 class BrandingUpdate(BaseModel):
     logo: Optional[str] = None
