@@ -20,6 +20,7 @@ const AssignProcedurePage = () => {
   
   const [patients, setPatients] = useState([]);
   const [procedures, setProcedures] = useState([]);
+  const [dentists, setDentists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -28,13 +29,14 @@ const AssignProcedurePage = () => {
     patientId: '',
     procedureId: '',
     performedDate: new Date().toISOString().split('T')[0], // Today's date
-    dentistName: '',
+    dentistId: '',
     practiceNotes: '',
     followUpDate: ''
   });
   
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedProcedure, setSelectedProcedure] = useState(null);
+  const [selectedDentist, setSelectedDentist] = useState(null);
 
   useEffect(() => {
     loadData();
