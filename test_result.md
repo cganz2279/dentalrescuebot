@@ -253,17 +253,53 @@ backend:
           comment: "Created Python seeding script to populate MongoDB with 7 specialties and 8 procedures. Database was initially empty, seeding resolved all data-related test failures"
 
 frontend:
-  - task: "Homepage Loading & Display"
-    implemented: true
-    working: true
-    file: "frontend/src/pages/HomePage.jsx"
+  - task: "Patient Login Form"
+    implemented: false
+    working: false
+    file: "frontend/src/components/PatientLoginForm.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
-          agent: "testing"
-          comment: "Homepage loads correctly with hero section, search bar, features section, and specialty cards. All 7 dental specialties load from backend API with proper procedure counts. Professional medical design verified."
+        - working: false
+          agent: "main"
+          comment: "Need to create patient login form - separate from practice admin login"
+
+  - task: "Add Patient Page"
+    implemented: false
+    working: false
+    file: "frontend/src/pages/AddPatientPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Button exists in dashboard but page needs full implementation"
+
+  - task: "Assign Procedure Page"
+    implemented: false
+    working: false
+    file: "frontend/src/pages/AssignProcedurePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Button exists in dashboard but page needs full implementation"
+
+  - task: "Patient Dashboard/Portal"
+    implemented: false
+    working: false
+    file: "frontend/src/components/PatientDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Need patient portal to view assigned procedures with practice branding"
 
   - task: "Search Functionality"
     implemented: true
