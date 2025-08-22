@@ -149,15 +149,18 @@ backend:
 
   - task: "Assign Procedure API"
     implemented: true
-    working: false
+    working: true
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "Assign procedure functionality already exists in backend - needs testing"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS - Assign procedure API working correctly. POST /api/practice/assign-procedure successfully assigns procedures to patients. Tested with Root Canal Therapy assignment. Requires practice admin authorization and validates patient/procedure existence."
 
   - task: "Patient Dashboard API"
     implemented: true
