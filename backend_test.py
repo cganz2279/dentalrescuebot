@@ -534,27 +534,59 @@ class DentalAPITester:
     
     def run_all_tests(self):
         """Run all backend API tests"""
-        print(f"🧪 Starting Backend API Tests for Dental Post-Operative Care App")
+        print(f"🧪 Starting Backend API Tests for Dental B2B SaaS Application")
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 70)
         
-        tests = [
+        # Basic API tests
+        basic_tests = [
             self.test_health_check,
             self.test_get_specialties,
             self.test_get_specialty_by_id,
             self.test_get_procedures,
             self.test_get_procedure_by_id,
             self.test_search_procedures,
-            self.test_error_handling
         ]
         
-        passed = 0
-        total = len(tests)
+        # Patient management workflow tests
+        patient_management_tests = [
+            self.test_practice_admin_login,
+            self.test_add_patient,
+            self.test_assign_procedure,
+            self.test_set_patient_password,
+            self.test_patient_login,
+            self.test_patient_dashboard,
+            self.test_practice_dashboard,
+        ]
         
-        for test in tests:
+        # Security tests
+        security_tests = [
+            self.test_unauthorized_access,
+            self.test_invalid_credentials,
+        ]
+        
+        all_tests = basic_tests + patient_management_tests + security_tests
+        
+        passed = 0
+        total = len(all_tests)
+        
+        print("🔍 Running Basic API Tests...")
+        for test in basic_tests:
             if test():
                 passed += 1
-            print()  # Add spacing between tests
+            print()
+        
+        print("👥 Running Patient Management Tests...")
+        for test in patient_management_tests:
+            if test():
+                passed += 1
+            print()
+        
+        print("🔒 Running Security Tests...")
+        for test in security_tests:
+            if test():
+                passed += 1
+            print()
         
         print("=" * 70)
         print(f"📊 Test Results: {passed}/{total} tests passed")
