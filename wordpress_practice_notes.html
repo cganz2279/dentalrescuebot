@@ -161,17 +161,18 @@
                 if (response.ok && data.success) {
                     // Check if user is practice admin/staff
                     if (data.user.role === 'practice_admin' || data.user.role === 'practice_staff') {
-                        // Store token
+                        // Store token and user data
                         localStorage.setItem('dentalToken', data.token);
                         localStorage.setItem('dentalUser', JSON.stringify(data.user));
                         
-                        successMessage.textContent = `Welcome back, ${data.user.firstName}!`;
+                        successMessage.textContent = `Welcome ${data.user.firstName}! Redirecting to your dashboard...`;
                         successMessage.style.display = 'block';
                         
-                        // Redirect to practice dashboard
+                        // Redirect with token in URL to bypass second login
                         setTimeout(() => {
-                            window.location.href = 'https://dentalrescue.preview.emergentagent.com';
-                        }, 1000);
+                            const redirectUrl = `https://dentalrescue.preview.emergentagent.com?token=${data.token}&auto=true`;
+                            window.location.href = redirectUrl;
+                        }, 1500);
                     } else {
                         throw new Error('This login is for practice staff only');
                     }
