@@ -175,24 +175,20 @@ const PracticeDashboard = () => {
             Assign Procedure
           </Button>
           <Button 
+            onClick={() => navigate('/request-procedure')}
+            variant="outline" 
+            className="h-20 flex flex-col"
+          >
+            <Plus className="h-6 w-6 mb-2" />
+            Request Procedure
+          </Button>
+          <Button 
             onClick={() => navigate('/practice-settings')}
             variant="outline" 
             className="h-20 flex flex-col"
           >
             <Settings className="h-6 w-6 mb-2" />
             Practice Settings
-          </Button>
-          <Button 
-            onClick={() => toast({
-              title: "Coming Soon",
-              description: "Export Data functionality will be available in the next update.",
-              variant: "default",
-            })}
-            variant="outline" 
-            className="h-20 flex flex-col"
-          >
-            <Download className="h-6 w-6 mb-2" />
-            Export Data
           </Button>
         </div>
 
