@@ -255,6 +255,21 @@ async def create_patient(
                 detail="Email already registered"
             )
         
+        # Validate assigned dentist if provided
+        assigned_dentist = None
+        if patient_data.assignedDentistId:
+            assigned_dentist = await db.users.find_one({
+                "id": patient_data.assignedDentistId,
+                "practiceId": practice_id,
+                "role": {"$in": ["practice_admin", "practice_staff"]},
+                "isActive": True
+            })
+            if not assigned_dentist:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Selected dentist not found or not active"
+                )
+        
         # Generate patient ID
         patient_id = str(uuid.uuid4())
         
