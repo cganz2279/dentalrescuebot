@@ -135,7 +135,12 @@
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="Enter your password">
+                <div class="password-container">
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <span id="eyeIcon">👁️</span>
+                    </button>
+                </div>
             </div>
             
             <button type="submit" class="login-btn" id="loginBtn">
