@@ -354,14 +354,14 @@ class DentalAPITester:
 
     def test_set_patient_password(self):
         """Test setting patient password for login"""
-        if not self.admin_token:
-            self.log_test("Set Patient Password", False, "No admin token available")
+        if not self.admin_token or not self.test_patient_email:
+            self.log_test("Set Patient Password", False, "No admin token or patient email available")
             return False
             
         try:
             # Use form data instead of JSON
             password_data = {
-                "email": "testpatient@dentaltest.com",
+                "email": self.test_patient_email,
                 "newPassword": "patient123"
             }
             
