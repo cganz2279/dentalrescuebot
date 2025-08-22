@@ -134,15 +134,18 @@ backend:
 
   - task: "Add Patient API"
     implemented: true
-    working: false
+    working: true
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "Add patient functionality already exists in backend - needs testing"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS - Add patient API working correctly. POST /api/practice/patients successfully creates new patients with proper validation. Requires practice admin authorization. Returns patient data with generated UUID."
 
   - task: "Assign Procedure API"
     implemented: true
