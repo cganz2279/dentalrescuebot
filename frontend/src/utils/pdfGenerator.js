@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 
-export const generateProcedurePDF = (procedure) => {
+export const generateProcedurePDF = (procedure, practice = null, dentist = null, patientName = null) => {
   try {
     // Create new PDF document
     const pdf = new jsPDF();
