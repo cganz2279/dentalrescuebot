@@ -240,29 +240,296 @@ class DentalAPITester:
             self.log_test("Search Procedures (q=root)", False, f"Exception: {str(e)}")
             return False
     
-    def test_error_handling(self):
-        """Test error handling with invalid endpoints"""
+    def test_practice_admin_login(self):
+        """Test practice admin login"""
         try:
-            # Test invalid specialty ID
-            response = self.session.get(f"{self.base_url}/specialties/invalid-id")
+            login_data = {
+                "email": "cganz2279@gmail.com",
+                "password": "password123"
+            }
             
-            if response.status_code == 404:
+            response = self.session.post(f"{self.base_url}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
                 data = response.json()
-                if "detail" in data:
-                    self.log_test("Error Handling (Invalid Specialty ID)", True, 
-                                f"Proper 404 error returned: {data['detail']}")
-                    return True
+                if data.get("success") and "token" in data and "user" in data:
+                    user = data["user"]
+                    if user.get("role") == "practice_admin":
+                        self.admin_token = data["token"]
+                        self.log_test("Practice Admin Login", True, f"Admin logged in: {user['firstName']} {user['lastName']}")
+                        return True
+                    else:
+                        self.log_test("Practice Admin Login", False, f"Wrong role: {user.get('role')}")
+                        return False
                 else:
-                    self.log_test("Error Handling (Invalid Specialty ID)", False, 
-                                "404 status but missing error detail")
+                    self.log_test("Practice Admin Login", False, "Invalid response format")
                     return False
             else:
-                self.log_test("Error Handling (Invalid Specialty ID)", False, 
-                            f"Expected 404, got {response.status_code}")
+                self.log_test("Practice Admin Login", False, f"Status: {response.status_code}, Response: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Error Handling (Invalid Specialty ID)", False, f"Exception: {str(e)}")
+            self.log_test("Practice Admin Login", False, f"Exception: {str(e)}")
+            return False
+
+    def test_add_patient(self):
+        """Test adding a new patient"""
+        if not self.admin_token:
+            self.log_test("Add Patient", False, "No admin token available")
+            return False
+            
+        try:
+            patient_data = {
+                "email": "testpatient@dentaltest.com",
+                "firstName": "John",
+                "lastName": "Doe",
+                "phone": "555-123-4567"
+            }
+            
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.post(f"{self.base_url}/practice/patients", json=patient_data, headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    patient = data["data"]
+                    self.test_patient_id = patient["id"]
+                    self.log_test("Add Patient", True, f"Patient created: {patient['firstName']} {patient['lastName']} (ID: {patient['id']})")
+                    return True
+                else:
+                    self.log_test("Add Patient", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Add Patient", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Add Patient", False, f"Exception: {str(e)}")
+            return False
+
+    def test_assign_procedure(self):
+        """Test assigning a procedure to a patient"""
+        if not self.admin_token or not self.test_patient_id:
+            self.log_test("Assign Procedure", False, "No admin token or patient ID available")
+            return False
+            
+        try:
+            # Use root-canal procedure for testing
+            assignment_data = {
+                "patientId": self.test_patient_id,
+                "procedureId": "root-canal",
+                "procedureName": "Root Canal Treatment",
+                "performedDate": datetime.utcnow().isoformat() + "Z",
+                "dentistName": "Dr. Smith",
+                "practiceNotes": "Standard root canal procedure completed successfully",
+                "customInstructions": ["Take prescribed antibiotics", "Avoid hard foods for 24 hours"],
+                "followUpDate": (datetime.utcnow() + timedelta(days=7)).isoformat() + "Z"
+            }
+            
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.post(f"{self.base_url}/practice/assign-procedure", json=assignment_data, headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    assignment = data["data"]
+                    self.test_assignment_id = assignment["assignmentId"]
+                    self.log_test("Assign Procedure", True, f"Procedure assigned: {assignment['procedureName']} to {assignment['patientName']}")
+                    return True
+                else:
+                    self.log_test("Assign Procedure", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Assign Procedure", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Assign Procedure", False, f"Exception: {str(e)}")
+            return False
+
+    def test_set_patient_password(self):
+        """Test setting patient password for login"""
+        if not self.admin_token:
+            self.log_test("Set Patient Password", False, "No admin token available")
+            return False
+            
+        try:
+            password_data = {
+                "email": "testpatient@dentaltest.com",
+                "newPassword": "patient123"
+            }
+            
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.post(f"{self.base_url}/auth/set-patient-password", json=password_data, headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    self.log_test("Set Patient Password", True, "Patient password set successfully")
+                    return True
+                else:
+                    self.log_test("Set Patient Password", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Set Patient Password", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Set Patient Password", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_login(self):
+        """Test patient login"""
+        try:
+            login_data = {
+                "email": "testpatient@dentaltest.com",
+                "password": "patient123"
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "token" in data and "user" in data:
+                    user = data["user"]
+                    if user.get("role") == "patient":
+                        self.patient_token = data["token"]
+                        self.log_test("Patient Login", True, f"Patient logged in: {user['firstName']} {user['lastName']}")
+                        return True
+                    else:
+                        self.log_test("Patient Login", False, f"Wrong role: {user.get('role')}")
+                        return False
+                else:
+                    self.log_test("Patient Login", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient Login", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Login", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_dashboard(self):
+        """Test patient dashboard API"""
+        if not self.patient_token:
+            self.log_test("Patient Dashboard", False, "No patient token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.patient_token}"}
+            response = self.session.get(f"{self.base_url}/auth/patient-dashboard", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    dashboard_data = data["data"]
+                    patient = dashboard_data.get("patient")
+                    practice = dashboard_data.get("practice")
+                    procedures = dashboard_data.get("assignedProcedures", [])
+                    stats = dashboard_data.get("stats", {})
+                    
+                    if patient and practice and isinstance(procedures, list):
+                        self.log_test("Patient Dashboard", True, 
+                                    f"Dashboard loaded: {len(procedures)} procedures, Practice: {practice.get('name', 'Unknown')}")
+                        return True
+                    else:
+                        self.log_test("Patient Dashboard", False, "Missing required dashboard data")
+                        return False
+                else:
+                    self.log_test("Patient Dashboard", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient Dashboard", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient Dashboard", False, f"Exception: {str(e)}")
+            return False
+
+    def test_practice_dashboard(self):
+        """Test practice dashboard API"""
+        if not self.admin_token:
+            self.log_test("Practice Dashboard", False, "No admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{self.base_url}/practice/dashboard", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    dashboard_data = data["data"]
+                    practice = dashboard_data.get("practice")
+                    stats = dashboard_data.get("stats", {})
+                    recent_patients = dashboard_data.get("recentPatients", [])
+                    recent_procedures = dashboard_data.get("recentProcedures", [])
+                    
+                    if practice and "patientCount" in stats:
+                        self.log_test("Practice Dashboard", True, 
+                                    f"Dashboard loaded: {stats.get('patientCount', 0)} patients, {stats.get('activeProcedures', 0)} active procedures")
+                        return True
+                    else:
+                        self.log_test("Practice Dashboard", False, "Missing required dashboard data")
+                        return False
+                else:
+                    self.log_test("Practice Dashboard", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Practice Dashboard", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Practice Dashboard", False, f"Exception: {str(e)}")
+            return False
+
+    def test_unauthorized_access(self):
+        """Test unauthorized access scenarios"""
+        try:
+            # Test patient trying to access admin API
+            if self.patient_token:
+                headers = {"Authorization": f"Bearer {self.patient_token}"}
+                response = self.session.get(f"{self.base_url}/practice/dashboard", headers=headers)
+                
+                if response.status_code == 403:
+                    self.log_test("Unauthorized Access (Patient->Admin)", True, "Properly blocked patient from admin API")
+                    return True
+                else:
+                    self.log_test("Unauthorized Access (Patient->Admin)", False, f"Expected 403, got {response.status_code}")
+                    return False
+            else:
+                self.log_test("Unauthorized Access (Patient->Admin)", False, "No patient token to test with")
+                return False
+                
+        except Exception as e:
+            self.log_test("Unauthorized Access (Patient->Admin)", False, f"Exception: {str(e)}")
+            return False
+
+    def test_invalid_credentials(self):
+        """Test login with invalid credentials"""
+        try:
+            login_data = {
+                "email": "invalid@test.com",
+                "password": "wrongpassword"
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/login", json=login_data)
+            
+            if response.status_code == 401:
+                data = response.json()
+                if "detail" in data:
+                    self.log_test("Invalid Credentials", True, f"Proper 401 error: {data['detail']}")
+                    return True
+                else:
+                    self.log_test("Invalid Credentials", False, "401 status but missing error detail")
+                    return False
+            else:
+                self.log_test("Invalid Credentials", False, f"Expected 401, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Invalid Credentials", False, f"Exception: {str(e)}")
             return False
     
     def run_all_tests(self):
