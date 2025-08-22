@@ -222,6 +222,36 @@ const AddPatientPage = () => {
                     </div>
                   </div>
 
+                  {/* Dentist Assignment */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Assign to Dentist (Optional)
+                    </label>
+                    <Select value={formData.assignedDentistId} onValueChange={handleDentistSelect}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose a dentist (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">No dentist assigned</SelectItem>
+                        {dentists.map((dentist) => (
+                          <SelectItem key={dentist.id} value={dentist.id}>
+                            Dr. {dentist.firstName} {dentist.lastName} ({dentist.role === 'practice_admin' ? 'Admin' : 'Staff'})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedDentist && (
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                        <p className="text-blue-800 text-sm">
+                          <strong>Patient will be assigned to Dr. {selectedDentist.firstName} {selectedDentist.lastName}</strong>
+                        </p>
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-500">
+                      You can assign this patient to a specific dentist or leave unassigned
+                    </p>
+                  </div>
+
                   <div className="space-y-2 md:col-span-2">
                     <label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-700">
                       Date of Birth (Optional)
