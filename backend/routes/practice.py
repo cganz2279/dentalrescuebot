@@ -824,3 +824,96 @@ async def update_patient(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update patient"
         )
+
+@router.post("/request-procedure")
+async def request_procedure(
+    procedureName: str,
+    specialty: str,
+    description: str,
+    requestType: str = "new",  # "new" or "custom"
+    customInstructions: Optional[str] = None,
+    urgency: str = "normal",
+    additionalNotes: Optional[str] = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Submit a request for a new procedure or custom instructions"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        practice_id = payload['practiceId']
+        user_id = payload['userId']
+        role = payload['role']
+        
+        # Check user permissions
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only practice staff can submit procedure requests"
+            )
+        
+        # Get user and practice details
+        user = await db.users.find_one({"id": user_id})
+        practice = await db.practices.find_one({"id": practice_id})
+        
+        if not user or not practice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User or practice not found"
+            )
+        
+        # Generate request ID
+        request_id = str(uuid.uuid4())
+        
+        # Create procedure request document
+        request_doc = {
+            "id": request_id,
+            "procedureName": procedureName,
+            "specialty": specialty,
+            "description": description,
+            "requestType": requestType,
+            "customInstructions": customInstructions,
+            "urgency": urgency,
+            "additionalNotes": additionalNotes,
+            "status": "pending",  # pending, in_review, approved, rejected, completed
+            "practiceId": practice_id,
+            "practiceName": practice.get("name", "Unknown Practice"),
+            "requestedBy": user_id,
+            "requestedByName": f"{user.get('firstName', '')} {user.get('lastName', '')}".strip(),
+            "requestedByEmail": user.get("email", ""),
+            "createdAt": datetime.utcnow(),
+            "updatedAt": datetime.utcnow()
+        }
+        
+        # Insert into procedure requests collection
+        await db.procedure_requests.insert_one(request_doc)
+        
+        return {
+            "success": True,
+            "message": f"Procedure request '{procedureName}' submitted successfully",
+            "request": {
+                "id": request_id,
+                "procedureName": procedureName,
+                "specialty": specialty,
+                "requestType": requestType,
+                "urgency": urgency,
+                "status": "pending",
+                "createdAt": request_doc["createdAt"]
+            }
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Request procedure error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to submit procedure request"
+        )
