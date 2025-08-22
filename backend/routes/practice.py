@@ -52,6 +52,7 @@ class PatientCreate(BaseModel):
     firstName: str
     lastName: str
     phone: Optional[str] = None
+    assignedDentistId: Optional[str] = None
 
 class ProcedureAssignment(BaseModel):
     patientId: str
