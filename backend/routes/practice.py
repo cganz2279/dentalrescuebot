@@ -304,7 +304,16 @@ async def create_patient(
         return {
             "success": True,
             "message": "Patient created successfully",
-            "data": patient_doc
+            "patient": {
+                "id": patient_id,
+                "firstName": patient_data.firstName,
+                "lastName": patient_data.lastName,
+                "email": patient_data.email,
+                "phone": patient_data.phone,
+                "assignedDentistId": patient_data.assignedDentistId,
+                "assignedDentistName": f"{assigned_dentist['firstName']} {assigned_dentist['lastName']}" if assigned_dentist else None,
+                "createdAt": patient_doc["createdAt"]
+            }
         }
         
     except HTTPException:
