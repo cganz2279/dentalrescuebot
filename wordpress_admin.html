@@ -277,6 +277,19 @@
     <script>
         const BACKEND_URL = 'https://dentalrescue.preview.emergentagent.com/api';
         
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.textContent = '🙈';
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.textContent = '👁️';
+            }
+        }
+        
         // Check if already logged in
         window.onload = function() {
             const token = localStorage.getItem('dentalToken');
