@@ -99,6 +99,7 @@ function App() {
             <Route path="/add-staff" element={<AddStaffPage />} />
             <Route path="/edit-patient/:patientId" element={<EditPatientPage />} />
             <Route path="/request-procedure" element={<RequestProcedurePage />} />
+            <Route path="/admin-requests" element={<AdminRequestsPage />} />
             <Route path="/*" element={<AppContent />} />
           </Routes>
         </BrowserRouter>
