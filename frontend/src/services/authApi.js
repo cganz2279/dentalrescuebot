@@ -107,6 +107,16 @@ export const authApi = {
       }
     );
     return response.data;
+  },
+
+  getPatientDashboard: async () => {
+    const token = localStorage.getItem('dentalToken');
+    const response = await authAxios.get('/patient-dashboard', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
   }
 };
 
