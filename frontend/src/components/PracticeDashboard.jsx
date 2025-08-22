@@ -217,11 +217,6 @@ const PracticeDashboard = () => {
                         <p className="text-sm text-gray-500">
                           Added {new Date(patient.createdAt).toLocaleDateString()}
                         </p>
-                        {patient.lastLoginAt && (
-                          <p className="text-xs text-gray-400">
-                            Last login: {new Date(patient.lastLoginAt).toLocaleDateString()}
-                          </p>
-                        )}
                       </div>
                     </div>
                   ))}
