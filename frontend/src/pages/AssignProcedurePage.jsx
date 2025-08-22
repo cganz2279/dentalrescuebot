@@ -91,7 +91,7 @@ const AssignProcedurePage = () => {
         procedureId: formData.procedureId,
         procedureName: selectedProcedure?.name || '',
         performedDate: formData.performedDate + 'T00:00:00Z',
-        dentistName: formData.dentistName,
+        dentistName: selectedDentist ? `${selectedDentist.firstName} ${selectedDentist.lastName}` : '',
         practiceNotes: formData.practiceNotes,
         followUpDate: formData.followUpDate ? formData.followUpDate + 'T00:00:00Z' : null
       };
