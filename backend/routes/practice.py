@@ -282,6 +282,8 @@ async def create_patient(
             "lastName": patient_data.lastName,
             "role": "patient",
             "practiceId": practice_id,
+            "assignedDentistId": patient_data.assignedDentistId,
+            "assignedDentistName": f"{assigned_dentist['firstName']} {assigned_dentist['lastName']}" if assigned_dentist else None,
             "isActive": True,
             "isEmailVerified": False,
             "invitedBy": user_id,
