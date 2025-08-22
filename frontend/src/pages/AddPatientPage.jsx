@@ -84,7 +84,7 @@ const AddPatientPage = () => {
             <div className="flex items-center space-x-4">
               <Button 
                 variant="ghost" 
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/')}
                 className="flex items-center space-x-2"
               >
                 <ArrowLeft className="h-4 w-4" />
