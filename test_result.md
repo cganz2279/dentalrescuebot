@@ -254,7 +254,7 @@ backend:
 
 frontend:
   - task: "Patient Login Form"
-    implemented: false
+    implemented: true
     working: false
     file: "frontend/src/components/PatientLoginForm.jsx"
     stuck_count: 0
@@ -263,10 +263,10 @@ frontend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Need to create patient login form - separate from practice admin login"
+          comment: "Created patient login form component - needs testing"
 
   - task: "Add Patient Page"
-    implemented: false
+    implemented: true
     working: false
     file: "frontend/src/pages/AddPatientPage.jsx"
     stuck_count: 0
@@ -275,10 +275,10 @@ frontend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Button exists in dashboard but page needs full implementation"
+          comment: "Add patient page already exists - updated navigation and needs testing"
 
   - task: "Assign Procedure Page"
-    implemented: false
+    implemented: true
     working: false
     file: "frontend/src/pages/AssignProcedurePage.jsx"
     stuck_count: 0
@@ -287,10 +287,10 @@ frontend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Button exists in dashboard but page needs full implementation"
+          comment: "Created complete assign procedure page with patient/procedure selection - needs testing"
 
   - task: "Patient Dashboard/Portal"
-    implemented: false
+    implemented: true
     working: false
     file: "frontend/src/components/PatientDashboard.jsx"
     stuck_count: 0
@@ -299,7 +299,7 @@ frontend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Need patient portal to view assigned procedures with practice branding"
+          comment: "Created patient dashboard to view assigned procedures with practice branding - needs testing"
 
   - task: "Search Functionality"
     implemented: true
