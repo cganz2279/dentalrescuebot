@@ -279,8 +279,11 @@ class DentalAPITester:
             return False
             
         try:
+            # Use timestamp to make email unique
+            import time
+            timestamp = str(int(time.time()))
             patient_data = {
-                "email": "testpatient@dentaltest.com",
+                "email": f"testpatient{timestamp}@dentaltest.com",
                 "firstName": "John",
                 "lastName": "Doe",
                 "phone": "555-123-4567"
@@ -294,6 +297,7 @@ class DentalAPITester:
                 if data.get("success") and "data" in data:
                     patient = data["data"]
                     self.test_patient_id = patient["id"]
+                    self.test_patient_email = patient["email"]  # Store for later use
                     self.log_test("Add Patient", True, f"Patient created: {patient['firstName']} {patient['lastName']} (ID: {patient['id']})")
                     return True
                 else:
