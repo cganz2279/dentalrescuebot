@@ -142,6 +142,11 @@ export const practiceApi = {
     return response.data;
   },
 
+  getStaff: async () => {
+    const response = await practiceAxios.get('/staff');
+    return response.data;
+  },
+
   updateBranding: async (brandingData) => {
     const response = await practiceAxios.put('/branding', brandingData);
     return response.data;
