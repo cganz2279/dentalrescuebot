@@ -377,10 +377,10 @@ const AssignProcedurePage = () => {
               <div className="flex-1">
                 <h3 className="font-semibold text-green-900 mb-2">What happens after assignment?</h3>
                 <ul className="text-sm text-green-800 space-y-1">
-                  <li>• Patient will receive access to their personalized post-op instructions</li>
-                  <li>• Instructions will include your practice branding and contact information</li>
-                  <li>• Patient can download PDF versions of their care instructions</li>
-                  <li>• You can track patient engagement and downloads in your dashboard</li>
+                  <li>• Procedure is assigned to the patient in your system</li>
+                  <li>• You can view and manage all assigned procedures</li>
+                  <li>• Generate and print customized post-op instruction sheets</li>
+                  <li>• Track patient procedures in your practice dashboard</li>
                 </ul>
               </div>
             </div>
