@@ -9,7 +9,7 @@ import { Textarea } from '../components/ui/textarea';
 import { ArrowLeft, FileText, User, Calendar, Stethoscope, Search, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
-import api from '../services/api';
+import { dentalApi } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 
