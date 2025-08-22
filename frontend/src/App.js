@@ -20,7 +20,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 // Main App Content Component
 const AppContent = () => {
   const { user, loading, isAuthenticated, isPracticeStaff, isPatient } = useAuth();
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [authMode, setAuthMode] = useState('patient-login'); // 'patient-login', 'practice-login', or 'register'
   
   // Navigation state for public library
   const [currentView, setCurrentView] = useState('home');
@@ -64,43 +64,30 @@ const AppContent = () => {
       return <PracticeDashboard />;
     }
     
-    // Patients see the public library (for now)
+    // Patients see their dashboard with assigned procedures
     if (isPatient()) {
-      return (
-        <>
-          {currentView === 'home' && (
-            <HomePage 
-              onSelectSpecialty={handleSelectSpecialty}
-              onSelectProcedure={handleSelectProcedure}
-            />
-          )}
-          {currentView === 'specialty' && (
-            <SpecialtyPage 
-              specialtyId={selectedSpecialty}
-              onSelectProcedure={handleSelectProcedure}
-              onBackToHome={handleBackToHome}
-            />
-          )}
-          {currentView === 'procedure' && (
-            <ProcedurePage 
-              procedureId={selectedProcedure}
-              onBackToHome={handleBackToHome}
-              onBackToSpecialty={handleBackToSpecialty}
-            />
-          )}
-        </>
-      );
+      return <PatientDashboard />;
     }
   }
 
   // Not authenticated - show login/register forms
   return (
     <>
-      {authMode === 'login' && (
-        <LoginForm onSwitchToRegister={() => setAuthMode('register')} />
+      {authMode === 'patient-login' && (
+        <PatientLoginForm 
+          onSwitchToPracticeLogin={() => setAuthMode('practice-login')} 
+        />
+      )}
+      {authMode === 'practice-login' && (
+        <LoginForm 
+          onSwitchToRegister={() => setAuthMode('register')}
+          onSwitchToPatientLogin={() => setAuthMode('patient-login')}
+        />
       )}
       {authMode === 'register' && (
-        <PracticeRegistrationForm onSwitchToLogin={() => setAuthMode('login')} />
+        <PracticeRegistrationForm 
+          onSwitchToLogin={() => setAuthMode('practice-login')} 
+        />
       )}
     </>
   );
