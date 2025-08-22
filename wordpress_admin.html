@@ -366,8 +366,17 @@
             
             // Set the URL based on section
             let url = 'https://dentalrescue.preview.emergentagent.com';
-            if (section === 'settings') {
-                url += '/practice-settings';
+            switch(section) {
+                case 'settings':
+                    url += '/practice-settings';
+                    break;
+                case 'requests':
+                    url += '/admin-requests';
+                    break;
+                case 'dashboard':
+                default:
+                    url = 'https://dentalrescue.preview.emergentagent.com';
+                    break;
             }
             
             iframe.src = url;
