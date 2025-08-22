@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the dental post-operative care app backend APIs including health check, specialties, procedures, search functionality, and error handling"
+user_problem_statement: "Complete B2B SaaS dental application with full patient and admin functionality. Need patient login system, patient management, procedure assignment, and patient portal all working."
 
 backend:
   - task: "Health Check API"
