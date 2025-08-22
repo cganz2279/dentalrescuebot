@@ -46,10 +46,11 @@ const AssignProcedurePage = () => {
     try {
       setLoading(true);
       
-      // Load patients and procedures in parallel
-      const [patientsResponse, proceduresResponse] = await Promise.all([
+      // Load patients, procedures, and dentists in parallel
+      const [patientsResponse, proceduresResponse, dentistsResponse] = await Promise.all([
         practiceApi.getPatients(),
-        dentalApi.getProcedures()
+        dentalApi.getProcedures(),
+        practiceApi.getStaff()
       ]);
       
       if (patientsResponse.success) {
