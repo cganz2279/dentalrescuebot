@@ -384,14 +384,18 @@ metadata:
 
 test_plan:
   current_focus:
-    - "All backend API testing completed successfully"
-    - "All frontend testing completed successfully"
+    - "Patient Login API"
+    - "Add Patient API"
+    - "Assign Procedure API"
+    - "Patient Dashboard API"
+    - "Patient Login Form"
+    - "Add Patient Page"
+    - "Assign Procedure Page"
+    - "Patient Dashboard/Portal"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
-    - agent: "testing"
-      message: "Comprehensive backend API testing completed. All 7 test scenarios passed: health check, specialties API, individual specialty, procedures API, individual procedure, search functionality, and error handling. Fixed one critical route ordering issue in FastAPI. Database seeding was required and implemented. Backend APIs are fully functional and ready for production use."
-    - agent: "testing"
-      message: "Comprehensive frontend testing completed successfully. Fixed critical import path issue for use-toast component. All major functionality verified: homepage loading with backend data integration, search functionality for multiple queries, complete navigation flow, detailed procedure pages with all 8 required sections, loading states, responsive design on mobile and desktop, and professional medical UI. Frontend-backend integration working seamlessly with real data from production APIs."
+    - agent: "main"
+      message: "User frustrated with incomplete B2B SaaS functionality. Implementing complete patient management system: patient login, add patients, assign procedures, and patient portal. Focus on core functionality over testing existing working features."
