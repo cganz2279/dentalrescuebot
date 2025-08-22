@@ -228,7 +228,7 @@ const AddPatientPage = () => {
               <p className="text-xs text-gray-500">
                 After adding the patient, you can assign post-operative procedures.
                 <br />
-                The patient will receive login credentials via email.
+                Patient information will be stored in your practice database.
               </p>
             </div>
           </CardContent>
