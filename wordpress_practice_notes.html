@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Login - DentalRescueBot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo img {
+            height: 60px;
+            width: auto;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .login-btn {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+        .login-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png" alt="DentalRescueBot Logo">
+        </div>
+        
+        <h2 style="text-align: center; margin-bottom: 2rem; color: #1f2937;">Practice Login</h2>
+        
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginBtn">
+                Sign In to Practice Dashboard
+            </button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <p>Signing you in...</p>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://dentalrescue.preview.emergentagent.com/api';
+        
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Reset messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing In...';
+            loading.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Check if user is practice admin/staff
+                    if (data.user.role === 'practice_admin' || data.user.role === 'practice_staff') {
+                        // Store token
+                        localStorage.setItem('dentalToken', data.token);
+                        localStorage.setItem('dentalUser', JSON.stringify(data.user));
+                        
+                        successMessage.textContent = `Welcome back, ${data.user.firstName}!`;
+                        successMessage.style.display = 'block';
+                        
+                        // Redirect to practice dashboard
+                        setTimeout(() => {
+                            window.location.href = 'https://dentalrescue.preview.emergentagent.com';
+                        }, 1000);
+                    } else {
+                        throw new Error('This login is for practice staff only');
+                    }
+                } else {
+                    throw new Error(data.detail || data.message || 'Login failed');
+                }
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                
+                // Reset button
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In to Practice Dashboard';
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
