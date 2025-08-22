@@ -118,7 +118,7 @@ backend:
           comment: "GET /api/ endpoint working correctly, returns {'message': 'Hello World'}"
 
   - task: "Patient Login API"
-    implemented: false
+    implemented: true
     working: false
     file: "backend/routes/auth.py"
     stuck_count: 0
@@ -127,10 +127,10 @@ backend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Need to implement patient login functionality - currently only practice admin login exists"
+          comment: "Implemented patient login functionality and patient dashboard API - needs testing"
 
   - task: "Add Patient API"
-    implemented: false
+    implemented: true
     working: false
     file: "backend/routes/practice.py"
     stuck_count: 0
@@ -139,10 +139,10 @@ backend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Need to implement add patient functionality for practice admins"
+          comment: "Add patient functionality already exists in backend - needs testing"
 
   - task: "Assign Procedure API"
-    implemented: false
+    implemented: true
     working: false
     file: "backend/routes/practice.py"
     stuck_count: 0
@@ -151,10 +151,10 @@ backend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Need to implement procedure assignment to patients"
+          comment: "Assign procedure functionality already exists in backend - needs testing"
 
   - task: "Patient Dashboard API"
-    implemented: false
+    implemented: true
     working: false
     file: "backend/routes/auth.py"
     stuck_count: 0
@@ -163,7 +163,7 @@ backend:
     status_history:
         - working: false
           agent: "main"
-          comment: "Need API to get patient's assigned procedures and practice info"
+          comment: "Implemented patient dashboard API to get assigned procedures and practice info - needs testing"
 
   - task: "Get All Specialties API"
     implemented: true
