@@ -50,6 +50,15 @@ const AddPatientPage = () => {
     });
   };
 
+  const handleDentistSelect = (dentistId) => {
+    const dentist = dentists.find(d => d.id === dentistId);
+    setSelectedDentist(dentist);
+    setFormData({
+      ...formData,
+      assignedDentistId: dentistId
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
