@@ -18,7 +18,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 // Main App Content Component
 const AppContent = () => {
   const { user, loading, isAuthenticated, isPracticeStaff, isPatient } = useAuth();
-  const [authMode, setAuthMode] = useState('patient-login'); // 'patient-login', 'practice-login', or 'register'
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
   
   // Navigation state for public library
   const [currentView, setCurrentView] = useState('home');
@@ -55,36 +55,28 @@ const AppContent = () => {
     );
   }
 
-  // If user is authenticated
+  // If user is authenticated - always show practice dashboard for dentists
   if (isAuthenticated()) {
     // Practice staff/admin see the dashboard
     if (isPracticeStaff()) {
       return <PracticeDashboard />;
     }
     
-    // Patients see their dashboard with assigned procedures
-    if (isPatient()) {
-      return <PatientDashboard />;
-    }
+    // Fallback: any authenticated user sees practice dashboard
+    return <PracticeDashboard />;
   }
 
-  // Not authenticated - show login/register forms
+  // Not authenticated - show login/register forms (practice staff only)
   return (
     <>
-      {authMode === 'patient-login' && (
-        <PatientLoginForm 
-          onSwitchToPracticeLogin={() => setAuthMode('practice-login')} 
-        />
-      )}
-      {authMode === 'practice-login' && (
+      {authMode === 'login' && (
         <LoginForm 
           onSwitchToRegister={() => setAuthMode('register')}
-          onSwitchToPatientLogin={() => setAuthMode('patient-login')}
         />
       )}
       {authMode === 'register' && (
         <PracticeRegistrationForm 
-          onSwitchToLogin={() => setAuthMode('practice-login')} 
+          onSwitchToLogin={() => setAuthMode('login')} 
         />
       )}
     </>
