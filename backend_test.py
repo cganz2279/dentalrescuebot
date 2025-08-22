@@ -8,6 +8,7 @@ import requests
 import json
 import sys
 from typing import Dict, Any, List
+from datetime import datetime, timedelta
 
 # Get backend URL from frontend .env file
 BACKEND_URL = "https://dentalrescue.preview.emergentagent.com/api"
@@ -17,6 +18,10 @@ class DentalAPITester:
         self.base_url = base_url
         self.session = requests.Session()
         self.test_results = []
+        self.admin_token = None
+        self.patient_token = None
+        self.test_patient_id = None
+        self.test_assignment_id = None
         
     def log_test(self, test_name: str, success: bool, details: str = ""):
         """Log test results"""
