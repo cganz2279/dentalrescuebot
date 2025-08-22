@@ -119,15 +119,18 @@ backend:
 
   - task: "Patient Login API"
     implemented: true
-    working: false
+    working: true
     file: "backend/routes/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "Implemented patient login functionality and patient dashboard API - needs testing"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS - Patient login working correctly. Successfully tested login with patient credentials (testpatient@dentaltest.com / patient123). Returns proper JWT token and user info with role='patient'."
 
   - task: "Add Patient API"
     implemented: true
