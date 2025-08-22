@@ -79,7 +79,7 @@ const AssignProcedurePage = () => {
     setError('');
 
     // Validate required fields
-    if (!formData.patientId || !formData.procedureId || !formData.dentistName || !formData.performedDate) {
+    if (!formData.patientId || !formData.procedureId || !formData.dentistId || !formData.performedDate) {
       setError('Please fill in all required fields');
       setSubmitting(false);
       return;
