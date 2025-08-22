@@ -63,7 +63,7 @@ const AddPatientPage = () => {
         });
 
         // Navigate back to dashboard
-        navigate('/dashboard');
+        navigate('/');
       } else {
         setError(response.detail || response.message || 'Failed to add patient');
       }
