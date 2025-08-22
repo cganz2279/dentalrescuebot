@@ -514,3 +514,86 @@ async def update_practice(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update practice settings"
         )
+
+@router.post("/add-staff")
+async def add_practice_staff(
+    firstName: str,
+    lastName: str, 
+    email: EmailStr,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Add a staff member to the practice (practice_admin only)"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        user_id = payload['userId']
+        role = payload['role']
+        practice_id = payload['practiceId']
+        
+        # Only practice admins can add staff
+        if role != 'practice_admin':
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only practice administrators can add staff members"
+            )
+        
+        # Check if email already exists
+        existing_user = await db.users.find_one({"email": email.lower()})
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A user with this email already exists"
+            )
+        
+        # Generate temporary password
+        temp_password = generate_temp_password()
+        staff_id = str(uuid.uuid4())
+        
+        # Create staff user
+        staff_doc = {
+            "id": staff_id,
+            "email": email.lower(),
+            "password": hash_password(temp_password),
+            "firstName": firstName,
+            "lastName": lastName,
+            "role": "practice_staff",
+            "practiceId": practice_id,
+            "isActive": True,
+            "isEmailVerified": False,
+            "requiresPasswordChange": True,
+            "loginCount": 0,
+            "createdAt": datetime.utcnow(),
+            "updatedAt": datetime.utcnow()
+        }
+        
+        await db.users.insert_one(staff_doc)
+        
+        return {
+            "success": True,
+            "message": f"Staff member {firstName} {lastName} added successfully",
+            "staffMember": {
+                "id": staff_id,
+                "email": email,
+                "firstName": firstName,
+                "lastName": lastName,
+                "role": "practice_staff"
+            },
+            "temporaryPassword": temp_password
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Add staff error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to add staff member"
+        )
