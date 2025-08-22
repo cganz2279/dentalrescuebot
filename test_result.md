@@ -164,15 +164,18 @@ backend:
 
   - task: "Patient Dashboard API"
     implemented: true
-    working: false
+    working: true
     file: "backend/routes/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "Implemented patient dashboard API to get assigned procedures and practice info - needs testing"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS - Patient dashboard API working correctly. GET /api/auth/patient-dashboard returns patient info, practice branding, assigned procedures with full details, and stats. Requires patient JWT token authorization."
 
   - task: "Get All Specialties API"
     implemented: true
