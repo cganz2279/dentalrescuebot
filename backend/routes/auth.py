@@ -495,3 +495,83 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get user info"
         )
+
+@router.get("/patient-dashboard")
+async def get_patient_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get patient dashboard with assigned procedures"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        user_id = payload['userId']
+        role = payload['role']
+        practice_id = payload['practiceId']
+        
+        # Check if user is a patient
+        if role != 'patient':
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only patients can access patient dashboard"
+            )
+        
+        # Get patient info
+        patient = await db.users.find_one(
+            {"id": user_id},
+            {"_id": 0, "password": 0}
+        )
+        
+        if not patient or not patient.get('isActive'):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Patient not found or inactive"
+            )
+        
+        # Get practice info for branding
+        practice = await db.practices.find_one(
+            {"id": practice_id},
+            {"_id": 0, "branding": 1, "name": 1, "phone": 1, "email": 1}
+        )
+        
+        # Get assigned procedures for this patient
+        assigned_procedures = await db.patientprocedures.find(
+            {"patientId": user_id},
+            {"_id": 0}
+        ).sort("performedDate", -1).to_list(length=None)
+        
+        # Get full procedure details for each assignment
+        for assignment in assigned_procedures:
+            procedure = await db.procedures.find_one(
+                {"id": assignment["procedureId"]},
+                {"_id": 0}
+            )
+            if procedure:
+                assignment["procedureDetails"] = procedure
+        
+        return {
+            "success": True,
+            "data": {
+                "patient": patient,
+                "practice": practice,
+                "assignedProcedures": assigned_procedures,
+                "stats": {
+                    "totalProcedures": len(assigned_procedures),
+                    "activeProcedures": len([p for p in assigned_procedures if p.get("status") == "active"])
+                }
+            }
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Patient dashboard error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get patient dashboard"
+        )
