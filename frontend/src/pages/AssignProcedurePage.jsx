@@ -317,24 +317,50 @@ const AssignProcedurePage = () => {
                 </div>
               </div>
 
+              {/* Dentist Selection */}
               <div className="space-y-2">
-                <label htmlFor="dentistName" className="text-sm font-medium text-gray-700">
-                  Dentist Name *
+                <label className="text-sm font-medium text-gray-700">
+                  Select Dentist *
                 </label>
-                <div className="relative">
-                  <Stethoscope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    id="dentistName"
-                    name="dentistName"
-                    type="text"
-                    required
-                    value={formData.dentistName}
-                    onChange={handleInputChange}
-                    className="pl-10"
-                    placeholder="Dr. Smith"
-                    disabled={submitting}
-                  />
-                </div>
+                <Select value={formData.dentistId} onValueChange={handleDentistSelect}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a dentist" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {dentists.length === 0 ? (
+                      <SelectItem value="no-dentists" disabled>
+                        No dentists available - Add staff members first
+                      </SelectItem>
+                    ) : (
+                      dentists.map((dentist) => (
+                        <SelectItem key={dentist.id} value={dentist.id}>
+                          Dr. {dentist.firstName} {dentist.lastName} ({dentist.role === 'practice_admin' ? 'Admin' : 'Staff'})
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                {dentists.length === 0 && (
+                  <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                    <p className="text-yellow-800 text-sm">No dentists found. Add staff members first.</p>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => navigate('/add-staff')}
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Staff
+                    </Button>
+                  </div>
+                )}
+                {selectedDentist && (
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <p className="text-blue-800 text-sm">
+                      <strong>Dr. {selectedDentist.firstName} {selectedDentist.lastName}</strong> - {selectedDentist.role === 'practice_admin' ? 'Practice Administrator' : 'Staff Dentist'}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
