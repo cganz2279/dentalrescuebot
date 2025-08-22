@@ -624,3 +624,43 @@ async def add_practice_staff(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to add staff member"
         )
+
+@router.get("/staff")
+async def get_practice_staff(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all staff members in the practice"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        practice_id = payload['practiceId']
+        
+        # Get all staff members for this practice
+        staff_members = await db.users.find(
+            {
+                "practiceId": practice_id,
+                "role": {"$in": ["practice_admin", "practice_staff"]},
+                "isActive": True
+            },
+            {"_id": 0, "password": 0}
+        ).to_list(length=None)
+        
+        return {
+            "success": True,
+            "data": staff_members
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Get staff error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get staff members"
+        )
