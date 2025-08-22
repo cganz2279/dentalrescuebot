@@ -21,6 +21,7 @@ class DentalAPITester:
         self.admin_token = None
         self.patient_token = None
         self.test_patient_id = None
+        self.test_patient_email = None
         self.test_assignment_id = None
         
     def log_test(self, test_name: str, success: bool, details: str = ""):
