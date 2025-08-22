@@ -168,8 +168,8 @@ class DentalAPITester:
     def test_get_procedure_by_id(self):
         """Test GET /api/procedures/{id} endpoint"""
         try:
-            # Test with root-canal procedure
-            response = self.session.get(f"{self.base_url}/procedures/root-canal")
+            # Test with root-canal-therapy procedure (correct ID)
+            response = self.session.get(f"{self.base_url}/procedures/root-canal-therapy")
             
             if response.status_code == 200:
                 data = response.json()
@@ -180,27 +180,27 @@ class DentalAPITester:
                                      "warningSignsToCallDoctor", "recoveryTimeline", "medications"]
                     
                     if all(field in procedure for field in required_fields):
-                        if procedure["id"] == "root-canal":
-                            self.log_test("Get Procedure by ID (root-canal)", True, 
+                        if procedure["id"] == "root-canal-therapy":
+                            self.log_test("Get Procedure by ID (root-canal-therapy)", True, 
                                         f"Found detailed procedure information")
                             return True
                         else:
-                            self.log_test("Get Procedure by ID (root-canal)", False, "Wrong procedure returned")
+                            self.log_test("Get Procedure by ID (root-canal-therapy)", False, "Wrong procedure returned")
                             return False
                     else:
                         missing_fields = [f for f in required_fields if f not in procedure]
-                        self.log_test("Get Procedure by ID (root-canal)", False, 
+                        self.log_test("Get Procedure by ID (root-canal-therapy)", False, 
                                     f"Missing fields: {missing_fields}")
                         return False
                 else:
-                    self.log_test("Get Procedure by ID (root-canal)", False, "Invalid response format")
+                    self.log_test("Get Procedure by ID (root-canal-therapy)", False, "Invalid response format")
                     return False
             else:
-                self.log_test("Get Procedure by ID (root-canal)", False, f"Status: {response.status_code}")
+                self.log_test("Get Procedure by ID (root-canal-therapy)", False, f"Status: {response.status_code}")
                 return False
                 
         except Exception as e:
-            self.log_test("Get Procedure by ID (root-canal)", False, f"Exception: {str(e)}")
+            self.log_test("Get Procedure by ID (root-canal-therapy)", False, f"Exception: {str(e)}")
             return False
     
     def test_search_procedures(self):
