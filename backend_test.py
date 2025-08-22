@@ -386,9 +386,13 @@ class DentalAPITester:
 
     def test_patient_login(self):
         """Test patient login"""
+        if not self.test_patient_email:
+            self.log_test("Patient Login", False, "No patient email available")
+            return False
+            
         try:
             login_data = {
-                "email": "testpatient@dentaltest.com",
+                "email": self.test_patient_email,
                 "password": "patient123"
             }
             
