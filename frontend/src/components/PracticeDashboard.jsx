@@ -210,14 +210,30 @@ const PracticeDashboard = () => {
                 <div className="space-y-4">
                   {dashboardData.recentPatients.map((patient) => (
                     <div key={patient.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
+                      <div className="flex-1">
                         <p className="font-medium">{patient.firstName} {patient.lastName}</p>
-                        <p className="text-sm text-gray-600">{patient.email}</p>
-                      </div>
-                      <div className="text-right">
+                        <div className="text-sm text-gray-600">
+                          {patient.email}
+                        </div>
                         <p className="text-sm text-gray-500">
                           Added {new Date(patient.createdAt).toLocaleDateString()}
                         </p>
+                        {patient.assignedDentistName && (
+                          <p className="text-xs text-blue-600">
+                            Assigned to: {patient.assignedDentistName}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          onClick={() => navigate(`/edit-patient/${patient.id}`)}
+                          size="sm"
+                          variant="outline"
+                          className="flex items-center space-x-1"
+                        >
+                          <Edit className="h-3 w-3" />
+                          <span>Edit</span>
+                        </Button>
                       </div>
                     </div>
                   ))}
