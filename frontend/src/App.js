@@ -8,6 +8,7 @@ import ProcedurePage from "./pages/ProcedurePage";
 import RegistrationPage from "./pages/RegistrationPage";
 import PracticeSettingsPage from "./pages/PracticeSettingsPage";
 import AddPatientPage from "./pages/AddPatientPage";
+import AssignProcedurePage from "./pages/AssignProcedurePage";
 import AddStaffPage from "./pages/AddStaffPage";
 import EditPatientPage from "./pages/EditPatientPage";
 import RequestProcedurePage from "./pages/RequestProcedurePage";
