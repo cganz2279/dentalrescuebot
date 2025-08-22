@@ -7,7 +7,7 @@ import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../hooks/use-toast';
 
-const LoginForm = ({ onSwitchToRegister, onSwitchToPatientLogin }) => {
+const LoginForm = ({ onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
