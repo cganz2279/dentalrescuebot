@@ -14,17 +14,34 @@ const AddPatientPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-
+  
+  const [dentists, setDentists] = useState([]);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    dateOfBirth: ''
+    assignedDentistId: ''
   });
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedDentist, setSelectedDentist] = useState(null);
+
+  useEffect(() => {
+    loadDentists();
+  }, []);
+
+  const loadDentists = async () => {
+    try {
+      const response = await practiceApi.getStaff();
+      if (response.success) {
+        setDentists(response.data);
+      }
+    } catch (err) {
+      console.error('Failed to load dentists:', err);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({
