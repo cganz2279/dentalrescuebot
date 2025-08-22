@@ -20,17 +20,41 @@ export const AuthProvider = ({ children }) => {
   // Initialize authentication state
   useEffect(() => {
     const initAuth = async () => {
-      const savedToken = localStorage.getItem('dentalToken');
-      if (savedToken) {
+      // Check for auto-login from WordPress redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get('token');
+      const autoLogin = urlParams.get('auto');
+      
+      if (urlToken && autoLogin === 'true') {
+        // Use token from URL for auto-login
+        localStorage.setItem('dentalToken', urlToken);
         try {
-          const response = await authApi.getCurrentUser(savedToken);
+          const response = await authApi.getCurrentUser(urlToken);
           setUser(response.user);
           setPractice(response.practice);
-          setToken(savedToken);
+          setToken(urlToken);
+          
+          // Clean up URL parameters
+          window.history.replaceState({}, document.title, window.location.pathname);
         } catch (error) {
-          console.error('Token validation failed:', error);
+          console.error('Auto-login failed:', error);
           localStorage.removeItem('dentalToken');
           setToken(null);
+        }
+      } else {
+        // Normal token check
+        const savedToken = localStorage.getItem('dentalToken');
+        if (savedToken) {
+          try {
+            const response = await authApi.getCurrentUser(savedToken);
+            setUser(response.user);
+            setPractice(response.practice);
+            setToken(savedToken);
+          } catch (error) {
+            console.error('Token validation failed:', error);
+            localStorage.removeItem('dentalToken');
+            setToken(null);
+          }
         }
       }
       setLoading(false);
