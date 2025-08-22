@@ -134,12 +134,12 @@ const AssignProcedurePage = () => {
     });
   };
 
-  const handleProcedureSelect = (procedureId) => {
-    const procedure = procedures.find(p => p.id === procedureId);
-    setSelectedProcedure(procedure);
+  const handleDentistSelect = (dentistId) => {
+    const dentist = dentists.find(d => d.id === dentistId);
+    setSelectedDentist(dentist);
     setFormData({
       ...formData,
-      procedureId: procedureId
+      dentistId: dentistId
     });
   };
 
