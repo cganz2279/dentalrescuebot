@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - DentalRescueBot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .admin-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .quick-action {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #374151;
+        }
+        .quick-action:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.1);
+            text-decoration: none;
+            color: #374151;
+        }
+        .quick-action h3 {
+            margin: 0 0 0.5rem 0;
+            color: #1f2937;
+        }
+        .quick-action p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .iframe-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+        }
+        .login-prompt {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .login-prompt button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div style="display: flex; align-items: center;">
+            <img src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png" 
+                 alt="DentalRescueBot" style="height: 40px; margin-right: 1rem;">
+            <h1 style="margin: 0;">Admin Control Panel</h1>
+        </div>
+        <button onclick="logout()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            Logout
+        </button>
+    </div>
+
+    <div id="loginPrompt" class="login-prompt" style="display: none;">
+        <h2>Admin Access Required</h2>
+        <p>Please log in to access the admin panel</p>
+        <button onclick="showLogin()">Login as Admin</button>
+    </div>
+
+    <div id="adminContent" class="admin-content">
+        <div class="admin-card">
+            <h2 style="margin-top: 0;">System Overview</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-number" id="practiceCount">-</div>
+                    <div class="stat-label">Total Practices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="patientCount">-</div>
+                    <div class="stat-label">Total Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="procedureCount">-</div>
+                    <div class="stat-label">Active Procedures</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="userCount">-</div>
+                    <div class="stat-label">System Users</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <h2 style="margin-top: 0;">Quick Actions</h2>
+            <div class="admin-grid">
+                <a href="#" onclick="loadAdminSection('practices')" class="quick-action">
+                    <h3>🏢 Manage Practices</h3>
+                    <p>View and manage all dental practices</p>
+                </a>
+                <a href="#" onclick="loadAdminSection('users')" class="quick-action">
+                    <h3>👥 Manage Users</h3>
+                    <p>View and manage all system users</p>
+                </a>
+                <a href="#" onclick="loadAdminSection('procedures')" class="quick-action">
+                    <h3>📋 Manage Procedures</h3>
+                    <p>Add and edit post-operative procedures</p>
+                </a>
+                <a href="#" onclick="loadAdminSection('analytics')" class="quick-action">
+                    <h3>📊 View Analytics</h3>
+                    <p>System usage and performance metrics</p>
+                </a>
+                <a href="#" onclick="loadAdminSection('settings')" class="quick-action">
+                    <h3>⚙️ System Settings</h3>
+                    <p>Configure global system settings</p>
+                </a>
+                <a href="https://dentalrescue.preview.emergentagent.com" target="_blank" class="quick-action">
+                    <h3>🚀 Launch Application</h3>
+                    <p>Open the main dental application</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="iframe-container" id="adminFrame" style="display: none;">
+            <iframe id="adminIframe" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://dentalrescue.preview.emergentagent.com/api';
+        let adminToken = localStorage.getItem('dentalToken');
+        
+        // Check if user is logged in and is admin
+        async function checkAuth() {
+            const token = localStorage.getItem('dentalToken');
+            const user = JSON.parse(localStorage.getItem('dentalUser') || '{}');
+            
+            if (!token || user.role !== 'practice_admin') {
+                document.getElementById('loginPrompt').style.display = 'block';
+                document.getElementById('adminContent').style.display = 'none';
+                return false;
+            }
+            
+            document.getElementById('loginPrompt').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            
+            loadSystemStats();
+            return true;
+        }
+        
+        async function loadSystemStats() {
+            try {
+                // Mock data for now - replace with actual API calls
+                document.getElementById('practiceCount').textContent = '12';
+                document.getElementById('patientCount').textContent = '248';
+                document.getElementById('procedureCount').textContent = '156';
+                document.getElementById('userCount').textContent = '260';
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+        
+        function loadAdminSection(section) {
+            const iframe = document.getElementById('adminIframe');
+            const frameContainer = document.getElementById('adminFrame');
+            
+            let url = '';
+            switch(section) {
+                case 'practices':
+                    url = 'https://dentalrescue.preview.emergentagent.com';
+                    break;
+                case 'users':
+                    url = 'https://dentalrescue.preview.emergentagent.com';
+                    break;
+                case 'procedures':
+                    url = 'https://dentalrescue.preview.emergentagent.com';
+                    break;
+                case 'analytics':
+                    url = 'https://dentalrescue.preview.emergentagent.com';
+                    break;
+                case 'settings':
+                    url = 'https://dentalrescue.preview.emergentagent.com/practice-settings';
+                    break;
+                default:
+                    url = 'https://dentalrescue.preview.emergentagent.com';
+            }
+            
+            iframe.src = url;
+            frameContainer.style.display = 'block';
+            
+            // Scroll to iframe
+            frameContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showLogin() {
+            window.location.href = '/practice-notes';
+        }
+        
+        function logout() {
+            localStorage.removeItem('dentalToken');
+            localStorage.removeItem('dentalUser');
+            window.location.reload();
+        }
+        
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>
