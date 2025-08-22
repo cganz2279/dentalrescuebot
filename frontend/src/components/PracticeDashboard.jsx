@@ -12,7 +12,8 @@ import {
   Download,
   Activity,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Edit
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
