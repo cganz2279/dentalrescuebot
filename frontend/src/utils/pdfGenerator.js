@@ -93,6 +93,38 @@ export const generateProcedurePDF = (procedure) => {
     yPosition += 15;
 
     // Footer
+    if (yPosition > pdf.internal.pageSize.height - 80) {
+      pdf.addPage();
+      yPosition = 20;
+    }
+    
+    // Add signature section
+    yPosition += 20;
+    addText('Patient Acknowledgment', 14, true, [37, 99, 235]);
+    addText('I acknowledge that I have received and understand these post-operative care instructions. I will follow these instructions carefully and contact my dental office if I have any questions or concerns.', 10);
+    yPosition += 15;
+    
+    // Signature line
+    pdf.setLineWidth(0.5);
+    pdf.setDrawColor(0, 0, 0);
+    const signatureLineY = yPosition + 5;
+    pdf.line(margin, signatureLineY, margin + 150, signatureLineY);
+    pdf.setFontSize(10);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text('Patient Signature', margin, signatureLineY + 15);
+    
+    // Date line
+    const dateLineX = margin + 170;
+    pdf.line(dateLineX, signatureLineY, dateLineX + 80, signatureLineY);
+    pdf.text('Date', dateLineX, signatureLineY + 15);
+    
+    yPosition += 40;
+    
+    // Legal disclaimer
+    addText('DISCLAIMER: This information is for educational purposes only and does not replace professional medical advice. Always consult your dentist or physician for specific medical concerns.', 8, false, [107, 114, 126]);
+    yPosition += 15;
+    
+    // Footer
     if (yPosition > pdf.internal.pageSize.height - 40) {
       pdf.addPage();
       yPosition = 20;
