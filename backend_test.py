@@ -314,11 +314,11 @@ class DentalAPITester:
             return False
             
         try:
-            # Use root-canal procedure for testing
+            # Use root-canal-therapy procedure for testing (correct ID)
             assignment_data = {
                 "patientId": self.test_patient_id,
-                "procedureId": "root-canal",
-                "procedureName": "Root Canal Treatment",
+                "procedureId": "root-canal-therapy",
+                "procedureName": "Root Canal Therapy",
                 "performedDate": datetime.utcnow().isoformat() + "Z",
                 "dentistName": "Dr. Smith",
                 "practiceNotes": "Standard root canal procedure completed successfully",
