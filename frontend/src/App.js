@@ -10,10 +10,8 @@ import PracticeSettingsPage from "./pages/PracticeSettingsPage";
 import AddPatientPage from "./pages/AddPatientPage";
 import AssignProcedurePage from "./pages/AssignProcedurePage";
 import LoginForm from "./components/LoginForm";
-import PatientLoginForm from "./components/PatientLoginForm";
 import PracticeRegistrationForm from "./components/PracticeRegistrationForm";
 import PracticeDashboard from "./components/PracticeDashboard";
-import PatientDashboard from "./components/PatientDashboard";
 import { Toaster } from "./components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
 
