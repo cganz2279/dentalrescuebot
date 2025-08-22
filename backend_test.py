@@ -337,14 +337,14 @@ class DentalAPITester:
             return False
             
         try:
-            # Use form data instead of JSON
-            password_data = {
+            # Use query parameters instead of form data
+            params = {
                 "email": self.test_patient_email,
                 "newPassword": "patient123"
             }
             
             headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = self.session.post(f"{self.base_url}/auth/set-patient-password", data=password_data, headers=headers)
+            response = self.session.post(f"{self.base_url}/auth/set-patient-password", params=params, headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
