@@ -664,3 +664,163 @@ async def get_practice_staff(credentials: HTTPAuthorizationCredentials = Depends
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get staff members"
         )
+
+@router.get("/patients/{patient_id}")
+async def get_patient(
+    patient_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get a specific patient by ID"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        practice_id = payload['practiceId']
+        
+        # Get patient data
+        patient = await db.users.find_one(
+            {
+                "id": patient_id,
+                "practiceId": practice_id,
+                "role": "patient"
+            },
+            {"_id": 0, "password": 0}
+        )
+        
+        if not patient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+        
+        return {
+            "success": True,
+            "data": patient
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Get patient error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get patient"
+        )
+
+@router.put("/patients/{patient_id}")
+async def update_patient(
+    patient_id: str,
+    firstName: str,
+    lastName: str,
+    email: EmailStr,
+    phone: Optional[str] = None,
+    assignedDentistId: Optional[str] = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Update a patient's information"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        practice_id = payload['practiceId']
+        role = payload['role']
+        
+        # Check user permissions
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only practice staff can update patients"
+            )
+        
+        # Check if patient exists in this practice
+        existing_patient = await db.users.find_one({
+            "id": patient_id,
+            "practiceId": practice_id,
+            "role": "patient"
+        })
+        
+        if not existing_patient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+        
+        # Check if email is already used by another user (excluding current patient)
+        if email.lower() != existing_patient['email']:
+            email_check = await db.users.find_one({
+                "email": email.lower(),
+                "id": {"$ne": patient_id}
+            })
+            if email_check:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Email already in use by another user"
+                )
+        
+        # Validate assigned dentist if provided
+        assigned_dentist = None
+        if assignedDentistId:
+            assigned_dentist = await db.users.find_one({
+                "id": assignedDentistId,
+                "practiceId": practice_id,
+                "role": {"$in": ["practice_admin", "practice_staff"]},
+                "isActive": True
+            })
+            if not assigned_dentist:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Selected dentist not found or not active"
+                )
+        
+        # Update patient document
+        update_doc = {
+            "firstName": firstName,
+            "lastName": lastName,
+            "email": email.lower(),
+            "phone": phone,
+            "assignedDentistId": assignedDentistId,
+            "assignedDentistName": f"{assigned_dentist['firstName']} {assigned_dentist['lastName']}" if assigned_dentist else None,
+            "updatedAt": datetime.utcnow()
+        }
+        
+        await db.users.update_one(
+            {"id": patient_id},
+            {"$set": update_doc}
+        )
+        
+        return {
+            "success": True,
+            "message": f"Patient {firstName} {lastName} updated successfully",
+            "patient": {
+                "id": patient_id,
+                "firstName": firstName,
+                "lastName": lastName,
+                "email": email,
+                "phone": phone,
+                "assignedDentistId": assignedDentistId,
+                "assignedDentistName": f"{assigned_dentist['firstName']} {assigned_dentist['lastName']}" if assigned_dentist else None
+            }
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Update patient error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update patient"
+        )
