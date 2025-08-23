@@ -143,13 +143,21 @@ export const practiceApi = {
   },
 
   addStaff: async (staffData) => {
-    const params = new URLSearchParams({
-      firstName: staffData.firstName,
-      lastName: staffData.lastName,
-      email: staffData.email
-    });
-    const response = await practiceAxios.post(`/add-staff?${params}`);
-    return response.data;
+    try {
+      console.log('Adding staff with data:', staffData);
+      const params = new URLSearchParams({
+        firstName: staffData.firstName,
+        lastName: staffData.lastName,
+        email: staffData.email
+      });
+      console.log('Request URL:', `/add-staff?${params}`);
+      const response = await practiceAxios.post(`/add-staff?${params}`);
+      console.log('Add staff response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Add staff error:', error.response?.data || error.message);
+      throw error;
+    }
   },
 
   getPatient: async (patientId) => {
