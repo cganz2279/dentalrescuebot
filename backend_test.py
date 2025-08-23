@@ -246,7 +246,7 @@ class DentalAPITester:
         try:
             login_data = {
                 "email": "cganz2279@gmail.com",
-                "password": "password123"
+                "password": "admin123"
             }
             
             response = self.session.post(f"{self.base_url}/auth/login", json=login_data)
