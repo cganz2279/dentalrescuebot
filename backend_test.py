@@ -721,6 +721,9 @@ class DentalAPITester:
             self.test_practice_staff_endpoint,  # Add the new staff endpoint test
             self.test_add_patient,
             self.test_assign_procedure,
+            self.test_check_existing_assignments,  # Check for existing assignments
+            self.test_get_procedure_assignment,   # Test GET procedure assignment
+            self.test_update_procedure_assignment, # Test PUT procedure assignment
             self.test_set_patient_password,
             self.test_patient_login,
             self.test_patient_dashboard,
