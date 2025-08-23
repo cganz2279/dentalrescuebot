@@ -203,7 +203,7 @@ const SimpleProcedureView = () => {
           </Card>
 
           {/* Practice Notes */}
-          {procedure.practiceNotes && (
+          {procedure.practiceNotes && procedure.practiceNotes.trim() && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -242,6 +242,135 @@ const SimpleProcedureView = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* Comprehensive Post-Operative Care Instructions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <FileText className="h-5 w-5 text-green-600" />
+                <span>Detailed Post-Operative Care Instructions</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Immediate Aftercare */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                    <Clock className="h-4 w-4 mr-2 text-red-600" />
+                    Immediate Aftercare (First 24 Hours)
+                  </h4>
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <ul className="space-y-2 text-red-800">
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Apply ice to the treated area for 15 minutes every hour for the first 24 hours to reduce swelling</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Keep gauze in place for 30-60 minutes after treatment, then remove gently</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Do not rinse or spit forcefully for the first 24 hours</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Take prescribed medications as directed by your dentist</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Diet Instructions */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                    <User className="h-4 w-4 mr-2 text-orange-600" />
+                    Diet and Eating Instructions
+                  </h4>
+                  <div className="bg-orange-50 p-4 rounded-lg">
+                    <ul className="space-y-2 text-orange-800">
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-orange-600">•</span>
+                        <span>Stick to soft foods for the first 24-48 hours (yogurt, soup, mashed potatoes)</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-orange-600">•</span>
+                        <span>Avoid hot liquids and foods until numbness wears off</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-orange-600">•</span>
+                        <span>No alcohol while taking prescribed medications</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-orange-600">•</span>
+                        <span>Avoid using straws for the first few days to prevent dry socket</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Medication Instructions */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                    <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                    Medication Guidelines
+                  </h4>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <ul className="space-y-2 text-blue-800">
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-blue-600">•</span>
+                        <span>Take all prescribed medications exactly as directed</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-blue-600">•</span>
+                        <span>Complete the full course of antibiotics if prescribed</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-blue-600">•</span>
+                        <span>Use over-the-counter pain relief as recommended (ibuprofen, acetaminophen)</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-blue-600">•</span>
+                        <span>Do not exceed recommended dosages of any medication</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Warning Signs */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                    <AlertTriangle className="h-4 w-4 mr-2 text-red-600" />
+                    ⚠️ When to Contact Your Dentist Immediately
+                  </h4>
+                  <div className="bg-red-100 border-l-4 border-red-500 p-4 rounded-lg">
+                    <ul className="space-y-2 text-red-900">
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Severe or worsening pain after 48 hours</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Excessive bleeding that does not stop with gentle pressure</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Signs of infection: fever, excessive swelling, pus, or foul taste</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Numbness that persists beyond the expected timeframe</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="font-bold text-red-600">•</span>
+                        <span>Difficulty swallowing or breathing</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* General Care Instructions */}
           <Card>
