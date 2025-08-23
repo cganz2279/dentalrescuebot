@@ -88,20 +88,45 @@ const PracticeDashboard = () => {
   const printProcedure = async (procedure) => {
     try {
       console.log('Printing procedure:', procedure);
+      
+      // Create a formatted procedure object for PDF generation
+      const formattedProcedure = {
+        name: procedure.procedureName || 'Unknown Procedure',
+        specialtyName: 'Post-Operative Care',
+        description: procedure.description || 'Post-operative care instructions',
+        duration: procedure.duration || 'As prescribed',
+        difficulty: procedure.difficulty || 'Standard',
+        materials: procedure.materials || [],
+        instructions: procedure.customInstructions || [],
+        warnings: procedure.warnings || ['Follow all instructions carefully', 'Contact office if problems arise'],
+        recoveryTimeline: procedure.recoveryTimeline || [
+          { day: 1, activity: 'Rest and follow post-op instructions' },
+          { day: 2, activity: 'Light activity as tolerated' },
+          { day: 7, activity: 'Follow-up appointment if scheduled' }
+        ],
+        medications: procedure.medications || ['Take medications as prescribed']
+      };
+      
+      console.log('Formatted procedure for PDF:', formattedProcedure);
+      
       // Generate and download PDF for this procedure
       const { generateProcedurePDF } = await import('../utils/pdfGenerator');
-      await generateProcedurePDF(procedure, practice);
+      const result = await generateProcedurePDF(formattedProcedure, practice);
       
-      toast({
-        title: "Success",
-        description: "Procedure PDF downloaded successfully",
-        variant: "default",
-      });
+      if (result) {
+        toast({
+          title: "Success",
+          description: "Procedure PDF downloaded successfully",
+          variant: "default",
+        });
+      } else {
+        throw new Error('PDF generation failed');
+      }
     } catch (err) {
       console.error('Print procedure error:', err);
       toast({
         title: "Error", 
-        description: "Failed to generate PDF",
+        description: "Failed to generate PDF: " + (err.message || 'Unknown error'),
         variant: "destructive",
       });
     }
