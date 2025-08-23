@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { ArrowLeft, FileText, Calendar, User, Clock, Download } from 'lucide-react';
+import { ArrowLeft, FileText, Calendar, User, Clock, Download, AlertTriangle } from 'lucide-react';
 import { practiceApi } from '../services/authApi';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
