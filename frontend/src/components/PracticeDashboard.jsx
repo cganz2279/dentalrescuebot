@@ -59,8 +59,8 @@ const PracticeDashboard = () => {
   };
 
   const editProcedure = (procedure) => {
-    // Navigate to assign procedure page with current procedure data
-    navigate(`/assign-procedure?edit=${procedure.id}`);
+    // Navigate to edit procedure assignment page  
+    navigate(`/edit-procedure/${procedure.id}`);
   };
 
   const printProcedure = async (procedure) => {
