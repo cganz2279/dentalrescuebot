@@ -601,6 +601,7 @@ class DentalAPITester:
         # Patient management workflow tests
         patient_management_tests = [
             self.test_practice_admin_login,
+            self.test_practice_staff_endpoint,  # Add the new staff endpoint test
             self.test_add_patient,
             self.test_assign_procedure,
             self.test_set_patient_password,
