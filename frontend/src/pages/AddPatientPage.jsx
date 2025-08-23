@@ -69,35 +69,22 @@ const AddPatientPage = () => {
     e.preventDefault();
     
     try {
-      const BACKEND_URL = import.meta.env?.REACT_APP_BACKEND_URL || 
-                          process.env?.REACT_APP_BACKEND_URL || 
-                          window.location.origin;
-      
-      const response = await fetch(`${BACKEND_URL}/api/practice/add-staff`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('dentalToken')}`
-        },
-        body: JSON.stringify({
-          firstName: dentistFormData.firstName,
-          lastName: dentistFormData.lastName,
-          email: dentistFormData.email
-        })
+      const response = await practiceApi.addStaff({
+        firstName: dentistFormData.firstName,
+        lastName: dentistFormData.lastName,
+        email: dentistFormData.email
       });
       
-      const data = await response.json();
-      
-      if (data.success) {
+      if (response.success) {
         // Refresh dentist list
         await loadDentists();
         
         // Select the newly added dentist
         setFormData({
           ...formData,
-          assignedDentistId: data.staffMember.id
+          assignedDentistId: response.staffMember.id
         });
-        setSelectedDentist(data.staffMember);
+        setSelectedDentist(response.staffMember);
         
         // Close modal and reset form
         setShowAddDentist(false);
@@ -109,12 +96,12 @@ const AddPatientPage = () => {
           variant: "default",
         });
       } else {
-        throw new Error(data.message || 'Failed to add dentist');
+        throw new Error(response.message || 'Failed to add dentist');
       }
     } catch (err) {
       toast({
         title: "Error",
-        description: err.message || 'Failed to add dentist',
+        description: err.response?.data?.detail || err.message || 'Failed to add dentist',
         variant: "destructive",
       });
     }
