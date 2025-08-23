@@ -519,6 +519,68 @@ class DentalAPITester:
         except Exception as e:
             self.log_test("Invalid Credentials", False, f"Exception: {str(e)}")
             return False
+
+    def test_practice_staff_endpoint(self):
+        """Test GET /api/practice/staff endpoint for Add Patient dentist assignment functionality"""
+        if not self.admin_token:
+            self.log_test("Practice Staff Endpoint", False, "No admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{self.base_url}/practice/staff", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    staff_members = data["data"]
+                    
+                    # Verify response format matches what frontend expects
+                    if isinstance(staff_members, list) and len(staff_members) > 0:
+                        # Check if each staff member has required fields for AddPatientPage
+                        required_fields = ["id", "firstName", "lastName", "email", "role"]
+                        valid_staff = True
+                        admin_found = False
+                        
+                        for staff in staff_members:
+                            # Check required fields
+                            for field in required_fields:
+                                if field not in staff:
+                                    valid_staff = False
+                                    break
+                            
+                            # Check if role is valid
+                            if staff.get("role") not in ["practice_admin", "practice_staff"]:
+                                valid_staff = False
+                                break
+                                
+                            # Check if admin user is present
+                            if staff.get("email") == "cganz2279@gmail.com" and staff.get("role") == "practice_admin":
+                                admin_found = True
+                        
+                        if valid_staff and admin_found:
+                            self.log_test("Practice Staff Endpoint", True, 
+                                        f"Found {len(staff_members)} staff members with correct format. Admin user present.")
+                            return True
+                        elif not valid_staff:
+                            self.log_test("Practice Staff Endpoint", False, "Staff members missing required fields")
+                            return False
+                        else:
+                            self.log_test("Practice Staff Endpoint", False, "Admin user cganz2279@gmail.com not found in staff list")
+                            return False
+                    else:
+                        self.log_test("Practice Staff Endpoint", False, "No staff members found or invalid data format")
+                        return False
+                else:
+                    self.log_test("Practice Staff Endpoint", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Practice Staff Endpoint", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Practice Staff Endpoint", False, f"Exception: {str(e)}")
+            return False
     
     def run_all_tests(self):
         """Run all backend API tests"""
