@@ -192,9 +192,9 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const topMargin = 20; // 20mm top margin
-    const bottomMargin = 25; // 25mm bottom margin (extra space for page numbers)
-    const sideMargin = 15; // 15mm side margins
+    const topMargin = 15; // 15mm top margin
+    const bottomMargin = 20; // 20mm bottom margin (space for page numbers)
+    const sideMargin = 10; // 10mm side margins
     const imgWidth = pdfWidth - (sideMargin * 2);
     const availableHeight = pdfHeight - topMargin - bottomMargin;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -206,10 +206,10 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     // Add first page with proper margins
     pdf.addImage(imgData, 'PNG', sideMargin, position, imgWidth, imgHeight, undefined, 'FAST');
     
-    // Add page number to first page
+    // Add page number to first page (positioned in bottom margin)
     pdf.setFontSize(10);
     pdf.setTextColor(100, 100, 100);
-    pdf.text(`Page ${pageNumber}`, pdfWidth - 25, pdfHeight - 10, { align: 'right' });
+    pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
     
     heightLeft -= availableHeight;
     
@@ -221,10 +221,10 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
       
       pdf.addImage(imgData, 'PNG', sideMargin, position, imgWidth, imgHeight, undefined, 'FAST');
       
-      // Add page number to each additional page
+      // Add page number to each additional page (positioned in bottom margin)
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
-      pdf.text(`Page ${pageNumber}`, pdfWidth - 25, pdfHeight - 10, { align: 'right' });
+      pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
       
       heightLeft -= availableHeight;
     }
