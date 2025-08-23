@@ -432,6 +432,12 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ PASS - PDF generation functionality working perfectly. Successfully tested complete flow: 1) Login as practice admin (cganz2279@gmail.com/admin123) ✅ 2) Navigate to procedure view from Recent Procedures section ✅ 3) Click 'Download PDF' button ✅ 4) PDF generated and downloaded successfully (589KB file) ✅ 5) Success toast notification displayed ✅ 6) Verified procedure view page contains all required sections: Procedure Information, Practice Notes, Custom Instructions, Detailed Post-Operative Care Instructions, Contact Information ✅ 7) Single Contact Information section found (no duplicates) ✅ 8) PDF includes proper margins (15mm top, 20mm bottom, 10mm sides), page numbering, patient acknowledgment section, and standardized disclaimer footer. Duplicate disclaimer issue has been resolved. Both dashboard Print buttons and procedure view Download PDF buttons are functional."
+        - working: false
+          agent: "user"
+          comment: "User reported margin issues: Page 1 bottom margin needs to be larger, Page 2+ top margin needs to be larger, and disclaimer is repeating on last page."
+        - working: false
+          agent: "main"
+          comment: "FIXED MARGIN AND DISCLAIMER ISSUES: 1) Increased margins - 20mm top/25mm bottom for all pages for better spacing 2) Rewrote page break logic to properly handle multi-page content with consistent top margins on subsequent pages 3) Enhanced duplicate disclaimer removal to aggressively clean captured content - removes any elements containing 'DISCLAIMER', 'educational purposes', 'professional medical advice', 'Generated on:', or 'DentalRescueBot' text 4) Fixed page positioning calculations to ensure proper content flow across pages. Ready for testing."
 
 metadata:
   created_by: "testing_agent"
