@@ -425,3 +425,5 @@ agent_communication:
       message: "Implemented complete B2B SaaS patient management system. Backend: patient login, patient dashboard API, existing add/assign patient APIs. Frontend: PatientLoginForm, PatientDashboard, updated AddPatientPage, new AssignProcedurePage, updated App.js routing for dual login system. Ready for backend testing first, then frontend testing."
     - agent: "main"
       message: "REGRESSIONS IDENTIFIED: 1) WordPress admin page at /admin not loading admin interface - only shows basic WordPress page. 2) Add Patient dentist assignment functionality reported broken. Need to fix WordPress integration and investigate Add Patient issue."
+    - agent: "main"
+      message: "FIXES IMPLEMENTED: 1) Created corrected wordpress_admin_fixed.html with proper URL detection for production (www.theoncallbot.com -> dentalstaff.preview.emergentagent.com). 2) Fixed admin panel routing so 'Main Dashboard' goes to proper PracticeDashboard. Need to test backend staff API for Add Patient issue and provide corrected HTML to user for WordPress embedding."
