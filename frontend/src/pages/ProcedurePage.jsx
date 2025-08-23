@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -21,7 +22,9 @@ import { dentalApi } from '../services/api';
 import { generateProcedurePDF } from '../utils/pdfGenerator';
 import { useToast } from '../hooks/use-toast';
 
-const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
+const ProcedurePage = () => {
+  const { procedureId } = useParams();
+  const navigate = useNavigate();
   const [procedure, setProcedure] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
