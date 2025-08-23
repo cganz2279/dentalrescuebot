@@ -154,7 +154,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = 'https://dentalstaff.preview.emergentagent.com/api';
+        const BACKEND_URL = 'https://carebot-1.preview.emergentagent.com/api';
         
         function togglePassword() {
             const passwordField = document.getElementById('password');
@@ -211,7 +211,7 @@
                         
                         // Redirect with token in URL to bypass second login
                         setTimeout(() => {
-                            const redirectUrl = `https://dentalstaff.preview.emergentagent.com?token=${data.token}&auto=true`;
+                            const redirectUrl = `https://carebot-1.preview.emergentagent.com?token=${data.token}&auto=true`;
                             window.location.href = redirectUrl;
                         }, 1500);
                     } else {
