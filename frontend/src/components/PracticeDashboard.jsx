@@ -54,17 +54,40 @@ const PracticeDashboard = () => {
   };
 
   const viewProcedure = (procedure) => {
-    // Navigate to procedure details page
-    navigate(`/procedure/${procedure.procedureId}`);
+    try {
+      console.log('Viewing procedure:', procedure);
+      // Navigate to procedure details page using the procedure template ID
+      const procedureId = procedure.procedureId || procedure.id;
+      navigate(`/procedure/${procedureId}`);
+    } catch (error) {
+      console.error('View procedure error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to open procedure details",
+        variant: "destructive",
+      });
+    }
   };
 
   const editProcedure = (procedure) => {
-    // Navigate to edit procedure assignment page  
-    navigate(`/edit-procedure/${procedure.id}`);
+    try {
+      console.log('Editing procedure:', procedure);
+      // Navigate to edit procedure assignment page using the assignment ID
+      const assignmentId = procedure.id;
+      navigate(`/edit-procedure/${assignmentId}`);
+    } catch (error) {
+      console.error('Edit procedure error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to open procedure editor",
+        variant: "destructive",
+      });
+    }
   };
 
   const printProcedure = async (procedure) => {
     try {
+      console.log('Printing procedure:', procedure);
       // Generate and download PDF for this procedure
       const { generateProcedurePDF } = await import('../utils/pdfGenerator');
       await generateProcedurePDF(procedure, practice);
@@ -75,6 +98,7 @@ const PracticeDashboard = () => {
         variant: "default",
       });
     } catch (err) {
+      console.error('Print procedure error:', err);
       toast({
         title: "Error", 
         description: "Failed to generate PDF",
