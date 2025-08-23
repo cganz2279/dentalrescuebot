@@ -27,6 +27,12 @@ const AddPatientPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedDentist, setSelectedDentist] = useState(null);
+  const [showAddDentist, setShowAddDentist] = useState(false);
+  const [dentistFormData, setDentistFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: ''
+  });
 
   useEffect(() => {
     loadDentists();
