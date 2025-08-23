@@ -379,7 +379,7 @@ frontend:
     file: "frontend/src/components/LoadingSpinner.jsx"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "testing"
