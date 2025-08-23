@@ -186,28 +186,47 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     // Remove temporary element
     document.body.removeChild(printElement);
     
-    // Create PDF with better page handling
+    // Create PDF with proper margins and page numbering
     const pdf = new jsPDF('p', 'mm', 'a4');
     const imgData = canvas.toDataURL('image/png', 1.0);
     
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = pdfWidth - 20; // 10mm margin on each side
+    const topMargin = 20; // 20mm top margin
+    const bottomMargin = 25; // 25mm bottom margin (extra space for page numbers)
+    const sideMargin = 15; // 15mm side margins
+    const imgWidth = pdfWidth - (sideMargin * 2);
+    const availableHeight = pdfHeight - topMargin - bottomMargin;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
     let heightLeft = imgHeight;
-    let position = 10; // 10mm top margin
+    let position = topMargin;
+    let pageNumber = 1;
     
-    // Add first page
-    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, undefined, 'FAST');
-    heightLeft -= pdfHeight - 20; // Account for margins
+    // Add first page with proper margins
+    pdf.addImage(imgData, 'PNG', sideMargin, position, imgWidth, imgHeight, undefined, 'FAST');
     
-    // Add additional pages if needed with better spacing
+    // Add page number to first page
+    pdf.setFontSize(10);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text(`Page ${pageNumber}`, pdfWidth - 25, pdfHeight - 10, { align: 'right' });
+    
+    heightLeft -= availableHeight;
+    
+    // Add additional pages if needed with proper margins and page numbers
     while (heightLeft >= 0) {
-      position = heightLeft - imgHeight + 10;
+      position = heightLeft - imgHeight + topMargin;
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= pdfHeight - 20;
+      pageNumber++;
+      
+      pdf.addImage(imgData, 'PNG', sideMargin, position, imgWidth, imgHeight, undefined, 'FAST');
+      
+      // Add page number to each additional page
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Page ${pageNumber}`, pdfWidth - 25, pdfHeight - 10, { align: 'right' });
+      
+      heightLeft -= availableHeight;
     }
     
     // Save the PDF
