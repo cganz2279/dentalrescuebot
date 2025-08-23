@@ -97,88 +97,11 @@ const PracticeDashboard = () => {
       if (!procedure || !procedure.procedureName) {
         throw new Error('Procedure data is incomplete');
       }
+
+      // Use the shared HTML-to-PDF generator for identical output
+      const { generateViewPagePDF } = await import('../utils/htmlToPdf');
+      const result = await generateViewPagePDF(procedure, practice);
       
-      // Create a properly formatted procedure object for PDF generation
-      const formattedProcedure = {
-        name: procedure.procedureName || 'Unknown Procedure',
-        specialtyName: 'Dental Post-Operative Care',
-        description: `Post-operative care instructions for ${procedure.procedureName}`,
-        duration: 'Follow as prescribed',
-        difficulty: 'Standard Care',
-        materials: ['Prescribed medications', 'Gauze pads', 'Salt water solution'],
-        
-        // Use custom instructions if available, otherwise provide defaults
-        instructions: Array.isArray(procedure.customInstructions) && procedure.customInstructions.length > 0 
-          ? procedure.customInstructions 
-          : [
-              'Follow all post-operative care instructions carefully',
-              'Take prescribed medications as directed by your dentist',
-              'Apply ice to reduce swelling as recommended',
-              'Eat soft foods and avoid the treated area',
-              'Contact your dental office if you have any concerns'
-            ],
-        
-        // Add the missing properties that the PDF generator expects
-        immediateAftercare: [
-          'Apply ice to the treated area for 15 minutes every hour for the first 24 hours',
-          'Keep gauze in place for 30-60 minutes after treatment',
-          'Do not rinse or spit forcefully for the first 24 hours',
-          'Take prescribed medications as directed'
-        ],
-        
-        dietRestrictions: [
-          'Stick to soft foods for the first 24-48 hours',
-          'Avoid hot liquids and foods until numbness wears off',
-          'No alcohol while taking prescribed medications',
-          'Avoid using straws to prevent dry socket'
-        ],
-        
-        warningSignsToCallDoctor: [
-          'Severe or worsening pain after 48 hours',
-          'Excessive bleeding that does not stop',
-          'Signs of infection: fever, excessive swelling, pus',
-          'Numbness that persists beyond expected timeframe'
-        ],
-        
-        warnings: [
-          'Contact your dental office immediately if you experience severe pain',
-          'Watch for signs of infection: excessive swelling, fever, or persistent bleeding',
-          'Do not smoke or use tobacco products during healing',
-          'Avoid alcohol while taking prescribed medications'
-        ],
-        
-        recoveryTimeline: [
-          { day: 1, activity: 'Rest and follow immediate post-op instructions' },
-          { day: 2, activity: 'Light activity as tolerated, continue medications' },
-          { day: 3, activity: 'Gradual return to normal diet if comfortable' },
-          { day: 7, activity: 'Follow-up appointment if scheduled' }
-        ],
-        
-        medications: [
-          'Take all prescribed medications as directed',
-          'Complete the full course of antibiotics if prescribed',
-          'Use over-the-counter pain relief as recommended',
-          'Do not exceed recommended dosages'
-        ]
-      };
-      
-      console.log('Formatted procedure for PDF:', formattedProcedure);
-      
-      // Test PDF generator import
-      console.log('Importing PDF generator...');
-      const pdfModule = await import('../utils/pdfGenerator');
-      console.log('PDF module imported:', pdfModule);
-      
-      const { generateProcedurePDF } = pdfModule;
-      console.log('generateProcedurePDF function:', generateProcedurePDF);
-      
-      if (typeof generateProcedurePDF !== 'function') {
-        throw new Error('generateProcedurePDF is not a function');
-      }
-      
-      // Generate PDF
-      console.log('Calling generateProcedurePDF...');
-      const result = await generateProcedurePDF(formattedProcedure, practice);
       console.log('PDF generation result:', result);
       console.log('=== PRINT DEBUG END ===');
       
