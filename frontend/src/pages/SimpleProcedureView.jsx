@@ -17,7 +17,9 @@ const SimpleProcedureView = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadProcedureData();
+    if (procedureId) {
+      loadProcedureData();
+    }
   }, [procedureId]);
 
   const loadProcedureData = async () => {
