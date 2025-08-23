@@ -128,8 +128,23 @@ const EditPatientPage = () => {
         setError(response.message || 'Failed to update patient');
       }
     } catch (err) {
-      setError('Failed to update patient. Please try again.');
       console.error('Update patient error:', err);
+      
+      // Handle different error types properly
+      let errorMessage = 'Failed to update patient. Please try again.';
+      
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          // FastAPI validation errors
+          errorMessage = err.response.data.detail.map(e => e.msg).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMessage = err.response.data.detail;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setSaving(false);
     }
