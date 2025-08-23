@@ -61,6 +61,20 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     printElement.style.width = '800px';
     document.body.appendChild(printElement);
     
+    // Clean up any duplicate content in the captured HTML
+    const contentDiv = printElement.querySelector('#procedure-content');
+    if (contentDiv) {
+      // Remove the original Contact Information section from the captured content
+      // since we'll add our own standardized version
+      const contactCards = contentDiv.querySelectorAll('[class*="bg-gray-50"]');
+      contactCards.forEach(card => {
+        const title = card.querySelector('h3, [class*="CardTitle"]');
+        if (title && title.textContent.includes('Contact Information')) {
+          card.parentNode.remove();
+        }
+      });
+    }
+    
     // Convert HTML to canvas with better quality and page break handling
     const canvas = await html2canvas(printElement, {
       scale: 2,
