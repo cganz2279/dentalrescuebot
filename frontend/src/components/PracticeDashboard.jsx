@@ -13,7 +13,10 @@ import {
   Activity,
   Clock,
   AlertCircle,
-  Edit
+  Edit,
+  Eye,
+  Printer,
+  MoreHorizontal
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
