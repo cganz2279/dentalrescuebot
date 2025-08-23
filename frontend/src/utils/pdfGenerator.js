@@ -38,10 +38,15 @@ export const generateProcedurePDF = (procedure, practice = null, dentist = null,
       addText(title, 14, true, titleColor);
       yPosition += 5;
       
-      items.forEach((item, index) => {
-        const bullet = isWarning ? '⚠️' : '•';
-        addText(`${bullet} ${item}`, 11);
-      });
+      // Ensure items is an array before calling forEach
+      if (Array.isArray(items) && items.length > 0) {
+        items.forEach((item, index) => {
+          const bullet = isWarning ? '⚠️' : '•';
+          addText(`${bullet} ${item}`, 11);
+        });
+      } else {
+        addText('• No specific instructions provided', 11);
+      }
       yPosition += 10;
     };
 
