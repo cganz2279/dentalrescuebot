@@ -53,6 +53,36 @@ const PracticeDashboard = () => {
     }
   };
 
+  const viewProcedure = (procedure) => {
+    // Navigate to procedure details page
+    navigate(`/procedure/${procedure.procedureId}`);
+  };
+
+  const editProcedure = (procedure) => {
+    // Navigate to edit procedure assignment page
+    navigate(`/edit-procedure/${procedure.id}`);
+  };
+
+  const printProcedure = async (procedure) => {
+    try {
+      // Generate and download PDF for this procedure
+      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
+      await generateProcedurePDF(procedure, practice);
+      
+      toast({
+        title: "Success",
+        description: "Procedure PDF downloaded successfully",
+        variant: "default",
+      });
+    } catch (err) {
+      toast({
+        title: "Error", 
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
