@@ -69,7 +69,11 @@ const AddPatientPage = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/practice/add-staff', {
+      const BACKEND_URL = import.meta.env?.REACT_APP_BACKEND_URL || 
+                          process.env?.REACT_APP_BACKEND_URL || 
+                          window.location.origin;
+      
+      const response = await fetch(`${BACKEND_URL}/api/practice/add-staff`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
