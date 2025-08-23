@@ -94,7 +94,6 @@ const SimpleProcedureView = () => {
   };
 
   if (loading) {
-    console.log('SimpleProcedureView: Still loading...');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <LoadingSpinner size="xl" />
@@ -102,10 +101,7 @@ const SimpleProcedureView = () => {
     );
   }
 
-  console.log('SimpleProcedureView: Rendering with state:', { loading, error, procedure });
-
   if (error || !procedure) {
-    console.log('SimpleProcedureView: Showing error state. Error:', error, 'Procedure:', procedure);
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white shadow-sm border-b">
