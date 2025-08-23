@@ -7,11 +7,13 @@ import { ArrowLeft, FileText, Calendar, User, Clock, Download, AlertTriangle } f
 import { practiceApi } from '../services/authApi';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const SimpleProcedureView = () => {
   const { procedureId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { practice } = useAuth();
   const [procedure, setProcedure] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
