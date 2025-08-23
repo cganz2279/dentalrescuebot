@@ -118,6 +118,28 @@ const PracticeDashboard = () => {
               'Contact your dental office if you have any concerns'
             ],
         
+        // Add the missing properties that the PDF generator expects
+        immediateAftercare: [
+          'Apply ice to the treated area for 15 minutes every hour for the first 24 hours',
+          'Keep gauze in place for 30-60 minutes after treatment',
+          'Do not rinse or spit forcefully for the first 24 hours',
+          'Take prescribed medications as directed'
+        ],
+        
+        dietRestrictions: [
+          'Stick to soft foods for the first 24-48 hours',
+          'Avoid hot liquids and foods until numbness wears off',
+          'No alcohol while taking prescribed medications',
+          'Avoid using straws to prevent dry socket'
+        ],
+        
+        warningSignsToCallDoctor: [
+          'Severe or worsening pain after 48 hours',
+          'Excessive bleeding that does not stop',
+          'Signs of infection: fever, excessive swelling, pus',
+          'Numbness that persists beyond expected timeframe'
+        ],
+        
         warnings: [
           'Contact your dental office immediately if you experience severe pain',
           'Watch for signs of infection: excessive swelling, fever, or persistent bleeding',
@@ -135,7 +157,8 @@ const PracticeDashboard = () => {
         medications: [
           'Take all prescribed medications as directed',
           'Complete the full course of antibiotics if prescribed',
-          'Use over-the-counter pain relief as recommended'
+          'Use over-the-counter pain relief as recommended',
+          'Do not exceed recommended dosages'
         ]
       };
       
