@@ -193,12 +193,16 @@ export const practiceApi = {
   },
 
   getProcedureAssignment: async (assignmentId) => {
+    console.log('Getting procedure assignment:', assignmentId);
     const response = await practiceAxios.get(`/procedure-assignments/${assignmentId}`);
+    console.log('Get procedure assignment response:', response.data);
     return response.data;
   },
 
   updateProcedureAssignment: async (assignmentId, updateData) => {
+    console.log('Updating procedure assignment:', assignmentId, updateData);
     const response = await practiceAxios.put(`/procedure-assignments/${assignmentId}`, updateData);
+    console.log('Update procedure assignment response:', response.data);
     return response.data;
   }
 };
