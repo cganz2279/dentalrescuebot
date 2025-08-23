@@ -391,7 +391,7 @@ frontend:
     file: "frontend/src/App.css"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "testing"
