@@ -232,7 +232,7 @@ const AddPatientPage = () => {
                         <SelectValue placeholder="Choose a dentist (optional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No dentist assigned</SelectItem>
+                        <SelectItem value="unassigned">No dentist assigned</SelectItem>
                         {dentists.map((dentist) => (
                           <SelectItem key={dentist.id} value={dentist.id}>
                             Dr. {dentist.firstName} {dentist.lastName} ({dentist.role === 'practice_admin' ? 'Admin' : 'Staff'})
