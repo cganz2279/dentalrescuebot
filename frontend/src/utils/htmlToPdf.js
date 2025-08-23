@@ -66,20 +66,29 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     if (contentDiv) {
       // Remove any existing Contact Information cards from the captured content
       // since we have our own standardized disclaimer/contact section at the bottom
-      const allCards = contentDiv.querySelectorAll('[class*="Card"], [class*="card"]');
+      const allCards = contentDiv.querySelectorAll('[class*="Card"], [class*="card"], div');
       allCards.forEach(card => {
         const cardText = card.textContent || '';
-        if (cardText.includes('Contact Information') || cardText.includes('contact your dental office')) {
+        if (cardText.includes('Contact Information') || 
+            cardText.includes('contact your dental office') ||
+            cardText.includes('DISCLAIMER') || 
+            cardText.includes('educational purposes') ||
+            cardText.includes('professional medical advice') ||
+            cardText.includes('Generated on:') ||
+            cardText.includes('DentalRescueBot')) {
           card.remove();
         }
       });
       
-      // Also remove any other potential duplicate disclaimer text
-      const allDivs = contentDiv.querySelectorAll('div');
-      allDivs.forEach(div => {
-        const divText = div.textContent || '';
-        if (divText.includes('DISCLAIMER') && divText.includes('educational purposes')) {
-          div.remove();
+      // Also remove any paragraph or text elements with disclaimer content
+      const allPs = contentDiv.querySelectorAll('p, span, div');
+      allPs.forEach(element => {
+        const text = element.textContent || '';
+        if ((text.includes('DISCLAIMER') && text.includes('educational')) ||
+            (text.includes('Always consult your dentist') && text.includes('medical concerns')) ||
+            text.includes('Generated on:') ||
+            text.includes('DentalRescueBot')) {
+          element.remove();
         }
       });
     }
