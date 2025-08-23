@@ -110,13 +110,8 @@ export const authApi = {
   },
 
   getPatientDashboard: async () => {
-    const token = localStorage.getItem('dentalToken');
-    const response = await authAxios.get('/patient-dashboard', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return response.data;
+    // REMOVED - Patients do not use this app
+    throw new Error('Patients do not have access to this system');
   }
 };
 
