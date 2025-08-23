@@ -426,6 +426,9 @@ frontend:
         - working: false
           agent: "user"
           comment: "User reported: Disclaimer on printed page shows twice. Need to investigate and fix duplicate disclaimer issue in PDF generation."
+        - working: false
+          agent: "main"
+          comment: "FIXED DUPLICATE DISCLAIMER: Modified htmlToPdf.js to capture actual page content instead of generating duplicate HTML. Now uses document.querySelector to capture main content area and removes duplicate contact/disclaimer sections automatically. Added cleanup logic to remove any duplicate Contact Information or disclaimer content from captured HTML before adding standardized footer."
 
 metadata:
   created_by: "testing_agent"
