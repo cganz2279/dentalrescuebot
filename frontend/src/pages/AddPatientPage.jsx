@@ -224,9 +224,21 @@ const AddPatientPage = () => {
 
                   {/* Dentist Assignment */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Assign to Dentist (Optional)
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-gray-700">
+                        Assign to Dentist (Optional)
+                      </label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAddDentist(true)}
+                        className="flex items-center space-x-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        <span>Add New Dentist</span>
+                      </Button>
+                    </div>
                     <Select value={formData.assignedDentistId} onValueChange={handleDentistSelect}>
                       <SelectTrigger>
                         <SelectValue placeholder="Choose a dentist (optional)" />
