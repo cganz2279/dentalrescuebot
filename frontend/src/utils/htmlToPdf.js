@@ -110,64 +110,73 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     // Remove temporary element
     document.body.removeChild(printElement);
     
-    // Create PDF with proper margins and page numbering
+    // Create PDF with proper page-by-page margins
     const pdf = new jsPDF('p', 'mm', 'a4');
     const imgData = canvas.toDataURL('image/png', 1.0);
     
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const topMargin = 20; // 20mm top margin for all pages  
-    const bottomMargin = 25; // 25mm bottom margin for all pages (space for page numbers)
     const sideMargin = 10; // 10mm side margins
     const imgWidth = pdfWidth - (sideMargin * 2);
-    const availableHeight = pdfHeight - topMargin - bottomMargin;
+    
+    // Different margins for different pages
+    const page1TopMargin = 15;    // 15mm top margin for page 1
+    const page1BottomMargin = 30; // 30mm bottom margin for page 1
+    const page2PlusTopMargin = 25; // 25mm top margin for page 2+
+    const page2PlusBottomMargin = 20; // 20mm bottom margin for page 2+
+    
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const page1AvailableHeight = pdfHeight - page1TopMargin - page1BottomMargin;
+    const page2PlusAvailableHeight = pdfHeight - page2PlusTopMargin - page2PlusBottomMargin;
     
-    let pageNumber = 1;
     let remainingHeight = imgHeight;
-    let currentYPosition = 0;
+    let contentOffset = 0; // Track how much content we've already placed
+    let pageNumber = 1;
     
-    // Add first page with proper margins
-    const firstPageContentHeight = Math.min(remainingHeight, availableHeight);
+    // Page 1 with specific margins
+    const page1ContentHeight = Math.min(remainingHeight, page1AvailableHeight);
     
-    // For first page, position image at top margin
     pdf.addImage(
-      imgData, 'PNG', 
-      sideMargin, topMargin - (currentYPosition * imgWidth / canvas.width), 
-      imgWidth, imgHeight, 
-      undefined, 'FAST'
+      imgData, 'PNG',
+      sideMargin, page1TopMargin,
+      imgWidth, imgHeight,
+      undefined, 'FAST',
+      0, 0 // Start from top of image
     );
     
-    // Add page number to first page
+    // Add page number to page 1
     pdf.setFontSize(10);
     pdf.setTextColor(100, 100, 100);
-    pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 10, { align: 'right' });
+    pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
     
-    remainingHeight -= availableHeight;
-    currentYPosition += availableHeight;
+    remainingHeight -= page1AvailableHeight;
+    contentOffset += page1AvailableHeight;
     
-    // Add additional pages with proper top margins
+    // Page 2+ with different margins
     while (remainingHeight > 0) {
       pdf.addPage();
       pageNumber++;
       
-      // Position the image so the next portion appears at the top margin
-      const yPos = topMargin - (currentYPosition * imgWidth / canvas.width);
+      // Calculate how much content fits on this page
+      const pageContentHeight = Math.min(remainingHeight, page2PlusAvailableHeight);
+      
+      // Position the image so the continuation appears at the top of the new page
+      const yOffset = -(contentOffset * imgWidth / canvas.width);
       
       pdf.addImage(
         imgData, 'PNG',
-        sideMargin, yPos,
+        sideMargin, page2PlusTopMargin + yOffset,
         imgWidth, imgHeight,
         undefined, 'FAST'
       );
       
-      // Add page number to each additional page
+      // Add page number
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
-      pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 10, { align: 'right' });
+      pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
       
-      remainingHeight -= availableHeight;
-      currentYPosition += availableHeight;
+      remainingHeight -= page2PlusAvailableHeight;
+      contentOffset += page2PlusAvailableHeight;
     }
     
     // Save the PDF
