@@ -268,17 +268,46 @@ const PracticeDashboard = () => {
                 <div className="space-y-4">
                   {dashboardData.recentProcedures.map((procedure) => (
                     <div key={procedure.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
+                      <div className="flex-1">
                         <p className="font-medium">{procedure.procedureName}</p>
                         <p className="text-sm text-gray-600">Dr. {procedure.dentistName}</p>
+                        <div className="flex items-center space-x-4 mt-2">
+                          <Badge variant="outline">
+                            {procedure.status}
+                          </Badge>
+                          <p className="text-xs text-gray-400">
+                            {new Date(procedure.performedDate).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className="mb-1">
-                          {procedure.status}
-                        </Badge>
-                        <p className="text-xs text-gray-400">
-                          {new Date(procedure.performedDate).toLocaleDateString()}
-                        </p>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => viewProcedure(procedure)}
+                          className="flex items-center space-x-1"
+                        >
+                          <Eye className="h-3 w-3" />
+                          <span>View</span>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => editProcedure(procedure)}
+                          className="flex items-center space-x-1"
+                        >
+                          <Edit className="h-3 w-3" />
+                          <span>Edit</span>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printProcedure(procedure)}
+                          className="flex items-center space-x-1"
+                        >
+                          <Printer className="h-3 w-3" />
+                          <span>Print</span>
+                        </Button>
                       </div>
                     </div>
                   ))}
