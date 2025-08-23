@@ -8,16 +8,16 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     // Create a printable version of the current page
     const printElement = document.createElement('div');
     printElement.innerHTML = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; padding: 20px; background: white; max-width: 800px; margin: 0 auto;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; padding: 20px; background: white; max-width: 800px; margin: 0 auto; page-break-inside: avoid;">
         <!-- Header -->
-        <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #000;">
+        <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #000; page-break-after: avoid;">
           <h1 style="font-size: 24px; font-weight: bold; margin: 0 0 10px 0; color: #000;">POST-OPERATIVE CARE INSTRUCTIONS</h1>
           ${practice?.name ? `<h2 style="font-size: 16px; font-weight: bold; margin: 5px 0; color: #000;">${practice.name}</h2>` : ''}
           ${practice?.phone ? `<p style="font-size: 12px; margin: 5px 0; color: #666;">Phone: ${practice.phone}</p>` : ''}
         </div>
 
         <!-- Procedure Information -->
-        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid;">
           <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #000;">PROCEDURE INFORMATION</h3>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div>
@@ -41,7 +41,7 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
 
         ${procedure.practiceNotes && procedure.practiceNotes.trim() ? `
         <!-- Practice Notes -->
-        <div style="background: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+        <div style="background: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 8px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid;">
           <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #7c3aed;">👤 Practice Notes</h3>
           <div style="background: #faf5ff; padding: 15px; border-radius: 6px;">
             <p style="color: #6b21a8; margin: 0; white-space: pre-wrap;">${procedure.practiceNotes}</p>
@@ -51,7 +51,7 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
 
         ${procedure.customInstructions && procedure.customInstructions.length > 0 ? `
         <!-- Custom Instructions -->
-        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid;">
           <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #2563eb;">📋 Custom Post-Operative Instructions</h3>
           <div style="background: #dbeafe; padding: 15px; border-radius: 6px;">
             <ul style="margin: 0; padding-left: 0; list-style: none;">
@@ -66,12 +66,12 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
         ` : ''}
 
         <!-- Detailed Post-Operative Care Instructions -->
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 20px 0; color: #16a34a;">📄 Detailed Post-Operative Care Instructions</h3>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid;">
+          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 20px 0; color: #16a34a; page-break-after: avoid;">📄 Detailed Post-Operative Care Instructions</h3>
           
           <!-- Immediate Aftercare -->
-          <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 15px; border-radius: 6px;">
-            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #dc2626;">🕐 IMMEDIATE AFTERCARE (First 24 Hours)</h4>
+          <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 15px; border-radius: 6px; page-break-inside: avoid;">
+            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #dc2626; page-break-after: avoid;">🕐 IMMEDIATE AFTERCARE (First 24 Hours)</h4>
             <ul style="margin: 0; padding-left: 0; list-style: none;">
               <li style="margin-bottom: 6px; color: #991b1b;"><span style="font-weight: bold; color: #dc2626;">•</span> Apply ice to the treated area for 15 minutes every hour for the first 24 hours to reduce swelling</li>
               <li style="margin-bottom: 6px; color: #991b1b;"><span style="font-weight: bold; color: #dc2626;">•</span> Keep gauze in place for 30-60 minutes after treatment, then remove gently</li>
@@ -81,8 +81,8 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
           </div>
 
           <!-- Diet Instructions -->
-          <div style="background: #fff7ed; border-left: 4px solid #f97316; padding: 15px; margin-bottom: 15px; border-radius: 6px;">
-            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #ea580c;">🍽️ DIET AND EATING INSTRUCTIONS</h4>
+          <div style="background: #fff7ed; border-left: 4px solid #f97316; padding: 15px; margin-bottom: 15px; border-radius: 6px; page-break-inside: avoid;">
+            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #ea580c; page-break-after: avoid;">🍽️ DIET AND EATING INSTRUCTIONS</h4>
             <ul style="margin: 0; padding-left: 0; list-style: none;">
               <li style="margin-bottom: 6px; color: #9a3412;"><span style="font-weight: bold; color: #ea580c;">•</span> Stick to soft foods for the first 24-48 hours (yogurt, soup, mashed potatoes)</li>
               <li style="margin-bottom: 6px; color: #9a3412;"><span style="font-weight: bold; color: #ea580c;">•</span> Avoid hot liquids and foods until numbness wears off</li>
@@ -92,8 +92,8 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
           </div>
 
           <!-- Medications -->
-          <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 15px; border-radius: 6px;">
-            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #2563eb;">💊 MEDICATION GUIDELINES</h4>
+          <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 15px; border-radius: 6px; page-break-inside: avoid;">
+            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #2563eb; page-break-after: avoid;">💊 MEDICATION GUIDELINES</h4>
             <ul style="margin: 0; padding-left: 0; list-style: none;">
               <li style="margin-bottom: 6px; color: #1e3a8a;"><span style="font-weight: bold; color: #2563eb;">•</span> Take all prescribed medications exactly as directed</li>
               <li style="margin-bottom: 6px; color: #1e3a8a;"><span style="font-weight: bold; color: #2563eb;">•</span> Complete the full course of antibiotics if prescribed</li>
@@ -103,8 +103,8 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
           </div>
 
           <!-- Warning Signs -->
-          <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; margin-bottom: 15px; border-radius: 6px;">
-            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #dc2626;">⚠️ WHEN TO CONTACT YOUR DENTIST IMMEDIATELY</h4>
+          <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; margin-bottom: 15px; border-radius: 6px; page-break-inside: avoid;">
+            <h4 style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; color: #dc2626; page-break-after: avoid;">⚠️ WHEN TO CONTACT YOUR DENTIST IMMEDIATELY</h4>
             <ul style="margin: 0; padding-left: 0; list-style: none;">
               <li style="margin-bottom: 6px; color: #7f1d1d;"><span style="font-weight: bold; color: #dc2626;">•</span> Severe or worsening pain after 48 hours</li>
               <li style="margin-bottom: 6px; color: #7f1d1d;"><span style="font-weight: bold; color: #dc2626;">•</span> Excessive bleeding that does not stop with gentle pressure</li>
@@ -116,8 +116,8 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
         </div>
 
         <!-- General Post-Operative Care -->
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #16a34a;">📋 General Post-Operative Care</h3>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid;">
+          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #16a34a; page-break-after: avoid;">📋 General Post-Operative Care</h3>
           <div style="background: #dcfce7; padding: 15px; border-radius: 6px;">
             <ul style="margin: 0; padding-left: 0; list-style: none;">
               <li style="margin-bottom: 8px; color: #166534;"><span style="font-weight: bold; color: #16a34a;">•</span> Follow all post-operative care instructions carefully</li>
@@ -129,32 +129,32 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
         </div>
 
         <!-- Contact Information -->
-        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
-          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #374151;">📞 Contact Information</h3>
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 30px; page-break-inside: avoid;">
+          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #374151; page-break-after: avoid;">📞 Contact Information</h3>
           <div style="background: #f3f4f6; padding: 15px; border-radius: 6px;">
-            <p style="color: #374151; margin: 0 0 10px 0;">For questions or concerns about this procedure, please contact your dental office during regular business hours or follow the emergency contact instructions provided.</p>
+            <p style="color: #374151; margin: 0;">For questions or concerns about this procedure, please contact your dental office during regular business hours or follow the emergency contact instructions provided.</p>
           </div>
         </div>
 
-        <!-- Patient Acknowledgment -->
-        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #000;">PATIENT ACKNOWLEDGMENT</h3>
-          <p style="margin: 0 0 20px 0; color: #374151;">I acknowledge that I have received and understand these post-operative care instructions. I will follow these instructions carefully and contact my dental office if I have any questions or concerns.</p>
+        <!-- Patient Acknowledgment - SINGLE INSTANCE -->
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid;">
+          <h3 style="font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #000; page-break-after: avoid;">PATIENT ACKNOWLEDGMENT</h3>
+          <p style="margin: 0 0 30px 0; color: #374151; page-break-after: avoid;">I acknowledge that I have received and understand these post-operative care instructions. I will follow these instructions carefully and contact my dental office if I have any questions or concerns.</p>
           
           <div style="display: flex; justify-content: space-between; margin-top: 30px;">
             <div style="width: 45%;">
-              <div style="border-bottom: 1px solid #000; height: 1px; margin-bottom: 8px;"></div>
-              <p style="font-size: 12px; margin: 0; color: #666;">Patient Signature</p>
+              <div style="border-bottom: 2px solid #000; height: 2px; margin-bottom: 8px;"></div>
+              <p style="font-size: 12px; margin: 0; color: #666; font-weight: bold;">Patient Signature</p>
             </div>
             <div style="width: 30%;">
-              <div style="border-bottom: 1px solid #000; height: 1px; margin-bottom: 8px;"></div>
-              <p style="font-size: 12px; margin: 0; color: #666;">Date</p>
+              <div style="border-bottom: 2px solid #000; height: 2px; margin-bottom: 8px;"></div>
+              <p style="font-size: 12px; margin: 0; color: #666; font-weight: bold;">Date</p>
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 10px; color: #666;">
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 10px; color: #666; page-break-inside: avoid;">
           <p style="margin: 0 0 5px 0;">DISCLAIMER: This information is for educational purposes only and does not replace professional medical advice.</p>
           <p style="margin: 0 0 5px 0;">Always consult your dentist or physician for specific medical concerns.</p>
           <p style="margin: 0;">Generated on: ${new Date().toLocaleDateString()} | DentalRescueBot - www.theoncallbot.com</p>
@@ -169,22 +169,26 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     printElement.style.width = '800px';
     document.body.appendChild(printElement);
     
-    // Convert HTML to canvas
+    // Convert HTML to canvas with better quality and page break handling
     const canvas = await html2canvas(printElement, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       width: 800,
-      height: printElement.offsetHeight
+      height: printElement.offsetHeight,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 800,
+      windowHeight: printElement.offsetHeight
     });
     
     // Remove temporary element
     document.body.removeChild(printElement);
     
-    // Create PDF
+    // Create PDF with better page handling
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/png', 1.0);
     
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -195,14 +199,14 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     let position = 10; // 10mm top margin
     
     // Add first page
-    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, undefined, 'FAST');
     heightLeft -= pdfHeight - 20; // Account for margins
     
-    // Add additional pages if needed
+    // Add additional pages if needed with better spacing
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight + 10;
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight, undefined, 'FAST');
       heightLeft -= pdfHeight - 20;
     }
     
