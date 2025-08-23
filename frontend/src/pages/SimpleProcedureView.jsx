@@ -23,12 +23,18 @@ const SimpleProcedureView = () => {
   const loadProcedureData = async () => {
     try {
       setLoading(true);
+      console.log('Loading procedure data for ID:', procedureId);
+      
       // Try to get procedure assignment data
       const response = await practiceApi.getProcedureAssignment(procedureId);
       
+      console.log('API response:', response);
+      
       if (response.success) {
+        console.log('Procedure data loaded:', response.data);
         setProcedure(response.data);
       } else {
+        console.error('API returned unsuccessful response:', response);
         setError('Procedure not found');
       }
     } catch (err) {
