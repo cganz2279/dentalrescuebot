@@ -825,6 +825,170 @@ async def update_patient(
             detail="Failed to update patient"
         )
 
+
+@router.get("/procedure-assignments/{assignment_id}")
+async def get_procedure_assignment(assignment_id: str, request: Request):
+    """Get a specific procedure assignment"""
+    try:
+        # Get MongoDB instance
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        client = AsyncIOMotorClient(mongo_url)
+        db_name = os.environ.get('DB_NAME', 'test_database')
+        db = client[db_name]
+        
+        # Verify token and get user
+        auth_header = request.headers.get('authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="No token provided"
+            )
+        
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        user_id = payload.get('user_id')
+        
+        # Get user and verify practice access
+        user = await db.users.find_one({"id": user_id})
+        if not user or user['role'] not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions"
+            )
+        
+        # Get procedure assignment
+        assignment = await db.patientprocedures.find_one({"id": assignment_id, "practiceId": user['practiceId']})
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure assignment not found"
+            )
+        
+        return {
+            "success": True,
+            "data": {
+                "id": assignment["id"],
+                "procedureName": assignment.get("procedureName", ""),
+                "dentistName": assignment.get("dentistName", ""),
+                "performedDate": assignment.get("performedDate"),
+                "practiceNotes": assignment.get("practiceNotes", ""),
+                "customInstructions": assignment.get("customInstructions", []),
+                "followUpDate": assignment.get("followUpDate"),
+                "patientName": assignment.get("patientName", ""),
+                "status": assignment.get("status", "assigned")
+            }
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Error getting procedure assignment: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get procedure assignment"
+        )
+
+
+@router.put("/procedure-assignments/{assignment_id}")
+async def update_procedure_assignment(assignment_id: str, request: Request):
+    """Update a procedure assignment"""
+    try:
+        # Get MongoDB instance
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        client = AsyncIOMotorClient(mongo_url)
+        db_name = os.environ.get('DB_NAME', 'test_database')
+        db = client[db_name]
+        
+        # Verify token and get user
+        auth_header = request.headers.get('authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="No token provided"
+            )
+        
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        user_id = payload.get('user_id')
+        
+        # Get user and verify practice access
+        user = await db.users.find_one({"id": user_id})
+        if not user or user['role'] not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions"
+            )
+        
+        # Get request body
+        body = await request.json()
+        practice_notes = body.get('practiceNotes', '')
+        custom_instructions = body.get('customInstructions', [])
+        follow_up_date = body.get('followUpDate')
+        performed_date = body.get('performedDate')
+        
+        # Verify assignment exists and belongs to practice
+        assignment = await db.patientprocedures.find_one({"id": assignment_id, "practiceId": user['practiceId']})
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure assignment not found"
+            )
+        
+        # Prepare update document
+        update_doc = {
+            "practiceNotes": practice_notes,
+            "customInstructions": custom_instructions,
+            "updatedAt": datetime.utcnow()
+        }
+        
+        if follow_up_date:
+            try:
+                update_doc["followUpDate"] = datetime.fromisoformat(follow_up_date.replace('Z', '+00:00'))
+            except:
+                update_doc["followUpDate"] = follow_up_date
+        
+        if performed_date:
+            try:
+                update_doc["performedDate"] = datetime.fromisoformat(performed_date.replace('Z', '+00:00'))
+            except:
+                update_doc["performedDate"] = performed_date
+        
+        # Update assignment
+        await db.patientprocedures.update_one(
+            {"id": assignment_id},
+            {"$set": update_doc}
+        )
+        
+        return {
+            "success": True,
+            "message": "Procedure assignment updated successfully"
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        print(f"Error updating procedure assignment: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update procedure assignment"
+        )
+
 @router.post("/request-procedure")
 async def request_procedure(
     procedureName: str,
