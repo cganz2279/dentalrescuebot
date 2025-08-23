@@ -432,6 +432,18 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Procedure Assignment Endpoints"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS - Procedure assignment endpoints working correctly. GET /api/practice/procedure-assignments/{assignment_id} successfully loads assignment data with all required fields (id, procedureName, dentistName, performedDate, practiceNotes, customInstructions, followUpDate). PUT /api/practice/procedure-assignments/{assignment_id} successfully updates practiceNotes, customInstructions, followUpDate, and performedDate. Authentication working with practice admin credentials (cganz2279@gmail.com/admin123). Data persistence verified - updates are saved and retrievable. Fixed JWT token payload issue (user_id -> userId)."
+
 agent_communication:
     - agent: "main"
       message: "Implemented complete B2B SaaS patient management system. Backend: patient login, patient dashboard API, existing add/assign patient APIs. Frontend: PatientLoginForm, PatientDashboard, updated AddPatientPage, new AssignProcedurePage, updated App.js routing for dual login system. Ready for backend testing first, then frontend testing."
@@ -441,3 +453,5 @@ agent_communication:
       message: "FIXES IMPLEMENTED: 1) Created corrected wordpress_admin_fixed.html with proper URL detection for production (www.theoncallbot.com -> dentalstaff.preview.emergentagent.com). 2) Fixed admin panel routing so 'Main Dashboard' goes to proper PracticeDashboard. Need to test backend staff API for Add Patient issue and provide corrected HTML to user for WordPress embedding."
     - agent: "testing"
       message: "BACKEND TESTING COMPLETED: Practice Staff API endpoint (GET /api/practice/staff) is working correctly for Add Patient dentist assignment functionality. Returns proper staff data with required fields (id, firstName, lastName, email, role). Admin user cganz2279@gmail.com found in staff list. Authentication working properly. The backend is NOT the cause of the Add Patient dentist assignment issue - problem likely in frontend integration."
+    - agent: "testing"
+      message: "PROCEDURE ASSIGNMENT ENDPOINTS TESTED: Successfully tested GET /api/practice/procedure-assignments/{assignment_id} and PUT /api/practice/procedure-assignments/{assignment_id} endpoints for editing procedure notes functionality. Both endpoints working correctly with practice admin authentication (cganz2279@gmail.com/admin123). Fixed JWT token payload issue in backend code. All required fields (practiceNotes, customInstructions, followUpDate, performedDate) can be updated successfully. Data persistence verified."
