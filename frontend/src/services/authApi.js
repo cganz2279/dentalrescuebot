@@ -142,6 +142,11 @@ export const practiceApi = {
     return response.data;
   },
 
+  addStaff: async (staffData) => {
+    const response = await practiceAxios.post('/add-staff', staffData);
+    return response.data;
+  },
+
   getPatient: async (patientId) => {
     const response = await practiceAxios.get(`/patients/${patientId}`);
     return response.data;
