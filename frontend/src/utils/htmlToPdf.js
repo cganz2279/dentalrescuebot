@@ -64,13 +64,22 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     // Clean up any duplicate content in the captured HTML
     const contentDiv = printElement.querySelector('#procedure-content');
     if (contentDiv) {
-      // Remove the original Contact Information section from the captured content
-      // since we'll add our own standardized version
-      const contactCards = contentDiv.querySelectorAll('[class*="bg-gray-50"]');
-      contactCards.forEach(card => {
-        const title = card.querySelector('h3, [class*="CardTitle"]');
-        if (title && title.textContent.includes('Contact Information')) {
-          card.parentNode.remove();
+      // Remove any existing Contact Information cards from the captured content
+      // since we have our own standardized disclaimer/contact section at the bottom
+      const allCards = contentDiv.querySelectorAll('[class*="Card"], [class*="card"]');
+      allCards.forEach(card => {
+        const cardText = card.textContent || '';
+        if (cardText.includes('Contact Information') || cardText.includes('contact your dental office')) {
+          card.remove();
+        }
+      });
+      
+      // Also remove any other potential duplicate disclaimer text
+      const allDivs = contentDiv.querySelectorAll('div');
+      allDivs.forEach(div => {
+        const divText = div.textContent || '';
+        if (divText.includes('DISCLAIMER') && divText.includes('educational purposes')) {
+          div.remove();
         }
       });
     }
