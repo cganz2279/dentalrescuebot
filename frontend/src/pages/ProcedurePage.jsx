@@ -124,7 +124,7 @@ const ProcedurePage = () => {
             <div className="flex items-center">
               <Button 
                 variant="ghost" 
-                onClick={onBackToHome}
+                onClick={() => navigate('/')}
                 className="mr-4 p-2 hover:bg-gray-100 rounded-full"
               >
                 <ArrowLeft className="h-5 w-5" />
