@@ -55,7 +55,7 @@ const AddPatientPage = () => {
     setSelectedDentist(dentist);
     setFormData({
       ...formData,
-      assignedDentistId: dentistId
+      assignedDentistId: dentistId === 'unassigned' ? '' : dentistId
     });
   };
 
