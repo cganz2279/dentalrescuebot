@@ -158,7 +158,14 @@ export const practiceApi = {
   },
 
   updatePatient: async (patientId, patientData) => {
-    const response = await practiceAxios.put(`/patients/${patientId}`, patientData);
+    const params = new URLSearchParams({
+      firstName: patientData.firstName,
+      lastName: patientData.lastName,
+      email: patientData.email,
+      phone: patientData.phone || '',
+      assignedDentistId: patientData.assignedDentistId || ''
+    });
+    const response = await practiceAxios.put(`/patients/${patientId}?${params}`);
     return response.data;
   },
 
