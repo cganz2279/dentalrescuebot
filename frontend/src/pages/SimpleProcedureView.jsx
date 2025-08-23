@@ -1,13 +1,123 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { ArrowLeft, FileText, Calendar, User } from 'lucide-react';
+import { ArrowLeft, FileText, Calendar, User, Clock, Download } from 'lucide-react';
+import { practiceApi } from '../services/authApi';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { useToast } from '../hooks/use-toast';
 
 const SimpleProcedureView = () => {
   const { procedureId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [procedure, setProcedure] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    loadProcedureData();
+  }, [procedureId]);
+
+  const loadProcedureData = async () => {
+    try {
+      setLoading(true);
+      // Try to get procedure assignment data
+      const response = await practiceApi.getProcedureAssignment(procedureId);
+      
+      if (response.success) {
+        setProcedure(response.data);
+      } else {
+        setError('Procedure not found');
+      }
+    } catch (err) {
+      console.error('Failed to load procedure:', err);
+      setError('Failed to load procedure data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePrint = async () => {
+    if (!procedure) return;
+    
+    try {
+      // Format procedure data for PDF generation
+      const formattedProcedure = {
+        name: procedure.procedureName || 'Unknown Procedure',
+        specialtyName: 'Post-Operative Care',
+        description: 'Post-operative care instructions for ' + procedure.procedureName,
+        duration: 'As prescribed',
+        difficulty: 'Standard',
+        materials: [],
+        instructions: procedure.customInstructions || [
+          'Follow all post-operative care instructions carefully',
+          'Take prescribed medications as directed',
+          'Contact office if you experience any complications'
+        ],
+        warnings: ['Contact your dental office if you experience severe pain, swelling, or bleeding'],
+        recoveryTimeline: [
+          { day: 1, activity: 'Rest and follow post-op instructions' },
+          { day: 2, activity: 'Light activity as tolerated' },
+          { day: 7, activity: 'Follow-up appointment if scheduled' }
+        ],
+        medications: ['Take medications as prescribed by your dentist']
+      };
+
+      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
+      const result = await generateProcedurePDF(formattedProcedure);
+      
+      if (result) {
+        toast({
+          title: "Success",
+          description: "Procedure PDF downloaded successfully",
+          variant: "default",
+        });
+      } else {
+        throw new Error('PDF generation failed');
+      }
+    } catch (err) {
+      console.error('Print error:', err);
+      toast({
+        title: "Error", 
+        description: "Failed to generate PDF: " + (err.message || 'Unknown error'),
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoadingSpinner size="xl" />
+      </div>
+    );
+  }
+
+  if (error || !procedure) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/')}
+                className="flex items-center space-x-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Dashboard</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-4xl mx-auto py-8 px-4 text-center">
+          <p className="text-red-600">{error || 'Procedure not found'}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
