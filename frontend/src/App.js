@@ -21,35 +21,9 @@ import LoadingSpinner from "./components/LoadingSpinner";
 
 // Main App Content Component
 const AppContent = () => {
-  const { user, loading, isAuthenticated, isPracticeStaff, isPatient } = useAuth();
+  const { user, loading, isAuthenticated, isPracticeStaff } = useAuth();
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
   
-  // Navigation state for public library
-  const [currentView, setCurrentView] = useState('home');
-  const [selectedSpecialty, setSelectedSpecialty] = useState(null);
-  const [selectedProcedure, setSelectedProcedure] = useState(null);
-
-  const handleSelectSpecialty = (specialtyId) => {
-    setSelectedSpecialty(specialtyId);
-    setCurrentView('specialty');
-  };
-
-  const handleSelectProcedure = (procedureId) => {
-    setSelectedProcedure(procedureId);
-    setCurrentView('procedure');
-  };
-
-  const handleBackToHome = () => {
-    setCurrentView('home');
-    setSelectedSpecialty(null);
-    setSelectedProcedure(null);
-  };
-
-  const handleBackToSpecialty = () => {
-    setCurrentView('specialty');
-    setSelectedProcedure(null);
-  };
-
   // Show loading spinner while checking authentication
   if (loading) {
     return (
@@ -59,18 +33,12 @@ const AppContent = () => {
     );
   }
 
-  // If user is authenticated - always show practice dashboard for dentists
-  if (isAuthenticated()) {
-    // Practice staff/admin see the dashboard
-    if (isPracticeStaff()) {
-      return <PracticeDashboard />;
-    }
-    
-    // Fallback: any authenticated user sees practice dashboard
+  // If user is authenticated - show practice dashboard (dentist only)
+  if (isAuthenticated() && isPracticeStaff()) {
     return <PracticeDashboard />;
   }
 
-  // Not authenticated - show login/register forms (practice staff only)
+  // Not authenticated - show login/register forms (dentist/practice only)
   return (
     <>
       {authMode === 'login' && (
