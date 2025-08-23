@@ -56,9 +56,10 @@ const PracticeDashboard = () => {
   const viewProcedure = (procedure) => {
     try {
       console.log('Viewing procedure:', procedure);
-      // Navigate to procedure details page using the procedure template ID
-      const procedureId = procedure.procedureId || procedure.id;
-      navigate(`/procedure/${procedureId}`);
+      // Navigate to procedure details page using the assignment ID (not template ID)
+      const assignmentId = procedure.id; // Use assignment ID, not procedureId
+      console.log('Navigating to view with assignment ID:', assignmentId);
+      navigate(`/procedure/${assignmentId}`);
     } catch (error) {
       console.error('View procedure error:', error);
       toast({
