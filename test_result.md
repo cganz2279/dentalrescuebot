@@ -441,6 +441,12 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ PASS - PDF generation with improved margins and duplicate disclaimer fixes working perfectly. COMPREHENSIVE TEST RESULTS: 1) Login as practice admin (cganz2279@gmail.com/admin123) ✅ 2) Successfully navigated to procedure view (Biopsy of Oral Tissue) ✅ 3) Download PDF button functional and clicked ✅ 4) PDF generated successfully (filename: biopsy_of_oral_tissue_post_op_instructions.pdf) ✅ 5) Success toast notification displayed correctly ✅ 6) All required content sections present: Procedure Information, Practice Notes, Custom Post-Operative Instructions, Detailed Post-Operative Care Instructions, Contact Information ✅ 7) MARGIN VERIFICATION: Code analysis confirms 20mm top margin, 25mm bottom margin, 10mm side margins as requested ✅ 8) DISCLAIMER VERIFICATION: No duplicate disclaimer content found on page - aggressive cleanup logic working correctly (0 instances of DISCLAIMER, educational purposes, professional medical advice, DentalRescueBot text found) ✅ 9) Page numbering positioned at bottom right within margins ✅ 10) HTML2Canvas rendering working smoothly with proper scaling and quality. All user-reported margin and disclaimer issues have been successfully resolved."
+        - working: false
+          agent: "user"
+          comment: "User still reporting margin issues: Bottom margin on page 1 and top margin on page 2+ need to be fixed. Follow same margin pattern for 3+ pages."
+        - working: false
+          agent: "main"
+          comment: "IMPLEMENTED SPECIFIC PAGE MARGIN FIXES: Completely rewrote PDF generation logic using proper canvas cropping approach. PAGE 1: 15mm top + 30mm bottom margin (larger bottom as requested). PAGE 2+: 25mm top + 20mm bottom margin (larger top as requested). All pages: 10mm side margins. Uses separate canvas elements for each page with precise content cropping using drawImage() to ensure exact margin control. This approach gives full control over page breaks and margins instead of repositioning a single large image."
 
 metadata:
   created_by: "testing_agent"
