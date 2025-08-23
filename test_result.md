@@ -416,13 +416,16 @@ frontend:
     implemented: true
     working: false
     file: "frontend/src/utils/htmlToPdf.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: true
     status_history:
         - working: false
           agent: "main"
           comment: "Fixed PDF margin calculations: reduced top margin from 20mm to 15mm, bottom margin from 25mm to 20mm, side margins from 15mm to 10mm. Corrected page number positioning to be within bottom margin at 8mm from page bottom. Enhanced content padding from 20px to 25px 20px for better internal spacing. generateViewPagePDF function updated - needs testing"
+        - working: false
+          agent: "user"
+          comment: "User reported: Disclaimer on printed page shows twice. Need to investigate and fix duplicate disclaimer issue in PDF generation."
 
 metadata:
   created_by: "testing_agent"
