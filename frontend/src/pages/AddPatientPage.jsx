@@ -360,6 +360,71 @@ const AddPatientPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Dentist Modal */}
+      {showAddDentist && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Add New Dentist</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAddDentist(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <form onSubmit={handleAddDentist} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700">First Name</label>
+                <Input
+                  value={dentistFormData.firstName}
+                  onChange={(e) => setDentistFormData({...dentistFormData, firstName: e.target.value})}
+                  placeholder="Enter first name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700">Last Name</label>
+                <Input
+                  value={dentistFormData.lastName}
+                  onChange={(e) => setDentistFormData({...dentistFormData, lastName: e.target.value})}
+                  placeholder="Enter last name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700">Email</label>
+                <Input
+                  type="email"
+                  value={dentistFormData.email}
+                  onChange={(e) => setDentistFormData({...dentistFormData, email: e.target.value})}
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
+              
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowAddDentist(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
+                  Add Dentist
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
