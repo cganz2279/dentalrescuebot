@@ -99,9 +99,25 @@ const AddPatientPage = () => {
         throw new Error(response.message || 'Failed to add dentist');
       }
     } catch (err) {
+      console.error('Add dentist error:', err);
+      
+      // Handle different error types
+      let errorMessage = 'Failed to add dentist';
+      
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          // FastAPI validation errors
+          errorMessage = err.response.data.detail.map(e => e.msg).join(', ');
+        } else if (typeof err.response.data.detail === 'string') {
+          errorMessage = err.response.data.detail;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
       toast({
         title: "Error",
-        description: err.response?.data?.detail || err.message || 'Failed to add dentist',
+        description: errorMessage,
         variant: "destructive",
       });
     }
