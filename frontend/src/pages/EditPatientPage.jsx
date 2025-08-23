@@ -296,7 +296,7 @@ const EditPatientPage = () => {
                 <label className="text-sm font-medium text-gray-700">
                   Assigned Dentist
                 </label>
-                <Select value={formData.assignedDentistId} onValueChange={handleDentistSelect}>
+                <Select value={formData.assignedDentistId || 'unassigned'} onValueChange={handleDentistSelect}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a dentist (optional)" />
                   </SelectTrigger>
