@@ -89,7 +89,9 @@ const PracticeDashboard = () => {
 
   const printProcedure = async (procedure) => {
     try {
+      console.log('=== PRINT DEBUG START ===');
       console.log('Printing procedure - raw data:', procedure);
+      console.log('Practice data:', practice);
       
       // Validate required data
       if (!procedure || !procedure.procedureName) {
@@ -139,11 +141,23 @@ const PracticeDashboard = () => {
       
       console.log('Formatted procedure for PDF:', formattedProcedure);
       
-      // Generate PDF
-      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
-      const result = await generateProcedurePDF(formattedProcedure, practice);
+      // Test PDF generator import
+      console.log('Importing PDF generator...');
+      const pdfModule = await import('../utils/pdfGenerator');
+      console.log('PDF module imported:', pdfModule);
       
+      const { generateProcedurePDF } = pdfModule;
+      console.log('generateProcedurePDF function:', generateProcedurePDF);
+      
+      if (typeof generateProcedurePDF !== 'function') {
+        throw new Error('generateProcedurePDF is not a function');
+      }
+      
+      // Generate PDF
+      console.log('Calling generateProcedurePDF...');
+      const result = await generateProcedurePDF(formattedProcedure, practice);
       console.log('PDF generation result:', result);
+      console.log('=== PRINT DEBUG END ===');
       
       if (result) {
         toast({
@@ -155,7 +169,11 @@ const PracticeDashboard = () => {
         throw new Error('PDF generation returned false');
       }
     } catch (err) {
+      console.error('=== PRINT ERROR ===');
       console.error('Print procedure error:', err);
+      console.error('Error stack:', err.stack);
+      console.error('===================');
+      
       toast({
         title: "Error", 
         description: "Failed to generate PDF: " + (err.message || 'Unknown error'),
