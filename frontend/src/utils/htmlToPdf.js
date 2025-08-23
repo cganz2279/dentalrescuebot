@@ -112,38 +112,55 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     
     // Create PDF with proper page-by-page margins
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgData = canvas.toDataURL('image/png', 1.0);
     
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const sideMargin = 10; // 10mm side margins
     const imgWidth = pdfWidth - (sideMargin * 2);
     
-    // Different margins for different pages as requested
+    // Different margins for different pages as requested by user
     const page1TopMargin = 15;    // 15mm top margin for page 1
     const page1BottomMargin = 30; // 30mm bottom margin for page 1 (larger as requested)
     const page2PlusTopMargin = 25; // 25mm top margin for page 2+ (larger as requested)
     const page2PlusBottomMargin = 20; // 20mm bottom margin for page 2+
     
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
     const page1AvailableHeight = pdfHeight - page1TopMargin - page1BottomMargin;
     const page2PlusAvailableHeight = pdfHeight - page2PlusTopMargin - page2PlusBottomMargin;
     
-    let remainingImgHeight = imgHeight;
-    let imgYOffset = 0; // How much of the image we've already used
+    // Convert canvas dimensions to PDF dimensions
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const scaleFactor = imgWidth / canvas.width;
+    
+    let remainingCanvasHeight = canvas.height;
+    let canvasYOffset = 0;
     let pageNumber = 1;
     
-    // PAGE 1: Special margins
-    if (remainingImgHeight > 0) {
-      const page1ImgHeight = Math.min(remainingImgHeight, page1AvailableHeight);
+    // PAGE 1: Special margins (larger bottom margin)
+    if (remainingCanvasHeight > 0) {
+      const page1CanvasHeight = Math.min(remainingCanvasHeight, page1AvailableHeight / scaleFactor);
       
-      // Add the portion of image that fits on page 1
+      // Create a cropped canvas for page 1
+      const page1Canvas = document.createElement('canvas');
+      page1Canvas.width = canvas.width;
+      page1Canvas.height = page1CanvasHeight;
+      const page1Ctx = page1Canvas.getContext('2d');
+      
+      page1Ctx.drawImage(
+        canvas,
+        0, canvasYOffset,           // Source x, y
+        canvas.width, page1CanvasHeight, // Source width, height
+        0, 0,                      // Dest x, y
+        canvas.width, page1CanvasHeight  // Dest width, height
+      );
+      
+      const page1ImgData = page1Canvas.toDataURL('image/png', 1.0);
+      const page1ImgHeight = page1CanvasHeight * scaleFactor;
+      
       pdf.addImage(
-        imgData, 'PNG',
+        page1ImgData, 'PNG',
         sideMargin, page1TopMargin,
         imgWidth, page1ImgHeight,
-        undefined, 'FAST',
-        0, imgYOffset // Start from the current offset
+        undefined, 'FAST'
       );
       
       // Add page number to page 1
@@ -151,24 +168,39 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
       pdf.setTextColor(100, 100, 100);
       pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
       
-      remainingImgHeight -= page1AvailableHeight;
-      imgYOffset += page1AvailableHeight;
+      remainingCanvasHeight -= page1CanvasHeight;
+      canvasYOffset += page1CanvasHeight;
     }
     
-    // PAGE 2+: Different margins (follow same pattern)
-    while (remainingImgHeight > 0) {
+    // PAGE 2+: Different margins (larger top margin, follow same pattern)
+    while (remainingCanvasHeight > 0) {
       pdf.addPage();
       pageNumber++;
       
-      const pageImgHeight = Math.min(remainingImgHeight, page2PlusAvailableHeight);
+      const pageCanvasHeight = Math.min(remainingCanvasHeight, page2PlusAvailableHeight / scaleFactor);
       
-      // Add the next portion of the image
+      // Create a cropped canvas for this page
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = pageCanvasHeight;
+      const pageCtx = pageCanvas.getContext('2d');
+      
+      pageCtx.drawImage(
+        canvas,
+        0, canvasYOffset,           // Source x, y
+        canvas.width, pageCanvasHeight, // Source width, height
+        0, 0,                      // Dest x, y
+        canvas.width, pageCanvasHeight  // Dest width, height
+      );
+      
+      const pageImgData = pageCanvas.toDataURL('image/png', 1.0);
+      const pageImgHeight = pageCanvasHeight * scaleFactor;
+      
       pdf.addImage(
-        imgData, 'PNG',
+        pageImgData, 'PNG',
         sideMargin, page2PlusTopMargin,
         imgWidth, pageImgHeight,
-        undefined, 'FAST',
-        0, imgYOffset // Continue from where we left off
+        undefined, 'FAST'
       );
       
       // Add page number
@@ -176,8 +208,8 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
       pdf.setTextColor(100, 100, 100);
       pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
       
-      remainingImgHeight -= page2PlusAvailableHeight;
-      imgYOffset += page2PlusAvailableHeight;
+      remainingCanvasHeight -= pageCanvasHeight;
+      canvasYOffset += pageCanvasHeight;
     }
     
     // Save the PDF
