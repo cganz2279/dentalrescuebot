@@ -78,7 +78,7 @@ const ProcedurePage = () => {
           title="Loading..."
           subtitle="Loading procedure information..."
           showBackButton={true}
-          onBackClick={onBackToHome}
+          onBackClick={() => navigate('/')}
           showBranding={false}
         />
         
