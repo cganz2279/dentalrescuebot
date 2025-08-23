@@ -89,40 +89,70 @@ const PracticeDashboard = () => {
 
   const printProcedure = async (procedure) => {
     try {
-      console.log('Printing procedure:', procedure);
+      console.log('Printing procedure - raw data:', procedure);
       
-      // Create a formatted procedure object for PDF generation
+      // Validate required data
+      if (!procedure || !procedure.procedureName) {
+        throw new Error('Procedure data is incomplete');
+      }
+      
+      // Create a properly formatted procedure object for PDF generation
       const formattedProcedure = {
         name: procedure.procedureName || 'Unknown Procedure',
-        specialtyName: 'Post-Operative Care',
-        description: procedure.description || 'Post-operative care instructions',
-        duration: procedure.duration || 'As prescribed',
-        difficulty: procedure.difficulty || 'Standard',
-        materials: procedure.materials || [],
-        instructions: procedure.customInstructions || [],
-        warnings: procedure.warnings || ['Follow all instructions carefully', 'Contact office if problems arise'],
-        recoveryTimeline: procedure.recoveryTimeline || [
-          { day: 1, activity: 'Rest and follow post-op instructions' },
-          { day: 2, activity: 'Light activity as tolerated' },
+        specialtyName: 'Dental Post-Operative Care',
+        description: `Post-operative care instructions for ${procedure.procedureName}`,
+        duration: 'Follow as prescribed',
+        difficulty: 'Standard Care',
+        materials: ['Prescribed medications', 'Gauze pads', 'Salt water solution'],
+        
+        // Use custom instructions if available, otherwise provide defaults
+        instructions: Array.isArray(procedure.customInstructions) && procedure.customInstructions.length > 0 
+          ? procedure.customInstructions 
+          : [
+              'Follow all post-operative care instructions carefully',
+              'Take prescribed medications as directed by your dentist',
+              'Apply ice to reduce swelling as recommended',
+              'Eat soft foods and avoid the treated area',
+              'Contact your dental office if you have any concerns'
+            ],
+        
+        warnings: [
+          'Contact your dental office immediately if you experience severe pain',
+          'Watch for signs of infection: excessive swelling, fever, or persistent bleeding',
+          'Do not smoke or use tobacco products during healing',
+          'Avoid alcohol while taking prescribed medications'
+        ],
+        
+        recoveryTimeline: [
+          { day: 1, activity: 'Rest and follow immediate post-op instructions' },
+          { day: 2, activity: 'Light activity as tolerated, continue medications' },
+          { day: 3, activity: 'Gradual return to normal diet if comfortable' },
           { day: 7, activity: 'Follow-up appointment if scheduled' }
         ],
-        medications: procedure.medications || ['Take medications as prescribed']
+        
+        medications: [
+          'Take all prescribed medications as directed',
+          'Complete the full course of antibiotics if prescribed',
+          'Use over-the-counter pain relief as recommended'
+        ]
       };
       
       console.log('Formatted procedure for PDF:', formattedProcedure);
       
-      // Generate and download PDF for this procedure
+      // Generate PDF
       const { generateProcedurePDF } = await import('../utils/pdfGenerator');
       const result = await generateProcedurePDF(formattedProcedure, practice);
+      
+      console.log('PDF generation result:', result);
       
       if (result) {
         toast({
           title: "Success",
-          description: "Procedure PDF downloaded successfully",
+          description: `PDF for ${procedure.procedureName} downloaded successfully`,
           variant: "default",
         });
       } else {
-        throw new Error('PDF generation failed');
+        throw new Error('PDF generation returned false');
       }
     } catch (err) {
       console.error('Print procedure error:', err);
