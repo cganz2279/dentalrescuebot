@@ -458,7 +458,6 @@ test_plan:
     - "Add Patient Page"
     - "Assign Procedure Page"
     - "Patient Dashboard/Portal"
-    - "PDF Generation with Proper Margins"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
