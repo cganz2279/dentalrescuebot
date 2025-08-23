@@ -85,6 +85,8 @@ const EditProcedureAssignmentPage = () => {
     setError('');
 
     try {
+      console.log('Form data before submit:', formData);
+      
       // Prepare custom instructions as array
       const customInstructionsArray = formData.customInstructions
         .split('\n')
@@ -97,7 +99,12 @@ const EditProcedureAssignmentPage = () => {
         performedDate: formData.performedDate
       };
 
+      console.log('Submitting update data:', updateData);
+      console.log('Assignment ID:', assignmentId);
+
       const response = await practiceApi.updateProcedureAssignment(assignmentId, updateData);
+      
+      console.log('Update response:', response);
       
       if (response.success) {
         toast({
@@ -109,10 +116,12 @@ const EditProcedureAssignmentPage = () => {
         // Navigate back to dashboard
         navigate('/');
       } else {
+        console.error('Update failed - response not successful:', response);
         setError(response.message || 'Failed to update procedure assignment');
       }
     } catch (err) {
       console.error('Update assignment error:', err);
+      console.error('Error response:', err.response);
       
       let errorMessage = 'Failed to update procedure assignment. Please try again.';
       
@@ -126,6 +135,7 @@ const EditProcedureAssignmentPage = () => {
         errorMessage = err.message;
       }
       
+      console.error('Final error message:', errorMessage);
       setError(errorMessage);
     } finally {
       setSaving(false);
