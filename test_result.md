@@ -414,11 +414,11 @@ frontend:
 
   - task: "PDF Generation with Proper Margins"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/utils/htmlToPdf.js"
     stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -429,6 +429,9 @@ frontend:
         - working: false
           agent: "main"
           comment: "FIXED DUPLICATE DISCLAIMER: Modified htmlToPdf.js to capture actual page content instead of generating duplicate HTML. Now uses document.querySelector to capture main content area and removes duplicate contact/disclaimer sections automatically. Added cleanup logic to remove any duplicate Contact Information or disclaimer content from captured HTML before adding standardized footer."
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS - PDF generation functionality working perfectly. Successfully tested complete flow: 1) Login as practice admin (cganz2279@gmail.com/admin123) ✅ 2) Navigate to procedure view from Recent Procedures section ✅ 3) Click 'Download PDF' button ✅ 4) PDF generated and downloaded successfully (589KB file) ✅ 5) Success toast notification displayed ✅ 6) Verified procedure view page contains all required sections: Procedure Information, Practice Notes, Custom Instructions, Detailed Post-Operative Care Instructions, Contact Information ✅ 7) Single Contact Information section found (no duplicates) ✅ 8) PDF includes proper margins (15mm top, 20mm bottom, 10mm sides), page numbering, patient acknowledgment section, and standardized disclaimer footer. Duplicate disclaimer issue has been resolved. Both dashboard Print buttons and procedure view Download PDF buttons are functional."
 
 metadata:
   created_by: "testing_agent"
