@@ -74,6 +74,7 @@ const PracticeDashboard = () => {
       console.log('Editing procedure:', procedure);
       // Navigate to edit procedure assignment page using the assignment ID
       const assignmentId = procedure.id;
+      console.log('Navigating to:', `/edit-procedure/${assignmentId}`);
       navigate(`/edit-procedure/${assignmentId}`);
     } catch (error) {
       console.error('Edit procedure error:', error);
