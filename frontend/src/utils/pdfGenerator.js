@@ -83,9 +83,13 @@ export const generateProcedurePDF = (procedure, practice = null, dentist = null,
     // Recovery Timeline
     addText('Recovery Timeline', 14, true, [37, 99, 235]);
     yPosition += 5;
-    procedure.recoveryTimeline.forEach((timeline) => {
-      addText(`Day ${timeline.day}: ${timeline.activity}`, 11);
-    });
+    if (Array.isArray(procedure.recoveryTimeline) && procedure.recoveryTimeline.length > 0) {
+      procedure.recoveryTimeline.forEach((timeline) => {
+        addText(`Day ${timeline.day}: ${timeline.activity}`, 11);
+      });
+    } else {
+      addText('Follow standard recovery guidelines as discussed', 11);
+    }
     yPosition += 15;
 
     // Medications
