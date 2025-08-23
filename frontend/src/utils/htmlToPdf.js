@@ -119,55 +119,56 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     const sideMargin = 10; // 10mm side margins
     const imgWidth = pdfWidth - (sideMargin * 2);
     
-    // Different margins for different pages
+    // Different margins for different pages as requested
     const page1TopMargin = 15;    // 15mm top margin for page 1
-    const page1BottomMargin = 30; // 30mm bottom margin for page 1
-    const page2PlusTopMargin = 25; // 25mm top margin for page 2+
+    const page1BottomMargin = 30; // 30mm bottom margin for page 1 (larger as requested)
+    const page2PlusTopMargin = 25; // 25mm top margin for page 2+ (larger as requested)
     const page2PlusBottomMargin = 20; // 20mm bottom margin for page 2+
     
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     const page1AvailableHeight = pdfHeight - page1TopMargin - page1BottomMargin;
     const page2PlusAvailableHeight = pdfHeight - page2PlusTopMargin - page2PlusBottomMargin;
     
-    let remainingHeight = imgHeight;
-    let contentOffset = 0; // Track how much content we've already placed
+    let remainingImgHeight = imgHeight;
+    let imgYOffset = 0; // How much of the image we've already used
     let pageNumber = 1;
     
-    // Page 1 with specific margins
-    const page1ContentHeight = Math.min(remainingHeight, page1AvailableHeight);
+    // PAGE 1: Special margins
+    if (remainingImgHeight > 0) {
+      const page1ImgHeight = Math.min(remainingImgHeight, page1AvailableHeight);
+      
+      // Add the portion of image that fits on page 1
+      pdf.addImage(
+        imgData, 'PNG',
+        sideMargin, page1TopMargin,
+        imgWidth, page1ImgHeight,
+        undefined, 'FAST',
+        0, imgYOffset // Start from the current offset
+      );
+      
+      // Add page number to page 1
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
+      
+      remainingImgHeight -= page1AvailableHeight;
+      imgYOffset += page1AvailableHeight;
+    }
     
-    pdf.addImage(
-      imgData, 'PNG',
-      sideMargin, page1TopMargin,
-      imgWidth, imgHeight,
-      undefined, 'FAST',
-      0, 0 // Start from top of image
-    );
-    
-    // Add page number to page 1
-    pdf.setFontSize(10);
-    pdf.setTextColor(100, 100, 100);
-    pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
-    
-    remainingHeight -= page1AvailableHeight;
-    contentOffset += page1AvailableHeight;
-    
-    // Page 2+ with different margins
-    while (remainingHeight > 0) {
+    // PAGE 2+: Different margins (follow same pattern)
+    while (remainingImgHeight > 0) {
       pdf.addPage();
       pageNumber++;
       
-      // Calculate how much content fits on this page
-      const pageContentHeight = Math.min(remainingHeight, page2PlusAvailableHeight);
+      const pageImgHeight = Math.min(remainingImgHeight, page2PlusAvailableHeight);
       
-      // Position the image so the continuation appears at the top of the new page
-      const yOffset = -(contentOffset * imgWidth / canvas.width);
-      
+      // Add the next portion of the image
       pdf.addImage(
         imgData, 'PNG',
-        sideMargin, page2PlusTopMargin + yOffset,
-        imgWidth, imgHeight,
-        undefined, 'FAST'
+        sideMargin, page2PlusTopMargin,
+        imgWidth, pageImgHeight,
+        undefined, 'FAST',
+        0, imgYOffset // Continue from where we left off
       );
       
       // Add page number
@@ -175,8 +176,8 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
       pdf.setTextColor(100, 100, 100);
       pdf.text(`Page ${pageNumber}`, pdfWidth - sideMargin, pdfHeight - 8, { align: 'right' });
       
-      remainingHeight -= page2PlusAvailableHeight;
-      contentOffset += page2PlusAvailableHeight;
+      remainingImgHeight -= page2PlusAvailableHeight;
+      imgYOffset += page2PlusAvailableHeight;
     }
     
     // Save the PDF
