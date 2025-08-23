@@ -143,7 +143,12 @@ export const practiceApi = {
   },
 
   addStaff: async (staffData) => {
-    const response = await practiceAxios.post('/add-staff', staffData);
+    const params = new URLSearchParams({
+      firstName: staffData.firstName,
+      lastName: staffData.lastName,
+      email: staffData.email
+    });
+    const response = await practiceAxios.post(`/add-staff?${params}`);
     return response.data;
   },
 
