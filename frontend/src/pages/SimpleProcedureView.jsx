@@ -129,6 +129,8 @@ const SimpleProcedureView = () => {
     );
   }
 
+  console.log('SimpleProcedureView: Rendering main view with procedure:', procedure);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
