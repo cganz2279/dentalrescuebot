@@ -68,6 +68,7 @@ function App() {
             <Route path="/assign-procedure" element={<AssignProcedurePage />} />
             <Route path="/add-staff" element={<AddStaffPage />} />
             <Route path="/edit-patient/:patientId" element={<EditPatientPage />} />
+            <Route path="/edit-procedure/:assignmentId" element={<EditProcedureAssignmentPage />} />
             <Route path="/request-procedure" element={<RequestProcedurePage />} />
             <Route path="/admin-requests" element={<AdminRequestsPage />} />
             <Route path="/procedure/:procedureId" element={<ProcedurePage />} />
