@@ -414,7 +414,7 @@ frontend:
 
   - task: "PDF Generation with Proper Margins"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/utils/htmlToPdf.js"
     stuck_count: 1
     priority: "high"
