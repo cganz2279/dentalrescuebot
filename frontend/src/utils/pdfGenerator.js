@@ -32,35 +32,50 @@ export const generateProcedurePDF = (procedure, practice = null, dentist = null,
       yPosition += lines.length * fontSize * 0.5 + 3;
     };
 
-    // Helper function to add a professional section
-    const addSection = (title, items, isWarning = false) => {
+    // Helper function to add a colored section box (like the View page)
+    const addColoredSection = (title, items, bgColor = [245, 245, 245], textColor = [0, 0, 0], titleColor = [0, 0, 0]) => {
       // Add spacing before section
       yPosition += 8;
       
-      // Section title
-      const titleColor = isWarning ? [180, 0, 0] : [0, 0, 0];
-      addText(title, 13, true, titleColor);
+      // Calculate box height needed
+      let itemsHeight = 0;
+      if (Array.isArray(items) && items.length > 0) {
+        itemsHeight = items.length * 12; // Approximate height per item
+      } else {
+        itemsHeight = 12; // Height for default text
+      }
       
-      // Add a subtle line under the title
+      const boxHeight = 25 + itemsHeight; // Title + items + padding
+      
+      // Check if we need a new page
+      if (yPosition + boxHeight > pdf.internal.pageSize.height - 20) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      // Draw colored background box
+      pdf.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
       pdf.setDrawColor(200, 200, 200);
       pdf.setLineWidth(0.5);
-      pdf.line(margin, yPosition - 3, margin + contentWidth, yPosition - 3);
+      pdf.roundedRect(margin, yPosition - 5, contentWidth, boxHeight, 3, 3, 'FD');
+      
+      // Section title
+      addText(title, 12, true, titleColor);
       yPosition += 3;
       
-      // Ensure items is an array before processing
+      // Items
       if (Array.isArray(items) && items.length > 0) {
         items.forEach((item, index) => {
-          const bullet = isWarning ? '•' : '•';
-          addText(`   ${bullet} ${item}`, 10);
+          addText(`• ${item}`, 10, false, textColor);
         });
       } else {
-        addText('   • Follow standard care instructions as discussed', 10);
+        addText('• Follow standard care instructions as discussed', 10, false, textColor);
       }
       
       yPosition += 5;
     };
 
-    // Professional Header
+    // Professional Header (matching View page)
     pdf.setFontSize(18);
     pdf.setFont(undefined, 'bold');
     pdf.setTextColor(0, 0, 0);
@@ -88,59 +103,110 @@ export const generateProcedurePDF = (procedure, practice = null, dentist = null,
     pdf.line(margin, yPosition, margin + contentWidth, yPosition);
     yPosition += 15;
 
-    // Procedure information
-    addText(`Procedure: ${procedure.name}`, 12, true);
+    // Procedure Information Box (matching View page)
+    pdf.setFillColor(249, 250, 251);
+    pdf.setDrawColor(200, 200, 200);
+    pdf.roundedRect(margin, yPosition - 5, contentWidth, 45, 3, 3, 'FD');
+    
+    addText('PROCEDURE INFORMATION', 13, true, [0, 0, 0]);
+    addText(`Procedure: ${procedure.name}`, 11, true);
+    if (procedure.dentistName) {
+      addText(`Performing Dentist: Dr. ${procedure.dentistName}`, 10);
+    }
     addText(`Date: ${new Date().toLocaleDateString()}`, 10);
-    yPosition += 10;
+    yPosition += 15;
 
-    // Main instructions sections
-    addSection('IMMEDIATE AFTERCARE INSTRUCTIONS', procedure.immediateAftercare);
-    addSection('DIET RESTRICTIONS', procedure.dietRestrictions);
-    addSection('MEDICATIONS', procedure.medications);
-    
-    // Recovery Timeline
-    yPosition += 8;
-    addText('RECOVERY TIMELINE', 13, true);
-    pdf.setDrawColor(200, 200, 200);
-    pdf.setLineWidth(0.5);
-    pdf.line(margin, yPosition - 3, margin + contentWidth, yPosition - 3);
-    yPosition += 3;
-    
-    if (Array.isArray(procedure.recoveryTimeline) && procedure.recoveryTimeline.length > 0) {
-      procedure.recoveryTimeline.forEach((timeline) => {
-        addText(`   Day ${timeline.day}: ${timeline.activity}`, 10);
-      });
-    } else {
-      addText('   Follow standard recovery guidelines as discussed', 10);
-    }
-    yPosition += 10;
+    // Detailed Post-Operative Care Instructions (matching View page sections)
+    addText('DETAILED POST-OPERATIVE CARE INSTRUCTIONS', 14, true, [34, 197, 94]);
+    yPosition += 5;
 
-    // Warning signs - highlighted but professional
-    addSection('⚠️ WHEN TO CONTACT YOUR DENTIST IMMEDIATELY', procedure.warningSignsToCallDoctor, true);
+    // Immediate Aftercare (Red section like View page)
+    addColoredSection(
+      '🕐 IMMEDIATE AFTERCARE (First 24 Hours)',
+      [
+        'Apply ice to the treated area for 15 minutes every hour for the first 24 hours to reduce swelling',
+        'Keep gauze in place for 30-60 minutes after treatment, then remove gently',
+        'Do not rinse or spit forcefully for the first 24 hours',
+        'Take prescribed medications as directed by your dentist'
+      ],
+      [254, 242, 242], // Light red background
+      [153, 27, 27],   // Dark red text
+      [185, 28, 28]    // Red title
+    );
 
-    // Custom instructions if available
+    // Diet Instructions (Orange section like View page)
+    addColoredSection(
+      '🍽️ DIET AND EATING INSTRUCTIONS',
+      [
+        'Stick to soft foods for the first 24-48 hours (yogurt, soup, mashed potatoes)',
+        'Avoid hot liquids and foods until numbness wears off',
+        'No alcohol while taking prescribed medications',
+        'Avoid using straws for the first few days to prevent dry socket'
+      ],
+      [255, 247, 237], // Light orange background
+      [154, 52, 18],   // Dark orange text
+      [194, 65, 12]    // Orange title
+    );
+
+    // Medication Guidelines (Blue section like View page)
+    addColoredSection(
+      '💊 MEDICATION GUIDELINES',
+      [
+        'Take all prescribed medications exactly as directed',
+        'Complete the full course of antibiotics if prescribed',
+        'Use over-the-counter pain relief as recommended (ibuprofen, acetaminophen)',
+        'Do not exceed recommended dosages of any medication'
+      ],
+      [239, 246, 255], // Light blue background
+      [30, 58, 138],   // Dark blue text
+      [37, 99, 235]    // Blue title
+    );
+
+    // Warning Signs (Red alert box like View page)
+    addColoredSection(
+      '⚠️ WHEN TO CONTACT YOUR DENTIST IMMEDIATELY',
+      [
+        'Severe or worsening pain after 48 hours',
+        'Excessive bleeding that does not stop with gentle pressure',
+        'Signs of infection: fever, excessive swelling, pus, or foul taste',
+        'Numbness that persists beyond the expected timeframe',
+        'Difficulty swallowing or breathing'
+      ],
+      [254, 226, 226], // Light red background
+      [127, 29, 29],   // Very dark red text
+      [185, 28, 28]    // Red title
+    );
+
+    // Custom instructions if available (matching View page)
     if (Array.isArray(procedure.instructions) && procedure.instructions.length > 0) {
-      addSection('ADDITIONAL INSTRUCTIONS', procedure.instructions);
+      addColoredSection(
+        '📋 ADDITIONAL CUSTOM INSTRUCTIONS',
+        procedure.instructions,
+        [240, 253, 244], // Light green background
+        [22, 101, 52],   // Dark green text
+        [34, 197, 94]    // Green title
+      );
     }
 
-    // Contact section
-    yPosition += 15;
-    addText('CONTACT INFORMATION', 13, true);
-    pdf.setDrawColor(200, 200, 200);
-    pdf.setLineWidth(0.5);
-    pdf.line(margin, yPosition - 3, margin + contentWidth, yPosition - 3);
-    yPosition += 3;
-    
-    addText('For questions or concerns, please contact our office during regular business hours.', 10);
-    addText('For after-hours emergencies, follow the emergency contact instructions provided.', 10);
-    yPosition += 15;
+    // Contact Information (matching View page)
+    addColoredSection(
+      '📞 CONTACT INFORMATION',
+      [
+        'For questions or concerns, please contact our office during regular business hours',
+        'For after-hours emergencies, follow the emergency contact instructions provided'
+      ],
+      [249, 250, 251], // Light gray background
+      [55, 65, 81],    // Dark gray text
+      [0, 0, 0]        // Black title
+    );
 
-    // Patient acknowledgment section
-    if (yPosition > pdf.internal.pageSize.height - 80) {
+    // Patient acknowledgment section (matching View page)
+    if (yPosition > pdf.internal.pageSize.height - 100) {
       pdf.addPage();
       yPosition = 20;
     }
     
+    yPosition += 15;
     addText('PATIENT ACKNOWLEDGMENT', 13, true);
     pdf.setDrawColor(200, 200, 200);
     pdf.setLineWidth(0.5);
@@ -150,7 +216,7 @@ export const generateProcedurePDF = (procedure, practice = null, dentist = null,
     addText('I acknowledge that I have received and understand these post-operative care instructions. I will follow these instructions carefully and contact my dental office if I have any questions or concerns.', 10);
     yPosition += 15;
     
-    // Signature lines
+    // Signature lines (matching View page)
     pdf.setDrawColor(0, 0, 0);
     pdf.setLineWidth(0.5);
     
