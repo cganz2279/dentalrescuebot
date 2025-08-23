@@ -65,6 +65,57 @@ const AddPatientPage = () => {
     });
   };
 
+  const handleAddDentist = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch('/api/practice/add-staff', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('dentalToken')}`
+        },
+        body: JSON.stringify({
+          firstName: dentistFormData.firstName,
+          lastName: dentistFormData.lastName,
+          email: dentistFormData.email
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Refresh dentist list
+        await loadDentists();
+        
+        // Select the newly added dentist
+        setFormData({
+          ...formData,
+          assignedDentistId: data.staffMember.id
+        });
+        setSelectedDentist(data.staffMember);
+        
+        // Close modal and reset form
+        setShowAddDentist(false);
+        setDentistFormData({ firstName: '', lastName: '', email: '' });
+        
+        toast({
+          title: "Dentist Added Successfully!",
+          description: `Dr. ${dentistFormData.firstName} ${dentistFormData.lastName} has been added to your practice.`,
+          variant: "default",
+        });
+      } else {
+        throw new Error(data.message || 'Failed to add dentist');
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err.message || 'Failed to add dentist',
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
