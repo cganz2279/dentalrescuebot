@@ -189,6 +189,18 @@ backend:
           agent: "testing"
           comment: "✅ PASS - Practice dashboard API working correctly. GET /api/practice/dashboard returns practice info, patient/procedure stats, recent patients, and recent procedures. Shows updated stats after procedure assignments (7 patients, 2 active procedures)."
 
+  - task: "Practice Staff API"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS - Practice Staff API working correctly. GET /api/practice/staff returns 1 staff member (admin user cganz2279@gmail.com) with correct format for AddPatientPage dentist assignment. Response includes required fields: id, firstName, lastName, email, role. Authentication working properly with practice_admin token."
+
   - task: "Get All Specialties API"
     implemented: true
     working: true
