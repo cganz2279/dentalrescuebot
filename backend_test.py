@@ -581,6 +581,123 @@ class DentalAPITester:
         except Exception as e:
             self.log_test("Practice Staff Endpoint", False, f"Exception: {str(e)}")
             return False
+
+    def test_get_procedure_assignment(self):
+        """Test GET /api/practice/procedure-assignments/{assignment_id} endpoint"""
+        if not self.admin_token or not self.test_assignment_id:
+            self.log_test("Get Procedure Assignment", False, "No admin token or assignment ID available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{self.base_url}/practice/procedure-assignments/{self.test_assignment_id}", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    assignment = data["data"]
+                    
+                    # Check required fields for procedure assignment
+                    required_fields = ["id", "procedureName", "dentistName", "performedDate", "practiceNotes", "customInstructions", "followUpDate"]
+                    missing_fields = [field for field in required_fields if field not in assignment]
+                    
+                    if not missing_fields:
+                        self.log_test("Get Procedure Assignment", True, 
+                                    f"Successfully retrieved assignment: {assignment.get('procedureName', 'Unknown')} for {assignment.get('patientName', 'Unknown Patient')}")
+                        return True
+                    else:
+                        self.log_test("Get Procedure Assignment", False, f"Missing required fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_test("Get Procedure Assignment", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Get Procedure Assignment", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Get Procedure Assignment", False, f"Exception: {str(e)}")
+            return False
+
+    def test_update_procedure_assignment(self):
+        """Test PUT /api/practice/procedure-assignments/{assignment_id} endpoint"""
+        if not self.admin_token or not self.test_assignment_id:
+            self.log_test("Update Procedure Assignment", False, "No admin token or assignment ID available")
+            return False
+            
+        try:
+            # Prepare update data
+            update_data = {
+                "practiceNotes": "Updated practice notes: Patient responded well to treatment. No complications observed.",
+                "customInstructions": [
+                    "Take prescribed antibiotics as directed",
+                    "Avoid hard foods for 48 hours",
+                    "Use warm salt water rinse twice daily",
+                    "Return if experiencing severe pain or swelling"
+                ],
+                "followUpDate": (datetime.utcnow() + timedelta(days=14)).isoformat() + "Z",
+                "performedDate": datetime.utcnow().isoformat() + "Z"
+            }
+            
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.put(f"{self.base_url}/practice/procedure-assignments/{self.test_assignment_id}", 
+                                      json=update_data, headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    self.log_test("Update Procedure Assignment", True, 
+                                f"Successfully updated assignment with new notes and instructions")
+                    return True
+                else:
+                    self.log_test("Update Procedure Assignment", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Update Procedure Assignment", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Update Procedure Assignment", False, f"Exception: {str(e)}")
+            return False
+
+    def test_check_existing_assignments(self):
+        """Check if there are existing procedure assignments in the database"""
+        if not self.admin_token:
+            self.log_test("Check Existing Assignments", False, "No admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            # Try to get practice dashboard to see recent procedures
+            response = self.session.get(f"{self.base_url}/practice/dashboard", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    dashboard_data = data["data"]
+                    recent_procedures = dashboard_data.get("recentProcedures", [])
+                    
+                    if recent_procedures:
+                        # Use the first procedure assignment ID for testing
+                        first_assignment = recent_procedures[0]
+                        if "id" in first_assignment:
+                            self.test_assignment_id = first_assignment["id"]
+                            self.log_test("Check Existing Assignments", True, 
+                                        f"Found {len(recent_procedures)} existing assignments. Using ID: {self.test_assignment_id}")
+                            return True
+                    
+                    self.log_test("Check Existing Assignments", True, "No existing assignments found - will use assignment from assign procedure test")
+                    return True
+                else:
+                    self.log_test("Check Existing Assignments", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Check Existing Assignments", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Check Existing Assignments", False, f"Exception: {str(e)}")
+            return False
     
     def run_all_tests(self):
         """Run all backend API tests"""
