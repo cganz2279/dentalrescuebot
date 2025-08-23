@@ -846,7 +846,7 @@ async def get_procedure_assignment(assignment_id: str, request: Request):
         
         token = auth_header.split(' ')[1]
         payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-        user_id = payload.get('user_id')
+        user_id = payload.get('userId')  # Fixed: changed from 'user_id' to 'userId'
         
         # Get user and verify practice access
         user = await db.users.find_one({"id": user_id})
