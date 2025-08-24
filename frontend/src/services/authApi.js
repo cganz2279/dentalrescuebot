@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Get backend URL with proper Create React App environment variable access
+// Get backend URL - use current domain if no specific URL provided
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const AUTH_BASE_URL = `${BACKEND_URL}/api/auth`;
