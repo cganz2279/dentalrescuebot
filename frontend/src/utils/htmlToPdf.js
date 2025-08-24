@@ -1,6 +1,8 @@
-// Shared HTML-to-PDF generator that creates PDFs identical to the View page
+// Shared HTML-to-PDF generator that creates PDFs - UPDATED VERSION
 export const generateViewPagePDF = async (procedure, practice = null) => {
   try {
+    console.log('PDF Generator: Starting PDF generation for', procedure.procedureName);
+    
     // Import html2canvas and jsPDF for HTML-to-PDF conversion
     const html2canvas = (await import('html2canvas')).default;
     const { jsPDF } = await import('jspdf');
@@ -10,10 +12,10 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     
     // If not found, we're probably on dashboard - create minimal content from procedure data
     if (!mainContent) {
-      console.log('Main content area not found - generating from procedure data instead');
+      console.log('PDF Generator: Main content area not found - generating from procedure data instead');
       // Create a minimal procedure content structure for dashboard context
-      mainContent = document.createElement('div');
-      mainContent.innerHTML = `
+      const contentElement = document.createElement('div');
+      contentElement.innerHTML = `
         <div class="space-y-6">
           <div class="border-l-4 border-l-blue-500 bg-white p-6 rounded-lg shadow">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">${procedure.procedureName}</h2>
@@ -50,13 +52,16 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
           </div>
           ` : ''}
           
-          <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg">
-            <h3 class="text-lg font-semibold text-red-800 mb-3">Standard Post-Operative Care</h3>
-            <div class="space-y-4 text-red-800">
+          <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-green-800 mb-3">Standard Post-Operative Care Instructions</h3>
+            <div class="space-y-4 text-green-800">
               <div>
-                <h4 class="font-semibold mb-2">Immediate Aftercare (First 24 Hours)</h4>
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <span class="text-red-600 mr-2">🩺</span>
+                  Immediate Aftercare (First 24 Hours)
+                </h4>
                 <ul class="space-y-1 ml-4">
-                  <li>• Apply ice to the treated area for 15 minutes every hour for the first 24 hours</li>
+                  <li>• Apply ice to the treated area for 15 minutes every hour for the first 24 hours to reduce swelling</li>
                   <li>• Keep gauze in place for 30-60 minutes after treatment, then remove gently</li>
                   <li>• Do not rinse or spit forcefully for the first 24 hours</li>
                   <li>• Take prescribed medications as directed by your dentist</li>
@@ -64,27 +69,50 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
               </div>
               
               <div>
-                <h4 class="font-semibold mb-2">Diet Restrictions</h4>
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <span class="text-orange-600 mr-2">🍽️</span>
+                  Diet Restrictions
+                </h4>
                 <ul class="space-y-1 ml-4">
-                  <li>• Stick to soft foods for the first 24-48 hours</li>
+                  <li>• Stick to soft foods for the first 24-48 hours (yogurt, soup, mashed potatoes)</li>
                   <li>• Avoid hot liquids and foods until numbness wears off</li>
-                  <li>• Avoid using straws for the first few days</li>
+                  <li>• Avoid using straws for the first few days to prevent dry socket</li>
                   <li>• No alcohol while taking prescribed medications</li>
                 </ul>
               </div>
               
               <div>
-                <h4 class="font-semibold mb-2">⚠️ Contact Your Dentist If You Experience:</h4>
-                <ul class="space-y-1 ml-4">
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <span class="text-red-600 mr-2">⚠️</span>
+                  Contact Your Dentist If You Experience:
+                </h4>
+                <ul class="space-y-1 ml-4 text-red-800">
                   <li>• Severe or worsening pain after 48 hours</li>
                   <li>• Excessive bleeding that does not stop with gentle pressure</li>
                   <li>• Signs of infection: fever, excessive swelling, pus, or foul taste</li>
                   <li>• Numbness that persists beyond the expected timeframe</li>
+                  <li>• Difficulty swallowing or breathing</li>
                 </ul>
               </div>
               
               <div>
-                <h4 class="font-semibold mb-2">General Care Instructions</h4>
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <span class="text-blue-600 mr-2">💊</span>
+                  Medication Guidelines
+                </h4>
+                <ul class="space-y-1 ml-4">
+                  <li>• Take all prescribed medications exactly as directed</li>
+                  <li>• Complete the full course of antibiotics if prescribed</li>
+                  <li>• Use over-the-counter pain relief as recommended (ibuprofen, acetaminophen)</li>
+                  <li>• Do not exceed recommended dosages of any medication</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <span class="text-green-600 mr-2">✅</span>
+                  General Care Instructions
+                </h4>
                 <ul class="space-y-1 ml-4">
                   <li>• Follow all post-operative care instructions carefully</li>
                   <li>• Take prescribed medications as directed</li>
@@ -96,6 +124,7 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
           </div>
         </div>
       `;
+      mainContent = contentElement;
     }
     
     // Create a printable version of the current page content
