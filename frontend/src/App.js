@@ -102,9 +102,11 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Main routes */}
+            {/* Practice routes */}
             <Route path="/" element={<AppContent />} />
-            <Route path="/admin" element={<AppContent />} />
+            
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminContent />} />
             
             {/* Public procedure routes */}
             <Route path="/specialties/:specialtyId" element={<SpecialtyPage />} />
