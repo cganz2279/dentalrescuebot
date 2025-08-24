@@ -255,11 +255,14 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
           comment: "GET /api/procedures returns all 8 procedures with required fields (id, name, specialty, specialtyName, duration)"
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED - Procedures API working perfectly for procedure library. GET /api/procedures returns 80 procedures with required fields (id, name, specialty, specialtyName, duration) for library page alphabetical listing and preview functionality."
 
   - task: "Get Individual Procedure API"
     implemented: true
