@@ -17,7 +17,7 @@ import SimpleProcedureView from "./pages/SimpleProcedureView";
 import RequestProcedurePage from "./pages/RequestProcedurePage";
 import AdminRequestsPage from "./pages/AdminRequestsPage";
 import LoginForm from "./components/LoginForm";
-import PracticeRegistrationForm from "./components/PracticeRegistrationForm";
+import AdminDashboard from "./components/AdminDashboard";
 import PracticeDashboard from "./components/PracticeDashboard";
 import { Toaster } from "./components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
