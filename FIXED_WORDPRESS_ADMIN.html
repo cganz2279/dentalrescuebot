@@ -275,9 +275,8 @@
     </div>
 
     <script>
-        // Get current domain and construct backend URL
-        const currentDomain = window.location.hostname;
-        const BACKEND_URL = window.location.protocol + '//' + currentDomain + '/api';
+        // Use the working React app URL instead of trying to make API calls from WordPress
+        const REACT_APP_URL = 'https://carebot-1.preview.emergentagent.com';
         
         function togglePassword() {
             const passwordField = document.getElementById('password');
@@ -292,69 +291,18 @@
             }
         }
         
-        // Check if already logged in
+        // Check if already logged in by trying to load the React app directly
         window.onload = function() {
-            const token = localStorage.getItem('dentalToken');
-            const user = JSON.parse(localStorage.getItem('dentalUser') || '{}');
-            
-            if (token && user.role === 'practice_admin') {
-                showAdminPanel();
-            }
+            // Instead of checking local storage here, let's just embed the React app
+            // and let it handle authentication - similar to practice-notes solution
+            showAdminPanel();
         };
         
-        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+        // Remove the login form submission handler since we'll embed the React app directly
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            
-            // Reset messages
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-            
-            // Show loading
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Authenticating...';
-            
-            try {
-                const response = await fetch(`${BACKEND_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    if (data.user.role === 'practice_admin') {
-                        // Store credentials
-                        localStorage.setItem('dentalToken', data.token);
-                        localStorage.setItem('dentalUser', JSON.stringify(data.user));
-                        
-                        successMessage.textContent = `Welcome ${data.user.firstName}! Loading admin panel...`;
-                        successMessage.style.display = 'block';
-                        
-                        setTimeout(() => {
-                            showAdminPanel();
-                        }, 1000);
-                    } else {
-                        throw new Error('Admin access required');
-                    }
-                } else {
-                    throw new Error(data.detail || data.message || 'Login failed');
-                }
-            } catch (error) {
-                errorMessage.textContent = error.message;
-                errorMessage.style.display = 'block';
-                
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Access Admin Panel';
-            }
+            // Skip login form and go directly to embedded React app
+            showAdminPanel();
         });
         
         function showAdminPanel() {
@@ -366,8 +314,8 @@
             const iframe = document.getElementById('adminIframe');
             const container = document.getElementById('iframeContainer');
             
-            // Set the URL based on section - use current domain
-            let url = window.location.protocol + '//' + currentDomain;
+            // Set the URL based on section - use working React app URL
+            let url = REACT_APP_URL;
             switch(section) {
                 case 'settings':
                     url += '/practice-settings';
@@ -375,9 +323,18 @@
                 case 'requests':
                     url += '/admin-requests';
                     break;
+                case 'procedures':
+                    url += '/library';
+                    break;
+                case 'practices':
+                    url += '/'; // Main dashboard shows practice info
+                    break;
+                case 'analytics':
+                    url += '/'; // Main dashboard has analytics
+                    break;
                 case 'dashboard':
                 default:
-                    url = window.location.protocol + '//' + currentDomain;
+                    url = REACT_APP_URL; // Main React app dashboard
                     break;
             }
             
@@ -390,8 +347,8 @@
         }
         
         function logout() {
-            localStorage.removeItem('dentalToken');
-            localStorage.removeItem('dentalUser');
+            // Close iframe and reload the page to reset state
+            closeIframe();
             location.reload();
         }
     </script>
