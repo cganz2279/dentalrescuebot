@@ -56,6 +56,36 @@ const PracticeDashboard = () => {
     }
   };
 
+  const selectPatient = async (patient) => {
+    try {
+      setSelectedPatient(patient);
+      setLoadingProcedures(true);
+      setPatientProcedures([]);
+      
+      // Load procedures for this specific patient
+      // This would require a new API endpoint or filtering
+      // For now, filter from dashboard data
+      const procedures = dashboardData?.recentProcedures?.filter(
+        proc => proc.patientId === patient.id
+      ) || [];
+      
+      setPatientProcedures(procedures);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to load patient procedures",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingProcedures(false);
+    }
+  };
+
+  const clearPatientSelection = () => {
+    setSelectedPatient(null);
+    setPatientProcedures([]);
+  };
+
   const viewProcedure = (procedure) => {
     try {
       console.log('Viewing procedure:', procedure);
