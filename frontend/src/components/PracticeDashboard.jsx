@@ -391,63 +391,75 @@ const PracticeDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <FileText className="h-5 w-5 mr-2 text-green-600" />
-                Recent Procedures
+                {selectedPatient ? `Procedures for ${selectedPatient.firstName} ${selectedPatient.lastName}` : 'Patient Procedures'}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {dashboardData?.recentProcedures?.length > 0 ? (
-                <div className="space-y-4">
-                  {dashboardData.recentProcedures.map((procedure) => (
-                    <div key={procedure.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div className="flex-1">
-                        <p className="font-medium">{procedure.procedureName}</p>
-                        <p className="text-sm text-gray-600">Dr. {procedure.dentistName}</p>
-                        <div className="flex items-center space-x-4 mt-2">
-                          <Badge variant="outline">
-                            {procedure.status}
-                          </Badge>
-                          <p className="text-xs text-gray-400">
-                            {new Date(procedure.performedDate).toLocaleDateString()}
-                          </p>
+              {selectedPatient ? (
+                loadingProcedures ? (
+                  <div className="flex items-center justify-center py-8">
+                    <LoadingSpinner />
+                  </div>
+                ) : patientProcedures.length > 0 ? (
+                  <div className="space-y-4">
+                    {patientProcedures.map((procedure) => (
+                      <div key={procedure.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-1">
+                          <p className="font-medium">{procedure.procedureName}</p>
+                          <p className="text-sm text-gray-600">Dr. {procedure.dentistName}</p>
+                          <div className="flex items-center space-x-4 mt-2">
+                            <Badge variant="outline">
+                              {procedure.status}
+                            </Badge>
+                            <p className="text-xs text-gray-400">
+                              {new Date(procedure.performedDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => viewProcedure(procedure)}
+                            className="flex items-center space-x-1"
+                          >
+                            <Eye className="h-3 w-3" />
+                            <span>View</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => editProcedure(procedure)}
+                            className="flex items-center space-x-1"
+                          >
+                            <Edit className="h-3 w-3" />
+                            <span>Edit</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => printProcedure(procedure)}
+                            className="flex items-center space-x-1"
+                          >
+                            <Printer className="h-3 w-3" />
+                            <span>Print</span>
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => viewProcedure(procedure)}
-                          className="flex items-center space-x-1"
-                        >
-                          <Eye className="h-3 w-3" />
-                          <span>View</span>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => editProcedure(procedure)}
-                          className="flex items-center space-x-1"
-                        >
-                          <Edit className="h-3 w-3" />
-                          <span>Edit</span>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => printProcedure(procedure)}
-                          className="flex items-center space-x-1"
-                        >
-                          <Printer className="h-3 w-3" />
-                          <span>Print</span>
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">No procedures for this patient</p>
+                    <p className="text-sm text-gray-500">Assign post-op care procedures</p>
+                  </div>
+                )
               ) : (
                 <div className="text-center py-8">
                   <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No procedures assigned yet</p>
-                  <p className="text-sm text-gray-500">Assign post-op care to patients</p>
+                  <p className="text-gray-600">Select a patient to view procedures</p>
+                  <p className="text-sm text-gray-500">Click on a patient to see their assigned procedures</p>
                 </div>
               )}
             </CardContent>
