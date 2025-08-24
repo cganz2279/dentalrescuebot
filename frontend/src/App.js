@@ -23,7 +23,7 @@ import PracticeDashboard from "./components/PracticeDashboard";
 import { Toaster } from "./components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
 
-// Main App Content Component
+// Main App Content Component - for practice access
 const AppContent = () => {
   const { user, loading, isAuthenticated, isPracticeStaff } = useAuth();
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
@@ -37,19 +37,12 @@ const AppContent = () => {
     );
   }
 
-  // If user is authenticated - show appropriate dashboard
-  if (isAuthenticated()) {
-    // Super admin gets admin dashboard
-    if (user?.role === 'super_admin' || user?.role === 'admin') {
-      return <AdminDashboard />;
-    }
-    // Practice staff gets practice dashboard
-    else if (isPracticeStaff()) {
-      return <PracticeDashboard />;
-    }
+  // If user is authenticated and is practice staff - show practice dashboard
+  if (isAuthenticated() && isPracticeStaff()) {
+    return <PracticeDashboard />;
   }
 
-  // Not authenticated - show login/register forms
+  // Not authenticated - show practice login/register forms
   return (
     <>
       {authMode === 'login' && (
@@ -63,6 +56,43 @@ const AppContent = () => {
         />
       )}
     </>
+  );
+};
+
+// Admin App Content Component - for admin access
+const AdminContent = () => {
+  const { user, loading, isAuthenticated } = useAuth();
+  
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center">
+        <LoadingSpinner size="xl" />
+      </div>
+    );
+  }
+
+  // If user is authenticated and has admin role - show admin dashboard
+  if (isAuthenticated() && (user?.role === 'super_admin' || user?.role === 'admin')) {
+    return <AdminDashboard />;
+  }
+
+  // Not authenticated or not admin - show admin login form
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-width-md">
+        <h1 className="text-2xl font-bold mb-4 text-center">Admin Access Required</h1>
+        <p className="text-gray-600 mb-4 text-center">Please contact system administrator for access.</p>
+        <div className="text-center">
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Go to Practice Portal
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
