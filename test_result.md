@@ -437,7 +437,7 @@ frontend:
           comment: "Initial testing failed due to import path error for use-toast component in HomePage, SpecialtyPage, and ProcedurePage"
         - working: true
           agent: "testing"
-          comment: "Fixed import paths from '../components/ui/use-toast' to '../hooks/use-toast'. Backend integration now working seamlessly with real data from https://carebot-1.preview.emergentagent.com/api. All API endpoints functioning correctly with proper error handling and loading states."
+          comment: "Fixed import paths from '../components/ui/use-toast' to '../hooks/use-toast'. Backend integration now working seamlessly with real data from https://carebotdental.preview.emergentagent.com/api. All API endpoints functioning correctly with proper error handling and loading states."
 
   - task: "Dashboard Patient Selection Logic"
     implemented: true

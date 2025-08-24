@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 from datetime import datetime, timedelta
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://carebot-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://carebotdental.preview.emergentagent.com/api"
 
 class DentalAPITester:
     def __init__(self, base_url: str):
