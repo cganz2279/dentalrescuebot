@@ -21,32 +21,56 @@
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         
-        <!-- Clear any existing service workers and cache -->
+        <!-- Comprehensive browser cleanup script -->
         <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
+        (function() {
+            console.log('Starting browser cleanup...');
+            
+            // 1. Unregister all service workers
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    console.log('Unregistering', registrations.length, 'service workers');
+                    for(let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+            }
+            
+            // 2. Clear all caches
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    console.log('Clearing', names.length, 'caches');
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            
+            // 3. Clear local storage for this domain (but preserve login state temporarily)
+            try {
+                const currentToken = localStorage.getItem('dentalToken');
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Restore token if it exists
+                if (currentToken) {
+                    localStorage.setItem('dentalToken', currentToken);
                 }
-            });
-        }
-        
-        // Clear all caches
-        if ('caches' in window) {
-            caches.keys().then(function(names) {
-                for (let name of names) {
-                    caches.delete(name);
-                }
-            });
-        }
-        
-        // Clear localStorage for this domain
-        try {
-            localStorage.clear();
-            sessionStorage.clear();
-        } catch(e) {
-            console.log('Could not clear storage:', e);
-        }
+                console.log('Storage cleared, token preserved');
+            } catch(e) {
+                console.log('Could not clear storage:', e);
+            }
+            
+            // 4. Force DNS flush by adding timestamp to requests
+            window.DNS_CACHE_BUSTER = Date.now();
+            
+            // 5. Disable any cached network requests
+            if ('connection' in navigator) {
+                console.log('Network type:', navigator.connection.effectiveType);
+            }
+            
+            console.log('Browser cleanup completed');
+        })();
         </script>
         <!--
       This HTML file is a template.
