@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix dashboard logic: show all patients, empty procedures until patient selected. Add Procedure Library with alphabetical list and preview. Fix Assign Procedure page and navigation issues."
+user_problem_statement: "1.PDF needs to be . 2.Library needs to show the documents. 3.Login to admin needs to work. 4.Admin panel needs to work. 5. SYSTEM NEEDS TO BE STABLE AND NOT CORRUPTING EVERY DAY."
 
 backend:
   - task: "Health Check API"
