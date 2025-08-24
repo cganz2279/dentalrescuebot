@@ -1033,7 +1033,10 @@ class DentalAPITester:
 def main():
     """Main function to run the tests"""
     tester = DentalAPITester(BACKEND_URL)
-    success = tester.run_all_tests()
+    
+    # Run focused tests based on review request
+    print("Running focused tests for dashboard and new features...")
+    success = tester.run_focused_tests()
     
     # Return appropriate exit code
     sys.exit(0 if success else 1)
