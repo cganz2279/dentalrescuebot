@@ -81,9 +81,7 @@ const RegistrationPage = () => {
       console.log('Submitting registration data:', formData);
       
       // Get backend URL with fallback
-      const backendUrl = import.meta.env?.REACT_APP_BACKEND_URL || 
-                        process.env?.REACT_APP_BACKEND_URL || 
-                        'https://carebot-1.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
       
       console.log('Using backend URL:', backendUrl);
       
