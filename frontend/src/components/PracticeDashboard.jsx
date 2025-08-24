@@ -26,7 +26,10 @@ import { useToast } from '../hooks/use-toast';
 const PracticeDashboard = () => {
   const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [patientProcedures, setPatientProcedures] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingProcedures, setLoadingProcedures] = useState(false);
   const [error, setError] = useState(null);
   const { user, practice, logout } = useAuth();
   const { toast } = useToast();
