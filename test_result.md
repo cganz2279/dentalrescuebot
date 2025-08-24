@@ -269,6 +269,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ VERIFIED - Procedures API working perfectly for procedure library. GET /api/procedures returns 80 procedures with required fields (id, name, specialty, specialtyName, duration) for library page alphabetical listing and preview functionality."
+        - working: true
+          agent: "testing"
+          comment: "✅ CRITICAL ISSUE RESOLVED - Database was seeded with only 8 procedures instead of 80. Executed processAllPDFs.py to populate database with all 80 procedures from PDF source files. Procedure library now complete with all required procedures for user functionality."
 
   - task: "Get Individual Procedure API"
     implemented: true
