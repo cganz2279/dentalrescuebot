@@ -144,7 +144,7 @@ backend:
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -152,6 +152,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS - Add patient API working correctly. POST /api/practice/patients successfully creates new patients with proper validation. Requires practice admin authorization. Returns patient data with generated UUID."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED - Patient list API (GET /api/practice/patients) working correctly for dashboard patient list. Returns 1 patient with required fields (id, firstName, lastName, email) for dashboard filtering."
 
   - task: "Assign Procedure API"
     implemented: true
