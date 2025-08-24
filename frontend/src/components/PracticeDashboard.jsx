@@ -157,9 +157,9 @@ const PracticeDashboard = () => {
         throw new Error('Procedure data is incomplete');
       }
 
-      // Use the shared HTML-to-PDF generator for identical output
-      const { generateViewPagePDF } = await import('../utils/htmlToPdf');
-      const result = await generateViewPagePDF(procedure, practice);
+      // Use the new FIXED HTML-to-PDF generator
+      const { generateDashboardPDF } = await import('../utils/pdfGeneratorFixed');
+      const result = await generateDashboardPDF(procedure, practice);
       
       console.log('PDF generation result:', result);
       console.log('=== PRINT DEBUG END ===');
