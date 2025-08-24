@@ -67,6 +67,7 @@ function App() {
             <Route path="/practice-settings" element={<PracticeSettingsPage />} />
             <Route path="/add-patient" element={<AddPatientPage />} />
             <Route path="/assign-procedure" element={<AssignProcedurePage />} />
+            <Route path="/library" element={<ProcedureLibraryPage />} />
             <Route path="/add-staff" element={<AddStaffPage />} />
             <Route path="/edit-patient/:patientId" element={<EditPatientPage />} />
             <Route path="/edit-procedure/:assignmentId" element={<EditProcedureAssignmentPage />} />
