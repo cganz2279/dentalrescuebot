@@ -47,7 +47,7 @@ const AddStaffPage = () => {
 
     try {
       const token = localStorage.getItem('dentalToken');
-      const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL}/api/practice/add-staff`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/practice/add-staff`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
