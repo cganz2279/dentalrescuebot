@@ -48,6 +48,16 @@ class PracticeStats(BaseModel):
     active_practices: int
     trial_practices: int
     cancelled_practices: int
+
+class CreateProcedureRequest(BaseModel):
+    name: str
+    specialty_id: str
+    overview: str
+    immediate_aftercare: List[str]
+    diet_restrictions: List[str]
+    warning_signs: List[str]
+    recovery_timeline: List[Dict[str, str]]  # [{"day": "1-2", "activity": "description"}]
+    medications: List[str]
     total_revenue: float
     monthly_revenue: float
 
