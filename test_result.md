@@ -162,7 +162,7 @@ backend:
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -170,6 +170,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS - Assign procedure API working correctly. POST /api/practice/assign-procedure successfully assigns procedures to patients. Tested with Root Canal Therapy assignment. Requires practice admin authorization and validates patient/procedure existence."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED - Assign procedure endpoint (POST /api/practice/assign-procedure) working perfectly for AssignProcedurePage. Successfully assigned Root Canal Therapy to patient Cary Smith with realistic data including dentist name, practice notes, custom instructions, and follow-up date."
 
   - task: "Patient Dashboard API"
     implemented: true
