@@ -80,11 +80,12 @@ const PracticeDashboard = () => {
       setLoadingProcedures(true);
       setPatientProcedures([]);
       
-      // Filter procedures for this specific patient from all procedures
-      // Look through all available procedures and find ones for this patient
-      const allProcedures = dashboardData?.recentProcedures || [];
+      // Get the original dashboard data that includes ALL procedures
+      const dashboardResponse = await practiceApi.getDashboard();
+      const allProcedures = dashboardResponse.data.recentProcedures || [];
+      
+      // Filter procedures for this specific patient
       const patientSpecificProcedures = allProcedures.filter(proc => {
-        // Check if procedure belongs to this patient (could be patientId or patient email/name matching)
         return proc.patientId === patient.id || 
                proc.patientEmail === patient.email ||
                (proc.patientName && proc.patientName.includes(patient.firstName));
@@ -97,7 +98,7 @@ const PracticeDashboard = () => {
       
     } catch (err) {
       toast({
-        title: "Error",
+        title: "Error", 
         description: "Failed to load patient procedures",
         variant: "destructive",
       });
