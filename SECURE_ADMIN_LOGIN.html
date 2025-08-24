@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Access - DentalRescueBot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            min-height: 100vh;
+        }
+        .admin-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .admin-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .logo {
+            height: 60px;
+            margin-bottom: 2rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .admin-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .admin-subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 16px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .login-btn:hover {
+            transform: translateY(-1px);
+        }
+        .login-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 14px;
+        }
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 14px;
+        }
+        .security-note {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 1rem;
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-card">
+            <img src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png" 
+                 alt="DentalRescueBot" class="logo">
+            
+            <h1 class="admin-title">Admin Access</h1>
+            <p class="admin-subtitle">Enter your administrator credentials</p>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="email">Administrator Email</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your admin email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Access Admin Panel
+                </button>
+            </form>
+            
+            <div class="security-note">
+                🔒 Secure authentication required<br>
+                Contact system administrator if you need access
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://carebotdental.preview.emergentagent.com/api';
+        
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Reset messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Show loading
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Authenticating...';
+            
+            try {
+                let response;
+                let data;
+                let loginEndpoint = '';
+                
+                // Try super admin login first
+                try {
+                    loginEndpoint = 'admin';
+                    response = await fetch(`${BACKEND_URL}/admin/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    if (response.ok) {
+                        data = await response.json();
+                        if (data.success) {
+                            // Super admin login successful
+                            localStorage.setItem('dentalToken', data.token);
+                            localStorage.setItem('dentalUser', JSON.stringify({
+                                email: email,
+                                role: 'super_admin',
+                                firstName: 'Admin'
+                            }));
+                            
+                            successMessage.textContent = 'Super Admin access granted. Loading admin dashboard...';
+                            successMessage.style.display = 'block';
+                            
+                            setTimeout(() => {
+                                window.location.href = 'https://carebot-1.preview.emergentagent.com/admin';
+                            }, 1500);
+                            return;
+                        }
+                    }
+                } catch (adminError) {
+                    console.log('Super admin endpoint failed, trying regular login');
+                }
+                
+                // If super admin failed, try regular login
+                loginEndpoint = 'auth';
+                response = await fetch(`${BACKEND_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const user = data.user;
+                    const userRole = user.role;
+                    
+                    // Check if user has admin privileges
+                    if (userRole === 'practice_admin') {
+                        // Store credentials
+                        localStorage.setItem('dentalToken', data.token);
+                        localStorage.setItem('dentalUser', JSON.stringify(user));
+                        
+                        successMessage.textContent = `Welcome ${user.firstName}! Loading practice admin panel...`;
+                        successMessage.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            // Redirect to practice dashboard for practice admin
+                            window.location.href = 'https://carebot-1.preview.emergentagent.com/';
+                        }, 1500);
+                    } else {
+                        throw new Error('Administrator access required. Your account does not have admin privileges.');
+                    }
+                } else {
+                    throw new Error(data.detail || data.message || 'Invalid credentials');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.textContent = error.message || 'Login failed. Please check your credentials.';
+                errorMessage.style.display = 'block';
+                
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Access Admin Panel';
+            }
+        });
+    </script>
+</body>
+</html>
