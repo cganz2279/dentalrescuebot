@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Admin Dashboard Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: #1e40af;
+            color: white;
+            padding: 20px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 8px 8px 0 0;
+        }
+        .login-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .admin-section {
+            display: none;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background: #1e40af;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .error {
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .success {
+            color: #059669;
+            background: #d1fae5;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .debug {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Admin Dashboard Test</h1>
+            <p>Testing admin authentication and dashboard access</p>
+        </div>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <h3>Test Admin Login</h3>
+            <div class="error" id="errorMsg"></div>
+            <div class="success" id="successMsg"></div>
+            
+            <div class="form-group">
+                <input type="email" id="emailInput" placeholder="Admin Email" value="">
+            </div>
+            <div class="form-group">
+                <input type="password" id="passwordInput" placeholder="Password" value="">
+            </div>
+            <button class="btn" onclick="testLogin()" id="loginBtn">Test Login</button>
+            
+            <div class="debug" id="debugInfo">
+                Ready to test login...
+            </div>
+        </div>
+
+        <!-- Admin Dashboard Section -->
+        <div id="adminSection" class="admin-section">
+            <h3>✅ Admin Dashboard Loaded Successfully!</h3>
+            <p><strong>User:</strong> <span id="userName"></span></p>
+            <p><strong>Role:</strong> <span id="userRole"></span></p>
+            <p><strong>Email:</strong> <span id="userEmail"></span></p>
+            
+            <h4>Admin Functions:</h4>
+            <button class="btn" onclick="testAdminAPI()">Test Admin API</button>
+            <button class="btn" onclick="openReactApp()">Open React Admin</button>
+            
+            <div class="debug" id="adminDebug">
+                Admin dashboard loaded
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://carebotdental.preview.emergentagent.com/api';
+        
+        async function testLogin() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+            const debugInfo = document.getElementById('debugInfo');
+            
+            if (!email || !password) {
+                showError('Please enter email and password');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Testing...';
+            hideMessages();
+            
+            try {
+                debugInfo.innerHTML = 'Attempting admin login...';
+                
+                // Try super admin login first
+                let response = await fetch(`${BACKEND_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                let data = await response.json();
+                debugInfo.innerHTML += '<br>Super admin response: ' + JSON.stringify(data, null, 2);
+                
+                if (response.ok && data.success) {
+                    // Super admin success
+                    localStorage.setItem('dentalToken', data.token);
+                    localStorage.setItem('dentalUser', JSON.stringify({
+                        email: email,
+                        role: 'super_admin',
+                        firstName: 'Admin'
+                    }));
+                    
+                    showSuccess('Super admin login successful!');
+                    showAdminDashboard('Admin', 'super_admin', email);
+                    return;
+                }
+                
+                // Try regular login
+                debugInfo.innerHTML += '<br>Trying regular login...';
+                response = await fetch(`${BACKEND_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                data = await response.json();
+                debugInfo.innerHTML += '<br>Regular login response: ' + JSON.stringify(data, null, 2);
+                
+                if (response.ok && data.success) {
+                    const user = data.user;
+                    
+                    if (user.role === 'practice_admin') {
+                        localStorage.setItem('dentalToken', data.token);
+                        localStorage.setItem('dentalUser', JSON.stringify(user));
+                        
+                        showSuccess('Practice admin login successful!');
+                        showAdminDashboard(user.firstName, user.role, user.email);
+                        return;
+                    } else {
+                        throw new Error('User role "' + user.role + '" does not have admin privileges');
+                    }
+                } else {
+                    throw new Error(data.detail || data.message || 'Login failed');
+                }
+                
+            } catch (error) {
+                showError('Login failed: ' + error.message);
+                debugInfo.innerHTML += '<br>Error: ' + error.message;
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Test Login';
+            }
+        }
+        
+        function showAdminDashboard(name, role, email) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminSection').style.display = 'block';
+            
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userRole').textContent = role;
+            document.getElementById('userEmail').textContent = email;
+        }
+        
+        async function testAdminAPI() {
+            const token = localStorage.getItem('dentalToken');
+            const debugDiv = document.getElementById('adminDebug');
+            
+            try {
+                debugDiv.innerHTML = 'Testing admin API access...';
+                
+                const response = await fetch(`${BACKEND_URL}/admin/dashboard`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                debugDiv.innerHTML += '<br>Admin API response: ' + JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                debugDiv.innerHTML += '<br>Admin API error: ' + error.message;
+            }
+        }
+        
+        function openReactApp() {
+            window.open('https://carebot-1.preview.emergentagent.com/admin', '_blank');
+        }
+        
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+        }
+        
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMsg');
+            successMsg.textContent = message;
+            successMsg.style.display = 'block';
+        }
+        
+        function hideMessages() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
