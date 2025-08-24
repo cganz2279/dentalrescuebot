@@ -213,11 +213,14 @@ backend:
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
           comment: "✅ PASS - Practice Staff API working correctly. GET /api/practice/staff returns 1 staff member (admin user cganz2279@gmail.com) with correct format for AddPatientPage dentist assignment. Response includes required fields: id, firstName, lastName, email, role. Authentication working properly with practice_admin token."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED - Staff API (GET /api/practice/staff) working correctly for assign procedure functionality. Returns 2 staff members with required fields (id, firstName, lastName, email, role) for assignment forms. Admin user cganz2279@gmail.com present in staff list."
 
   - task: "Get All Specialties API"
     implemented: true
