@@ -160,6 +160,31 @@ export const authApi = {
     return response.data;
   },
 
+  // Admin login endpoint
+  adminLogin: async (email, password) => {
+    try {
+      // Try super admin login first
+      const adminResponse = await authAxios.post('/admin/login', { email, password });
+      return adminResponse.data;
+    } catch (adminError) {
+      // If admin login fails, try regular login and check role
+      console.log('Admin login failed, trying regular login...');
+      try {
+        const regularResponse = await authAxios.post('/login', { email, password });
+        const userData = regularResponse.data;
+        
+        // Check if user has admin role
+        if (userData.user && (userData.user.role === 'super_admin' || userData.user.role === 'admin' || userData.user.role === 'practice_admin')) {
+          return userData;
+        } else {
+          throw new Error('Admin access required');
+        }
+      } catch (regularError) {
+        throw adminError; // Return original admin error
+      }
+    }
+  },
+
   registerPractice: async (practiceData) => {
     const response = await authAxios.post('/register-practice', {
       practiceName: practiceData.practiceName,
