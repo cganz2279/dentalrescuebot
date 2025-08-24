@@ -452,3 +452,233 @@ async def get_all_payments(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get payments"
         )
+
+@router.post("/procedures")
+async def create_procedure(
+    request: CreateProcedureRequest,
+    admin_data = Depends(verify_admin_token)
+):
+    """Create a new post-operative care procedure"""
+    try:
+        # Generate procedure ID from name
+        procedure_id = request.name.lower().replace(' ', '-').replace('(', '').replace(')', '').replace('/', '-')
+        
+        # Check if procedure already exists
+        existing = await db.procedures.find_one({"id": procedure_id})
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Procedure with this name already exists"
+            )
+        
+        # Create procedure document
+        procedure = {
+            "id": procedure_id,
+            "name": request.name,
+            "specialtyId": request.specialty_id,
+            "overview": request.overview,
+            "immediateAftercare": request.immediate_aftercare,
+            "dietRestrictions": request.diet_restrictions,
+            "warningSigns": request.warning_signs,
+            "recoveryTimeline": request.recovery_timeline,
+            "medications": request.medications,
+            "createdAt": datetime.utcnow(),
+            "createdBy": admin_data["adminEmail"],
+            "isActive": True
+        }
+        
+        # Insert into database
+        await db.procedures.insert_one(procedure)
+        
+        # Log admin action
+        admin_action = {
+            "id": str(uuid.uuid4()),
+            "admin_email": admin_data["adminEmail"],
+            "action": "create_procedure",
+            "procedure_id": procedure_id,
+            "procedure_name": request.name,
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_actions.insert_one(admin_action)
+        
+        return {
+            "success": True,
+            "message": "Post-operative care procedure created successfully",
+            "procedure_id": procedure_id,
+            "procedure": {k: v for k, v in procedure.items() if k != "_id"}
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Create procedure error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create procedure"
+        )
+
+@router.get("/procedures")
+async def get_all_procedures_admin(
+    admin_data = Depends(verify_admin_token),
+    specialty_id: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(100, ge=1, le=500)
+):
+    """Get all procedures for admin management"""
+    try:
+        # Build query
+        query = {}
+        if specialty_id:
+            query["specialtyId"] = specialty_id
+        if is_active is not None:
+            query["isActive"] = is_active
+        
+        # Get total count
+        total = await db.procedures.count_documents(query)
+        
+        # Get procedures with pagination
+        skip = (page - 1) * limit
+        procedures = await db.procedures.find(
+            query,
+            {"_id": 0}
+        ).sort("name", 1).skip(skip).limit(limit).to_list(limit)
+        
+        # Add specialty info
+        for procedure in procedures:
+            if procedure.get("specialtyId"):
+                specialty = await db.specialties.find_one(
+                    {"id": procedure["specialtyId"]},
+                    {"_id": 0, "name": 1, "color": 1}
+                )
+                procedure["specialty"] = specialty
+        
+        return {
+            "success": True,
+            "procedures": procedures,
+            "pagination": {
+                "total": total,
+                "page": page,
+                "limit": limit,
+                "total_pages": (total + limit - 1) // limit
+            }
+        }
+        
+    except Exception as e:
+        print(f"Get procedures admin error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get procedures"
+        )
+
+@router.put("/procedures/{procedure_id}")
+async def update_procedure(
+    procedure_id: str,
+    request: CreateProcedureRequest,
+    admin_data = Depends(verify_admin_token)
+):
+    """Update an existing procedure"""
+    try:
+        # Check if procedure exists
+        existing = await db.procedures.find_one({"id": procedure_id})
+        if not existing:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure not found"
+            )
+        
+        # Update procedure
+        updates = {
+            "name": request.name,
+            "specialtyId": request.specialty_id,
+            "overview": request.overview,
+            "immediateAftercare": request.immediate_aftercare,
+            "dietRestrictions": request.diet_restrictions,
+            "warningSigns": request.warning_signs,
+            "recoveryTimeline": request.recovery_timeline,
+            "medications": request.medications,
+            "updatedAt": datetime.utcnow(),
+            "updatedBy": admin_data["adminEmail"]
+        }
+        
+        await db.procedures.update_one(
+            {"id": procedure_id},
+            {"$set": updates}
+        )
+        
+        # Log admin action
+        admin_action = {
+            "id": str(uuid.uuid4()),
+            "admin_email": admin_data["adminEmail"],
+            "action": "update_procedure",
+            "procedure_id": procedure_id,
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_actions.insert_one(admin_action)
+        
+        return {
+            "success": True,
+            "message": "Procedure updated successfully",
+            "procedure_id": procedure_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Update procedure error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update procedure"
+        )
+
+@router.delete("/procedures/{procedure_id}")
+async def delete_procedure(
+    procedure_id: str,
+    admin_data = Depends(verify_admin_token)
+):
+    """Soft delete a procedure (set isActive to false)"""
+    try:
+        # Check if procedure exists
+        existing = await db.procedures.find_one({"id": procedure_id})
+        if not existing:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure not found"
+            )
+        
+        # Soft delete procedure
+        await db.procedures.update_one(
+            {"id": procedure_id},
+            {
+                "$set": {
+                    "isActive": False,
+                    "deletedAt": datetime.utcnow(),
+                    "deletedBy": admin_data["adminEmail"]
+                }
+            }
+        )
+        
+        # Log admin action
+        admin_action = {
+            "id": str(uuid.uuid4()),
+            "admin_email": admin_data["adminEmail"],
+            "action": "delete_procedure",
+            "procedure_id": procedure_id,
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_actions.insert_one(admin_action)
+        
+        return {
+            "success": True,
+            "message": "Procedure deleted successfully",
+            "procedure_id": procedure_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Delete procedure error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete procedure"
+        )
