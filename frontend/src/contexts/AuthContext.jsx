@@ -44,15 +44,28 @@ export const AuthProvider = ({ children }) => {
       } else {
         // Normal token check
         const savedToken = localStorage.getItem('dentalToken');
-        if (savedToken) {
+        const savedUser = localStorage.getItem('dentalUser');
+        
+        if (savedToken && savedUser) {
           try {
-            const response = await authApi.getCurrentUser(savedToken);
-            setUser(response.user);
-            setPractice(response.practice);
-            setToken(savedToken);
+            const userData = JSON.parse(savedUser);
+            
+            // If it's a super admin, don't try to validate with regular endpoint
+            if (userData.role === 'super_admin' || userData.role === 'admin') {
+              setUser(userData);
+              setToken(savedToken);
+              console.log('Super admin user loaded from localStorage:', userData);
+            } else {
+              // Regular user - validate with API
+              const response = await authApi.getCurrentUser(savedToken);
+              setUser(response.user);
+              setPractice(response.practice);
+              setToken(savedToken);
+            }
           } catch (error) {
             console.error('Token validation failed:', error);
             localStorage.removeItem('dentalToken');
+            localStorage.removeItem('dentalUser');
             setToken(null);
           }
         }
