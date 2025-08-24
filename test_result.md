@@ -507,14 +507,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Patient Login API"
-    - "Add Patient API"
-    - "Assign Procedure API"
-    - "Patient Dashboard API"
-    - "Patient Login Form"
-    - "Add Patient Page"
-    - "Assign Procedure Page"
-    - "Patient Dashboard/Portal"
+    - "PDF Generation Fix"
+    - "Procedure Library Functionality"
+    - "Admin Login Fix"
+    - "Admin Panel Functionality"
+    - "System Stability"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
