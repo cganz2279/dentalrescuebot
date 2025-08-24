@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
 
-router = APIRouter(prefix="/api/admin", tags=["admin"])
+router = APIRouter(prefix="/admin", tags=["admin"])
 security = HTTPBearer()
 
 # MongoDB connection
