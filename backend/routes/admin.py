@@ -27,7 +27,7 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'your-super-secret-jwt-key-change-in-p
 
 # Super admin credentials (simple for testing)
 SUPER_ADMIN_EMAIL = "cganz2279@gmail.com"
-SUPER_ADMIN_PASSWORD = "password123"
+SUPER_ADMIN_PASSWORD = "admin123"
 
 # Pydantic models
 class AdminLoginRequest(BaseModel):
