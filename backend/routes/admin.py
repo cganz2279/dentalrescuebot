@@ -26,7 +26,7 @@ db = client[os.environ.get('DB_NAME', 'test_database')]
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-super-secret-jwt-key-change-in-production')
 
 # Super admin credentials (simple for testing)
-SUPER_ADMIN_EMAIL = "admin@theoncallbot.com"
+SUPER_ADMIN_EMAIL = "cganz2279@gmail.com"
 SUPER_ADMIN_PASSWORD = "admin123"
 
 # Pydantic models
