@@ -42,8 +42,21 @@ const PracticeDashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await practiceApi.getDashboard();
-      setDashboardData(response.data);
+      
+      // Load dashboard stats and practice info
+      const dashboardResponse = await practiceApi.getDashboard();
+      
+      // Load ALL patients (not just recent ones)
+      const patientsResponse = await practiceApi.getPatients();
+      
+      // Combine the data
+      const combinedData = {
+        ...dashboardResponse.data,
+        allPatients: patientsResponse.data || [], // All patients for selection
+        recentPatients: patientsResponse.data || [] // Keep this for compatibility but use all patients
+      };
+      
+      setDashboardData(combinedData);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to load dashboard');
       toast({
