@@ -269,7 +269,7 @@ const PracticeDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <Button 
             onClick={() => navigate('/add-patient')}
             className="bg-blue-600 hover:bg-blue-700 text-white h-20 flex flex-col"
@@ -284,6 +284,14 @@ const PracticeDashboard = () => {
           >
             <FileText className="h-6 w-6 mb-2" />
             Assign Procedure
+          </Button>
+          <Button 
+            onClick={() => navigate('/library')}
+            variant="outline" 
+            className="h-20 flex flex-col"
+          >
+            <FileText className="h-6 w-6 mb-2" />
+            Procedure Library
           </Button>
           <Button 
             onClick={() => navigate('/add-staff')}
