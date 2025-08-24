@@ -412,44 +412,41 @@ frontend:
           agent: "testing"
           comment: "Fixed import paths from '../components/ui/use-toast' to '../hooks/use-toast'. Backend integration now working seamlessly with real data from https://carebot-1.preview.emergentagent.com/api. All API endpoints functioning correctly with proper error handling and loading states."
 
-  - task: "PDF Generation with Proper Margins"
+  - task: "Dashboard Patient Selection Logic"
     implemented: true
-    working: true
-    file: "frontend/src/utils/htmlToPdf.js"
-    stuck_count: 1
+    working: false
+    file: "frontend/src/components/PracticeDashboard.jsx"
+    stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "main"
-          comment: "Fixed PDF margin calculations: reduced top margin from 20mm to 15mm, bottom margin from 25mm to 20mm, side margins from 15mm to 10mm. Corrected page number positioning to be within bottom margin at 8mm from page bottom. Enhanced content padding from 20px to 25px 20px for better internal spacing. generateViewPagePDF function updated - needs testing"
-        - working: false
-          agent: "user"
-          comment: "User reported: Disclaimer on printed page shows twice. Need to investigate and fix duplicate disclaimer issue in PDF generation."
-        - working: false
-          agent: "main"
-          comment: "FIXED DUPLICATE DISCLAIMER: Modified htmlToPdf.js to capture actual page content instead of generating duplicate HTML. Now uses document.querySelector to capture main content area and removes duplicate contact/disclaimer sections automatically. Added cleanup logic to remove any duplicate Contact Information or disclaimer content from captured HTML before adding standardized footer."
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS - PDF generation functionality working perfectly. Successfully tested complete flow: 1) Login as practice admin (cganz2279@gmail.com/admin123) ✅ 2) Navigate to procedure view from Recent Procedures section ✅ 3) Click 'Download PDF' button ✅ 4) PDF generated and downloaded successfully (589KB file) ✅ 5) Success toast notification displayed ✅ 6) Verified procedure view page contains all required sections: Procedure Information, Practice Notes, Custom Instructions, Detailed Post-Operative Care Instructions, Contact Information ✅ 7) Single Contact Information section found (no duplicates) ✅ 8) PDF includes proper margins (15mm top, 20mm bottom, 10mm sides), page numbering, patient acknowledgment section, and standardized disclaimer footer. Duplicate disclaimer issue has been resolved. Both dashboard Print buttons and procedure view Download PDF buttons are functional."
-        - working: false
-          agent: "user"
-          comment: "User reported margin issues: Page 1 bottom margin needs to be larger, Page 2+ top margin needs to be larger, and disclaimer is repeating on last page."
+          comment: "Implemented patient selection logic: shows all patients, procedures empty until patient selected. Added selectPatient function, patient-specific procedure filtering, visual selection feedback with blue background/border, Clear Selection button. Modified procedures section to show patient-specific procedures or empty state with instructional text."
+
+  - task: "Procedure Library Page"
+    implemented: true
+    working: false
+    file: "frontend/src/pages/ProcedureLibraryPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
         - working: false
           agent: "main"
-          comment: "FIXED MARGIN AND DISCLAIMER ISSUES: 1) Increased margins - 20mm top/25mm bottom for all pages for better spacing 2) Rewrote page break logic to properly handle multi-page content with consistent top margins on subsequent pages 3) Enhanced duplicate disclaimer removal to aggressively clean captured content - removes any elements containing 'DISCLAIMER', 'educational purposes', 'professional medical advice', 'Generated on:', or 'DentalRescueBot' text 4) Fixed page positioning calculations to ensure proper content flow across pages. Ready for testing."
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS - PDF generation with improved margins and duplicate disclaimer fixes working perfectly. COMPREHENSIVE TEST RESULTS: 1) Login as practice admin (cganz2279@gmail.com/admin123) ✅ 2) Successfully navigated to procedure view (Biopsy of Oral Tissue) ✅ 3) Download PDF button functional and clicked ✅ 4) PDF generated successfully (filename: biopsy_of_oral_tissue_post_op_instructions.pdf) ✅ 5) Success toast notification displayed correctly ✅ 6) All required content sections present: Procedure Information, Practice Notes, Custom Post-Operative Instructions, Detailed Post-Operative Care Instructions, Contact Information ✅ 7) MARGIN VERIFICATION: Code analysis confirms 20mm top margin, 25mm bottom margin, 10mm side margins as requested ✅ 8) DISCLAIMER VERIFICATION: No duplicate disclaimer content found on page - aggressive cleanup logic working correctly (0 instances of DISCLAIMER, educational purposes, professional medical advice, DentalRescueBot text found) ✅ 9) Page numbering positioned at bottom right within margins ✅ 10) HTML2Canvas rendering working smoothly with proper scaling and quality. All user-reported margin and disclaimer issues have been successfully resolved."
-        - working: false
-          agent: "user"
-          comment: "User still reporting margin issues: Bottom margin on page 1 and top margin on page 2+ need to be fixed. Follow same margin pattern for 3+ pages."
+          comment: "Created new Procedure Library page with alphabetical procedure listing, search functionality, specialty filtering, clickable preview buttons. Added navigation button to dashboard Quick Actions. Added route to App.js. Includes proper 'Back to Dashboard' navigation and responsive grid layout."
+
+  - task: "Assign Procedure Page Navigation"
+    implemented: true
+    working: false
+    file: "frontend/src/pages/AssignProcedurePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
         - working: false
           agent: "main"
-          comment: "IMPLEMENTED SPECIFIC PAGE MARGIN FIXES: Completely rewrote PDF generation logic using proper canvas cropping approach. PAGE 1: 15mm top + 30mm bottom margin (larger bottom as requested). PAGE 2+: 25mm top + 20mm bottom margin (larger top as requested). All pages: 10mm side margins. Uses separate canvas elements for each page with precise content cropping using drawImage() to ensure exact margin control. This approach gives full control over page breaks and margins instead of repositioning a single large image."
-        - working: true
-          agent: "testing"
-          comment: "✅ COMPREHENSIVE PDF MARGIN TESTING COMPLETED: Successfully verified all user-requested margin fixes have been implemented correctly. CODE ANALYSIS CONFIRMS: 1) Page 1: 15mm top + 30mm bottom margin (larger bottom as specifically requested) ✅ 2) Page 2+: 25mm top + 20mm bottom margin (larger top as specifically requested) ✅ 3) Page 3+: Same pattern as page 2 (25mm top + 20mm bottom) ✅ 4) All pages: 10mm side margins ✅ 5) Page numbers: positioned at bottom right within margins (8mm from edge) ✅ 6) Canvas cropping approach: separate canvas elements per page for precise control ✅ 7) Content flow: proper drawImage() cropping prevents content cutoff ✅ 8) Disclaimer cleanup: aggressive removal logic prevents duplication ✅ FUNCTIONALITY VERIFIED: Login flow, navigation to procedure view, PDF generation button, success notifications, content structure, and all required sections present. The specific margin improvements requested by the user (larger bottom margin on page 1, larger top margin on page 2+) have been successfully implemented using the new canvas cropping approach."
+          comment: "Verified Assign Procedure page has proper 'Back to Dashboard' navigation button. Form submission includes navigation to '/' after successful assignment. Need to test full functionality including form validation, patient/procedure/dentist selection, and API calls."
 
 metadata:
   created_by: "testing_agent"
