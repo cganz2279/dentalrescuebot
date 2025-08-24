@@ -902,11 +902,11 @@ class DentalAPITester:
     def test_procedure_content_completeness(self):
         """Test procedure content loading completeness - main focus of review request"""
         try:
-            # Test popular procedures mentioned in review request
+            # Test popular procedures mentioned in review request (using actual IDs from database)
             test_procedures = [
                 "root-canal-therapy",
-                "tooth-extraction", 
-                "crown-placement"
+                "surgical-tooth-extraction",  # closest to "tooth-extraction"
+                "dental-crown-placement"      # closest to "crown-placement"
             ]
             
             all_procedures_complete = True
