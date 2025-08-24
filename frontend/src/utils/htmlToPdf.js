@@ -5,11 +5,97 @@ export const generateViewPagePDF = async (procedure, practice = null) => {
     const html2canvas = (await import('html2canvas')).default;
     const { jsPDF } = await import('jspdf');
     
-    // Find the main content area of the current page (excluding header/navigation)
-    const mainContent = document.querySelector('.max-w-4xl.mx-auto.py-8');
+    // Try to find the main content area from procedure view page first
+    let mainContent = document.querySelector('.max-w-4xl.mx-auto.py-8');
     
+    // If not found, we're probably on dashboard - create minimal content from procedure data
     if (!mainContent) {
-      throw new Error('Could not find main content area to print');
+      console.log('Main content area not found - generating from procedure data instead');
+      // Create a minimal procedure content structure for dashboard context
+      mainContent = document.createElement('div');
+      mainContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="border-l-4 border-l-blue-500 bg-white p-6 rounded-lg shadow">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">${procedure.procedureName}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-2">Performing Dentist</h3>
+                <p class="text-lg">Dr. ${procedure.dentistName}</p>
+              </div>
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-2">Performed Date</h3>
+                <p class="text-lg">${new Date(procedure.performedDate).toLocaleDateString()}</p>
+              </div>
+            </div>
+          </div>
+          
+          ${procedure.practiceNotes ? `
+          <div class="bg-purple-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-purple-800 mb-3">Practice Notes</h3>
+            <p class="text-purple-800 whitespace-pre-wrap">${procedure.practiceNotes}</p>
+          </div>
+          ` : ''}
+          
+          ${procedure.customInstructions && procedure.customInstructions.length > 0 ? `
+          <div class="bg-blue-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-blue-800 mb-3">Custom Instructions</h3>
+            <ul class="space-y-2">
+              ${procedure.customInstructions.map(instruction => `
+                <li class="flex items-start space-x-2 text-blue-800">
+                  <span class="font-bold text-blue-600">•</span>
+                  <span>${instruction}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          ` : ''}
+          
+          <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-red-800 mb-3">Standard Post-Operative Care</h3>
+            <div class="space-y-4 text-red-800">
+              <div>
+                <h4 class="font-semibold mb-2">Immediate Aftercare (First 24 Hours)</h4>
+                <ul class="space-y-1 ml-4">
+                  <li>• Apply ice to the treated area for 15 minutes every hour for the first 24 hours</li>
+                  <li>• Keep gauze in place for 30-60 minutes after treatment, then remove gently</li>
+                  <li>• Do not rinse or spit forcefully for the first 24 hours</li>
+                  <li>• Take prescribed medications as directed by your dentist</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 class="font-semibold mb-2">Diet Restrictions</h4>
+                <ul class="space-y-1 ml-4">
+                  <li>• Stick to soft foods for the first 24-48 hours</li>
+                  <li>• Avoid hot liquids and foods until numbness wears off</li>
+                  <li>• Avoid using straws for the first few days</li>
+                  <li>• No alcohol while taking prescribed medications</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 class="font-semibold mb-2">⚠️ Contact Your Dentist If You Experience:</h4>
+                <ul class="space-y-1 ml-4">
+                  <li>• Severe or worsening pain after 48 hours</li>
+                  <li>• Excessive bleeding that does not stop with gentle pressure</li>
+                  <li>• Signs of infection: fever, excessive swelling, pus, or foul taste</li>
+                  <li>• Numbness that persists beyond the expected timeframe</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 class="font-semibold mb-2">General Care Instructions</h4>
+                <ul class="space-y-1 ml-4">
+                  <li>• Follow all post-operative care instructions carefully</li>
+                  <li>• Take prescribed medications as directed</li>
+                  <li>• Contact office if you experience any complications</li>
+                  <li>• Attend follow-up appointments as scheduled</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
     
     // Create a printable version of the current page content
