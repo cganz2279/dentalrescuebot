@@ -37,12 +37,19 @@ const AppContent = () => {
     );
   }
 
-  // If user is authenticated and is practice staff - show practice dashboard
-  if (isAuthenticated() && isPracticeStaff()) {
-    return <PracticeDashboard />;
+  // If user is authenticated - show appropriate dashboard
+  if (isAuthenticated()) {
+    // Super admin gets admin dashboard
+    if (user?.role === 'super_admin' || user?.role === 'admin') {
+      return <AdminDashboard />;
+    }
+    // Practice staff gets practice dashboard
+    else if (isPracticeStaff()) {
+      return <PracticeDashboard />;
+    }
   }
 
-  // Not authenticated - show login/register forms (dentist/practice only)
+  // Not authenticated - show login/register forms
   return (
     <>
       {authMode === 'login' && (
