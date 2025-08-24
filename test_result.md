@@ -191,6 +191,9 @@ backend:
         - working: "NA"
           agent: "testing"
           comment: "❌ ENDPOINT NOT FOUND - GET /api/auth/patient-dashboard returns 404. This endpoint does not exist in the current backend implementation. Patient dashboard functionality may need to be implemented if required for the frontend."
+        - working: "NA"
+          agent: "testing"
+          comment: "✅ CONFIRMED FOR WORDPRESS ADMIN TESTING - Patient Dashboard API (GET /api/auth/patient-dashboard) returns 404 as expected. This endpoint is not implemented and not required for WordPress admin page functionality. Admin functionality works independently through practice management endpoints."
 
   - task: "Practice Dashboard API"
     implemented: true
