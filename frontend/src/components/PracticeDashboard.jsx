@@ -75,14 +75,21 @@ const PracticeDashboard = () => {
       setLoadingProcedures(true);
       setPatientProcedures([]);
       
-      // Load procedures for this specific patient
-      // This would require a new API endpoint or filtering
-      // For now, filter from dashboard data
-      const procedures = dashboardData?.recentProcedures?.filter(
-        proc => proc.patientId === patient.id
-      ) || [];
+      // Filter procedures for this specific patient from all procedures
+      // Look through all available procedures and find ones for this patient
+      const allProcedures = dashboardData?.recentProcedures || [];
+      const patientSpecificProcedures = allProcedures.filter(proc => {
+        // Check if procedure belongs to this patient (could be patientId or patient email/name matching)
+        return proc.patientId === patient.id || 
+               proc.patientEmail === patient.email ||
+               (proc.patientName && proc.patientName.includes(patient.firstName));
+      });
       
-      setPatientProcedures(procedures);
+      setPatientProcedures(patientSpecificProcedures);
+      
+      console.log(`Selected patient: ${patient.firstName} ${patient.lastName}`);
+      console.log(`Found ${patientSpecificProcedures.length} procedures for this patient`);
+      
     } catch (err) {
       toast({
         title: "Error",
