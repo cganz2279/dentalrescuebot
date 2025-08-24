@@ -46,17 +46,22 @@ const PracticeDashboard = () => {
       // Load dashboard stats and practice info
       const dashboardResponse = await practiceApi.getDashboard();
       
-      // Load ALL patients (not just recent ones)
+      // Load ALL patients (not just recent ones)  
       const patientsResponse = await practiceApi.getPatients();
       
-      // Combine the data
+      // Combine the data but DON'T load procedures initially
       const combinedData = {
         ...dashboardResponse.data,
-        allPatients: patientsResponse.data || [], // All patients for selection
-        recentPatients: patientsResponse.data || [] // Keep this for compatibility but use all patients
+        allPatients: patientsResponse.data || [],
+        recentPatients: patientsResponse.data || [],
+        // Clear procedures so they don't show initially
+        recentProcedures: [] 
       };
       
       setDashboardData(combinedData);
+      // Ensure no patient is selected and no procedures show initially
+      setSelectedPatient(null);
+      setPatientProcedures([]);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to load dashboard');
       toast({
