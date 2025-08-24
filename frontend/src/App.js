@@ -19,6 +19,8 @@ import AdminRequestsPage from "./pages/AdminRequestsPage";
 import LoginForm from "./components/LoginForm";
 import AdminDashboard from "./components/AdminDashboard";
 import PracticeDashboard from "./components/PracticeDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import { Toaster } from "./components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
 
