@@ -1,5 +1,60 @@
 import axios from 'axios';
 
+// Create axios instances with retry logic for network resilience
+const createAxiosInstance = (baseURL) => {
+  const instance = axios.create({
+    baseURL,
+    timeout: 15000, // Increased timeout
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  // Add request interceptor for debugging
+  instance.interceptors.request.use(
+    (config) => {
+      console.log(`Making request to: ${config.baseURL}${config.url}`);
+      const token = localStorage.getItem('dentalToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      console.error('Request interceptor error:', error);
+      return Promise.reject(error);
+    }
+  );
+
+  // Add response interceptor with retry logic
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      console.error('API Error:', error.message);
+      
+      // If it's a network error, try with alternative approach
+      if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+        console.warn('Network error detected, attempting retry...');
+        
+        // Retry once with explicit headers
+        if (!error.config._retry) {
+          error.config._retry = true;
+          error.config.headers = {
+            ...error.config.headers,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          };
+          return instance.request(error.config);
+        }
+      }
+      
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
+};
+
 // Get backend URL - use current domain if no specific URL provided
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
@@ -8,23 +63,9 @@ const PRACTICE_BASE_URL = `${BACKEND_URL}/api/practice`;
 
 console.log('Auth API using backend URL:', BACKEND_URL);
 
-// Create axios instance for auth
-const authAxios = axios.create({
-  baseURL: AUTH_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Create axios instance for practice management
-const practiceAxios = axios.create({
-  baseURL: PRACTICE_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// Create instances with retry logic
+const authAxios = createAxiosInstance(AUTH_BASE_URL);
+const practiceAxios = createAxiosInstance(PRACTICE_BASE_URL);
 
 // Add auth token to practice requests
 practiceAxios.interceptors.request.use(
