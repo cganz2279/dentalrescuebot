@@ -246,11 +246,14 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
           comment: "GET /api/specialties/oral-surgery returns specialty details with 3 associated procedures. Proper error handling for invalid IDs"
+        - working: true
+          agent: "testing"
+          comment: "✅ COMPREHENSIVE SPECIALTY CONTENT TESTING COMPLETED: GET /api/specialties/oral-surgery returns complete specialty data with 34 procedures. Specialty endpoint returns basic procedure info (id, name, specialty, specialtyName, duration) as expected for library functionality. Full procedure content should be fetched separately via individual procedure endpoints. Specialty pages show proper procedure listings for navigation to detailed content."
 
   - task: "Get All Procedures API"
     implemented: true
