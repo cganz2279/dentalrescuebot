@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-// Get backend URL with proper fallback that works in all environments
-const BACKEND_URL = import.meta.env?.REACT_APP_BACKEND_URL || 
-                    process.env?.REACT_APP_BACKEND_URL || 
-                    window.location.origin; // Use current domain instead of hardcoded preview
+// Get backend URL with proper Create React App environment variable access
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const AUTH_BASE_URL = `${BACKEND_URL}/api/auth`;
 const PRACTICE_BASE_URL = `${BACKEND_URL}/api/practice`;
