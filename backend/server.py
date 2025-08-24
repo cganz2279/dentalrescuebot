@@ -211,15 +211,15 @@ async def get_procedure(procedure_id: str):
         logging.error(f"Error fetching procedure {procedure_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-# Include the router in the main app
-app.include_router(api_router)
+# Include auth, practice management, payment, webhook, and admin routes under the API router
+api_router.include_router(auth_router)
+api_router.include_router(practice_router)
+api_router.include_router(payments_router)
+api_router.include_router(webhooks_router)
+api_router.include_router(admin_router)
 
-# Include auth, practice management, payment, webhook, and admin routes directly
-app.include_router(auth_router)
-app.include_router(practice_router)
-app.include_router(payments_router)
-app.include_router(webhooks_router)
-app.include_router(admin_router)
+# Include the main api router in the app
+app.include_router(api_router)
 
 # Configure logging
 logging.basicConfig(
