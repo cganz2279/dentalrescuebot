@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - DentalRescueBot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .iframe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+        }
+        .iframe-header {
+            background: #1e40af;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: calc(100% - 70px);
+            border: none;
+            background: white;
+        }
+        .admin-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-logo {
+            height: 32px;
+        }
+        .refresh-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .loading-overlay {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Full Screen Admin App -->
+    <div class="iframe-container">
+        <div class="iframe-header">
+            <div class="admin-title">
+                <img src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png" 
+                     alt="DentalRescueBot" class="admin-logo">
+                <h3 style="margin: 0; font-size: 18px;">DentalRescueBot Admin Panel</h3>
+            </div>
+            <button class="refresh-btn" onclick="refreshApp()">↻ Refresh</button>
+        </div>
+        
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading admin interface...</div>
+        </div>
+        
+        <!-- Main App Iframe -->
+        <iframe id="adminIframe" src="https://carebot-1.preview.emergentagent.com/" onload="hideLoading()"></iframe>
+    </div>
+
+    <script>
+        function refreshApp() {
+            const iframe = document.getElementById('adminIframe');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+            
+            // Refresh iframe
+            iframe.src = iframe.src;
+        }
+        
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Hide loading overlay after iframe loads
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 1000);
+        }
+        
+        // Initialize - hide loading after initial load
+        window.onload = function() {
+            setTimeout(() => {
+                hideLoading();
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
