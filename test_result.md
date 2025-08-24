@@ -198,11 +198,14 @@ backend:
     file: "backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "testing"
           comment: "✅ PASS - Practice dashboard API working correctly. GET /api/practice/dashboard returns practice info, patient/procedure stats, recent patients, and recent procedures. Shows updated stats after procedure assignments (7 patients, 2 active procedures)."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED - Dashboard API (GET /api/practice/dashboard) working perfectly for filtering logic. Returns filtering data: 1 patients, 1 recent patients, 4 recent procedures. Provides all necessary data for dashboard patient selection and procedure filtering functionality."
 
   - task: "Practice Staff API"
     implemented: true
