@@ -315,16 +315,36 @@ const PracticeDashboard = () => {
           {/* Recent Patients */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="h-5 w-5 mr-2 text-blue-600" />
-                Recent Patients
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Users className="h-5 w-5 mr-2 text-blue-600" />
+                  All Patients
+                </div>
+                {selectedPatient && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={clearPatientSelection}
+                    className="text-xs"
+                  >
+                    Clear Selection
+                  </Button>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {dashboardData?.recentPatients?.length > 0 ? (
                 <div className="space-y-4">
                   {dashboardData.recentPatients.map((patient) => (
-                    <div key={patient.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div 
+                      key={patient.id} 
+                      className={`flex justify-between items-center p-3 rounded-lg cursor-pointer transition-colors ${
+                        selectedPatient?.id === patient.id 
+                          ? 'bg-blue-100 border-2 border-blue-300' 
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                      onClick={() => selectPatient(patient)}
+                    >
                       <div className="flex-1">
                         <p className="font-medium">{patient.firstName} {patient.lastName}</p>
                         <div className="text-sm text-gray-600">
@@ -341,9 +361,12 @@ const PracticeDashboard = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Button
-                          onClick={() => navigate(`/edit-patient/${patient.id}`)}
                           size="sm"
                           variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/edit-patient/${patient.id}`);
+                          }}
                           className="flex items-center space-x-1"
                         >
                           <Edit className="h-3 w-3" />
