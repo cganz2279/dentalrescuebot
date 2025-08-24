@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import HomePage from "./pages/HomePage";
 import SpecialtyPage from "./pages/SpecialtyPage";
-import ProcedurePage from "./pages/SimpleProcedureView";
+import ProcedurePage from "./pages/ProcedurePage";
 import RegistrationPage from "./pages/RegistrationPage";
 import PracticeSettingsPage from "./pages/PracticeSettingsPage";
 import AddPatientPage from "./pages/AddPatientPage";
