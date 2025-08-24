@@ -196,7 +196,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = 'https://carebotdental.preview.emergentagent.com/api';
+        const BACKEND_URL = 'https://carebot-2.preview.emergentagent.com/api';
         
         function fillSuperAdmin() {
             document.getElementById('email').value = 'admin@theoncallbot.com';
@@ -275,9 +275,9 @@
                         setTimeout(() => {
                             // Redirect to the React app with admin access
                             if (userRole === 'super_admin' || userRole === 'admin') {
-                                window.location.href = 'https://carebot-1.preview.emergentagent.com/admin';
+                                window.location.href = 'https://carebot-2.preview.emergentagent.com/admin';
                             } else {
-                                window.location.href = 'https://carebot-1.preview.emergentagent.com/';
+                                window.location.href = 'https://carebot-2.preview.emergentagent.com/';
                             }
                         }, 2000);
                     } else {

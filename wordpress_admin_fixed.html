@@ -281,7 +281,7 @@
         
         // If on www.theoncallbot.com (production), use the production backend
         if (currentDomain === 'www.theoncallbot.com') {
-            BACKEND_URL = 'https://carebotdental.preview.emergentagent.com/api';
+            BACKEND_URL = 'https://carebot-2.preview.emergentagent.com/api';
         } else {
             // For other domains, use the same domain with /api
             BACKEND_URL = window.location.protocol + '//' + currentDomain + '/api';
@@ -381,7 +381,7 @@
             
             // If on www.theoncallbot.com (production), use the production frontend
             if (currentDomain === 'www.theoncallbot.com') {
-                url = 'https://carebotdental.preview.emergentagent.com';
+                url = 'https://carebot-2.preview.emergentagent.com';
             } else {
                 // For other domains, use the same domain
                 url = window.location.protocol + '//' + currentDomain;

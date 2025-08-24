@@ -88,7 +88,7 @@
         <p class="admin-subtitle">Choose how you'd like to access the admin panel</p>
         
         <!-- Auto redirect option -->
-        <a href="https://carebot-1.preview.emergentagent.com/" class="access-btn" id="autoRedirect">
+        <a href="https://carebot-2.preview.emergentagent.com/" class="access-btn" id="autoRedirect">
             🚀 Access Admin Panel
         </a>
         
@@ -99,7 +99,7 @@
         <div class="options">
             <h3 style="color: #374151; margin-bottom: 1rem;">Alternative Access Methods:</h3>
             
-            <a href="https://carebot-1.preview.emergentagent.com/" target="_blank" class="secondary-btn">
+            <a href="https://carebot-2.preview.emergentagent.com/" target="_blank" class="secondary-btn">
                 🔗 Open in New Tab
             </a>
             
@@ -137,7 +137,7 @@
                 if (redirectTimer <= 0) {
                     clearInterval(redirectInterval);
                     if (redirectActive) {
-                        window.location.href = 'https://carebot-1.preview.emergentagent.com/';
+                        window.location.href = 'https://carebot-2.preview.emergentagent.com/';
                     }
                 }
             }, 1000);
@@ -153,7 +153,7 @@
             const container = document.getElementById('iframeContainer');
             const iframe = document.getElementById('adminIframe');
             
-            iframe.src = 'https://carebot-1.preview.emergentagent.com/';
+            iframe.src = 'https://carebot-2.preview.emergentagent.com/';
             container.style.display = 'block';
             
             // Stop redirect when trying iframe

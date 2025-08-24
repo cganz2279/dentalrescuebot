@@ -199,7 +199,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = 'https://carebotdental.preview.emergentagent.com/api';
+        const BACKEND_URL = 'https://carebot-2.preview.emergentagent.com/api';
         
         function fillSuperAdmin() {
             document.getElementById('email').value = 'admin@theoncallbot.com';
@@ -277,7 +277,7 @@
                     
                     setTimeout(() => {
                         updateDebug('Redirecting to React admin dashboard...');
-                        window.location.href = 'https://carebot-1.preview.emergentagent.com/admin';
+                        window.location.href = 'https://carebot-2.preview.emergentagent.com/admin';
                     }, 2000);
                     return;
                 }
@@ -311,7 +311,7 @@
                         successMessage.style.display = 'block';
                         
                         setTimeout(() => {
-                            window.location.href = 'https://carebot-1.preview.emergentagent.com/';
+                            window.location.href = 'https://carebot-2.preview.emergentagent.com/';
                         }, 2000);
                     } else {
                         throw new Error(`User role "${user.role}" does not have admin privileges`);

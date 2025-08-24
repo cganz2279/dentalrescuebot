@@ -155,7 +155,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = 'https://carebotdental.preview.emergentagent.com/api';
+        const BACKEND_URL = 'https://carebot-2.preview.emergentagent.com/api';
         
         document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -205,7 +205,7 @@
                             successMessage.style.display = 'block';
                             
                             setTimeout(() => {
-                                window.location.href = 'https://carebot-1.preview.emergentagent.com/admin';
+                                window.location.href = 'https://carebot-2.preview.emergentagent.com/admin';
                             }, 1500);
                             return;
                         }
@@ -241,7 +241,7 @@
                         
                         setTimeout(() => {
                             // Redirect to practice dashboard for practice admin
-                            window.location.href = 'https://carebot-1.preview.emergentagent.com/';
+                            window.location.href = 'https://carebot-2.preview.emergentagent.com/';
                         }, 1500);
                     } else {
                         throw new Error('Administrator access required. Your account does not have admin privileges.');
