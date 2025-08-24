@@ -67,23 +67,8 @@ console.log('Auth API using backend URL:', BACKEND_URL);
 const authAxios = createAxiosInstance(AUTH_BASE_URL);
 const practiceAxios = createAxiosInstance(PRACTICE_BASE_URL);
 
-// Add auth token to practice requests
-practiceAxios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('dentalToken');
-    console.log('Token from localStorage:', token ? token.substring(0, 50) + '...' : 'No token found');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor for error handling
-const handleApiError = (error) => {
+// Additional response interceptor for auth-specific error handling
+const handleAuthError = (error) => {
   if (error.response?.status === 401) {
     // Token expired or invalid
     localStorage.removeItem('dentalToken');
@@ -92,14 +77,15 @@ const handleApiError = (error) => {
   return Promise.reject(error);
 };
 
+// Add auth-specific error handling to both instances
 authAxios.interceptors.response.use(
   (response) => response,
-  handleApiError
+  handleAuthError
 );
 
 practiceAxios.interceptors.response.use(
   (response) => response,
-  handleApiError
+  handleAuthError
 );
 
 export const authApi = {
