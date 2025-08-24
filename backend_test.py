@@ -699,6 +699,267 @@ class DentalAPITester:
             self.log_test("Check Existing Assignments", False, f"Exception: {str(e)}")
             return False
     
+    def test_dashboard_api_for_filtering(self):
+        """Test GET /api/practice/dashboard - should return patients and procedures for filtering"""
+        if not self.admin_token:
+            self.log_test("Dashboard API for Filtering", False, "No admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{self.base_url}/practice/dashboard", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    dashboard_data = data["data"]
+                    practice = dashboard_data.get("practice")
+                    stats = dashboard_data.get("stats", {})
+                    recent_patients = dashboard_data.get("recentPatients", [])
+                    recent_procedures = dashboard_data.get("recentProcedures", [])
+                    
+                    # Check if dashboard returns data needed for filtering
+                    if practice and "patientCount" in stats and isinstance(recent_patients, list) and isinstance(recent_procedures, list):
+                        self.log_test("Dashboard API for Filtering", True, 
+                                    f"Dashboard returns filtering data: {stats.get('patientCount', 0)} patients, {len(recent_patients)} recent patients, {len(recent_procedures)} recent procedures")
+                        return True
+                    else:
+                        self.log_test("Dashboard API for Filtering", False, "Missing required dashboard filtering data")
+                        return False
+                else:
+                    self.log_test("Dashboard API for Filtering", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Dashboard API for Filtering", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Dashboard API for Filtering", False, f"Exception: {str(e)}")
+            return False
+
+    def test_patient_list_api(self):
+        """Test GET /api/practice/patients - for dashboard patient list"""
+        if not self.admin_token:
+            self.log_test("Patient List API", False, "No admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{self.base_url}/practice/patients", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    patients = data["data"]
+                    
+                    if isinstance(patients, list):
+                        # Check if patients have required fields for dashboard
+                        if len(patients) > 0:
+                            sample_patient = patients[0]
+                            required_fields = ["id", "firstName", "lastName", "email"]
+                            missing_fields = [field for field in required_fields if field not in sample_patient]
+                            
+                            if not missing_fields:
+                                self.log_test("Patient List API", True, 
+                                            f"Found {len(patients)} patients with required fields for dashboard")
+                                return True
+                            else:
+                                self.log_test("Patient List API", False, f"Patients missing required fields: {missing_fields}")
+                                return False
+                        else:
+                            self.log_test("Patient List API", True, "No patients found but API working correctly")
+                            return True
+                    else:
+                        self.log_test("Patient List API", False, "Invalid patients data format")
+                        return False
+                else:
+                    self.log_test("Patient List API", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Patient List API", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Patient List API", False, f"Exception: {str(e)}")
+            return False
+
+    def test_procedure_library_apis(self):
+        """Test GET /api/procedures and GET /api/specialties for procedure library page"""
+        try:
+            # Test procedures API
+            procedures_response = self.session.get(f"{self.base_url}/procedures")
+            specialties_response = self.session.get(f"{self.base_url}/specialties")
+            
+            procedures_success = False
+            specialties_success = False
+            
+            # Check procedures API
+            if procedures_response.status_code == 200:
+                procedures_data = procedures_response.json()
+                if procedures_data.get("success") and "data" in procedures_data:
+                    procedures = procedures_data["data"]
+                    if len(procedures) > 0:
+                        # Check if procedures have required fields for library
+                        sample_procedure = procedures[0]
+                        required_fields = ["id", "name", "specialty", "specialtyName", "duration"]
+                        if all(field in sample_procedure for field in required_fields):
+                            procedures_success = True
+            
+            # Check specialties API
+            if specialties_response.status_code == 200:
+                specialties_data = specialties_response.json()
+                if specialties_data.get("success") and "data" in specialties_data:
+                    specialties = specialties_data["data"]
+                    if len(specialties) > 0:
+                        # Check if specialties have required fields for library
+                        sample_specialty = specialties[0]
+                        required_fields = ["id", "name", "description", "procedureCount"]
+                        if all(field in sample_specialty for field in required_fields):
+                            specialties_success = True
+            
+            if procedures_success and specialties_success:
+                self.log_test("Procedure Library APIs", True, 
+                            f"Both APIs working: {len(procedures)} procedures, {len(specialties)} specialties")
+                return True
+            else:
+                failed_apis = []
+                if not procedures_success:
+                    failed_apis.append("procedures")
+                if not specialties_success:
+                    failed_apis.append("specialties")
+                self.log_test("Procedure Library APIs", False, f"Failed APIs: {', '.join(failed_apis)}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Procedure Library APIs", False, f"Exception: {str(e)}")
+            return False
+
+    def test_assign_procedure_endpoint(self):
+        """Test assign-procedure endpoint for AssignProcedurePage"""
+        if not self.admin_token:
+            self.log_test("Assign Procedure Endpoint", False, "No admin token available")
+            return False
+            
+        try:
+            # First get a patient to assign to
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            patients_response = self.session.get(f"{self.base_url}/practice/patients", headers=headers)
+            
+            if patients_response.status_code != 200:
+                self.log_test("Assign Procedure Endpoint", False, "Could not get patients list")
+                return False
+            
+            patients_data = patients_response.json()
+            if not patients_data.get("success") or not patients_data.get("data"):
+                self.log_test("Assign Procedure Endpoint", False, "No patients available for assignment")
+                return False
+            
+            patients = patients_data["data"]
+            if len(patients) == 0:
+                self.log_test("Assign Procedure Endpoint", False, "No patients found for assignment")
+                return False
+            
+            # Use first patient for testing
+            test_patient = patients[0]
+            
+            # Test assignment with realistic data
+            assignment_data = {
+                "patientId": test_patient["id"],
+                "procedureId": "root-canal-therapy",
+                "procedureName": "Root Canal Therapy",
+                "performedDate": datetime.utcnow().isoformat() + "Z",
+                "dentistName": "Dr. Sarah Johnson",
+                "practiceNotes": "Patient responded well to local anesthesia. Procedure completed without complications.",
+                "customInstructions": [
+                    "Take prescribed antibiotics as directed",
+                    "Avoid chewing on treated tooth for 24 hours",
+                    "Use warm salt water rinse twice daily"
+                ],
+                "followUpDate": (datetime.utcnow() + timedelta(days=14)).isoformat() + "Z"
+            }
+            
+            response = self.session.post(f"{self.base_url}/practice/assign-procedure", json=assignment_data, headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    assignment = data["data"]
+                    self.test_assignment_id = assignment.get("assignmentId")
+                    self.log_test("Assign Procedure Endpoint", True, 
+                                f"Successfully assigned {assignment.get('procedureName', 'procedure')} to {assignment.get('patientName', 'patient')}")
+                    return True
+                else:
+                    self.log_test("Assign Procedure Endpoint", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Assign Procedure Endpoint", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Assign Procedure Endpoint", False, f"Exception: {str(e)}")
+            return False
+
+    def run_focused_tests(self):
+        """Run focused tests based on review request requirements"""
+        print(f"🧪 Starting Focused Backend API Tests for Dashboard & New Features")
+        print(f"🔗 Testing against: {self.base_url}")
+        print("=" * 70)
+        
+        # Authentication first
+        auth_tests = [
+            self.test_practice_admin_login,
+        ]
+        
+        # Core functionality tests based on review request
+        focused_tests = [
+            self.test_dashboard_api_for_filtering,
+            self.test_patient_list_api,
+            self.test_assign_procedure_endpoint,
+            self.test_procedure_library_apis,
+            self.test_practice_staff_endpoint,
+        ]
+        
+        # Additional verification tests
+        verification_tests = [
+            self.test_check_existing_assignments,
+            self.test_get_procedure_assignment,
+            self.test_update_procedure_assignment,
+            self.test_practice_dashboard,
+        ]
+        
+        all_tests = auth_tests + focused_tests + verification_tests
+        
+        passed = 0
+        total = len(all_tests)
+        
+        print("🔐 Running Authentication...")
+        for test in auth_tests:
+            if test():
+                passed += 1
+            print()
+        
+        print("🎯 Running Focused Feature Tests...")
+        for test in focused_tests:
+            if test():
+                passed += 1
+            print()
+        
+        print("✅ Running Verification Tests...")
+        for test in verification_tests:
+            if test():
+                passed += 1
+            print()
+        
+        print("=" * 70)
+        print(f"📊 Test Results: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All focused tests passed! Backend APIs are working correctly for dashboard and new features.")
+            return True
+        else:
+            print(f"⚠️  {total - passed} test(s) failed. Check the details above.")
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print(f"🧪 Starting Backend API Tests for Dental B2B SaaS Application")
