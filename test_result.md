@@ -175,12 +175,12 @@ backend:
           comment: "✅ VERIFIED - Assign procedure endpoint (POST /api/practice/assign-procedure) working perfectly for AssignProcedurePage. Successfully assigned Root Canal Therapy to patient Cary Smith with realistic data including dentist name, practice notes, custom instructions, and follow-up date."
 
   - task: "Patient Dashboard API"
-    implemented: true
-    working: true
+    implemented: false
+    working: "NA"
     file: "backend/routes/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
@@ -188,6 +188,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS - Patient dashboard API working correctly. GET /api/auth/patient-dashboard returns patient info, practice branding, assigned procedures with full details, and stats. Requires patient JWT token authorization."
+        - working: "NA"
+          agent: "testing"
+          comment: "❌ ENDPOINT NOT FOUND - GET /api/auth/patient-dashboard returns 404. This endpoint does not exist in the current backend implementation. Patient dashboard functionality may need to be implemented if required for the frontend."
 
   - task: "Practice Dashboard API"
     implemented: true
