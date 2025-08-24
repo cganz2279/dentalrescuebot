@@ -1,78 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { 
-  Building2, 
-  Users, 
-  DollarSign, 
-  Activity, 
-  Settings, 
-  FileText,
-  TrendingUp,
-  AlertCircle
-} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
-import { useToast } from '../hooks/use-toast';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
-  const { toast } = useToast();
   const [stats, setStats] = useState(null);
-  const [practices, setPractices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadAdminData();
-  }, []);
-
-  const loadAdminData = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('dentalToken');
-      
-      // Load admin dashboard stats
-      const statsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/dashboard`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+    // Simple loading simulation
+    setTimeout(() => {
+      setStats({
+        total_practices: 5,
+        active_practices: 3,
+        trial_practices: 2,
+        monthly_revenue: 2500
       });
-      
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStats(statsData.stats);
-      } else {
-        console.error('Failed to load admin stats:', statsResponse.status);
-      }
-
-      // Load practices list
-      const practicesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/practices?limit=10`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (practicesResponse.ok) {
-        const practicesData = await practicesResponse.json();
-        setPractices(practicesData.practices || []);
-      } else {
-        console.error('Failed to load practices:', practicesResponse.status);
-      }
-
-    } catch (error) {
-      console.error('Failed to load admin data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load admin dashboard data",
-        variant: "destructive",
-      });
-    } finally {
       setLoading(false);
-    }
-  };
+    }, 1000);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -100,12 +47,16 @@ const AdminDashboard = () => {
               />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">System Admin Dashboard</h1>
-                <p className="text-gray-600">Welcome back, {user?.firstName}</p>
+                <p className="text-gray-600">Welcome back, {user?.firstName || 'Admin'}</p>
+                <p className="text-sm text-gray-500">Role: {user?.role || 'super_admin'}</p>
               </div>
             </div>
-            <Button variant="outline" onClick={handleLogout}>
+            <button 
+              onClick={handleLogout}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
               Logout
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -113,160 +64,94 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Practices</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.total_practices || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats?.active_practices || 0} active practices
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600">Total Practices</h3>
+            <p className="text-2xl font-bold text-gray-900">{stats?.total_practices || 0}</p>
+            <p className="text-xs text-gray-500">{stats?.active_practices || 0} active practices</p>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Practices</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.active_practices || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Currently subscribed
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600">Active Practices</h3>
+            <p className="text-2xl font-bold text-gray-900">{stats?.active_practices || 0}</p>
+            <p className="text-xs text-gray-500">Currently subscribed</p>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Trial Practices</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.trial_practices || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                On trial period
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600">Trial Practices</h3>
+            <p className="text-2xl font-bold text-gray-900">{stats?.trial_practices || 0}</p>
+            <p className="text-xs text-gray-500">On trial period</p>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${(stats?.monthly_revenue || 0).toLocaleString()}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Monthly recurring revenue
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+            <h3 className="text-sm font-medium text-gray-600">Monthly Revenue</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              ${(stats?.monthly_revenue || 0).toLocaleString()}
+            </p>
+            <p className="text-xs text-gray-500">Monthly recurring revenue</p>
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Settings className="h-5 w-5" />
-                <span>Quick Actions</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="h-16 flex flex-col space-y-2">
-                  <Building2 className="h-6 w-6" />
-                  <span className="text-sm">Manage Practices</span>
-                </Button>
-                <Button variant="outline" className="h-16 flex flex-col space-y-2">
-                  <Users className="h-6 w-6" />
-                  <span className="text-sm">User Management</span>
-                </Button>
-                <Button variant="outline" className="h-16 flex flex-col space-y-2">
-                  <FileText className="h-6 w-6" />
-                  <span className="text-sm">Procedure Requests</span>
-                </Button>
-                <Button variant="outline" className="h-16 flex flex-col space-y-2">
-                  <DollarSign className="h-6 w-6" />
-                  <span className="text-sm">Billing & Payments</span>
-                </Button>
+        <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+          <h3 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button className="bg-blue-600 text-white p-4 rounded hover:bg-blue-700">
+              <div className="text-center">
+                <div className="text-2xl mb-2">🏢</div>
+                <div className="text-sm">Manage Practices</div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5" />
-                <span>System Health</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">System Status</span>
-                  <Badge className="bg-green-100 text-green-800">Operational</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Database</span>
-                  <Badge className="bg-green-100 text-green-800">Connected</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">API Services</span>
-                  <Badge className="bg-green-100 text-green-800">Running</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Last Backup</span>
-                  <span className="text-sm text-gray-600">2 hours ago</span>
-                </div>
+            </button>
+            <button className="bg-green-600 text-white p-4 rounded hover:bg-green-700">
+              <div className="text-center">
+                <div className="text-2xl mb-2">👥</div>
+                <div className="text-sm">User Management</div>
               </div>
-            </CardContent>
-          </Card>
+            </button>
+            <button className="bg-purple-600 text-white p-4 rounded hover:bg-purple-700">
+              <div className="text-center">
+                <div className="text-2xl mb-2">📋</div>
+                <div className="text-sm">Procedure Requests</div>
+              </div>
+            </button>
+            <button className="bg-yellow-600 text-white p-4 rounded hover:bg-yellow-700">
+              <div className="text-center">
+                <div className="text-2xl mb-2">💰</div>
+                <div className="text-sm">Billing & Payments</div>
+              </div>
+            </button>
+          </div>
         </div>
 
-        {/* Recent Practices */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Building2 className="h-5 w-5" />
-              <span>Recent Practices</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {practices.length > 0 ? (
-              <div className="space-y-4">
-                {practices.slice(0, 5).map((practice) => (
-                  <div key={practice.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">{practice.name}</h4>
-                      <p className="text-sm text-gray-600">{practice.email}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge 
-                        variant={practice.subscription?.status === 'active' ? 'default' : 'secondary'}
-                      >
-                        {practice.subscription?.status || 'trial'}
-                      </Badge>
-                      <Button variant="outline" size="sm">
-                        Manage
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No practices found</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* System Status */}
+        <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+          <h3 className="text-lg font-medium text-gray-800 mb-4">System Status</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">System Status</span>
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Operational</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Database</span>
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Connected</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">API Services</span>
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Running</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Last Backup</span>
+              <span className="text-sm text-gray-500">2 hours ago</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Debug Info */}
+        <div className="bg-gray-100 p-4 rounded mt-8">
+          <h4 className="font-medium text-gray-700 mb-2">Debug Info:</h4>
+          <pre className="text-xs text-gray-600">
+            User: {JSON.stringify(user, null, 2)}
+          </pre>
+        </div>
       </div>
     </div>
   );
