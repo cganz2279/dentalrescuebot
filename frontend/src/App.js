@@ -81,6 +81,7 @@ function App() {
             <Route path="/edit-procedure/:assignmentId" element={<EditProcedureAssignmentPage />} />
             <Route path="/view-assignment/:assignmentId" element={<SimpleProcedureView />} />
             <Route path="/request-procedure" element={<RequestProcedurePage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin-requests" element={<AdminRequestsPage />} />
             <Route path="/procedure/:procedureId" element={<ProcedurePage />} />
             <Route path="/specialty/:specialtyId" element={<SpecialtyPage />} />
