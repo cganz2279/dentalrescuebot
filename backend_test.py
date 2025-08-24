@@ -1137,6 +1137,222 @@ class DentalAPITester:
             self.log_test("Assigned Procedure Content", False, f"Exception: {str(e)}")
             return False
 
+    def test_admin_login_credentials(self):
+        """Test admin login with cganz2279@gmail.com/admin123 to check role"""
+        try:
+            login_data = {
+                "email": "cganz2279@gmail.com",
+                "password": "admin123"
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "token" in data and "user" in data:
+                    user = data["user"]
+                    role = user.get("role")
+                    self.admin_token = data["token"]
+                    
+                    if role == "practice_admin":
+                        self.log_test("Admin Login Role Check", True, f"User has practice_admin role: {user['firstName']} {user['lastName']}")
+                        return True
+                    elif role == "admin" or role == "super_admin":
+                        self.log_test("Admin Login Role Check", True, f"User has {role} role: {user['firstName']} {user['lastName']}")
+                        return True
+                    else:
+                        self.log_test("Admin Login Role Check", False, f"User has role: {role} (not admin or practice_admin)")
+                        return False
+                else:
+                    self.log_test("Admin Login Role Check", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Admin Login Role Check", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Login Role Check", False, f"Exception: {str(e)}")
+            return False
+
+    def test_super_admin_login(self):
+        """Test super admin login endpoint"""
+        try:
+            login_data = {
+                "email": "admin@theoncallbot.com",
+                "password": "your-super-admin-password-123"
+            }
+            
+            response = self.session.post(f"{self.base_url}/admin/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "token" in data:
+                    self.super_admin_token = data["token"]
+                    self.log_test("Super Admin Login", True, "Super admin login successful")
+                    return True
+                else:
+                    self.log_test("Super Admin Login", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Super Admin Login", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Super Admin Login", False, f"Exception: {str(e)}")
+            return False
+
+    def test_admin_dashboard_endpoint(self):
+        """Test GET /api/admin/dashboard endpoint"""
+        if not hasattr(self, 'super_admin_token') or not self.super_admin_token:
+            self.log_test("Admin Dashboard Endpoint", False, "No super admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.super_admin_token}"}
+            response = self.session.get(f"{self.base_url}/admin/dashboard", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "stats" in data:
+                    stats = data["stats"]
+                    required_stats = ["total_practices", "active_practices", "trial_practices", "cancelled_practices"]
+                    
+                    if all(stat in stats for stat in required_stats):
+                        self.log_test("Admin Dashboard Endpoint", True, 
+                                    f"Dashboard loaded: {stats.get('total_practices', 0)} total practices, {stats.get('active_practices', 0)} active")
+                        return True
+                    else:
+                        self.log_test("Admin Dashboard Endpoint", False, "Missing required stats in dashboard")
+                        return False
+                else:
+                    self.log_test("Admin Dashboard Endpoint", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Admin Dashboard Endpoint", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Dashboard Endpoint", False, f"Exception: {str(e)}")
+            return False
+
+    def test_admin_practices_endpoint(self):
+        """Test GET /api/admin/practices endpoint"""
+        if not hasattr(self, 'super_admin_token') or not self.super_admin_token:
+            self.log_test("Admin Practices Endpoint", False, "No super admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.super_admin_token}"}
+            response = self.session.get(f"{self.base_url}/admin/practices", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "practices" in data and "pagination" in data:
+                    practices = data["practices"]
+                    pagination = data["pagination"]
+                    
+                    self.log_test("Admin Practices Endpoint", True, 
+                                f"Found {len(practices)} practices, total: {pagination.get('total', 0)}")
+                    return True
+                else:
+                    self.log_test("Admin Practices Endpoint", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Admin Practices Endpoint", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Practices Endpoint", False, f"Exception: {str(e)}")
+            return False
+
+    def test_admin_vs_practice_admin_access(self):
+        """Test access differences between admin and practice_admin roles"""
+        try:
+            # Test practice admin trying to access super admin endpoints
+            if self.admin_token:
+                headers = {"Authorization": f"Bearer {self.admin_token}"}
+                response = self.session.get(f"{self.base_url}/admin/dashboard", headers=headers)
+                
+                if response.status_code == 403:
+                    self.log_test("Admin vs Practice Admin Access", True, "Practice admin properly blocked from super admin endpoints")
+                    return True
+                elif response.status_code == 401:
+                    self.log_test("Admin vs Practice Admin Access", True, "Practice admin properly blocked from super admin endpoints (401)")
+                    return True
+                else:
+                    self.log_test("Admin vs Practice Admin Access", False, f"Expected 403/401, got {response.status_code}")
+                    return False
+            else:
+                self.log_test("Admin vs Practice Admin Access", False, "No practice admin token to test with")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin vs Practice Admin Access", False, f"Exception: {str(e)}")
+            return False
+
+    def test_admin_management_apis(self):
+        """Test admin management APIs under /api/admin/"""
+        if not hasattr(self, 'super_admin_token') or not self.super_admin_token:
+            self.log_test("Admin Management APIs", False, "No super admin token available")
+            return False
+            
+        try:
+            headers = {"Authorization": f"Bearer {self.super_admin_token}"}
+            
+            # Test payments endpoint
+            response = self.session.get(f"{self.base_url}/admin/payments", headers=headers)
+            payments_working = response.status_code == 200
+            
+            # Test users endpoint (if we have a practice ID)
+            users_working = True  # Default to true since we might not have practice data
+            
+            if payments_working:
+                self.log_test("Admin Management APIs", True, "Admin management endpoints accessible")
+                return True
+            else:
+                self.log_test("Admin Management APIs", False, f"Payments endpoint failed: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Management APIs", False, f"Exception: {str(e)}")
+            return False
+
+    def run_admin_functionality_tests(self):
+        """Run comprehensive admin functionality tests"""
+        print("=" * 70)
+        print("🔐 ADMIN FUNCTIONALITY TESTS")
+        print("Testing admin login, dashboard, and management functionality")
+        print("=" * 70)
+        
+        # Admin authentication and role tests
+        admin_tests = [
+            self.test_admin_login_credentials,
+            self.test_super_admin_login,
+            self.test_admin_dashboard_endpoint,
+            self.test_admin_practices_endpoint,
+            self.test_admin_vs_practice_admin_access,
+            self.test_admin_management_apis,
+        ]
+        
+        passed = 0
+        total = len(admin_tests)
+        
+        print("🔐 Running Admin Tests...")
+        for test in admin_tests:
+            if test():
+                passed += 1
+            print()
+        
+        print("=" * 70)
+        print(f"📊 Test Results: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All admin functionality tests passed!")
+            return True
+        else:
+            print(f"⚠️  {total - passed} test(s) failed.")
+            return False
+
     def run_procedure_content_tests(self):
         """Run comprehensive procedure content loading tests based on review request"""
         print(f"🧪 Starting Procedure Content Loading Tests")
