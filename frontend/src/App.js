@@ -38,21 +38,9 @@ const AppContent = () => {
     );
   }
 
-  // If user is authenticated - show practice dashboard (practice staff only)
+  // If user is authenticated and is practice staff - show practice dashboard
   if (isAuthenticated() && isPracticeStaff()) {
     return <PracticeDashboard />;
-  }
-  
-  // Super admins should be redirected to /admin route, not handled here
-  if (isAuthenticated() && (user?.role === 'super_admin' || user?.role === 'admin')) {
-    // Redirect to admin route
-    window.location.href = '/admin';
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center">
-        <LoadingSpinner size="xl" />
-        <div className="absolute bottom-10 text-sm text-gray-500">Redirecting to admin panel...</div>
-      </div>
-    );
   }
 
   // Not authenticated - show login/register forms (dentist/practice only)
