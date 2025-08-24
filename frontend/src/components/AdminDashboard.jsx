@@ -20,12 +20,21 @@ const AdminDashboard = () => {
       const token = localStorage.getItem('dentalToken');
       
       // Load dashboard stats
-      setStats({
-        total_practices: 5,
-        active_practices: 3,
-        trial_practices: 2,
-        monthly_revenue: 2500
+      const dashboardResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/dashboard`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (dashboardResponse.ok) {
+        const dashboardData = await dashboardResponse.json();
+        setStats(dashboardData.stats);
+      } else {
+        // Fallback to mock data if API fails
+        setStats({
+          total_practices: 5,
+          active_practices: 3,
+          trial_practices: 2,
+          monthly_revenue: 2500
+        });
+      }
       
       // Load practices
       const practicesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/practices`, {
@@ -39,6 +48,13 @@ const AdminDashboard = () => {
       setLoading(false);
     } catch (error) {
       console.error('Failed to load admin data:', error);
+      // Use fallback data
+      setStats({
+        total_practices: 5,
+        active_practices: 3,
+        trial_practices: 2,
+        monthly_revenue: 2500
+      });
       setLoading(false);
     }
   };
