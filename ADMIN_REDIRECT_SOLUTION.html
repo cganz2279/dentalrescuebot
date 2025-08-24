@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - DentalRescueBot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .admin-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        .logo {
+            height: 60px;
+            margin-bottom: 2rem;
+        }
+        .admin-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .admin-subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+        .access-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .access-btn:hover {
+            transform: translateY(-2px);
+        }
+        .secondary-btn {
+            background: #6b7280;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .countdown {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 1rem;
+        }
+        .options {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <img src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png" 
+             alt="DentalRescueBot" class="logo">
+        
+        <h1 class="admin-title">Admin Access</h1>
+        <p class="admin-subtitle">Choose how you'd like to access the admin panel</p>
+        
+        <!-- Auto redirect option -->
+        <a href="https://carebot-1.preview.emergentagent.com/" class="access-btn" id="autoRedirect">
+            🚀 Access Admin Panel
+        </a>
+        
+        <div class="countdown" id="countdown">
+            Auto-redirecting in <span id="timer">5</span> seconds...
+        </div>
+        
+        <div class="options">
+            <h3 style="color: #374151; margin-bottom: 1rem;">Alternative Access Methods:</h3>
+            
+            <a href="https://carebot-1.preview.emergentagent.com/" target="_blank" class="secondary-btn">
+                🔗 Open in New Tab
+            </a>
+            
+            <button onclick="tryIframe()" class="secondary-btn">
+                📱 Try Embedded View
+            </button>
+            
+            <button onclick="stopRedirect()" class="secondary-btn">
+                ⏸️ Cancel Auto-Redirect
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden iframe container -->
+    <div id="iframeContainer" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000;">
+        <div style="background: #1e40af; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">DentalRescueBot Admin Panel</h3>
+            <button onclick="closeIframe()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                ✕ Close
+            </button>
+        </div>
+        <iframe id="adminIframe" src="" width="100%" height="calc(100% - 70px)" frameborder="0"></iframe>
+    </div>
+
+    <script>
+        let redirectTimer = 5;
+        let redirectInterval;
+        let redirectActive = true;
+        
+        function startRedirect() {
+            redirectInterval = setInterval(function() {
+                redirectTimer--;
+                document.getElementById('timer').textContent = redirectTimer;
+                
+                if (redirectTimer <= 0) {
+                    clearInterval(redirectInterval);
+                    if (redirectActive) {
+                        window.location.href = 'https://carebot-1.preview.emergentagent.com/';
+                    }
+                }
+            }, 1000);
+        }
+        
+        function stopRedirect() {
+            redirectActive = false;
+            clearInterval(redirectInterval);
+            document.getElementById('countdown').innerHTML = '<span style="color: #059669;">✅ Auto-redirect cancelled</span>';
+        }
+        
+        function tryIframe() {
+            const container = document.getElementById('iframeContainer');
+            const iframe = document.getElementById('adminIframe');
+            
+            iframe.src = 'https://carebot-1.preview.emergentagent.com/';
+            container.style.display = 'block';
+            
+            // Stop redirect when trying iframe
+            stopRedirect();
+        }
+        
+        function closeIframe() {
+            document.getElementById('iframeContainer').style.display = 'none';
+        }
+        
+        // Start the redirect timer when page loads
+        window.onload = function() {
+            startRedirect();
+        };
+    </script>
+</body>
+</html>
