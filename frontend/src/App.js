@@ -13,6 +13,7 @@ import ProcedureLibraryPage from "./pages/ProcedureLibraryPage";
 import AddStaffPage from "./pages/AddStaffPage";
 import EditPatientPage from "./pages/EditPatientPage";
 import EditProcedureAssignmentPage from "./pages/EditProcedureAssignmentPage";
+import SimpleProcedureView from "./pages/SimpleProcedureView";
 import RequestProcedurePage from "./pages/RequestProcedurePage";
 import AdminRequestsPage from "./pages/AdminRequestsPage";
 import LoginForm from "./components/LoginForm";
