@@ -15,7 +15,7 @@ import bcrypt
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
 
-router = APIRouter(prefix="/api/practice", tags=["practice"])
+router = APIRouter(prefix="/practice", tags=["practice"])
 security = HTTPBearer()
 
 # MongoDB connection
