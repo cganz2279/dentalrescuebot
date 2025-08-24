@@ -33,13 +33,16 @@ const ProcedureLibraryPage = () => {
     try {
       setLoading(true);
       const response = await dentalApi.getProcedures();
+      // Sort procedures alphabetically by name
       const sortedProcedures = response.data.sort((a, b) => a.name.localeCompare(b.name));
       setProcedures(sortedProcedures);
+      console.log(`Loaded ${sortedProcedures.length} procedures for library`);
     } catch (err) {
+      console.error('Failed to load procedures:', err);
       toast({
         title: "Error",
-        description: "Failed to load procedures",
-        variant: "destructive",
+        description: "Failed to load procedures library",
+        variant: "destructive", 
       });
     } finally {
       setLoading(false);
