@@ -73,21 +73,28 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/register" element={<RegistrationPage />} />
-            <Route path="/practice-settings" element={<PracticeSettingsPage />} />
-            <Route path="/add-patient" element={<AddPatientPage />} />
-            <Route path="/assign-procedure" element={<AssignProcedurePage />} />
-            <Route path="/library" element={<ProcedureLibraryPage />} />
-            <Route path="/add-staff" element={<AddStaffPage />} />
-            <Route path="/edit-patient/:patientId" element={<EditPatientPage />} />
-            <Route path="/edit-procedure/:assignmentId" element={<EditProcedureAssignmentPage />} />
-            <Route path="/view-assignment/:assignmentId" element={<SimpleProcedureView />} />
-            <Route path="/request-procedure" element={<RequestProcedurePage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin-requests" element={<AdminRequestsPage />} />
+            {/* Public routes */}
+            <Route path="/" element={<AppContent />} />
+            <Route path="/admin" element={<AdminRoute />} />
+            
+            {/* Protected routes that require authentication */}
+            <Route path="/practice-settings" element={<ProtectedRoute><PracticeSettingsPage /></ProtectedRoute>} />
+            <Route path="/add-patient" element={<ProtectedRoute><AddPatientPage /></ProtectedRoute>} />
+            <Route path="/assign-procedure" element={<ProtectedRoute><AssignProcedurePage /></ProtectedRoute>} />
+            <Route path="/add-staff" element={<ProtectedRoute><AddStaffPage /></ProtectedRoute>} />
+            <Route path="/edit-patient/:patientId" element={<ProtectedRoute><EditPatientPage /></ProtectedRoute>} />
+            <Route path="/edit-procedure/:assignmentId" element={<ProtectedRoute><EditProcedureAssignmentPage /></ProtectedRoute>} />
+            <Route path="/view-assignment/:assignmentId" element={<ProtectedRoute><SimpleProcedureView /></ProtectedRoute>} />
+            <Route path="/request-procedure" element={<ProtectedRoute><RequestProcedurePage /></ProtectedRoute>} />
+            <Route path="/admin-requests" element={<ProtectedRoute><AdminRequestsPage /></ProtectedRoute>} />
+            
+            {/* Public procedure routes */}
+            <Route path="/specialties/:specialtyId" element={<SpecialtyPage />} />
             <Route path="/procedure/:procedureId" element={<ProcedurePage />} />
-            <Route path="/specialty/:specialtyId" element={<SpecialtyPage />} />
-            <Route path="/*" element={<AppContent />} />
+            <Route path="/library" element={<ProcedureLibraryPage />} />
+            
+            {/* Keep existing register route */}
+            <Route path="/register" element={<RegistrationPage />} />
           </Routes>
         </BrowserRouter>
         <Toaster />
