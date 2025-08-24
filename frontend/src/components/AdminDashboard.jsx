@@ -43,6 +43,8 @@ const AdminDashboard = () => {
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setStats(statsData.stats);
+      } else {
+        console.error('Failed to load admin stats:', statsResponse.status);
       }
 
       // Load practices list
@@ -56,6 +58,8 @@ const AdminDashboard = () => {
       if (practicesResponse.ok) {
         const practicesData = await practicesResponse.json();
         setPractices(practicesData.practices || []);
+      } else {
+        console.error('Failed to load practices:', practicesResponse.status);
       }
 
     } catch (error) {
