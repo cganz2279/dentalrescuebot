@@ -1175,11 +1175,12 @@ class DentalAPITester:
             return False
 
     def test_super_admin_login(self):
-        """Test super admin login endpoint"""
+        """Test super admin login endpoint - using correct credentials from backend"""
         try:
+            # Based on backend/routes/admin.py, the super admin credentials are:
             login_data = {
-                "email": "admin@theoncallbot.com",
-                "password": "your-super-admin-password-123"
+                "email": "cganz2279@gmail.com",
+                "password": "admin123"
             }
             
             response = self.session.post(f"{self.base_url}/admin/login", json=login_data)
