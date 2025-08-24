@@ -1,51 +1,116 @@
 import axios from 'axios';
 
-// Create axios instances with retry logic for network resilience
+// Create axios instances with comprehensive error handling and cache busting
 const createAxiosInstance = (baseURL) => {
   const instance = axios.create({
     baseURL,
-    timeout: 15000, // Increased timeout
+    timeout: 20000, // Increased to 20 seconds
     headers: {
       'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'X-Requested-With': 'XMLHttpRequest'
     },
+    // Add cache busting
+    params: {
+      '_t': Date.now()
+    }
   });
 
-  // Add request interceptor for debugging
+  // Add request interceptor with comprehensive debugging
   instance.interceptors.request.use(
     (config) => {
-      console.log(`Making request to: ${config.baseURL}${config.url}`);
+      // Add DNS cache buster from global variable
+      if (window.DNS_CACHE_BUSTER) {
+        config.params = { ...config.params, _dns: window.DNS_CACHE_BUSTER };
+      }
+      
+      console.log(`🚀 Making request to: ${config.baseURL}${config.url}`);
+      console.log('Request config:', { 
+        method: config.method, 
+        url: config.url, 
+        headers: config.headers,
+        params: config.params 
+      });
+      
       const token = localStorage.getItem('dentalToken');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log('✅ Token added to request');
+      } else {
+        console.log('⚠️ No token found in localStorage');
       }
       return config;
     },
     (error) => {
-      console.error('Request interceptor error:', error);
+      console.error('❌ Request interceptor error:', error);
       return Promise.reject(error);
     }
   );
 
-  // Add response interceptor with retry logic
+  // Enhanced response interceptor with multiple retry strategies
   instance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      console.log('✅ Response received:', response.status, response.statusText);
+      return response;
+    },
     async (error) => {
-      console.error('API Error:', error.message);
+      console.error('❌ API Error Details:', {
+        message: error.message,
+        code: error.code,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data
+      });
       
-      // If it's a network error, try with alternative approach
-      if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
-        console.warn('Network error detected, attempting retry...');
-        
-        // Retry once with explicit headers
-        if (!error.config._retry) {
-          error.config._retry = true;
-          error.config.headers = {
-            ...error.config.headers,
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
+      const config = error.config;
+      
+      // Handle different types of network errors
+      if (!config._retryCount) config._retryCount = 0;
+      
+      // Retry logic for various error types
+      if (config._retryCount < 3) {
+        const shouldRetry = 
+          error.message === 'Network Error' ||
+          error.code === 'ERR_NETWORK' ||
+          error.code === 'ECONNREFUSED' ||
+          error.code === 'ETIMEDOUT' ||
+          (error.response?.status >= 500 && error.response?.status < 600);
+          
+        if (shouldRetry) {
+          config._retryCount += 1;
+          console.warn(`🔄 Retrying request (attempt ${config._retryCount}/3)...`);
+          
+          // Add different retry strategies
+          const retryDelay = config._retryCount * 1000; // Exponential backoff
+          
+          // Update headers for retry
+          config.headers = {
+            ...config.headers,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'X-Retry-Attempt': config._retryCount
           };
-          return instance.request(error.config);
+          
+          // Add new cache buster for retry
+          config.params = {
+            ...config.params,
+            _retry: Date.now(),
+            _attempt: config._retryCount
+          };
+          
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          
+          return instance.request(config);
         }
+      }
+      
+      // If all retries failed, provide helpful error message
+      if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+        console.error('🔥 Network connectivity issue detected. All retry attempts failed.');
+        error.userMessage = 'Unable to connect to server. Please check your internet connection and try again.';
       }
       
       return Promise.reject(error);
