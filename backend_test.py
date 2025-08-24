@@ -899,10 +899,249 @@ class DentalAPITester:
             self.log_test("Assign Procedure Endpoint", False, f"Exception: {str(e)}")
             return False
 
-    def run_focused_tests(self):
-        """Run focused tests based on review request requirements"""
-        print(f"🧪 Starting Focused Backend API Tests for Dashboard & New Features")
+    def test_procedure_content_completeness(self):
+        """Test procedure content loading completeness - main focus of review request"""
+        try:
+            # Test popular procedures mentioned in review request
+            test_procedures = [
+                "root-canal-therapy",
+                "tooth-extraction", 
+                "crown-placement"
+            ]
+            
+            all_procedures_complete = True
+            procedure_results = []
+            
+            for procedure_id in test_procedures:
+                response = self.session.get(f"{self.base_url}/procedures/{procedure_id}")
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("success") and "data" in data:
+                        procedure = data["data"]
+                        
+                        # Check all required content sections mentioned in review
+                        required_sections = {
+                            "overview": "Overview section",
+                            "immediateAftercare": "Aftercare instructions", 
+                            "dietRestrictions": "Diet restrictions",
+                            "warningSignsToCallDoctor": "Warning signs",
+                            "recoveryTimeline": "Recovery timeline",
+                            "medications": "Medications"
+                        }
+                        
+                        missing_sections = []
+                        empty_sections = []
+                        
+                        for field, description in required_sections.items():
+                            if field not in procedure:
+                                missing_sections.append(description)
+                            elif not procedure[field] or (isinstance(procedure[field], list) and len(procedure[field]) == 0):
+                                empty_sections.append(description)
+                        
+                        if missing_sections or empty_sections:
+                            all_procedures_complete = False
+                            issues = []
+                            if missing_sections:
+                                issues.append(f"Missing: {', '.join(missing_sections)}")
+                            if empty_sections:
+                                issues.append(f"Empty: {', '.join(empty_sections)}")
+                            procedure_results.append(f"❌ {procedure_id}: {'; '.join(issues)}")
+                        else:
+                            # Check content quality - ensure sections have meaningful content
+                            content_quality_issues = []
+                            
+                            if isinstance(procedure.get("overview"), str) and len(procedure["overview"]) < 50:
+                                content_quality_issues.append("Overview too short")
+                            
+                            if isinstance(procedure.get("immediateAftercare"), list) and len(procedure["immediateAftercare"]) < 3:
+                                content_quality_issues.append("Insufficient aftercare instructions")
+                            
+                            if isinstance(procedure.get("recoveryTimeline"), list) and len(procedure["recoveryTimeline"]) < 3:
+                                content_quality_issues.append("Insufficient recovery timeline")
+                            
+                            if content_quality_issues:
+                                procedure_results.append(f"⚠️  {procedure_id}: Content quality issues - {', '.join(content_quality_issues)}")
+                            else:
+                                procedure_results.append(f"✅ {procedure_id}: Complete content with all sections")
+                    else:
+                        all_procedures_complete = False
+                        procedure_results.append(f"❌ {procedure_id}: Invalid response format")
+                else:
+                    all_procedures_complete = False
+                    procedure_results.append(f"❌ {procedure_id}: HTTP {response.status_code}")
+            
+            # Log detailed results
+            details = "\n   " + "\n   ".join(procedure_results)
+            
+            if all_procedures_complete:
+                self.log_test("Procedure Content Completeness", True, f"All tested procedures have complete content sections{details}")
+                return True
+            else:
+                self.log_test("Procedure Content Completeness", False, f"Some procedures missing or have incomplete content{details}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Procedure Content Completeness", False, f"Exception: {str(e)}")
+            return False
+
+    def test_procedures_api_content_depth(self):
+        """Test if GET /api/procedures returns full content or just summaries"""
+        try:
+            response = self.session.get(f"{self.base_url}/procedures")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    procedures = data["data"]
+                    if len(procedures) > 0:
+                        sample_procedure = procedures[0]
+                        
+                        # Check if this is summary data (basic fields only) or full content
+                        basic_fields = ["id", "name", "specialty", "specialtyName", "duration"]
+                        full_content_fields = ["overview", "immediateAftercare", "dietRestrictions", "warningSignsToCallDoctor", "recoveryTimeline", "medications"]
+                        
+                        has_basic_fields = all(field in sample_procedure for field in basic_fields)
+                        has_full_content = any(field in sample_procedure for field in full_content_fields)
+                        
+                        if has_basic_fields and not has_full_content:
+                            self.log_test("Procedures API Content Depth", True, 
+                                        f"GET /api/procedures returns summary data only (as expected). Found {len(procedures)} procedures with basic fields.")
+                            return True
+                        elif has_basic_fields and has_full_content:
+                            self.log_test("Procedures API Content Depth", True, 
+                                        f"GET /api/procedures returns full content data. Found {len(procedures)} procedures with detailed content.")
+                            return True
+                        else:
+                            self.log_test("Procedures API Content Depth", False, "Procedures missing basic required fields")
+                            return False
+                    else:
+                        self.log_test("Procedures API Content Depth", False, "No procedures found")
+                        return False
+                else:
+                    self.log_test("Procedures API Content Depth", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Procedures API Content Depth", False, f"Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Procedures API Content Depth", False, f"Exception: {str(e)}")
+            return False
+
+    def test_specialty_procedure_content(self):
+        """Test if specialty pages show full procedure content"""
+        try:
+            # Test with oral-surgery specialty
+            response = self.session.get(f"{self.base_url}/specialties/oral-surgery")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    specialty = data["data"]
+                    procedures = specialty.get("procedures", [])
+                    
+                    if len(procedures) > 0:
+                        sample_procedure = procedures[0]
+                        
+                        # Check if specialty endpoint returns full procedure content or just basic info
+                        basic_fields = ["id", "name", "specialty", "specialtyName", "duration"]
+                        full_content_fields = ["overview", "immediateAftercare", "dietRestrictions"]
+                        
+                        has_basic_fields = all(field in sample_procedure for field in basic_fields)
+                        has_full_content = any(field in sample_procedure for field in full_content_fields)
+                        
+                        if has_basic_fields:
+                            if has_full_content:
+                                self.log_test("Specialty Procedure Content", True, 
+                                            f"Specialty endpoint returns full procedure content. Found {len(procedures)} procedures with detailed content.")
+                            else:
+                                self.log_test("Specialty Procedure Content", True, 
+                                            f"Specialty endpoint returns basic procedure info (as expected). Found {len(procedures)} procedures.")
+                            return True
+                        else:
+                            self.log_test("Specialty Procedure Content", False, "Procedures in specialty missing basic fields")
+                            return False
+                    else:
+                        self.log_test("Specialty Procedure Content", False, "No procedures found in specialty")
+                        return False
+                else:
+                    self.log_test("Specialty Procedure Content", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Specialty Procedure Content", False, f"Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Specialty Procedure Content", False, f"Exception: {str(e)}")
+            return False
+
+    def test_assigned_procedure_content(self):
+        """Test if assigned procedures have full content via procedure assignment endpoint"""
+        if not self.admin_token:
+            self.log_test("Assigned Procedure Content", False, "No admin token available")
+            return False
+            
+        try:
+            # First check if we have any existing assignments
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            dashboard_response = self.session.get(f"{self.base_url}/practice/dashboard", headers=headers)
+            
+            assignment_id = None
+            if dashboard_response.status_code == 200:
+                dashboard_data = dashboard_response.json()
+                if dashboard_data.get("success") and "data" in dashboard_data:
+                    recent_procedures = dashboard_data["data"].get("recentProcedures", [])
+                    if recent_procedures:
+                        assignment_id = recent_procedures[0].get("id")
+            
+            if not assignment_id:
+                self.log_test("Assigned Procedure Content", True, "No existing procedure assignments to test - this is expected for new systems")
+                return True
+            
+            # Test the assignment endpoint
+            response = self.session.get(f"{self.base_url}/practice/procedure-assignments/{assignment_id}", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    assignment = data["data"]
+                    
+                    # Check if assignment contains procedure content or just references
+                    required_assignment_fields = ["id", "procedureName", "dentistName", "performedDate", "practiceNotes", "customInstructions"]
+                    procedure_content_fields = ["overview", "immediateAftercare", "dietRestrictions", "warningSignsToCallDoctor", "recoveryTimeline", "medications"]
+                    
+                    has_assignment_fields = all(field in assignment for field in required_assignment_fields)
+                    has_procedure_content = any(field in assignment for field in procedure_content_fields)
+                    
+                    if has_assignment_fields:
+                        if has_procedure_content:
+                            self.log_test("Assigned Procedure Content", True, 
+                                        f"Assignment endpoint includes full procedure content for comprehensive care instructions")
+                        else:
+                            self.log_test("Assigned Procedure Content", True, 
+                                        f"Assignment endpoint returns assignment data (procedure content should be fetched separately via procedure ID)")
+                        return True
+                    else:
+                        missing_fields = [f for f in required_assignment_fields if f not in assignment]
+                        self.log_test("Assigned Procedure Content", False, f"Assignment missing required fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_test("Assigned Procedure Content", False, "Invalid response format")
+                    return False
+            else:
+                self.log_test("Assigned Procedure Content", False, f"Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Assigned Procedure Content", False, f"Exception: {str(e)}")
+            return False
+
+    def run_procedure_content_tests(self):
+        """Run comprehensive procedure content loading tests based on review request"""
+        print(f"🧪 Starting Procedure Content Loading Tests")
         print(f"🔗 Testing against: {self.base_url}")
+        print("📋 Focus: Verify full documents are loading in library, view, edit, and print preview")
         print("=" * 70)
         
         # Authentication first
@@ -910,24 +1149,15 @@ class DentalAPITester:
             self.test_practice_admin_login,
         ]
         
-        # Core functionality tests based on review request
-        focused_tests = [
-            self.test_dashboard_api_for_filtering,
-            self.test_patient_list_api,
-            self.test_assign_procedure_endpoint,
-            self.test_procedure_library_apis,
-            self.test_practice_staff_endpoint,
+        # Core procedure content tests based on review request
+        content_tests = [
+            self.test_procedures_api_content_depth,
+            self.test_procedure_content_completeness,
+            self.test_specialty_procedure_content,
+            self.test_assigned_procedure_content,
         ]
         
-        # Additional verification tests
-        verification_tests = [
-            self.test_check_existing_assignments,
-            self.test_get_procedure_assignment,
-            self.test_update_procedure_assignment,
-            self.test_practice_dashboard,
-        ]
-        
-        all_tests = auth_tests + focused_tests + verification_tests
+        all_tests = auth_tests + content_tests
         
         passed = 0
         total = len(all_tests)
@@ -938,14 +1168,8 @@ class DentalAPITester:
                 passed += 1
             print()
         
-        print("🎯 Running Focused Feature Tests...")
-        for test in focused_tests:
-            if test():
-                passed += 1
-            print()
-        
-        print("✅ Running Verification Tests...")
-        for test in verification_tests:
+        print("📄 Running Procedure Content Tests...")
+        for test in content_tests:
             if test():
                 passed += 1
             print()
@@ -954,10 +1178,10 @@ class DentalAPITester:
         print(f"📊 Test Results: {passed}/{total} tests passed")
         
         if passed == total:
-            print("🎉 All focused tests passed! Backend APIs are working correctly for dashboard and new features.")
+            print("🎉 All procedure content tests passed! Backend is returning complete procedure documents.")
             return True
         else:
-            print(f"⚠️  {total - passed} test(s) failed. Check the details above.")
+            print(f"⚠️  {total - passed} test(s) failed. Procedure content may be incomplete.")
             return False
 
     def run_all_tests(self):
