@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Redirect Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #1e40af;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            display: block;
+            width: 200px;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        .debug {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Route Test</h1>
+        <p>Test which page loads when accessing the React admin route</p>
+        
+        <button class="btn" onclick="setupAdminAndRedirect()">
+            1. Setup Super Admin & Go to /admin
+        </button>
+        
+        <button class="btn" onclick="setupPracticeAndRedirect()">
+            2. Setup Practice Admin & Go to /
+        </button>
+        
+        <button class="btn" onclick="clearAndRedirect()">
+            3. Clear Auth & Go to /admin
+        </button>
+        
+        <button class="btn" onclick="directRedirect()">
+            4. Direct Redirect to /admin
+        </button>
+        
+        <div class="debug" id="debugOutput">
+            Ready for testing...
+        </div>
+    </div>
+
+    <script>
+        function setupAdminAndRedirect() {
+            const debugOutput = document.getElementById('debugOutput');
+            
+            // Clear existing data
+            localStorage.removeItem('dentalToken');
+            localStorage.removeItem('dentalUser');
+            
+            // Set super admin data
+            localStorage.setItem('dentalToken', 'fake-super-admin-token-123');
+            localStorage.setItem('dentalUser', JSON.stringify({
+                email: 'admin@theoncallbot.com',
+                role: 'super_admin',
+                firstName: 'Admin'
+            }));
+            
+            debugOutput.innerHTML = 'Step 1: Set super admin credentials in localStorage\n';
+            debugOutput.innerHTML += 'Token: fake-super-admin-token-123\n';
+            debugOutput.innerHTML += 'User: super_admin role\n';
+            debugOutput.innerHTML += 'Step 2: Redirecting to /admin in 2 seconds...';
+            
+            setTimeout(() => {
+                window.location.href = 'https://carebot-1.preview.emergentagent.com/admin';
+            }, 2000);
+        }
+        
+        function setupPracticeAndRedirect() {
+            const debugOutput = document.getElementById('debugOutput');
+            
+            // Clear existing data
+            localStorage.removeItem('dentalToken');
+            localStorage.removeItem('dentalUser');
+            
+            // Set practice admin data
+            localStorage.setItem('dentalToken', 'fake-practice-admin-token-123');
+            localStorage.setItem('dentalUser', JSON.stringify({
+                email: 'cganz2279@gmail.com',
+                role: 'practice_admin',
+                firstName: 'Chris'
+            }));
+            
+            debugOutput.innerHTML = 'Step 1: Set practice admin credentials in localStorage\n';
+            debugOutput.innerHTML += 'Token: fake-practice-admin-token-123\n';
+            debugOutput.innerHTML += 'User: practice_admin role\n';
+            debugOutput.innerHTML += 'Step 2: Redirecting to / in 2 seconds...';
+            
+            setTimeout(() => {
+                window.location.href = 'https://carebot-1.preview.emergentagent.com/';
+            }, 2000);
+        }
+        
+        function clearAndRedirect() {
+            const debugOutput = document.getElementById('debugOutput');
+            
+            // Clear all data
+            localStorage.removeItem('dentalToken');
+            localStorage.removeItem('dentalUser');
+            
+            debugOutput.innerHTML = 'Step 1: Cleared all localStorage data\n';
+            debugOutput.innerHTML += 'Step 2: Redirecting to /admin in 2 seconds...\n';
+            debugOutput.innerHTML += 'Expected: Should show login form';
+            
+            setTimeout(() => {
+                window.location.href = 'https://carebot-1.preview.emergentagent.com/admin';
+            }, 2000);
+        }
+        
+        function directRedirect() {
+            const debugOutput = document.getElementById('debugOutput');
+            
+            debugOutput.innerHTML = 'Direct redirect to /admin without any setup...\n';
+            debugOutput.innerHTML += 'Current localStorage:\n';
+            debugOutput.innerHTML += 'Token: ' + (localStorage.getItem('dentalToken') || 'None') + '\n';
+            debugOutput.innerHTML += 'User: ' + (localStorage.getItem('dentalUser') || 'None');
+            
+            setTimeout(() => {
+                window.location.href = 'https://carebot-1.preview.emergentagent.com/admin';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
