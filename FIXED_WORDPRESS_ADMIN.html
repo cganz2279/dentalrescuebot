@@ -277,17 +277,14 @@
         
         // Check if already logged in by trying to load the React app directly
         window.onload = function() {
-            // Instead of checking local storage here, let's just embed the React app
-            // and let it handle authentication - similar to practice-notes solution
-            showAdminPanel();
+            // Automatically show admin panel after a brief loading period
+            setTimeout(() => {
+                showAdminPanel();
+            }, 2000); // 2 second delay to show loading
         };
         
         // Remove the login form submission handler since we'll embed the React app directly
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Skip login form and go directly to embedded React app
-            showAdminPanel();
-        });
+        // No form to handle anymore
         
         function showAdminPanel() {
             document.getElementById('loginContainer').style.display = 'none';
