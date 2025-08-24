@@ -121,6 +121,7 @@ export const AuthProvider = ({ children }) => {
     setPractice(null);
     setToken(null);
     localStorage.removeItem('dentalToken');
+    localStorage.removeItem('dentalUser');
   };
 
   const isAuthenticated = () => {
