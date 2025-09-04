@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login Diagnostic</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .btn {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #005a87;
+        }
+        
+        .result {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border-left: 4px solid #007cba;
+        }
+        
+        .error {
+            border-left-color: #dc3545;
+            background: #f8f9fa;
+        }
+        
+        .success {
+            border-left-color: #28a745;
+            background: #f8f9fa;
+        }
+        
+        .login-form {
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #007cba;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        #login-btn {
+            background: #dc3545;
+            font-size: 16px;
+            padding: 12px 24px;
+        }
+        
+        #login-btn:hover {
+            background: #c82333;
+        }
+        
+        #login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Admin Login Diagnostic Tool</h1>
+        <p>This page will help diagnose why the admin login isn't working.</p>
+        
+        <div class="test-section">
+            <h3>1. API Connectivity Test</h3>
+            <p>Testing if we can reach the backend API from this domain.</p>
+            <button class="btn" onclick="testAPIConnectivity()">Test API Connection</button>
+            <div id="api-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Admin Login Test</h3>
+            <p>Testing the actual admin login with your credentials.</p>
+            <button class="btn" onclick="testAdminLogin()">Test Admin Login</button>
+            <div id="login-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Dashboard Access Test</h3>
+            <p>Testing dashboard access (run after login test succeeds).</p>
+            <button class="btn" onclick="testDashboard()">Test Dashboard</button>
+            <div id="dashboard-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. Working Admin Login</h3>
+            <p>If tests above pass, this should work:</p>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="email">Admin Email:</label>
+                    <input type="email" id="email" value="cganz@admin.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" value="Dentist1#">
+                </div>
+                
+                <button id="login-btn" onclick="performLogin()">
+                    <span id="login-text">Login to Admin Dashboard</span>
+                </button>
+            </div>
+            
+            <div id="final-result" class="result" style="display: none;"></div>
+            
+            <div id="admin-dashboard" style="display: none; margin-top: 20px; padding: 20px; background: #e8f5e8; border-radius: 8px;">
+                <h3>✅ Admin Dashboard</h3>
+                <div id="dashboard-stats"></div>
+                <button class="btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentist-portal-3.emergent.host/api';
+        let currentToken = null;
+        
+        function showResult(elementId, content, isError = false, isSuccess = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = content;
+            element.className = 'result' + (isError ? ' error' : '') + (isSuccess ? ' success' : '');
+        }
+        
+        async function testAPIConnectivity() {
+            showResult('api-result', '🔄 Testing API connectivity...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('api-result', `✅ API Connected Successfully!\nResponse: ${JSON.stringify(data, null, 2)}`, false, true);
+                } else {
+                    showResult('api-result', `❌ API Connection Failed\nStatus: ${response.status}\nStatusText: ${response.statusText}`, true);
+                }
+            } catch (error) {
+                showResult('api-result', `❌ Network Error\nError: ${error.message}\nThis likely means CORS is blocking the request or the API is not accessible from this domain.`, true);
+            }
+        }
+        
+        async function testAdminLogin() {
+            showResult('login-result', '🔄 Testing admin login...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'cganz@admin.com',
+                        password: 'Dentist1#'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success && data.token) {
+                    currentToken = data.token;
+                    showResult('login-result', `✅ Admin Login Successful!\nToken received: ${data.token.substring(0, 50)}...\nMessage: ${data.message}`, false, true);
+                } else {
+                    showResult('login-result', `❌ Admin Login Failed\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`, true);
+                }
+            } catch (error) {
+                showResult('login-result', `❌ Login Request Failed\nError: ${error.message}`, true);
+            }
+        }
+        
+        async function testDashboard() {
+            if (!currentToken) {
+                showResult('dashboard-result', '❌ No token available. Run login test first.', true);
+                return;
+            }
+            
+            showResult('dashboard-result', '🔄 Testing dashboard access...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/dashboard`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResult('dashboard-result', `✅ Dashboard Access Successful!\nStats: ${JSON.stringify(data.stats, null, 2)}\nPractices: ${data.recent_practices?.length || 0} found`, false, true);
+                } else {
+                    showResult('dashboard-result', `❌ Dashboard Access Failed\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`, true);
+                }
+            } catch (error) {
+                showResult('dashboard-result', `❌ Dashboard Request Failed\nError: ${error.message}`, true);
+            }
+        }
+        
+        async function performLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            
+            loginBtn.disabled = true;
+            loginText.textContent = 'Logging in...';
+            
+            showResult('final-result', '🔄 Performing login...');
+            
+            try {
+                // Step 1: Login
+                const loginResponse = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const loginData = await loginResponse.json();
+                
+                if (!loginResponse.ok || !loginData.success || !loginData.token) {
+                    throw new Error(`Login failed: ${loginData.detail || loginData.message || 'Unknown error'}`);
+                }
+                
+                // Step 2: Get Dashboard
+                const dashboardResponse = await fetch(`${API_BASE}/admin/dashboard`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${loginData.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const dashboardData = await dashboardResponse.json();
+                
+                if (!dashboardResponse.ok || !dashboardData.success) {
+                    throw new Error(`Dashboard failed: ${dashboardData.detail || 'Unknown error'}`);
+                }
+                
+                // Success! Show dashboard
+                showResult('final-result', '✅ LOGIN SUCCESSFUL! Dashboard loaded.', false, true);
+                
+                const dashboardDiv = document.getElementById('admin-dashboard');
+                const statsDiv = document.getElementById('dashboard-stats');
+                
+                const stats = dashboardData.stats || {};
+                statsDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 24px; font-weight: bold; color: #dc3545;">${stats.total_practices || 0}</div>
+                            <div style="font-size: 14px; color: #666;">Total Practices</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 24px; font-weight: bold; color: #dc3545;">${stats.active_practices || 0}</div>
+                            <div style="font-size: 14px; color: #666;">Active</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 24px; font-weight: bold; color: #dc3545;">$${stats.total_revenue || 0}</div>
+                            <div style="font-size: 14px; color: #666;">Revenue</div>
+                        </div>
+                    </div>
+                `;
+                
+                dashboardDiv.style.display = 'block';
+                currentToken = loginData.token;
+                
+            } catch (error) {
+                showResult('final-result', `❌ LOGIN FAILED\nError: ${error.message}`, true);
+            } finally {
+                loginBtn.disabled = false;
+                loginText.textContent = 'Login to Admin Dashboard';
+            }
+        }
+        
+        function logout() {
+            currentToken = null;
+            document.getElementById('admin-dashboard').style.display = 'none';
+            showResult('final-result', '👋 Logged out successfully.');
+        }
+        
+        // Auto-run connectivity test on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Admin diagnostic page loaded');
+            testAPIConnectivity();
+        });
+    </script>
+</body>
+</html>

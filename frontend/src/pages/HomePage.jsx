@@ -1,0 +1,228 @@
+import React, { useState, useEffect } from 'react';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { Search, BookOpen, Shield, Users } from 'lucide-react';
+import SpecialtyCard from '../components/SpecialtyCard';
+import ProcedureCard from '../components/ProcedureCard';
+import LoadingSpinner, { LoadingCard, ErrorMessage } from '../components/LoadingSpinner';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { dentalApi } from '../services/api';
+import { useToast } from '../hooks/use-toast';
+
+const HomePage = ({ onSelectSpecialty, onSelectProcedure }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const { toast } = useToast();
+
+  // Load specialties on component mount
+  useEffect(() => {
+    loadSpecialties();
+  }, []);
+
+  const loadSpecialties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await dentalApi.getSpecialties();
+      setSpecialties(response.data);
+    } catch (err) {
+      setError(err.message);
+      toast({
+        title: "Error",
+        description: "Failed to load dental specialties. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async (query) => {
+    setSearchQuery(query);
+    
+    if (query.trim()) {
+      setIsSearching(true);
+      setSearchLoading(true);
+      
+      try {
+        const response = await dentalApi.searchProcedures(query);
+        setSearchResults(response.data);
+      } catch (err) {
+        toast({
+          title: "Search Error",
+          description: "Failed to search procedures. Please try again.",
+          variant: "destructive",
+        });
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    } else {
+      setIsSearching(false);
+      setSearchResults([]);
+      setSearchLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      {/* Header with Logo */}
+      <Header 
+        title="The Dental Rescue Bot Library Of Post-Operative Notes"
+        subtitle="Your comprehensive resource for post-procedure care instructions, warning signs, and recovery guidelines for all dental treatments."
+        showBranding={true}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        {/* Search Bar */}
+        <div className="max-w-md mx-auto mb-12">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Input
+              type="text"
+              placeholder="Search procedures (e.g., root canal, extraction...)"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-10 pr-4 py-3 text-base border-2 border-gray-200 focus:border-blue-500 rounded-lg"
+            />
+          </div>
+        </div>
+        {/* Search Results */}
+        {isSearching && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Search Results ({searchResults.length})
+            </h2>
+            {searchLoading ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <LoadingCard key={i} />
+                ))}
+              </div>
+            ) : searchResults.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {searchResults.map((procedure) => (
+                  <ProcedureCard
+                    key={procedure.id}
+                    procedure={procedure}
+                    showSpecialty={true}
+                    onViewDetails={() => onSelectProcedure(procedure.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-gray-400 mb-4">
+                  <Search className="h-16 w-16 mx-auto" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-600">No procedures found</h3>
+                <p className="text-gray-500">Try searching with different keywords</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Features Section */}
+        {!isSearching && (
+          <div className="mb-16">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Everything You Need for Recovery
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Get detailed, professional guidance for your post-operative care
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 mb-16">
+              <div className="text-center p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <Shield className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">Step-by-Step Instructions</h3>
+                <p className="text-gray-600">Detailed care instructions for every procedure to ensure proper healing</p>
+              </div>
+              
+              <div className="text-center p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <Search className="h-8 w-8 text-red-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">Warning Signs</h3>
+                <p className="text-gray-600">Know when to contact your dentist with clear warning sign indicators</p>
+              </div>
+              
+              <div className="text-center p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <Users className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">Professional Guidance</h3>
+                <p className="text-gray-600">Evidence-based recommendations from dental professionals</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Dental Specialties */}
+        {!isSearching && (
+          <>
+            {loading ? (
+              <>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Browse by Dental Specialty
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    Loading dental specialties...
+                  </p>
+                </div>
+                
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                    <LoadingCard key={i} />
+                  ))}
+                </div>
+              </>
+            ) : error ? (
+              <ErrorMessage 
+                message={error} 
+                onRetry={loadSpecialties}
+              />
+            ) : (
+              <>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Browse by Dental Specialty
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    Select your procedure category for specific post-operative care instructions
+                  </p>
+                </div>
+                
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {specialties.map((specialty) => (
+                    <SpecialtyCard
+                      key={specialty.id}
+                      specialty={specialty}
+                      onClick={() => onSelectSpecialty(specialty.id)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
+      
+      {/* Footer */}
+      <Footer />
+    </div>
+  );
+};
+
+export default HomePage;

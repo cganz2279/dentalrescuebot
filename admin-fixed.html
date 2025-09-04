@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Fixed</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #dc3545;
+            font-size: 28px;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .debug-info {
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            border: 1px solid #b3d9ff;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #dc3545;
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-btn:hover {
+            background: #c82333;
+        }
+        
+        .login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .dashboard {
+            margin-top: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #dc3545;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Admin Login - FIXED</h1>
+        </div>
+        
+        <div class="debug-info">
+            <strong>Debug Info:</strong><br>
+            API Base: <span id="api-base">https://dentist-portal-3.emergent.host/api</span><br>
+            Admin Token: <span id="token-status">Not Set</span><br>
+            Dashboard Data: <span id="dashboard-status">Not Loaded</span>
+        </div>
+        
+        <div id="login-form">
+            <div id="error-message" class="error" style="display: none;"></div>
+            
+            <div class="form-group">
+                <label for="email">Admin Email:</label>
+                <input type="email" id="email" value="cganz@admin.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" value="Dentist1#" required>
+            </div>
+            
+            <button class="login-btn" id="login-btn" onclick="handleLogin()">
+                <span id="btn-text">Admin Login</span>
+            </button>
+        </div>
+        
+        <div id="dashboard" style="display: none;">
+            <div class="success">
+                ✅ <strong>Admin Login Successful!</strong> You are now logged in to the admin dashboard.
+            </div>
+            
+            <div class="dashboard">
+                <h2>📊 Dashboard Statistics</h2>
+                <div class="stats-grid" id="stats-grid">
+                    <!-- Stats will be populated here -->
+                </div>
+                
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://dentist-portal-3.emergent.host/api';
+        let adminToken = localStorage.getItem('adminToken');
+        let dashboardData = null;
+
+        // Update debug info
+        function updateDebugInfo() {
+            document.getElementById('token-status').textContent = adminToken ? 'Set' : 'Not Set';
+            document.getElementById('dashboard-status').textContent = dashboardData ? 'Loaded' : 'Not Loaded';
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Hide error message
+        function hideError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // Handle login
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const btnText = document.getElementById('btn-text');
+            
+            hideError();
+            loginBtn.disabled = true;
+            btnText.textContent = 'Logging in...';
+            
+            try {
+                console.log('Attempting admin login...');
+                
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                console.log('Login response:', data);
+
+                if (response.ok && data.success && data.token) {
+                    console.log('Login successful, loading dashboard...');
+                    
+                    adminToken = data.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    updateDebugInfo();
+                    
+                    // Load dashboard
+                    await loadDashboard();
+                } else {
+                    showError(data.detail || data.message || 'Invalid admin credentials');
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                showError('Login failed. Please try again.');
+            } finally {
+                loginBtn.disabled = false;
+                btnText.textContent = 'Admin Login';
+            }
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                console.log('Loading dashboard data...');
+                
+                const response = await fetch(`${API_BASE}/admin/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Dashboard data:', data);
+                    
+                    if (data.success) {
+                        dashboardData = data;
+                        updateDebugInfo();
+                        showDashboard();
+                    } else {
+                        showError('Failed to load dashboard data');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.error('Dashboard error:', response.status, errorText);
+                    showError(`Dashboard loading failed: ${response.status} ${errorText}`);
+                }
+            } catch (err) {
+                console.error('Dashboard loading error:', err);
+                showError('Network error while loading dashboard');
+            }
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Populate stats
+            const statsGrid = document.getElementById('stats-grid');
+            const stats = dashboardData.stats || {};
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_practices || 0}</div>
+                    <div class="stat-label">Total Practices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.active_practices || 0}</div>
+                    <div class="stat-label">Active Practices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$${stats.total_revenue || 0}</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            `;
+        }
+
+        // Handle logout
+        function handleLogout() {
+            console.log('Logging out...');
+            
+            adminToken = null;
+            dashboardData = null;
+            localStorage.removeItem('adminToken');
+            
+            updateDebugInfo();
+            
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            
+            hideError();
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            updateDebugInfo();
+            
+            // If token exists, try to load dashboard
+            if (adminToken) {
+                loadDashboard();
+            }
+        };
+    </script>
+</body>
+</html>

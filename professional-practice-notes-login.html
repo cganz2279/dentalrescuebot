@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Notes Login - The OnCall Bot</title>
+    <meta name="description" content="Access your dental practice post-operative care management system. Secure login for dental professionals.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #3c7ab7 0%, #2c5a87 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .login-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            padding: 60px 50px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3c7ab7, #0073e6, #3c7ab7);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: -200% 0; }
+            50% { background-position: 200% 0; }
+        }
+        
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .brand-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3c7ab7;
+            margin-bottom: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .brand-title:hover {
+            color: #2c5a87;
+            transform: translateY(-2px);
+        }
+        
+        .brand-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 35px;
+            border-left: 4px solid #3c7ab7;
+        }
+        
+        .app-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .app-title::before {
+            content: '🦷';
+            font-size: 24px;
+        }
+        
+        .app-description {
+            font-size: 16px;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+        
+        .login-form {
+            position: relative;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 400;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fff;
+            color: #2c3e50;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3c7ab7;
+            box-shadow: 0 0 0 4px rgba(60, 122, 183, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .form-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        
+        .login-button {
+            width: 100%;
+            background: linear-gradient(135deg, #3c7ab7 0%, #0073e6 100%);
+            color: white;
+            border: none;
+            padding: 18px 20px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+        
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .login-button:hover::before {
+            left: 100%;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(60, 122, 183, 0.4);
+        }
+        
+        .login-button:active {
+            transform: translateY(-1px);
+        }
+        
+        .login-button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .login-button:disabled::before {
+            display: none;
+        }
+        
+        .loading-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            text-align: center;
+            display: none;
+            border-left: 4px solid #dc2626;
+            font-weight: 500;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .forgot-password a {
+            color: #3c7ab7;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .forgot-password a:hover {
+            color: #2c5a87;
+        }
+        
+        .forgot-password a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 50%;
+            background-color: #3c7ab7;
+            transition: all 0.3s ease;
+        }
+        
+        .forgot-password a:hover::after {
+            width: 100%;
+            left: 0;
+        }
+        
+        .register-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e1e8ed;
+        }
+        
+        .register-text {
+            color: #5a6c7d;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .register-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
+        }
+        
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .register-button::before {
+            content: '🚀';
+            font-size: 16px;
+        }
+        
+        .features-list {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .features-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0c4a6e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .features-title::before {
+            content: '✨';
+            font-size: 16px;
+        }
+        
+        .features-list ul {
+            list-style: none;
+            font-size: 14px;
+            color: #0c4a6e;
+            line-height: 1.6;
+        }
+        
+        .features-list li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .features-list li::before {
+            content: '✅';
+            font-size: 12px;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .login-wrapper {
+                padding: 40px 25px;
+                margin: 10px;
+                border-radius: 16px;
+            }
+            
+            .brand-title {
+                font-size: 28px;
+            }
+            
+            .app-title {
+                font-size: 24px;
+            }
+            
+            .form-input, .login-button {
+                padding: 14px 16px;
+            }
+        }
+        
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="header-section">
+            <a href="https://www.theoncallbot.com" class="brand-title">The OnCall Bot</a>
+            <div class="brand-subtitle">Professional Dental Solutions</div>
+        </div>
+        
+        <div class="app-header">
+            <div class="app-title">Practice Notes</div>
+            <div class="app-description">Comprehensive post-operative care management system for dental professionals</div>
+        </div>
+        
+        <div id="errorMessage" class="error-message"></div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-input" 
+                    placeholder="Enter your practice email address"
+                    required
+                    autocomplete="email"
+                    aria-describedby="email-help"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input" 
+                    placeholder="Enter your secure password"
+                    required
+                    autocomplete="current-password"
+                    aria-describedby="password-help"
+                >
+            </div>
+            
+            <button type="submit" class="login-button" id="loginButton" aria-describedby="login-help">
+                <span class="loading-content" id="loadingContent">
+                    <span id="buttonText">Access Practice Dashboard</span>
+                </span>
+            </button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+        </div>
+        
+        <div class="features-list">
+            <div class="features-title">What you get access to:</div>
+            <ul>
+                <li>80+ detailed post-operative care guides</li>
+                <li>Patient management & procedure assignment</li>
+                <li>Branded PDF downloads for your practice</li>
+                <li>Complete patient tracking system</li>
+            </ul>
+        </div>
+        
+        <div class="register-section">
+            <div class="register-text">Don't have a practice account yet?</div>
+            <a href="https://www.theoncallbot.com" class="register-button">
+                Start Your Free 15-Day Trial
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            API_BASE_URL: 'https://careflow-31.preview.emergentagent.com/api',
+            DASHBOARD_URL: 'https://careflow-31.preview.emergentagent.com/',
+            ERROR_DISPLAY_TIME: 6000
+        };
+        
+        // DOM elements
+        const elements = {
+            loginForm: document.getElementById('loginForm'),
+            emailInput: document.getElementById('email'),
+            passwordInput: document.getElementById('password'),
+            loginButton: document.getElementById('loginButton'),
+            buttonText: document.getElementById('buttonText'),
+            loadingContent: document.getElementById('loadingContent'),
+            errorMessage: document.getElementById('errorMessage'),
+            forgotPasswordLink: document.getElementById('forgotPasswordLink')
+        };
+        
+        // Utility functions
+        const utils = {
+            showError(message) {
+                elements.errorMessage.textContent = message;
+                elements.errorMessage.style.display = 'block';
+                elements.errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                setTimeout(() => {
+                    elements.errorMessage.style.display = 'none';
+                }, CONFIG.ERROR_DISPLAY_TIME);
+            },
+            
+            setLoading(isLoading) {
+                if (isLoading) {
+                    elements.loginButton.disabled = true;
+                    elements.loadingContent.innerHTML = `
+                        <div class="spinner"></div>
+                        <span>Signing you in...</span>
+                    `;
+                } else {
+                    elements.loginButton.disabled = false;
+                    elements.loadingContent.innerHTML = `
+                        <span>Access Practice Dashboard</span>
+                    `;
+                }
+            },
+            
+            validateForm(email, password) {
+                if (!email || !password) {
+                    this.showError('Please enter both your email address and password.');
+                    return false;
+                }
+                
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    this.showError('Please enter a valid email address.');
+                    return false;
+                }
+                
+                return true;
+            },
+            
+            handleLoginSuccess(data) {
+                // Store authentication data
+                if (data.token) {
+                    localStorage.setItem('authToken', data.token);
+                }
+                if (data.user) {
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+                }
+                
+                // Show success message briefly before redirect
+                elements.loadingContent.innerHTML = `
+                    <span>✅ Login successful! Redirecting...</span>
+                `;
+                
+                // Redirect after short delay for better UX
+                setTimeout(() => {
+                    window.location.href = CONFIG.DASHBOARD_URL;
+                }, 1000);
+            },
+            
+            handleLoginError(data, response) {
+                let errorMessage;
+                
+                if (response.status === 401) {
+                    errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+                } else if (response.status === 429) {
+                    errorMessage = 'Too many login attempts. Please wait a few minutes before trying again.';
+                } else if (response.status >= 500) {
+                    errorMessage = 'Server error. Please try again in a few moments.';
+                } else {
+                    errorMessage = data.message || 'Login failed. Please try again.';
+                }
+                
+                this.showError(errorMessage);
+            }
+        };
+        
+        // Event handlers
+        const handlers = {
+            async handleLogin(e) {
+                e.preventDefault();
+                
+                const email = elements.emailInput.value.trim();
+                const password = elements.passwordInput.value;
+                
+                if (!utils.validateForm(email, password)) {
+                    return;
+                }
+                
+                utils.setLoading(true);
+                
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        utils.handleLoginSuccess(data);
+                    } else {
+                        utils.handleLoginError(data, response);
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    utils.showError('Unable to connect to the server. Please check your internet connection and try again.');
+                } finally {
+                    utils.setLoading(false);
+                }
+            },
+            
+            handleForgotPassword(e) {
+                e.preventDefault();
+                
+                const email = elements.emailInput.value.trim();
+                if (!email) {
+                    utils.showError('Please enter your email address first, then click "Forgot your password?"');
+                    elements.emailInput.focus();
+                    return;
+                }
+                
+                // Show professional message
+                utils.showError(`Password reset instructions will be sent to ${email}. Please check your inbox and spam folder. Contact support if you don't receive the email within 10 minutes.`);
+            },
+            
+            clearErrorOnInput() {
+                if (elements.errorMessage.style.display === 'block') {
+                    elements.errorMessage.style.display = 'none';
+                }
+            }
+        };
+        
+        // Initialize event listeners
+        function initializeEventListeners() {
+            elements.loginForm.addEventListener('submit', handlers.handleLogin);
+            elements.forgotPasswordLink.addEventListener('click', handlers.handleForgotPassword);
+            
+            // Clear errors when user starts typing
+            [elements.emailInput, elements.passwordInput].forEach(input => {
+                input.addEventListener('input', handlers.clearErrorOnInput);
+            });
+            
+            // Auto-focus email field when page loads
+            window.addEventListener('load', () => {
+                elements.emailInput.focus();
+            });
+            
+            // Handle Enter key in password field
+            elements.passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handlers.handleLogin(e);
+                }
+            });
+        }
+        
+        // Initialize the application
+        initializeEventListeners();
+    </script>
+</body>
+</html>

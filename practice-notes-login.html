@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en-US" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Notes Login - The OnCall Bot</title>
+    <meta name="description" content="Access your dental practice post-operative care management system. Secure login for dental professionals.">
+    
+    <!-- Match existing site styling -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #3c7ab7;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .site-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 50px 40px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo-section {
+            margin-bottom: 30px;
+        }
+        
+        .site-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #3c7ab7;
+            margin: 0 0 10px 0;
+            text-decoration: none;
+        }
+        
+        .site-title:hover {
+            color: #2c5a87;
+        }
+        
+        .app-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0 10px 0;
+        }
+        
+        .app-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .login-form {
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3c7ab7;
+            box-shadow: 0 0 0 3px rgba(60, 122, 183, 0.1);
+        }
+        
+        .login-button {
+            width: 100%;
+            background: #0073e6;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-button:hover {
+            background: #005bb5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 115, 230, 0.3);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+        }
+        
+        .login-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .forgot-password a {
+            color: #3c7ab7;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #3c7ab7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #ffeaa7;
+            color: #d63031;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+        
+        .loading-spinner {
+            display: none;
+            margin-right: 8px;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .app-title {
+                font-size: 20px;
+            }
+            
+            .site-title {
+                font-size: 24px;
+            }
+        }
+        
+        /* Loading animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3c7ab7;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="site-container">
+        <main class="main-content">
+            <div class="login-container">
+                <div class="logo-section">
+                    <a href="https://www.theoncallbot.com" class="site-title">The OnCall Bot</a>
+                </div>
+                
+                <div class="app-title">Practice Notes</div>
+                <div class="app-subtitle">Post-Operative Care Management System</div>
+                
+                <div id="errorMessage" class="error-message"></div>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="Enter your email address"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+                    
+                    <button type="submit" class="login-button" id="loginButton">
+                        <span class="loading-spinner" id="loadingSpinner">
+                            <span class="spinner"></span>
+                        </span>
+                        <span id="buttonText">Sign In to Dashboard</span>
+                    </button>
+                </form>
+                
+                <div class="forgot-password">
+                    <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+                </div>
+                
+                <div class="register-link">
+                    Don't have a practice account? 
+                    <a href="https://www.theoncallbot.com">Start Your Free Trial</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://careflow-31.preview.emergentagent.com/api';
+        const DASHBOARD_URL = 'https://careflow-31.preview.emergentagent.com/';
+        
+        // IMPORTANT: Clear any existing authentication on page load to force fresh login
+        // This ensures users always see the login page and login to their own account
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        sessionStorage.clear();
+        
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Show loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loginButton.disabled = true;
+                loadingSpinner.style.display = 'inline-block';
+                buttonText.textContent = 'Signing In...';
+            } else {
+                loginButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                buttonText.textContent = 'Sign In to Dashboard';
+            }
+        }
+        
+        // Handle form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!email || !password) {
+                showError('Please enter both email and password.');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Store the token if provided
+                    if (data.token) {
+                        localStorage.setItem('authToken', data.token);
+                    }
+                    
+                    // Store user data if provided
+                    if (data.user) {
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+                    }
+                    
+                    // Redirect to dashboard
+                    window.location.href = DASHBOARD_URL;
+                } else {
+                    // Handle login error
+                    const errorMsg = data.message || 'Invalid email or password. Please try again.';
+                    showError(errorMsg);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Unable to connect to the server. Please check your internet connection and try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        // Handle forgot password
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            if (!email) {
+                showError('Please enter your email address first, then click "Forgot your password?"');
+                emailInput.focus();
+                return;
+            }
+            
+            // For now, show a message. In the future, you could implement password reset functionality
+            alert(`Password reset instructions will be sent to ${email}. Please contact support if you don't receive them within 10 minutes.`);
+        });
+        
+        // Auto-focus email field on page load
+        window.addEventListener('load', () => {
+            emailInput.focus();
+        });
+        
+        // Handle Enter key in password field
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+        
+        // Clear error message when user starts typing
+        [emailInput, passwordInput].forEach(input => {
+            input.addEventListener('input', () => {
+                if (errorMessage.style.display === 'block') {
+                    errorMessage.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

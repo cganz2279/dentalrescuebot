@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Practice Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-header {
+            background: linear-gradient(135deg, #3c7ab7 0%, #2c5a87 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .login-header.admin {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        .login-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .login-tabs {
+            display: flex;
+            background: #f8f9fa;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: #f8f9fa;
+            color: #666;
+            font-weight: 600;
+        }
+        .tab.active {
+            background: white;
+            color: #333;
+            border-bottom: 3px solid #3c7ab7;
+        }
+        .tab.admin.active {
+            border-bottom-color: #dc3545;
+        }
+        .login-form {
+            padding: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #3c7ab7;
+        }
+        .form-group input:focus.admin {
+            border-color: #dc3545;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #3c7ab7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-btn.admin {
+            background: #dc3545;
+        }
+        .login-btn:hover {
+            background: #2c5a87;
+        }
+        .login-btn.admin:hover {
+            background: #c82333;
+        }
+        .login-btn:disabled {
+            background: #ccc;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header" id="loginHeader">
+            <h1 id="loginTitle">Practice Notes Login</h1>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="login-tabs">
+            <button class="tab active" onclick="switchTab('member')">Member Login</button>
+            <button class="tab" onclick="switchTab('admin')">Admin Login</button>
+        </div>
+        
+        <!-- Form -->
+        <div class="login-form">
+            <div id="message" class="message"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label id="emailLabel">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" id="loginBtn" class="login-btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'member';
+        
+        function switchTab(mode) {
+            currentMode = mode;
+            const tabs = document.querySelectorAll('.tab');
+            const header = document.getElementById('loginHeader');
+            const title = document.getElementById('loginTitle');
+            const emailLabel = document.getElementById('emailLabel');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Reset tabs
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.classList.remove('admin');
+            });
+            
+            if (mode === 'admin') {
+                // Admin mode
+                tabs[1].classList.add('active', 'admin');
+                header.classList.add('admin');
+                title.textContent = '🔐 Admin Login';
+                emailLabel.textContent = 'Admin Email:';
+                emailInput.value = 'cganz@admin.com';
+                passwordInput.value = 'Dentist1#';
+                loginBtn.textContent = 'Admin Login';
+                loginBtn.classList.add('admin');
+            } else {
+                // Member mode
+                tabs[0].classList.add('active');
+                header.classList.remove('admin');
+                title.textContent = 'Practice Notes Login';
+                emailLabel.textContent = 'Email:';
+                emailInput.value = '';
+                passwordInput.value = '';
+                loginBtn.textContent = 'Login';
+                loginBtn.classList.remove('admin');
+            }
+            
+            hideMessage();
+        }
+        
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 5000);
+        }
+        
+        function hideMessage() {
+            document.getElementById('message').style.display = 'none';
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+            
+            if (!email || !password) {
+                showMessage('Please enter email and password', 'error');
+                return;
+            }
+            
+            btn.textContent = 'Logging in...';
+            btn.disabled = true;
+            
+            try {
+                const endpoint = currentMode === 'admin' ? '/admin/login' : '/auth/login';
+                const response = await fetch(`https://dentist-portal-3.emergent.host/api${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.token) {
+                    const tokenKey = currentMode === 'admin' ? 'adminToken' : 'dentalToken';
+                    localStorage.setItem(tokenKey, data.token);
+                    
+                    if (data.user) {
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+                    }
+                    
+                    showMessage(`${currentMode === 'admin' ? 'Admin' : 'Member'} login successful!`, 'success');
+                    
+                    setTimeout(() => {
+                        if (currentMode === 'admin') {
+                            // Admin goes to admin dashboard
+                            window.location.href = 'https://dentist-portal-3.emergent.host/admin';
+                        } else {
+                            // Member goes to practice dashboard
+                            window.location.href = 'https://dentist-portal-3.emergent.host/';
+                        }
+                    }, 1000);
+                } else {
+                    showMessage(data.detail || data.message || 'Invalid credentials', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Please try again.', 'error');
+            } finally {
+                btn.textContent = currentMode === 'admin' ? 'Admin Login' : 'Login';
+                btn.disabled = false;
+            }
+        });
+        
+        // Initialize member mode
+        switchTab('member');
+    </script>
+</body>
+</html>
