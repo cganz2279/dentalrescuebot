@@ -1,17 +1,63 @@
-// Enhanced PDF Generator that captures the actual screen content
+// WYSIWYG PDF Generator - Captures actual screen appearance
 export const generateProcedurePDF = async (procedure) => {
   try {
-    console.log('🎨 Starting enhanced PDF generation...');
+    console.log('🎨 Starting WYSIWYG PDF generation...');
     
-    // Find the main content area that's currently displayed
-    const contentElement = document.querySelector('.max-w-4xl') || document.querySelector('main') || document.body;
+    // Create a temporary element that exactly matches the screen display
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.top = '0px';
+    tempContainer.style.width = '800px';
+    tempContainer.style.backgroundColor = '#ffffff';
+    tempContainer.style.padding = '20px';
     
-    if (!contentElement) {
-      throw new Error('Could not find content to capture');
+    // Get the exact HTML content from the current page
+    const currentPageContent = document.querySelector('.max-w-4xl') || document.querySelector('main');
+    
+    if (currentPageContent) {
+      // Clone the current page content exactly
+      tempContainer.innerHTML = currentPageContent.outerHTML;
+    } else {
+      // Fallback: create enhanced content
+      tempContainer.innerHTML = createEnhancedContentHTML(procedure);
     }
     
-    // Use the browser's native print functionality for best results
-    return generatePrintStylePDF(procedure);
+    // Temporarily add to DOM
+    document.body.appendChild(tempContainer);
+    
+    // Create and trigger print
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    if (!printWindow) {
+      document.body.removeChild(tempContainer);
+      throw new Error('Could not open print window - check popup blocker');
+    }
+    
+    // Create the complete HTML document with the exact styling
+    const fullHTML = createWYSIWYGPrintHTML(tempContainer.innerHTML, procedure);
+    
+    printWindow.document.write(fullHTML);
+    printWindow.document.close();
+    
+    // Clean up
+    document.body.removeChild(tempContainer);
+    
+    // Wait for content to load, then trigger print
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+      
+      // Close after printing
+      setTimeout(() => {
+        if (!printWindow.closed) {
+          printWindow.close();
+        }
+      }, 1000);
+    }, 500);
+    
+    console.log('✅ WYSIWYG PDF generation initiated');
+    return true;
     
   } catch (error) {
     console.error('❌ PDF generation failed:', error);
@@ -19,54 +65,151 @@ export const generateProcedurePDF = async (procedure) => {
   }
 };
 
-// Generate PDF using browser's print functionality with enhanced styling
-const generatePrintStylePDF = (procedure) => {
-  try {
-    console.log('🖨️ Using browser print functionality...');
-    
-    // Create enhanced HTML content with print-specific styling
-    const printContent = createEnhancedPrintHTML(procedure);
-    
-    // Create new window for printing
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    
-    if (!printWindow) {
-      throw new Error('Could not open print window. Please check popup blocker settings.');
-    }
-    
-    // Write content and setup print handling
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    
-    // Wait for content to load, then trigger print
-    setTimeout(() => {
-      printWindow.focus();
-      
-      // Add print event listeners
-      printWindow.onbeforeprint = () => {
-        console.log('🖨️ Print dialog opening...');
-      };
-      
-      printWindow.onafterprint = () => {
-        console.log('✅ Print completed');
-        setTimeout(() => {
-          if (!printWindow.closed) {
-            printWindow.close();
-          }
-        }, 1000);
-      };
-      
-      // Trigger print
-      printWindow.print();
-    }, 1000);
-    
-    console.log('✅ Print window opened successfully');
-    return true;
-    
-  } catch (error) {
-    console.error('❌ Print generation failed:', error);
-    return false;
-  }
+// Create HTML that exactly matches screen appearance
+const createWYSIWYGPrintHTML = (contentHTML, procedure) => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${procedure.name} - Care Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in 1in 1.5in 1in; /* top right bottom left */
+        }
+        
+        @page :first {
+            margin-bottom: 1.75in; /* Extra space on first page bottom */
+        }
+        
+        @page :nth(2) {
+            margin-top: 1.75in; /* Extra space on second page top */
+        }
+        
+        @page :nth(n+3) {
+            margin-top: 1.5in;
+            margin-bottom: 1.5in;
+        }
+        
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                color: #374151;
+                background: white !important;
+                margin: 0;
+                padding: 0;
+            }
+            
+            /* Preserve all background colors */
+            .bg-blue-600, .bg-blue-500 {
+                background-color: #2563eb !important;
+                color: white !important;
+            }
+            
+            .bg-green-100 {
+                background-color: #dcfce7 !important;
+            }
+            
+            .bg-orange-100 {
+                background-color: #fed7aa !important;
+            }
+            
+            .bg-red-50 {
+                background-color: #fef2f2 !important;
+            }
+            
+            .bg-purple-100 {
+                background-color: #f3e8ff !important;
+            }
+            
+            .bg-gray-50 {
+                background-color: #f9fafb !important;
+            }
+            
+            /* Preserve text colors */
+            .text-green-600 {
+                color: #16a34a !important;
+            }
+            
+            .text-orange-600 {
+                color: #ea580c !important;
+            }
+            
+            .text-red-600 {
+                color: #dc2626 !important;
+            }
+            
+            .text-purple-600 {
+                color: #9333ea !important;
+            }
+            
+            .text-blue-600 {
+                color: #2563eb !important;
+            }
+            
+            /* Preserve borders */
+            .border-l-4 {
+                border-left-width: 4px !important;
+            }
+            
+            .border-l-green-500 {
+                border-left-color: #22c55e !important;
+            }
+            
+            .border-l-orange-500 {
+                border-left-color: #f97316 !important;
+            }
+            
+            .border-l-red-500 {
+                border-left-color: #ef4444 !important;
+            }
+            
+            .border-l-purple-500 {
+                border-left-color: #a855f7 !important;
+            }
+            
+            .border-l-blue-500 {
+                border-left-color: #3b82f6 !important;
+            }
+            
+            /* Page break controls */
+            .break-inside-avoid {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            
+            .break-before-auto {
+                break-before: auto;
+                page-break-before: auto;
+            }
+        }
+        
+        /* Screen styles that should also apply to print */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #374151;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen bg-white">
+        ${contentHTML}
+    </div>
+</body>
+</html>
+  `;
 };
 
 // Create enhanced HTML for printing with proper styling
