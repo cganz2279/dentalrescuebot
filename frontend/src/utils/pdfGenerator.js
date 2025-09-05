@@ -880,7 +880,7 @@ const createEnhancedPrintHTML = (procedure) => {
             ${procedure.practiceName ? `
                 <div>
                     <h2>${procedure.practiceName}</h2>
-                    ${procedure.practicePhone ? `<p>Phone: ${procedure.practicePhone}</p>` : ''}
+                    ${procedure.practicePhone ? `<p>Phone: ${formatPhoneNumber(procedure.practicePhone)}</p>` : ''}
                 </div>
             ` : ''}
         </div>
