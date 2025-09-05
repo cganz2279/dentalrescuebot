@@ -11,6 +11,7 @@ import LoadingSpinner, { LoadingCard, ErrorMessage } from '../components/Loading
 import { dentalApi } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 import { generateProcedurePDF } from '../utils/pdfGenerator';
+import { useAuth } from '../contexts/AuthContext';
 
 const PracticeLibraryPage = () => {
   const navigate = useNavigate();
