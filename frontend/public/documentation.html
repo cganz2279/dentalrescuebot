@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dentist Practice Platform - Deployment & Configuration Guide</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+        }
+        
+        * {
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #374151;
+            background: white;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            background: #2563eb !important;
+            color: white !important;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            color: white !important;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        
+        .section-header {
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-content {
+            padding: 20px;
+        }
+        
+        .important {
+            border-left: 4px solid #ef4444 !important;
+            background: #fef2f2 !important;
+        }
+        
+        .important .section-header {
+            background: #fee2e2 !important;
+            color: #dc2626 !important;
+        }
+        
+        .success {
+            border-left: 4px solid #10b981 !important;
+        }
+        
+        .success .section-header {
+            background: #dcfce7 !important;
+            color: #059669 !important;
+        }
+        
+        .info {
+            border-left: 4px solid #3b82f6 !important;
+        }
+        
+        .info .section-header {
+            background: #dbeafe !important;
+            color: #2563eb !important;
+        }
+        
+        .warning {
+            border-left: 4px solid #f59e0b !important;
+        }
+        
+        .warning .section-header {
+            background: #fef3c7 !important;
+            color: #d97706 !important;
+        }
+        
+        .code {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #3b82f6 !important;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 12px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .url {
+            background: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            border: 1px solid #bfdbfe;
+            margin: 5px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #f9fafb !important;
+            font-weight: 600;
+        }
+        
+        .footer {
+            background: #f3f4f6 !important;
+            padding: 16px;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dentist Practice Platform</h1>
+        <p style="margin: 8px 0 0 0; color: #bfdbfe;">Deployment & Configuration Guide</p>
+        <p style="margin: 4px 0 0 0; color: #bfdbfe;">Generated: ${new Date().toLocaleDateString()}</p>
+    </div>
+
+    <!-- CRITICAL ENVIRONMENT INFO -->
+    <div class="section important">
+        <div class="section-header">
+            <span style="margin-right: 8px;">🚨</span>
+            CRITICAL: Your Production Environment
+        </div>
+        <div class="section-content">
+            <p><strong>ALWAYS use these URLs and settings:</strong></p>
+            
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Correct URL/Setting</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td><strong>Production App</strong></td>
+                    <td><div class="url">https://dentist-portal-3.emergent.host/</div></td>
+                    <td>✅ ACTIVE</td>
+                </tr>
+                <tr>
+                    <td><strong>Emergent Dashboard</strong></td>
+                    <td><div class="url">https://app.emergent.sh</div></td>
+                    <td>✅ ACTIVE</td>
+                </tr>
+                <tr>
+                    <td><strong>App Name in Dashboard</strong></td>
+                    <td><strong>"Careflow 31"</strong></td>
+                    <td>✅ ACTIVE</td>
+                </tr>
+                <tr>
+                    <td><strong>WRONG URL (Don't Use)</strong></td>
+                    <td><div class="url" style="background: #fef2f2; color: #dc2626;">❌ dentist-hub-2.preview.emergentagent.com</div></td>
+                    <td>❌ DEPRECATED</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- DEPLOYMENT WORKFLOW -->
+    <div class="section success">
+        <div class="section-header">
+            <span style="margin-right: 8px;">🚀</span>
+            Standard Deployment Workflow
+        </div>
+        <div class="section-content">
+            <p><strong>Follow this process for ALL changes and updates:</strong></p>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>AI Makes Changes</strong><br>
+                    The AI agent implements features, fixes, and improvements in the development environment.
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Save to GitHub</strong><br>
+                    Click "Save to GitHub" button in the chat interface to commit changes.
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Access Emergent Dashboard</strong><br>
+                    Go to: <div class="url">https://app.emergent.sh</div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div>
+                    <strong>Find Your App</strong><br>
+                    Look for <strong>"Careflow 31"</strong> in the "Deployed Apps" section.
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">5</div>
+                <div>
+                    <strong>Deploy Updates</strong><br>
+                    Click "Update" or "Redeploy" on your "Careflow 31" app.
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">6</div>
+                <div>
+                    <strong>Test Changes</strong><br>
+                    Access: <div class="url">https://dentist-portal-3.emergent.host/</div>
+                    Clear browser cache (Ctrl+Shift+R) and test functionality.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN CREDENTIALS -->
+    <div class="section info">
+        <div class="section-header">
+            <span style="margin-right: 8px;">🔐</span>
+            Login Credentials
+        </div>
+        <div class="section-content">
+            <p><strong>Use these credentials for testing and access:</strong></p>
+            
+            <table>
+                <tr>
+                    <th>Account Type</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>Primary User</td>
+                    <td>cganz2279@gmail.com</td>
+                    <td>password123</td>
+                    <td>Main testing account</td>
+                </tr>
+                <tr>
+                    <td>Alternative User</td>
+                    <td>ganzseth@gmail.com</td>
+                    <td>password123</td>
+                    <td>Backup testing account</td>
+                </tr>
+                <tr>
+                    <td>Admin Access</td>
+                    <td>cganz@admin.com</td>
+                    <td>Dentist1#</td>
+                    <td>Administrative functions</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- PDF FUNCTIONALITY -->
+    <div class="section success">
+        <div class="section-header">
+            <span style="margin-right: 8px;">📄</span>
+            PDF Functionality Features
+        </div>
+        <div class="section-content">
+            <p><strong>Your platform now includes comprehensive PDF functionality:</strong></p>
+            
+            <h4>Library PDF Downloads:</h4>
+            <ul>
+                <li>✅ PDF download buttons in all Library specialty pages</li>
+                <li>✅ Two buttons per procedure: "View" and "PDF"</li>
+                <li>✅ Direct PDF generation from library browsing</li>
+            </ul>
+            
+            <h4>Personalization Features:</h4>
+            <ul>
+                <li>✅ Practice name in header and footer</li>
+                <li>✅ Practice phone number for emergency contact</li>
+                <li>✅ Practice address and email (when available)</li>
+                <li>✅ Dentist name as "Your Doctor"</li>
+                <li>✅ After-hours contact information</li>
+                <li>✅ Personalized footer with generation details</li>
+            </ul>
+            
+            <h4>PDF Quality Improvements:</h4>
+            <ul>
+                <li>✅ Professional colorful formatting</li>
+                <li>✅ Improved page margins (first page: 1.75" bottom, second page: 1.75" top)</li>
+                <li>✅ Proper line breaks in Overview section</li>
+                <li>✅ WYSIWYG appearance matching screen display</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- TROUBLESHOOTING -->
+    <div class="section warning">
+        <div class="section-header">
+            <span style="margin-right: 8px;">⚠️</span>
+            Common Issues & Solutions
+        </div>
+        <div class="section-content">
+            <h4>Login Issues:</h4>
+            <ul>
+                <li><strong>Problem:</strong> Login fails or shows errors</li>
+                <li><strong>Solution:</strong> Clear browser cache (Ctrl+Shift+R) or use incognito mode</li>
+                <li><strong>Alternative:</strong> Try different credentials from the table above</li>
+            </ul>
+            
+            <h4>Changes Not Showing:</h4>
+            <ul>
+                <li><strong>Problem:</strong> Updates not visible in production</li>
+                <li><strong>Solution:</strong> Ensure you're using the correct URL: dentist-portal-3.emergent.host</li>
+                <li><strong>Check:</strong> Verify deployment was done on "Careflow 31" app, not other deployments</li>
+            </ul>
+            
+            <h4>PDF Issues:</h4>
+            <ul>
+                <li><strong>Problem:</strong> PDF opens and closes immediately</li>
+                <li><strong>Solution:</strong> Check browser popup blocker settings</li>
+                <li><strong>Alternative:</strong> Use incognito mode to bypass popup blockers</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- TECHNICAL CONFIGURATION -->
+    <div class="section info">
+        <div class="section-header">
+            <span style="margin-right: 8px;">⚙️</span>
+            Technical Configuration
+        </div>
+        <div class="section-content">
+            <h4>Environment Variables:</h4>
+            <div class="code">
+                REACT_APP_BACKEND_URL=https://dentist-portal-3.emergent.host<br>
+                WDS_SOCKET_PORT=443
+            </div>
+            
+            <h4>Technology Stack:</h4>
+            <ul>
+                <li><strong>Frontend:</strong> React.js with Tailwind CSS</li>
+                <li><strong>Backend:</strong> FastAPI (Python)</li>
+                <li><strong>Database:</strong> MongoDB</li>
+                <li><strong>Authentication:</strong> JWT token-based</li>
+                <li><strong>PDF Generation:</strong> HTML-to-PDF with professional styling</li>
+            </ul>
+            
+            <h4>Key Features:</h4>
+            <ul>
+                <li>Multi-tenant practice management</li>
+                <li>Procedure library with search and categorization</li>
+                <li>Patient management and assignment</li>
+                <li>Personalized PDF generation</li>
+                <li>Admin portal for global management</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- CONTACT & SUPPORT -->
+    <div class="section info">
+        <div class="section-header">
+            <span style="margin-right: 8px;">📞</span>
+            Support & Contact Information
+        </div>
+        <div class="section-content">
+            <h4>For Platform Issues:</h4>
+            <ul>
+                <li><strong>Discord Support:</strong> https://discord.gg/VzKfwCXC4A</li>
+                <li><strong>Emergent Dashboard:</strong> https://app.emergent.sh</li>
+            </ul>
+            
+            <h4>When Contacting Support:</h4>
+            <ul>
+                <li>Mention you're using "Careflow 31" deployment</li>
+                <li>Provide your production URL: dentist-portal-3.emergent.host</li>
+                <li>Include specific error messages or screenshots</li>
+                <li>Describe what you were trying to do when the issue occurred</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- IMPORTANT REMINDERS -->
+    <div class="section important">
+        <div class="section-header">
+            <span style="margin-right: 8px;">📌</span>
+            Important Reminders
+        </div>
+        <div class="section-content">
+            <h4>DO:</h4>
+            <ul>
+                <li>✅ Always use dentist-portal-3.emergent.host as your production URL</li>
+                <li>✅ Deploy changes through "Careflow 31" in Emergent dashboard</li>
+                <li>✅ Clear browser cache after deployments</li>
+                <li>✅ Test PDF functionality after updates</li>
+                <li>✅ Bookmark the correct URLs</li>
+            </ul>
+            
+            <h4>DON'T:</h4>
+            <ul>
+                <li>❌ Use dentist-hub-2.preview.emergentagent.com (deprecated)</li>
+                <li>❌ Deploy to wrong app environments</li>
+                <li>❌ Skip the "Save to GitHub" step</li>
+                <li>❌ Forget to clear browser cache after updates</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>
+            <strong>Dentist Practice Platform - Deployment Guide</strong><br>
+            Generated: ${new Date().toLocaleDateString()} | Version: 1.0<br>
+            Production Environment: dentist-portal-3.emergent.host
+        </p>
+    </div>
+</body>
+</html>
