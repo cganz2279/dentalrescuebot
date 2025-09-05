@@ -1030,22 +1030,17 @@ const createEnhancedPrintHTML = (procedure) => {
             </p>
             ${procedure.emergencyContact || procedure.practicePhone ? `
                 <p style="margin-top: 8px;">
-                    <strong>Emergency Contact:</strong> ${procedure.emergencyContact || procedure.practicePhone}
+                    <strong>Emergency Contact:</strong> ${formatPhoneNumber(procedure.emergencyContact || procedure.practicePhone)}
                 </p>
             ` : ''}
             ${procedure.afterHoursContact ? `
                 <p style="margin-top: 4px;">
-                    <strong>After Hours:</strong> ${procedure.afterHoursContact}
+                    <strong>After Hours:</strong> ${formatPhoneNumber(procedure.afterHoursContact)}
                 </p>
             ` : ''}
             ${procedure.dentistName ? `
                 <p style="margin-top: 8px;">
                     <strong>Your Doctor:</strong> ${procedure.dentistName}
-                </p>
-            ` : ''}
-            ${procedure.generatedBy ? `
-                <p style="margin-top: 4px; font-size: 10px; color: #9ca3af;">
-                    Personalized for ${procedure.generatedFor} by ${procedure.generatedBy}
                 </p>
             ` : ''}
         </div>
