@@ -1062,7 +1062,7 @@ const createEnhancedContentHTML = (procedure) => {
         ${procedure.practiceName ? `
           <div class="mt-4">
             <h2 class="text-xl font-semibold">${procedure.practiceName}</h2>
-            ${procedure.practicePhone ? `<p class="text-blue-100 mt-1">Phone: ${procedure.practicePhone}</p>` : ''}
+            ${procedure.practicePhone ? `<p class="text-blue-100 mt-1">Phone: ${formatPhoneNumber(procedure.practicePhone)}</p>` : ''}
           </div>
         ` : ''}
       </div>
