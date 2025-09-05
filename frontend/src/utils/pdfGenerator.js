@@ -1230,22 +1230,17 @@ const createEnhancedContentHTML = (procedure) => {
         </p>
         ${procedure.emergencyContact || procedure.practicePhone ? `
           <p class="text-gray-600 text-sm mt-2">
-            <strong>Emergency Contact:</strong> ${procedure.emergencyContact || procedure.practicePhone}
+            <strong>Emergency Contact:</strong> ${formatPhoneNumber(procedure.emergencyContact || procedure.practicePhone)}
           </p>
         ` : ''}
         ${procedure.afterHoursContact ? `
           <p class="text-gray-600 text-sm mt-1">
-            <strong>After Hours:</strong> ${procedure.afterHoursContact}
+            <strong>After Hours:</strong> ${formatPhoneNumber(procedure.afterHoursContact)}
           </p>
         ` : ''}
         ${procedure.dentistName ? `
           <p class="text-gray-600 text-sm mt-2">
             <strong>Your Doctor:</strong> ${procedure.dentistName}
-          </p>
-        ` : ''}
-        ${procedure.generatedBy ? `
-          <p class="text-gray-500 text-xs mt-1">
-            Personalized for ${procedure.generatedFor} by ${procedure.generatedBy}
           </p>
         ` : ''}
       </div>
