@@ -866,9 +866,9 @@ frontend:
 
   - task: "Dentist Selection in Procedure Assignment"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/pages/AssignProcedurePage.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
