@@ -16,6 +16,7 @@ import { useAuth } from '../contexts/AuthContext';
 const PracticeLibraryPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, practice } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
