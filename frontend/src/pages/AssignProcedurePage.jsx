@@ -51,7 +51,7 @@ const AssignProcedurePage = () => {
       // Load essential data first
       const [patientsResponse, proceduresResponse] = await Promise.all([
         practiceApi.getPatients(),
-        practiceApi.getPracticeProcedures() // Use practice-specific procedures instead of global
+        authApi.getProcedures() // Use global procedures API instead of practice-specific
       ]);
       
       // The API functions already return response.data, which contains {success: true, data: [...]}
