@@ -1,3 +1,23 @@
+// Helper function to format phone numbers
+const formatPhoneNumber = (phone) => {
+  if (!phone) return '';
+  
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, '');
+  
+  // Format based on length
+  if (cleaned.length === 10) {
+    // US format: (123) 456-7890
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  } else if (cleaned.length === 11 && cleaned[0] === '1') {
+    // US format with country code: +1 (123) 456-7890
+    return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
+  } else {
+    // Return original if can't format
+    return phone;
+  }
+};
+
 // Improved PDF Generator with better popup handling
 export const generateProcedurePDF = async (procedure) => {
   try {
@@ -51,26 +71,6 @@ export const generateProcedurePDF = async (procedure) => {
     console.error('❌ PDF generation failed:', error);
     alert('PDF generation failed: ' + error.message + '\n\nPlease check your popup blocker settings.');
     return false;
-  }
-};
-
-// Helper function to format phone numbers
-const formatPhoneNumber = (phone) => {
-  if (!phone) return '';
-  
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '');
-  
-  // Format based on length
-  if (cleaned.length === 10) {
-    // US format: (123) 456-7890
-    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-  } else if (cleaned.length === 11 && cleaned[0] === '1') {
-    // US format with country code: +1 (123) 456-7890
-    return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
-  } else {
-    // Return original if can't format
-    return phone;
   }
 };
 
