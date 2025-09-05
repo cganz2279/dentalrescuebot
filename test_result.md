@@ -506,9 +506,9 @@ backend:
 
   - task: "Updated Procedure Database Content Verification"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -521,6 +521,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "PDF GENERATION BACKEND VERIFICATION COMPLETED SUCCESSFULLY: ✅ COMPREHENSIVE REVIEW REQUEST TESTING (100% SUCCESS RATE FOR CORE REQUIREMENTS): Conducted thorough backend verification of enhanced PDF generation functionality as specifically requested in review. BACKEND API VERIFICATION: (1) ✅ GET /api/procedures/root-canal-therapy: Complete procedure data with all required fields, procedure-specific content with root canal terminology (root canal, pulp, canal, endodontic, tooth), (2) ✅ GET /api/procedures/dental-implant-placement: Complete data structure with implant-specific content and terminology (implant, titanium, surgical), (3) ✅ All procedures verified with proper JSON structure supporting enhanced PDF styling. ENHANCED STYLING COMPATIBILITY VERIFIED: (1) ✅ Green Aftercare Badges: 4+ items per procedure perfect for numbered badges and visual styling, (2) ✅ Orange Diet Badges: 4+ items excellent for color-coded sections, (3) ✅ Red Warning Alert Boxes: 4+ warnings with urgent language suitable for red alert styling, (4) ✅ Purple Timeline Badges: 4+ structured day/activity items compatible with timeline badges, (5) ✅ Blue Medication Headers: 1-3+ items sufficient for header styling. Minor: Some procedures (surgical-tooth-extraction) have fewer content items in certain arrays, and some procedures share identical aftercare/warning content indicating partial generic content remains. However, core procedures (root-canal-therapy, dental-implant-placement) have complete procedure-specific content. CRITICAL FINDINGS: Backend provides complete data structure supporting ALL enhanced PDF features mentioned in review request - vibrant colors, professional styling, circular number badges, visual backgrounds, warning alerts, day badges, and icons. All procedures contain procedure-specific (not generic) content for the main procedures tested. Backend is fully ready for enhanced PDF generation with WYSIWYG consistency."
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL DATA AUDIT REVEALS MAJOR CORRUPTION ISSUE: Conducted comprehensive data audit as requested in review. CRITICAL FINDINGS: (1) ❌ PROCEDURE COUNT DISCREPANCY: Found 80 procedures instead of expected 81 procedures, (2) 🔴 BIOPSY ORAL SOFT TISSUE CORRUPTION CONFIRMED: The dietRestrictions field contains 778 characters of mixed content from other sections including aftercare instructions, pain management, and oral hygiene content instead of proper diet restrictions, (3) 🚨 WIDESPREAD DATA CORRUPTION: 95% corruption rate detected - 19 out of 20 randomly sampled procedures have corrupted dietRestrictions fields containing mixed content from other sections, (4) ✅ OTHER FIELDS INTACT: All other fields (overview, immediateAftercare, warningSignsToCallDoctor, recoveryTimeline, medications) contain proper data, (5) ✅ CLEAN EXAMPLE FOUND: Dental Implant Placement procedure has proper dietRestrictions with 4 clean items. ROOT CAUSE: Data import/processing error during PDF upload caused dietRestrictions field to be populated with content from other sections. IMPACT: This directly explains user's report that 'Biopsy Oral Soft Tissue dietRestrictions starts off wrong and is cut off' - the field contains aftercare content instead of diet restrictions. PDF quality is severely compromised for 95% of procedures. URGENT ACTION REQUIRED: Database needs to be re-processed to fix dietRestrictions field corruption across all affected procedures."
 
   - task: "Procedure Assignment with Dentist Integration"
     implemented: true
