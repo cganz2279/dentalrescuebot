@@ -1072,7 +1072,7 @@ const createEnhancedContentHTML = (procedure) => {
       ${procedure.overview ? `
         <div class="p-6 border-b">
           <h3 class="text-lg font-semibold mb-3 text-gray-900">Overview</h3>
-          <p class="text-gray-700 leading-relaxed">${procedure.overview}</p>
+          <div class="text-gray-700 leading-relaxed" style="white-space: pre-line; line-height: 1.7;">${procedure.overview.replace(/\\n/g, '\n').replace(/\n/g, '<br>')}</div>
         </div>
       ` : ''}
       
