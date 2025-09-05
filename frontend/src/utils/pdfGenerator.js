@@ -69,19 +69,47 @@ const createOptimizedPrintHTML = (procedure) => {
         @page {
             size: A4;
             margin: 1in 1in 1.5in 1in;
+            
+            @bottom-right {
+                content: "Page " counter(page);
+                font-size: 10px;
+                color: #6b7280;
+                margin-bottom: 0.5in;
+            }
         }
         
         @page :first {
             margin-bottom: 1.75in;
+            
+            @bottom-right {
+                content: "Page " counter(page);
+                font-size: 10px;
+                color: #6b7280;
+                margin-bottom: 0.5in;
+            }
         }
         
         @page :nth(2) {
             margin-top: 1.75in;
+            
+            @bottom-right {
+                content: "Page " counter(page);
+                font-size: 10px;
+                color: #6b7280;
+                margin-bottom: 0.5in;
+            }
         }
         
         @page :nth(n+3) {
             margin-top: 1.5in;
             margin-bottom: 1.5in;
+            
+            @bottom-right {
+                content: "Page " counter(page);
+                font-size: 10px;
+                color: #6b7280;
+                margin-bottom: 0.5in;
+            }
         }
         
         * {
