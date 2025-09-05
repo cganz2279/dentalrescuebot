@@ -1190,14 +1190,24 @@ const createEnhancedContentHTML = (procedure) => {
           ${procedure.practiceName || 'Your Dental Practice'} | 
           Post-Operative Care Guide
         </p>
-        ${procedure.practicePhone ? `
+        ${procedure.emergencyContact || procedure.practicePhone ? `
           <p class="text-gray-600 text-sm mt-2">
-            <strong>Emergency Contact:</strong> ${procedure.practicePhone}
+            <strong>Emergency Contact:</strong> ${procedure.emergencyContact || procedure.practicePhone}
           </p>
         ` : ''}
-        ${procedure.dentistName || procedure.treatingDentist ? `
+        ${procedure.afterHoursContact ? `
+          <p class="text-gray-600 text-sm mt-1">
+            <strong>After Hours:</strong> ${procedure.afterHoursContact}
+          </p>
+        ` : ''}
+        ${procedure.dentistName ? `
           <p class="text-gray-600 text-sm mt-2">
-            <strong>Treating Doctor:</strong> ${procedure.dentistName || procedure.treatingDentist}
+            <strong>Your Doctor:</strong> ${procedure.dentistName}
+          </p>
+        ` : ''}
+        ${procedure.generatedBy ? `
+          <p class="text-gray-500 text-xs mt-1">
+            Personalized for ${procedure.generatedFor} by ${procedure.generatedBy}
           </p>
         ` : ''}
       </div>
