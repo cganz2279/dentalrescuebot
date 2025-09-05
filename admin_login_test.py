@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://careflow-31.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentistpdf.preview.emergentagent.com/api"
 
 # Admin credentials from the review request
 ADMIN_CREDENTIALS = {

@@ -1,69 +1,77 @@
 <analysis>
-The AI engineer's trajectory involved a series of debugging and feature enhancement attempts, primarily focused on resolving critical application stability and functionality issues. Initial efforts addressed a missing  package, resolving a frontend only preview message and allowing services to run. Subsequently, a major refactor of  was undertaken to achieve WYSIWYG output, moving from  to an HTML-to-PDF conversion, though the user still reported issues. Recurrent login failures led to deep dives into  configuration,  file inconsistencies, frontend build processes, and browser caching. Despite these fixes, the user repeatedly reported login failures and the frontend only preview message persisted. The AI diagnosed these as platform-level infrastructure and routing problems, escalating to support, while also facing user reports that previous fixes (PDFs, registration) were still unresolved. The trajectory highlights iterative problem-solving, detailed code investigation, and systematic debugging, often hampered by underlying infrastructure issues.
+The trajectory details an iterative problem-solving process by the AI engineer, primarily focused on the PDF generation functionality and persistent platform/deployment issues. Initial efforts addressed a missing  package and a misconfigured , frequently leading to Preview Unavailable messages. PDF generation underwent multiple overhauls, moving from  to , then to a browser-native print-optimized HTML, and finally a complete rewrite to perfectly mirror the on-screen view.
+
+A recurring challenge was the disconnect between the local development environment and the user's hosted , later identified as  (Careflow 31). Deployment synchronization failures and platform agent sleep cycles consistently hindered user testing and validation. Git repository corruption also occurred, requiring a full reset. Towards the end, critical data corruption in MongoDB's  field was identified, and a repair script failed. The conversation concluded with a new Save to GitHub failure, blocking the deployment of the data fix.
 </analysis>
 
 <product_requirements>
-The application is a multi-tenant B2B SaaS platform for dentists. Its primary goal is to generate customized post-operative PDF care guides for patients, facilitate practice administration, and manage patient and procedure data. Future integration with SamCart is an upcoming requirement.
+The application is a multi-tenant B2B SaaS platform for dentists to generate customized post-operative PDF care guides, manage practice administration, and handle patient/procedure data. Future SamCart integration is planned.
 
-**Currently Implemented/Addressed Features:**
-1.  **Login Functionality**: Addressed initial corrupted password hashes, frontend caching, and critical  configuration issues and build-related login failures.
-2.  **PDF Care Guides**: Updated with 81 new procedure-specific guides. Major focus was enhancing PDF generation to accurately mirror the visual styling of the on-screen display, moving from  to an HTML-to-PDF conversion strategy.
-3.  **Procedure Library**: Enhanced for accurate display and navigation, with global administrative management capabilities.
-4.  **Patient Management**: Existing patient editing functionality, with updated procedure display linked to new PDF content.
-5.  **Dentist Management**: A new CRUD feature for managing dentists within a practice, accessible from the practice dashboard.
-6.  **Admin Portal**: Expanded to include global procedure management, practice deletion, and user management. Addressed duplicate practice records.
-7.  **Multi-Tenancy Fix**: Implemented an architectural change to ensure practice-specific procedure customizations do not interfere with global templates.
+**Implemented/Addressed Features:**
+1.  **Login Functionality**: Initial issues with password hashes, caching, and backend URL configuration were addressed, though recurring platform-level login failures persisted.
+2.  **PDF Care Guides**: The core feature, initially generating poor-quality PDFs, was iteratively enhanced. Changes included moving from  to an HTML-to-PDF conversion strategy, then to a browser-native print-optimized HTML, and finally a full rewrite to match the on-screen view (WYSIWYG). Personalization with practice/dentist details, page numbering, and margin adjustments were added.
+3.  **Procedure Library**: Enhanced for accurate display and navigation. PDF download functionality was added to library pages and procedure cards, requiring dynamic data fetching.
+4.  **Admin Portal**: Expanded for global management; admin login was re-verified.
+5.  **Multi-Tenancy**: PDF personalization ensures each subscriber's PDFs reflect their specific practice information.
+
+**Current Problem**: The  data in the backend for 95-100% of procedures is corrupted, containing mixed content and being truncated.
 </product_requirements>
 
 <key_technical_concepts>
--   **React.js**: Frontend UI, routing, state management.
+-   **React.js**: Frontend UI, routing, state management with AuthContext.
 -   **FastAPI**: Python backend for API services.
 -   **MongoDB**: NoSQL database for data persistence.
--   **JWT Authentication**: Token-based security for user sessions.
--   **Kubernetes Ingress**: Manages external routing to services.
--   **Environment Variables**: Configuration management via  files.
--   **Supervisor**: Process control system for managing services.
--   **HTML-to-PDF Conversion**: Method used for accurate PDF rendering.
+-   **JWT Authentication**: Token-based security.
+-   **Kubernetes Ingress**: Manages external routing.
+-   **Environment Variables**: Configuration via  files.
+-   **Supervisor**: Process control for services.
+-   **HTML-to-PDF Conversion**: Iterative approach for PDF rendering.
+-   **Git/GitHub**: Version control, deployment source.
+-   ** package**: For frontend serving.
 </key_technical_concepts>
 
 <code_architecture>
 
--   ****: Handles user authentication and registration. Previously modified to fix password validation discrepancies between frontend and backend and improved error handling during registration.
--   ****: Core frontend routing configuration. Contains routes for , , , and .
--   ****: Manages new practice and user registration. A password requirement note was added to the UI.
--   ****: Displays detailed procedure information. This component's rendering heavily influenced the PDF generation requirements.
--   ****: The component responsible for the admin login interface and logic. It was examined to diagnose login failures.
--   ****: A critical utility file for generating PDF documents.
-    -   **Changes**: Initially used  for basic generation. Underwent multiple rewrites to transition from a manual  approach to an HTML-to-PDF conversion strategy to achieve accurate replication of on-screen styling and complex CSS. This involved defining extensive HTML and CSS within the JavaScript file for rendering.
+
+-   ****: **CRITICAL FOCUS.** This file was completely rewritten multiple times.
+    -   **Initial State**: Used  for basic generation, later updated to  + .
+    -   **Changes**: Rewritten to use browser-native print functionality with extensive custom HTML and CSS to achieve WYSIWYG. Further rewritten to explicitly mirror the 's layout, including overview on page 1, page numbers, and preserving markdown formatting. Personalized with practice, dentist, and contact info. Fixed  errors by ensuring  functions use  and correctly scoped .
+-   ****: Displays detailed procedure information and initiates PDF generation.
+    -   **Changes**: Modified to pass  and  context to  for personalization. PDF generation made .
+-   ****: Displays procedures within a specialty.
+    -   **Changes**: Integrated PDF download functionality into procedure cards, fetching full data and passing  and  context to .
+-   ****: Manages the main library.
+    -   **Changes**: Updated search results to use enhanced PDF generation and pass  and  context.
+-   ****: Reusable component for displaying individual procedures.
+    -   **Changes**: Enhanced to include a dedicated PDF download button alongside the View button, with conditional rendering based on  prop.
 -   ****: Frontend environment variables.
-    -   **Changes**:  was modified from  to  to resolve backend connectivity issues for the frontend application.
--   ****: Tracks task progress, identified issues, and testing outcomes. Frequently updated to document debugging steps, fixes, and test results.
+    -   **Changes**:  was changed multiple times (, , , then back to ) due to confusion about the correct deployed environment. Eventually, the correct hosted URL was identified (), and the local  was updated to reflect this for future consistency.
+-   ****: Backend routes for admin functionality.
+    -   **Changes**: Examined to verify admin login credentials (, ).
+-   ****: Handles user authentication and registration.
+    -   **Changes**: Examined for password validation consistency and admin credentials.
+-   ****: (New File) Created to provide essential information about the application's environment, deployment workflow, login credentials, and PDF functionality.
+-   ****: (New File) Script created to attempt fixing  data corruption.
+-   ****: (New File) Second attempt at a more targeted script for  data corruption.
 </code_architecture>
 
 <pending_tasks>
--   **SamCart Webhook Integration**: Automate account activation/deactivation, revenue tracking, and customer communication.
+-   **PDF Data Corruption**: Address critical data corruption in the  field for ~95% of procedures in MongoDB.
+-   **Deployment of Data Fix**: Successfully save the database repair script to GitHub and deploy it to the production environment.
+-   **SamCart Webhook Integration**: Automate account activation/deactivation and tracking.
 -   **Enhanced Website Integration**: Add dedicated pages and navigation links on .
 -   **Sales & Marketing**: User needs to contact dental practices and set up sales funnel.
 -   **Disclaimers & Privacy Statements**: Integrate legal pages.
--   **Login Functionality**: Admin and customer login are still reported as non-functional by the user.
--   **PDF Generation Quality**: User reports PDFs still look awful after previous fix attempts.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer was engaged in resolving persistent login issues and PDF generation problems, both of which the user reported as still broken.
+Immediately before this summary, the AI engineer was grappling with a critical data corruption issue within the MongoDB database, specifically affecting the  field for nearly all (95-100%) of the 81 post-operative procedures. The  field was found to contain mixed, truncated content from other sections like aftercare or medications, as reported by the user for Biopsy Oral Soft Tissue Diet Restriction.
 
-**Login Issue:**
-The AI had previously diagnosed a  frontend service status due to a missing  package, which was installed. It also identified and corrected a hardcoded  mismatch in  (changed from  to ), followed by a frontend rebuild and service restart. Despite these efforts and internal API tests showing successful logins, the user repeatedly reported that Admin login is not working and later, Neither login works. The recurring frontend only preview message indicated ongoing infrastructure or routing problems. The AI ultimately escalated this as a platform-level service exposure issue to the .
+The AI developed a Python repair script, , but it initially failed to identify the corruption. A subsequent, more targeted script, , was created after a detailed audit confirmed widespread corruption. This second script, however, failed during execution with a division by zero error.
 
-**PDF Generation Issue:**
-Following user feedback that printed PDFs look awful and did not match the on-screen display, the AI analyzed  and . It determined that the  library could not replicate complex CSS styling. The AI then rewrote  to adopt an HTML-to-PDF conversion approach, complete with extensive inline HTML and CSS for accurate rendering. After multiple iterations and resolving parsing errors, the file was successfully edited, the frontend rebuilt, and the service restarted. However, the user subsequently reported that The PDFs still look awful when I was able to view the print, indicating the fix was not effective from the user's perspective.
-
-**Registration Issue:**
-The user also inquired, Did you even fix the registration issue as I requested? The AI had previously addressed this by fixing a backend password validation mismatch in  and adding a password requirement note to . However, the user's question suggests lingering concerns or new failures related to registration.
-
-The overall state is one of critical functionality (login, PDF generation) being reported as broken by the user, despite the AI's repeated attempts to fix them and internal verification of some steps. The frontend only preview message points to deeper infrastructure issues that have been escalated.
+Concurrently, the AI faced a persistent issue where it could not Save to GitHub, preventing any local fixes (including the database repair scripts) from being deployed to the user's live environment (). The Git repository had previously been severely corrupted, requiring a full re-initialization, which was temporarily resolved, but the Save to GitHub error reappeared. The immediate focus is now on resolving this new Git save failure to proceed with the crucial data repair.
 </current_work>
 
 <optional_next_step>
-Address the user's explicit feedback that PDFs still look awful and debug the HTML-to-PDF generation.
+Troubleshoot and fix the Save to GitHub error to enable deployment of the database repair script.
 </optional_next_step>

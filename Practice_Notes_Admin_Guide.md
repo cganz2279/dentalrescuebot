@@ -10,9 +10,9 @@
 ### **Main Application URLs**
 | Service | URL | Purpose |
 |---------|-----|---------|
-| **Main App** | `https://careflow-31.preview.emergentagent.com` | Primary dental practice application |
-| **Admin Console** | `https://careflow-31.preview.emergentagent.com/admin` | Full admin management interface |
-| **HTML Admin Dashboard** | `https://careflow-31.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
+| **Main App** | `https://dentistpdf.preview.emergentagent.com` | Primary dental practice application |
+| **Admin Console** | `https://dentistpdf.preview.emergentagent.com/admin` | Full admin management interface |
+| **HTML Admin Dashboard** | `https://dentistpdf.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
 
 ### **WordPress Integration URLs**
 | Page | URL | Purpose |
@@ -83,7 +83,7 @@
 ## 🛠 **System Management**
 
 ### **Backend API Endpoints**
-- **Base URL:** `https://careflow-31.preview.emergentagent.com/api`
+- **Base URL:** `https://dentistpdf.preview.emergentagent.com/api`
 - **Admin Login:** `POST /admin/login`
 - **Practice Management:** `GET /admin/practices`
 - **Procedure Requests:** `GET /admin/procedure-requests`
