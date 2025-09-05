@@ -1175,12 +1175,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Dentist Management API Implementation"
-    - "Dentist Management Frontend UI" 
-    - "Dentist Selection in Procedure Assignment"
+    - "Add Patient with Dentist Selection"
+    - "Procedure Assignment Workflow"
   stuck_tasks:
+    - "Add Patient with Dentist Selection - Missing dentist dropdown field"
+    - "Dentist Selection in Procedure Assignment - No procedures available for assignment"
     - "Update Patient API"
-    - "Procedure Library Button Visibility"
   test_all: false
   test_priority: "high_first"
   completed_new_features:
