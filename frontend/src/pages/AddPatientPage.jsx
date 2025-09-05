@@ -137,14 +137,15 @@ const AddPatientPage = () => {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
-        phone: formData.phone.trim() || null
+        phone: formData.phone.trim() || null,
+        primaryDentist: formData.primaryDentist || null
       });
       
       const patientName = `${formData.firstName} ${formData.lastName}`;
       
       toast({
         title: "Success!",
-        description: `Patient ${patientName} has been added successfully.`,
+        description: `Patient ${patientName} has been added successfully with ${formData.primaryDentist || 'no assigned dentist'}.`,
         variant: "default",
         action: (
           <ToastAction
@@ -164,7 +165,8 @@ const AddPatientPage = () => {
         firstName: '',
         lastName: '',
         email: '',
-        phone: ''
+        phone: '',
+        primaryDentist: user?.firstName ? `Dr. ${user.firstName} ${user.lastName}` : ''
       });
       
       // Navigate back to dashboard after delay, unless user clicks "Assign Procedure"
