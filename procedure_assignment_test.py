@@ -121,9 +121,12 @@ def test_complete_workflow():
     assignment_data = {
         "patientId": patient_id,
         "procedureId": procedure_id,
+        "procedureName": root_canal.get("name"),
         "doctorName": f"Dr. {test_dentist['firstName']} {test_dentist['lastName']}",
+        "dentistName": f"Dr. {test_dentist['firstName']} {test_dentist['lastName']}",
         "scheduledDate": (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d"),
-        "customInstructions": "Please follow all post-operative instructions carefully.",
+        "performedDate": (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d"),
+        "customInstructions": ["Please follow all post-operative instructions carefully."],
         "practiceNotes": "Test assignment from automated testing"
     }
     
