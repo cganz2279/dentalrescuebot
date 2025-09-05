@@ -116,9 +116,6 @@ const PracticeLibraryPage = () => {
       const procedureResponse = await dentalApi.getProcedure(procedure.id);
       const fullProcedure = procedureResponse.data;
       
-      // Add practice and user context from AuthContext
-      const { user, practice } = authContext;
-      
       // Add practice and user context to the procedure data
       const personalizedProcedure = {
         ...fullProcedure,
