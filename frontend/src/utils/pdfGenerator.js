@@ -971,12 +971,17 @@ const createEnhancedPrintHTML = (procedure) => {
         <div class="footer">
             <p>
                 Generated on ${new Date().toLocaleDateString()} | 
-                ${procedure.practiceName || 'Dental Practice'} | 
+                ${procedure.practiceName || 'Your Dental Practice'} | 
                 Post-Operative Care Guide
             </p>
             ${procedure.practicePhone ? `
                 <p style="margin-top: 8px;">
                     <strong>Emergency Contact:</strong> ${procedure.practicePhone}
+                </p>
+            ` : ''}
+            ${procedure.dentistName || procedure.treatingDentist ? `
+                <p style="margin-top: 8px;">
+                    <strong>Treating Doctor:</strong> ${procedure.dentistName || procedure.treatingDentist}
                 </p>
             ` : ''}
         </div>
