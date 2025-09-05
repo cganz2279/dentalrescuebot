@@ -291,6 +291,61 @@ const AddPatientPage = () => {
                 </div>
               </div>
 
+              <div>
+                <Label htmlFor="primaryDentist">Primary Dentist (Optional)</Label>
+                {loadingDentists ? (
+                  <div className="flex items-center space-x-2 p-3 border rounded-md">
+                    <LoadingSpinner size="sm" />
+                    <span className="text-sm text-gray-500">Loading dentists...</span>
+                  </div>
+                ) : (
+                  <Select
+                    value={formData.primaryDentist}
+                    onValueChange={(value) => handleInputChange('primaryDentist', value)}
+                  >
+                    <SelectTrigger className={errors.primaryDentist ? 'border-red-500' : ''}>
+                      <SelectValue placeholder="Select a primary dentist" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">
+                        <div className="flex items-center text-gray-500">
+                          <UserCheck className="h-4 w-4 mr-2" />
+                          No primary dentist assigned
+                        </div>
+                      </SelectItem>
+                      {dentists.length > 0 ? (
+                        dentists.map((dentist) => (
+                          <SelectItem key={dentist.id} value={`Dr. ${dentist.firstName} ${dentist.lastName}`}>
+                            <div className="flex items-center">
+                              <UserCheck className="h-4 w-4 mr-2 text-blue-600" />
+                              Dr. {dentist.firstName} {dentist.lastName}
+                              {dentist.specialties && dentist.specialties.length > 0 && (
+                                <span className="ml-2 text-xs text-gray-500">
+                                  ({dentist.specialties.slice(0, 2).join(', ')})
+                                </span>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-dentists" disabled>
+                          <div className="flex items-center text-gray-400">
+                            <UserCheck className="h-4 w-4 mr-2" />
+                            No dentists found - Add dentists in Practice Settings
+                          </div>
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
+                {errors.primaryDentist && (
+                  <p className="text-sm text-red-500 mt-1">{errors.primaryDentist}</p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  The primary dentist will be pre-selected when assigning procedures to this patient
+                </p>
+              </div>
+
               <div className="flex justify-end space-x-3 pt-6">
                 <Button
                   type="button"
