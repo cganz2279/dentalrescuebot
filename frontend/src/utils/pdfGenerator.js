@@ -76,8 +76,6 @@ const formatPhoneNumber = (phone) => {
 
 // Create optimized HTML for better PDF viewing
 const createOptimizedPrintHTML = (procedure) => {
-  const isPatientAssignment = procedure.patientName && procedure.performedDate;
-  
   return `
 <!DOCTYPE html>
 <html lang="en">
