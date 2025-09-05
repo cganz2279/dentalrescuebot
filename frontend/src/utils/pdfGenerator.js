@@ -1166,12 +1166,17 @@ const createEnhancedContentHTML = (procedure) => {
       <div class="bg-gray-100 p-6 text-center border-t">
         <p class="text-gray-600 text-sm">
           Generated ${new Date().toLocaleDateString()} | 
-          ${procedure.practiceName || 'Dental Practice'} | 
+          ${procedure.practiceName || 'Your Dental Practice'} | 
           Post-Operative Care Guide
         </p>
         ${procedure.practicePhone ? `
           <p class="text-gray-600 text-sm mt-2">
             <strong>Emergency Contact:</strong> ${procedure.practicePhone}
+          </p>
+        ` : ''}
+        ${procedure.dentistName || procedure.treatingDentist ? `
+          <p class="text-gray-600 text-sm mt-2">
+            <strong>Treating Doctor:</strong> ${procedure.dentistName || procedure.treatingDentist}
           </p>
         ` : ''}
       </div>
