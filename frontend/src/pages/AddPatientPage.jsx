@@ -17,15 +17,75 @@ const AddPatientPage = () => {
   const { user, practice } = useAuth();
   const { toast } = useToast();
   
+  const [dentists, setDentists] = useState([]);
+  const [loadingDentists, setLoadingDentists] = useState(true);
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    phone: '',
+    primaryDentist: user?.firstName ? `Dr. ${user.firstName} ${user.lastName}` : ''
   });
   
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    loadDentists();
+  }, []);
+
+  const loadDentists = async () => {
+    try {
+      setLoadingDentists(true);
+      
+      // Try to load dentists from new API, fallback to old doctors API
+      try {
+        const dentistsResponse = await practiceApi.getDentists();
+        setDentists(dentistsResponse.data || []);
+      } catch (dentistsError) {
+        console.warn('Failed to load dentists, trying doctors API:', dentistsError);
+        // Fallback to old doctors API and convert format
+        try {
+          const doctorsResponse = await practiceApi.getPracticeDoctors();
+          const doctorsData = doctorsResponse.data || [];
+          // Convert doctors format to dentists format
+          const convertedDentists = doctorsData.map(doctor => ({
+            id: doctor.id,
+            firstName: doctor.firstName || doctor.name?.split(' ')[0] || '',
+            lastName: doctor.lastName || doctor.name?.split(' ').slice(1).join(' ') || '',
+            email: doctor.email || '',
+            phone: doctor.phone || '',
+            specialties: doctor.specialties || []
+          }));
+          setDentists(convertedDentists);
+        } catch (doctorsError) {
+          console.warn('Failed to load doctors:', doctorsError);
+          // Set default dentist from current user
+          if (user?.firstName && user?.lastName) {
+            setDentists([{
+              id: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email || '',
+              phone: user.phone || '',
+              specialties: []
+            }]);
+          }
+        }
+      }
+      
+    } catch (error) {
+      console.error('Load dentists error:', error);
+      toast({
+        title: "Warning",
+        description: "Could not load dentists. You can still add the patient.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingDentists(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
