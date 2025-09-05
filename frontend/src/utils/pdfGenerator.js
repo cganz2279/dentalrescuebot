@@ -250,8 +250,9 @@ const createOptimizedPrintHTML = (procedure) => {
             ${procedure.practiceName ? `
                 <div style="margin-top: 16px;">
                     <h2 style="font-size: 20px; font-weight: 600; margin: 0; color: white;">${procedure.practiceName}</h2>
-                    ${procedure.practicePhone ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">Phone: ${procedure.practicePhone}</p>` : ''}
-                    ${procedure.practiceAddress ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">${procedure.practiceAddress}</p>` : ''}
+                    ${procedure.practicePhone ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">📞 ${procedure.practicePhone}</p>` : ''}
+                    ${procedure.practiceAddress ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">📍 ${procedure.practiceAddress}</p>` : ''}
+                    ${procedure.practiceEmail ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">📧 ${procedure.practiceEmail}</p>` : ''}
                 </div>
             ` : ''}
         </div>
