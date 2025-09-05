@@ -884,7 +884,7 @@ const createEnhancedPrintHTML = (procedure) => {
                     Overview
                 </div>
                 <div class="section-content">
-                    <p>${procedure.overview}</p>
+                    <div style="white-space: pre-line; line-height: 1.7;">${procedure.overview.replace(/\\n/g, '\n').replace(/\n/g, '<br>')}</div>
                 </div>
             </div>
         ` : ''}
