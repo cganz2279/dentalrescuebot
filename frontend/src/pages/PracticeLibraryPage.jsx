@@ -108,7 +108,7 @@ const PracticeLibraryPage = () => {
     try {
       toast({
         title: "Generating PDF...",
-        description: "Please wait while we create your care guide.",
+        description: "Please wait while we create your personalized care guide.",
         variant: "default",
       });
       
@@ -116,24 +116,49 @@ const PracticeLibraryPage = () => {
       const procedureResponse = await dentalApi.getProcedure(procedure.id);
       const fullProcedure = procedureResponse.data;
       
-      // Add practice and user context to the procedure data
+      // Add subscriber-specific personalization to the procedure data
       const personalizedProcedure = {
         ...fullProcedure,
-        practiceName: practice?.name || 'Your Dental Practice',
-        practicePhone: practice?.phone || practice?.contactInfo?.phone,
-        practiceAddress: practice?.address,
-        // If this is for a specific dentist, include their info
-        dentistName: user?.firstName && user?.lastName ? `Dr. ${user.firstName} ${user.lastName}` : null,
-        // Add current user as the treating dentist if they're a dentist
-        treatingDentist: user?.role === 'dentist' ? `${user.firstName} ${user.lastName}` : null
+        // Practice personalization for this subscriber
+        practiceName: practice?.name || practice?.practiceName || 'Your Dental Practice',
+        practicePhone: practice?.phone || practice?.contactInfo?.phone || practice?.practicePhone,
+        practiceAddress: practice?.address || practice?.location,
+        practiceEmail: practice?.email || practice?.contactInfo?.email,
+        
+        // Dentist personalization for this subscriber
+        dentistName: user?.firstName && user?.lastName 
+          ? `Dr. ${user.firstName} ${user.lastName}` 
+          : (user?.name ? `Dr. ${user.name}` : null),
+        
+        // Additional subscriber context
+        subscriberId: user?.id || user?.practiceId,
+        subscriptionTier: practice?.subscriptionTier || 'Standard',
+        
+        // Branding customization (if available)
+        practiceLogoUrl: practice?.logoUrl,
+        practiceColors: practice?.brandingColors,
+        
+        // Contact and emergency info specific to this practice
+        emergencyContact: practice?.emergencyPhone || practice?.phone,
+        afterHoursContact: practice?.afterHoursPhone,
+        
+        // Metadata for tracking
+        generatedBy: `${user?.firstName} ${user?.lastName}` || user?.email,
+        generatedFor: practice?.name || 'Practice Member'
       };
+      
+      console.log('🏥 Personalizing PDF for:', {
+        practice: personalizedProcedure.practiceName,
+        dentist: personalizedProcedure.dentistName,
+        subscriber: personalizedProcedure.subscriberId
+      });
       
       const success = await generateProcedurePDF(personalizedProcedure);
       
       if (success) {
         toast({
           title: "PDF Downloaded",
-          description: `${procedure.name} care guide downloaded successfully.`,
+          description: `Personalized ${procedure.name} care guide for ${practice?.name || 'your practice'} downloaded successfully.`,
           variant: "default",
         });
       } else {
