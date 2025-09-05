@@ -15,6 +15,7 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { toast } = useToast();
+  const { user, practice } = useAuth();
 
   useEffect(() => {
     if (specialtyId) {
