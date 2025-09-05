@@ -114,7 +114,22 @@ const PracticeLibraryPage = () => {
       const procedureResponse = await dentalApi.getProcedure(procedure.id);
       const fullProcedure = procedureResponse.data;
       
-      const success = await generateProcedurePDF(fullProcedure);
+      // Add practice and user context from AuthContext
+      const { user, practice } = authContext;
+      
+      // Add practice and user context to the procedure data
+      const personalizedProcedure = {
+        ...fullProcedure,
+        practiceName: practice?.name || 'Your Dental Practice',
+        practicePhone: practice?.phone || practice?.contactInfo?.phone,
+        practiceAddress: practice?.address,
+        // If this is for a specific dentist, include their info
+        dentistName: user?.firstName && user?.lastName ? `Dr. ${user.firstName} ${user.lastName}` : null,
+        // Add current user as the treating dentist if they're a dentist
+        treatingDentist: user?.role === 'dentist' ? `${user.firstName} ${user.lastName}` : null
+      };
+      
+      const success = await generateProcedurePDF(personalizedProcedure);
       
       if (success) {
         toast({
