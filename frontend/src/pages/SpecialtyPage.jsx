@@ -8,6 +8,7 @@ import Footer from '../components/Footer';
 import { dentalApi } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 import { generateProcedurePDF } from '../utils/pdfGenerator';
+import { useAuth } from '../contexts/AuthContext';
 
 const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
   const [specialty, setSpecialty] = useState(null);
