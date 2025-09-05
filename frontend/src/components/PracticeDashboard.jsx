@@ -527,7 +527,11 @@ const PracticeDashboard = () => {
                     <div key={procedure.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div className="flex-1">
                         <p className="font-medium">{procedure.procedureName}</p>
-                        <p className="text-sm text-gray-600">Dr. {procedure.dentistName}</p>
+                        <p className="text-sm text-gray-600">
+                          {procedure.dentistName && procedure.dentistName.startsWith('Dr.') 
+                            ? procedure.dentistName 
+                            : `Dr. ${procedure.dentistName}`}
+                        </p>
                         <p className="text-xs text-gray-500">
                           Patient: {procedure.patientName || 'Unknown'}
                         </p>
