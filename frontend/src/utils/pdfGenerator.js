@@ -74,7 +74,7 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Create optimized HTML for better PDF viewing
+// Create optimized HTML that matches the View page layout exactly
 const createOptimizedPrintHTML = (procedure) => {
   return `
 <!DOCTYPE html>
@@ -86,48 +86,7 @@ const createOptimizedPrintHTML = (procedure) => {
     <style>
         @page {
             size: A4;
-            margin: 1in 1in 1.5in 1in;
-            
-            @bottom-right {
-                content: "Page " counter(page);
-                font-size: 10px;
-                color: #6b7280;
-                margin-bottom: 0.5in;
-            }
-        }
-        
-        @page :first {
-            margin-bottom: 1.75in;
-            
-            @bottom-right {
-                content: "Page " counter(page);
-                font-size: 10px;
-                color: #6b7280;
-                margin-bottom: 0.5in;
-            }
-        }
-        
-        @page :nth(2) {
-            margin-top: 1.75in;
-            
-            @bottom-right {
-                content: "Page " counter(page);
-                font-size: 10px;
-                color: #6b7280;
-                margin-bottom: 0.5in;
-            }
-        }
-        
-        @page :nth(n+3) {
-            margin-top: 1.5in;
-            margin-bottom: 1.5in;
-            
-            @bottom-right {
-                content: "Page " counter(page);
-                font-size: 10px;
-                color: #6b7280;
-                margin-bottom: 0.5in;
-            }
+            margin: 0.75in;
         }
         
         * {
@@ -142,112 +101,206 @@ const createOptimizedPrintHTML = (procedure) => {
             color: #374151;
             background: white !important;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-size: 14px;
         }
         
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
+        /* Page numbering */
+        .page-footer {
+            position: fixed;
+            bottom: 0.5in;
+            right: 0.75in;
+            font-size: 10px;
+            color: #6b7280;
         }
         
-        .header {
-            background: #2563eb !important;
-            color: white !important;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 20px;
-            border-radius: 8px;
+        .page-footer:after {
+            counter-increment: page;
+            content: "Page " counter(page);
         }
         
-        .header h1 {
+        /* Header section - matches View exactly */
+        .header-section {
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 24px;
+        }
+        
+        .specialty-badge {
+            background: #f3f4f6 !important;
+            color: #4b5563 !important;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        
+        .main-title {
             font-size: 28px;
             font-weight: bold;
+            color: #111827;
+            margin: 0 0 8px 0;
+        }
+        
+        .duration {
+            color: #6b7280;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .practice-info {
+            background: #2563eb !important;
+            color: white !important;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .practice-name {
+            font-size: 18px;
+            font-weight: 600;
             margin: 0 0 8px 0;
             color: white !important;
         }
         
-        .section {
-            margin-bottom: 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-            break-inside: avoid;
-            page-break-inside: avoid;
+        .practice-contact {
+            font-size: 14px;
+            color: #bfdbfe !important;
+            margin: 4px 0;
         }
         
-        .section-header {
+        /* Card styling to match View */
+        .content-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            break-inside: avoid;
+        }
+        
+        .card-header {
             padding: 16px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             display: flex;
             align-items: center;
+            border-bottom: 1px solid #e5e7eb;
         }
         
-        .section-content {
+        .card-content {
             padding: 16px;
         }
         
-        .aftercare {
-            border-left: 4px solid #10b981 !important;
+        /* Overview specific styling */
+        .overview-header {
+            background: #f9fafb !important;
+            color: #2563eb !important;
         }
         
-        .aftercare .section-header {
+        .overview-content {
+            line-height: 1.6;
+        }
+        
+        .overview-content p {
+            margin-bottom: 12px;
+            color: #374151;
+        }
+        
+        .overview-content h4 {
+            font-weight: bold;
+            color: #111827;
+            margin: 24px 0 12px 0;
+            font-size: 16px;
+        }
+        
+        .overview-bullet {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            margin-left: 16px;
+        }
+        
+        .overview-bullet-point {
+            color: #2563eb;
+            margin-right: 12px;
+            font-size: 16px;
+            line-height: 1;
+        }
+        
+        /* Grid layout for sections */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        /* Section-specific colors */
+        .aftercare .card-header {
             background: #dcfce7 !important;
-            color: #059669 !important;
+            color: #16a34a !important;
         }
         
-        .diet {
-            border-left: 4px solid #f59e0b !important;
+        .aftercare {
+            border-left: 4px solid #16a34a !important;
         }
         
-        .diet .section-header {
+        .diet .card-header {
             background: #fef3c7 !important;
             color: #d97706 !important;
         }
         
-        .warnings {
-            border-left: 4px solid #ef4444 !important;
-            background: #fef2f2 !important;
+        .diet {
+            border-left: 4px solid #d97706 !important;
         }
         
-        .warnings .section-header {
+        .warnings {
+            background: #fef2f2 !important;
+            border-left: 4px solid #ef4444 !important;
+        }
+        
+        .warnings .card-header {
             background: #fee2e2 !important;
             color: #dc2626 !important;
         }
         
-        .timeline {
-            border-left: 4px solid #8b5cf6 !important;
-        }
-        
-        .timeline .section-header {
+        .timeline .card-header {
             background: #ede9fe !important;
             color: #7c3aed !important;
         }
         
-        .medications {
-            border-left: 4px solid #3b82f6 !important;
+        .timeline {
+            border-left: 4px solid #7c3aed !important;
         }
         
-        .medications .section-header {
+        .medications .card-header {
             background: #dbeafe !important;
             color: #2563eb !important;
         }
         
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+        .medications {
+            border-left: 4px solid #2563eb !important;
         }
         
-        .list-item {
+        /* List styling */
+        .section-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .section-item {
             display: flex;
             align-items: flex-start;
             margin-bottom: 12px;
         }
         
-        .badge {
+        .item-number {
             width: 24px;
             height: 24px;
             border-radius: 50%;
@@ -261,207 +314,250 @@ const createOptimizedPrintHTML = (procedure) => {
             flex-shrink: 0;
         }
         
-        .badge-green {
+        .aftercare .item-number {
             background: #dcfce7 !important;
             color: #16a34a !important;
         }
         
-        .badge-orange {
+        .diet .item-number {
             background: #fef3c7 !important;
             color: #d97706 !important;
         }
         
-        .footer {
-            background: #f3f4f6 !important;
-            padding: 16px;
-            text-align: center;
-            border-top: 1px solid #e5e7eb;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #6b7280;
+        .timeline .item-number {
+            background: #ede9fe !important;
+            color: #7c3aed !important;
+            border-radius: 16px;
+            padding: 4px 12px;
+            width: auto;
+            min-width: 60px;
+            font-size: 11px;
         }
         
-        @media screen {
-            body {
-                padding: 40px;
+        .warning-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            color: #991b1b;
+        }
+        
+        .warning-icon {
+            color: #ef4444;
+            margin-right: 8px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .footer-info {
+            background: #f9fafb !important;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 32px;
+        }
+        
+        @media print {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>Post-Operative Care Guide</h1>
-            ${procedure.practiceName ? `
-                <div style="margin-top: 16px;">
-                    <h2 style="font-size: 20px; font-weight: 600; margin: 0; color: white;">${procedure.practiceName}</h2>
-                    ${procedure.practicePhone ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">📞 ${formatPhoneNumber(procedure.practicePhone)}</p>` : ''}
-                    ${procedure.practiceAddress ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">📍 ${procedure.practiceAddress}</p>` : ''}
-                    ${procedure.practiceEmail ? `<p style="color: #bfdbfe; margin: 4px 0 0 0;">📧 ${procedure.practiceEmail}</p>` : ''}
-                </div>
-            ` : ''}
-        </div>
-        
-        ${procedure.patientName && procedure.performedDate ? `
-            <div class="section" style="background: #eff6ff; border-left: 4px solid #3b82f6;">
-                <div class="section-content">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
-                        <div>
-                            <strong>Patient:</strong> ${procedure.patientName}
-                        </div>
-                        <div>
-                            <strong>Date:</strong> ${new Date(procedure.performedDate).toLocaleDateString()}
-                        </div>
-                        ${procedure.dentistName ? `
-                            <div>
-                                <strong>Dentist:</strong> ${procedure.dentistName}
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
+    <div class="page-footer"></div>
+    
+    <!-- Header section - matches View page exactly -->
+    <div class="header-section">
+        <div class="specialty-badge">${procedure.specialtyName || 'Dental Procedure'}</div>
+        <h1 class="main-title">${procedure.name}</h1>
+        ${procedure.duration ? `
+            <div class="duration">⏰ Duration: ${procedure.duration}</div>
         ` : ''}
         
-        <!-- Title -->
-        <div style="text-align: center; margin: 20px 0; padding: 16px;">
-            <h2 style="font-size: 24px; font-weight: bold; margin: 0; color: #111827;">${procedure.name}</h2>
-            ${procedure.specialtyName ? `
-                <span style="background: #4b5563; color: white; padding: 4px 12px; border-radius: 16px; font-size: 14px; margin-top: 8px; display: inline-block;">
-                    ${procedure.specialtyName}
-                </span>
-            ` : ''}
-            ${procedure.duration ? `
-                <p style="color: #6b7280; margin: 8px 0 0 0;">⏰ Duration: ${procedure.duration}</p>
-            ` : ''}
-        </div>
-        
-        ${procedure.overview ? `
-            <div class="section">
-                <div class="section-header" style="background: #f3f4f6;">
-                    <span style="margin-right: 8px;">📋</span>
-                    Overview
-                </div>
-                <div class="section-content">
-                    <div style="white-space: pre-line; line-height: 1.7;">${procedure.overview.replace(/\\n/g, '\n').replace(/\n/g, '<br>')}</div>
-                </div>
+        ${procedure.practiceName ? `
+            <div class="practice-info">
+                <div class="practice-name">${procedure.practiceName}</div>
+                ${procedure.practicePhone ? `<div class="practice-contact">📞 ${formatPhoneNumber(procedure.practicePhone)}</div>` : ''}
+                ${procedure.practiceAddress ? `<div class="practice-contact">📍 ${procedure.practiceAddress}</div>` : ''}
+                ${procedure.practiceEmail ? `<div class="practice-contact">📧 ${procedure.practiceEmail}</div>` : ''}
             </div>
         ` : ''}
-        
-        <!-- Main Content Grid -->
-        <div class="grid">
-            <!-- Immediate Aftercare -->
-            <div class="section aftercare">
-                <div class="section-header">
-                    <span style="margin-right: 8px;">⚡</span>
-                    Immediate Aftercare
+    </div>
+    
+    <!-- Overview Section - ON PAGE 1 like View -->
+    ${procedure.overview ? `
+        <div class="content-card">
+            <div class="card-header overview-header">
+                <span style="margin-right: 8px;">📋</span>
+                Overview
+            </div>
+            <div class="card-content">
+                <div class="overview-content">
+                    ${procedure.overview.split('\n').map(line => {
+                        const trimmedLine = line.trim();
+                        
+                        if (trimmedLine === '') {
+                            return '<div style="margin-bottom: 8px;"></div>';
+                        }
+                        
+                        if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                            const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
+                            return `
+                                <div class="overview-bullet">
+                                    <span class="overview-bullet-point">•</span>
+                                    <span>${bulletText}</span>
+                                </div>
+                            `;
+                        }
+                        
+                        if (trimmedLine.includes('**')) {
+                            if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.length > 4) {
+                                const headerText = trimmedLine.replace(/\*\*/g, '');
+                                return `<h4>${headerText}</h4>`;
+                            } else {
+                                const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/);
+                                return `<p>${parts.map(part => {
+                                    if (part.startsWith('**') && part.endsWith('**')) {
+                                        return `<strong>${part.replace(/\*\*/g, '')}</strong>`;
+                                    }
+                                    return part;
+                                }).join('')}</p>`;
+                            }
+                        }
+                        
+                        if (trimmedLine.length > 0) {
+                            return `<p>${trimmedLine}</p>`;
+                        }
+                        
+                        return '';
+                    }).join('')}
                 </div>
-                <div class="section-content">
+            </div>
+        </div>
+    ` : ''}
+    
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- Immediate Aftercare -->
+        <div class="content-card aftercare">
+            <div class="card-header">
+                <span style="margin-right: 8px;">⚡</span>
+                Immediate Aftercare
+            </div>
+            <div class="card-content">
+                <ul class="section-list">
                     ${procedure.immediateAftercare?.map((instruction, index) => `
-                        <div class="list-item">
-                            <span class="badge badge-green">${index + 1}</span>
+                        <li class="section-item">
+                            <div class="item-number">${index + 1}</div>
                             <span>${instruction}</span>
-                        </div>
-                    `).join('') || '<p>No specific aftercare instructions provided.</p>'}
-                </div>
+                        </li>
+                    `).join('') || '<li>No specific aftercare instructions provided.</li>'}
+                </ul>
             </div>
-            
-            <!-- Diet Restrictions -->
-            <div class="section diet">
-                <div class="section-header">
-                    <span style="margin-right: 8px;">🍽️</span>
-                    Diet Restrictions
-                </div>
-                <div class="section-content">
+        </div>
+        
+        <!-- Diet Restrictions -->
+        <div class="content-card diet">
+            <div class="card-header">
+                <span style="margin-right: 8px;">🍽️</span>
+                Diet Restrictions
+            </div>
+            <div class="card-content">
+                <ul class="section-list">
                     ${procedure.dietRestrictions?.map((restriction, index) => `
-                        <div class="list-item">
-                            <span class="badge badge-orange">${index + 1}</span>
+                        <li class="section-item">
+                            <div class="item-number">${index + 1}</div>
                             <span>${restriction}</span>
-                        </div>
-                    `).join('') || '<p>No specific diet restrictions.</p>'}
-                </div>
+                        </li>
+                    `).join('') || '<li>No specific diet restrictions.</li>'}
+                </ul>
             </div>
         </div>
-        
-        <!-- Warning Signs -->
-        <div class="section warnings">
-            <div class="section-header">
-                <span style="margin-right: 8px;">⚠️</span>
-                Warning Signs - Call Your Dentist
-            </div>
-            <div class="section-content">
-                <p style="font-weight: 500; margin-bottom: 12px; color: #b91c1c;">
-                    Contact your dental office immediately if you experience any of the following:
-                </p>
-                ${procedure.warningSignsToCallDoctor?.map((sign) => `
-                    <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
-                        <span style="color: #ef4444; margin-right: 8px; margin-top: 4px; flex-shrink: 0;">⚠️</span>
-                        <span style="color: #991b1b;">${sign}</span>
-                    </div>
-                `).join('') || '<div style="color: #991b1b;">Please contact your dentist if you have any concerns.</div>'}
-            </div>
+    </div>
+    
+    <!-- Warning Signs -->
+    <div class="content-card warnings">
+        <div class="card-header">
+            <span style="margin-right: 8px;">⚠️</span>
+            Warning Signs - Call Your Dentist
         </div>
-        
-        <!-- Bottom Grid -->
-        <div class="grid">
-            <!-- Recovery Timeline -->
-            <div class="section timeline">
-                <div class="section-header">
-                    <span style="margin-right: 8px;">📅</span>
-                    Recovery Timeline
-                </div>
-                <div class="section-content">
-                    ${procedure.recoveryTimeline?.map((timeline) => `
-                        <div class="list-item">
-                            <span style="background: #ede9fe; color: #7c3aed; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-right: 16px; flex-shrink: 0;">
-                                Day ${timeline.day}
-                            </span>
-                            <span style="font-size: 14px;">${timeline.activity}</span>
-                        </div>
-                    `).join('') || '<p>Standard recovery timeline applies.</p>'}
-                </div>
-            </div>
-            
-            <!-- Medications -->
-            <div class="section medications">
-                <div class="section-header">
-                    <span style="margin-right: 8px;">💊</span>
-                    Medications
-                </div>
-                <div class="section-content">
-                    ${procedure.medications?.map((medication) => `
-                        <div class="list-item">
-                            <span style="color: #3b82f6; margin-right: 8px; margin-top: 4px; flex-shrink: 0;">💊</span>
-                            <span style="font-size: 14px;">${medication}</span>
-                        </div>
-                    `).join('') || '<p>No specific medications prescribed.</p>'}
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p>
-                Generated on ${new Date().toLocaleDateString()} | 
-                ${procedure.practiceName || 'Your Dental Practice'} | 
-                Post-Operative Care Guide
+        <div class="card-content">
+            <p style="font-weight: 500; margin-bottom: 12px; color: #b91c1c;">
+                Contact your dental office immediately if you experience any of the following:
             </p>
-            ${procedure.emergencyContact || procedure.practicePhone ? `
-                <p style="margin-top: 8px;">
-                    <strong>Emergency Contact:</strong> ${formatPhoneNumber(procedure.emergencyContact || procedure.practicePhone)}
-                </p>
-            ` : ''}
-            ${procedure.afterHoursContact ? `
-                <p style="margin-top: 4px;">
-                    <strong>After Hours:</strong> ${formatPhoneNumber(procedure.afterHoursContact)}
-                </p>
-            ` : ''}
-            ${procedure.dentistName ? `
-                <p style="margin-top: 8px;">
-                    <strong>Your Doctor:</strong> ${procedure.dentistName}
-                </p>
-            ` : ''}
+            ${procedure.warningSignsToCallDoctor?.map((sign) => `
+                <div class="warning-item">
+                    <span class="warning-icon">⚠️</span>
+                    <span>${sign}</span>
+                </div>
+            `).join('') || '<div class="warning-item"><span>Please contact your dentist if you have any concerns.</span></div>'}
         </div>
+    </div>
+    
+    <!-- Bottom Grid -->
+    <div class="content-grid">
+        <!-- Recovery Timeline -->
+        <div class="content-card timeline">
+            <div class="card-header">
+                <span style="margin-right: 8px;">📅</span>
+                Recovery Timeline
+            </div>
+            <div class="card-content">
+                <ul class="section-list">
+                    ${procedure.recoveryTimeline?.map((timeline) => `
+                        <li class="section-item">
+                            <div class="item-number">Day ${timeline.day}</div>
+                            <span style="font-size: 14px;">${timeline.activity}</span>
+                        </li>
+                    `).join('') || '<li>Standard recovery timeline applies.</li>'}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Medications -->
+        <div class="content-card medications">
+            <div class="card-header">
+                <span style="margin-right: 8px;">💊</span>
+                Medications
+            </div>
+            <div class="card-content">
+                <ul class="section-list">
+                    ${procedure.medications?.map((medication) => `
+                        <li class="section-item">
+                            <span style="color: #2563eb; margin-right: 8px; margin-top: 4px; flex-shrink: 0;">💊</span>
+                            <span style="font-size: 14px;">${medication}</span>
+                        </li>
+                    `).join('') || '<li>No specific medications prescribed.</li>'}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer-info">
+        <p>
+            Generated on ${new Date().toLocaleDateString()} | 
+            ${procedure.practiceName || 'Your Dental Practice'} | 
+            Post-Operative Care Guide
+        </p>
+        ${procedure.emergencyContact || procedure.practicePhone ? `
+            <p style="margin-top: 8px;">
+                <strong>Emergency Contact:</strong> ${formatPhoneNumber(procedure.emergencyContact || procedure.practicePhone)}
+            </p>
+        ` : ''}
+        ${procedure.afterHoursContact ? `
+            <p style="margin-top: 4px;">
+                <strong>After Hours:</strong> ${formatPhoneNumber(procedure.afterHoursContact)}
+            </p>
+        ` : ''}
+        ${procedure.dentistName ? `
+            <p style="margin-top: 8px;">
+                <strong>Your Doctor:</strong> ${procedure.dentistName}
+            </p>
+        ` : ''}
     </div>
 </body>
 </html>
