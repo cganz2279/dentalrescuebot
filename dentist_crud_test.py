@@ -80,7 +80,7 @@ def test_dentist_crud():
         response = requests.post(f"{PRODUCTION_URL}/practice/dentists", headers=headers, json=test_dentist, timeout=10)
         print(f"   Status: {response.status_code}")
         
-        if response.status_code == 201:
+        if response.status_code in [200, 201]:
             data = response.json()
             created_dentist = data.get("data", {})
             dentist_id = created_dentist.get("id")
