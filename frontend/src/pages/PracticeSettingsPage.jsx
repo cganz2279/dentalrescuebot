@@ -991,12 +991,30 @@ const PracticeSettingsPage = () => {
                 </div>
                 
                 <div className="flex justify-end space-x-3 mt-6">
-                  <Button variant="outline" className="border-indigo-300 text-indigo-700 hover:bg-indigo-50">
-                    Clear Form
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setShowAddDentist(false);
+                      setNewDentist({
+                        firstName: '',
+                        lastName: '',
+                        email: '',
+                        phone: '',
+                        licenseNumber: '',
+                        specialties: []
+                      });
+                    }}
+                    className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+                  >
+                    Cancel
                   </Button>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  <Button 
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  >
                     <UserPlus className="h-4 w-4 mr-2" />
-                    Add Dentist
+                    {saving ? 'Saving...' : (newDentist.id ? 'Update Dentist' : 'Add Dentist')}
                   </Button>
                 </div>
               </div>
