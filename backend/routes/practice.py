@@ -956,6 +956,10 @@ async def update_practice(
             practice_update["phone"] = update_data.phone
         if update_data.website is not None:
             practice_update["website"] = update_data.website
+        if update_data.officeHours is not None:
+            practice_update["officeHours"] = update_data.officeHours
+        if update_data.emergencyContact is not None:
+            practice_update["emergencyContact"] = update_data.emergencyContact
             
         # Update address if provided
         if hasattr(update_data, 'address') and update_data.address:
