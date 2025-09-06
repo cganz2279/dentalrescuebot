@@ -87,6 +87,8 @@ const PracticeSettingsPage = () => {
         city: practice.address?.city || '',
         state: practice.address?.state || '',
         zipCode: practice.address?.zipCode || '',
+        officeHours: practice.officeHours || '',
+        emergencyContact: practice.emergencyContact || '',
         logo: practice.branding?.logo || '',
         primaryColor: practice.branding?.primaryColor || '#2563eb',
         secondaryColor: practice.branding?.secondaryColor || '#1e40af',
