@@ -343,8 +343,14 @@ async def register_practice(request: PracticeRegisterRequest):
 async def register_practice_samcart(request: PracticeRegisterRequest):
     """Register practice after SamCart payment verification"""
     try:
+        # DEBUG: Log the payment verification value
+        print(f"DEBUG: paymentVerified value = {request.paymentVerified} (type: {type(request.paymentVerified)})")
+        print(f"DEBUG: Full request data = {request.dict()}")
+        
         # Enhanced Payment Verification for SamCart
         if not request.paymentVerified:
+            print(f"DEBUG: Payment verification failed - blocking registration for {request.email}")
+            
             # Log unauthorized registration attempt
             await db.registration_attempts.insert_one({
                 "email": request.email.lower(),
@@ -359,6 +365,8 @@ async def register_practice_samcart(request: PracticeRegisterRequest):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Payment verification required. Please complete your payment through SamCart first."
             )
+        
+        print(f"DEBUG: Payment verification passed for {request.email}")
         
         # Validate password
         if not validate_password(request.adminPassword):
