@@ -10,9 +10,9 @@
 ### **Main Application URLs**
 | Service | URL | Purpose |
 |---------|-----|---------|
-| **Main App** | `https://careplan-debug.preview.emergentagent.com` | Primary dental practice application |
-| **Admin Console** | `https://careplan-debug.preview.emergentagent.com/admin` | Full admin management interface |
-| **HTML Admin Dashboard** | `https://careplan-debug.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
+| **Main App** | `https://careplan-builder.preview.emergentagent.com` | Primary dental practice application |
+| **Admin Console** | `https://careplan-builder.preview.emergentagent.com/admin` | Full admin management interface |
+| **HTML Admin Dashboard** | `https://careplan-builder.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
 
 ### **WordPress Integration URLs**
 | Page | URL | Purpose |
@@ -83,7 +83,7 @@
 ## 🛠 **System Management**
 
 ### **Backend API Endpoints**
-- **Base URL:** `https://careplan-debug.preview.emergentagent.com/api`
+- **Base URL:** `https://careplan-builder.preview.emergentagent.com/api`
 - **Admin Login:** `POST /admin/login`
 - **Practice Management:** `GET /admin/practices`
 - **Procedure Requests:** `GET /admin/procedure-requests`

@@ -25,7 +25,7 @@ Your application is now **LOCKED AND STABLE** for testing. Here's what's confirm
 ## 🧪 TESTING CHECKLIST
 
 ### 📱 MAIN APPLICATION TESTING
-**URL**: `https://careplan-debug.preview.emergentagent.com/`
+**URL**: `https://careplan-builder.preview.emergentagent.com/`
 **Login**: `cganz2279@gmail.com` / `password123`
 
 #### ✅ Dashboard & Navigation
@@ -64,7 +64,7 @@ Your application is now **LOCKED AND STABLE** for testing. Here's what's confirm
 - [ ] Assignment creation successful
 
 ### 🔧 ADMIN DASHBOARD TESTING  
-**URL**: `https://careplan-debug.preview.emergentagent.com/admin`
+**URL**: `https://careplan-builder.preview.emergentagent.com/admin`
 **Login**: `cganz@admin.com` / `Dentist1#`
 
 #### ✅ Admin Navigation
