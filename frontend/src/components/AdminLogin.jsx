@@ -152,6 +152,26 @@ const AdminDashboard = () => {
     }
   };
 
+  const loadRegistrations = async () => {
+    try {
+      setRegistrationsLoading(true);
+      const response = await fetch(`${API_BASE}/registration-attempts`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setRegistrations(data.data || []);
+      } else {
+        console.error('Failed to load registrations');
+      }
+    } catch (error) {
+      console.error('Failed to load registrations:', error);
+    } finally {
+      setRegistrationsLoading(false);
+    }
+  };
+
   const managePractice = async (practiceId, action, reason = '') => {
     try {
       const response = await fetch(`${API_BASE}/manage-practice`, {
