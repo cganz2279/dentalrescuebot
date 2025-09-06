@@ -218,44 +218,7 @@ const createOptimizedPrintHTML = (procedure) => {
                 Post-Operative Care Instructions
             </div>
             <div class="overview-content">
-                ${procedure.overview.split('\n').map(line => {
-                    const trimmedLine = line.trim();
-                    
-                    if (trimmedLine === '') {
-                        return '<div style="margin-bottom: 8px;"></div>';
-                    }
-                    
-                    if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-                        const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
-                        return `
-                            <div class="overview-bullet">
-                                <span class="overview-bullet-point">•</span>
-                                <span>${bulletText}</span>
-                            </div>
-                        `;
-                    }
-                    
-                    if (trimmedLine.includes('**')) {
-                        if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.length > 4) {
-                            const headerText = trimmedLine.replace(/\*\*/g, '');
-                            return `<h4>${headerText}</h4>`;
-                        } else {
-                            const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/);
-                            return `<p>${parts.map(part => {
-                                if (part.startsWith('**') && part.endsWith('**')) {
-                                    return `<strong>${part.replace(/\*\*/g, '')}</strong>`;
-                                }
-                                return part;
-                            }).join('')}</p>`;
-                        }
-                    }
-                    
-                    if (trimmedLine.length > 0) {
-                        return `<p>${trimmedLine}</p>`;
-                    }
-                    
-                    return '';
-                }).join('')}
+                ${formatOriginalPDFContent(procedure.overview)}
             </div>
         </div>
     ` : ''}
