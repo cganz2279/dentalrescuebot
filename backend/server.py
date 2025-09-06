@@ -187,7 +187,7 @@ async def search_procedures(q: str = Query(..., min_length=1)):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @api_router.get("/procedures/{procedure_id}")
-async def get_procedure(procedure_id: str):
+async def get_procedure(procedure_id: str, current_user: dict = Depends(get_current_user)):
     try:
         procedure = await db.procedures.find_one(
             {"id": procedure_id}, 
@@ -196,6 +196,19 @@ async def get_procedure(procedure_id: str):
         
         if not procedure:
             raise HTTPException(status_code=404, detail="Procedure not found")
+        
+        # Add practice information for PDF generation
+        if current_user and current_user.get("practiceId"):
+            practice = await db.practices.find_one(
+                {"id": current_user["practiceId"]},
+                {"_id": 0, "name": 1, "phone": 1, "officeHours": 1, "emergencyContact": 1}
+            )
+            
+            if practice:
+                procedure["practiceName"] = practice.get("name")
+                procedure["practicePhone"] = practice.get("phone")
+                procedure["practiceOfficeHours"] = practice.get("officeHours")
+                procedure["practiceEmergencyContact"] = practice.get("emergencyContact")
         
         return {"success": True, "data": procedure}
     except HTTPException:
