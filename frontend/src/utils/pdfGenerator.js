@@ -106,7 +106,7 @@ export const generateProcedurePDF = async (procedure) => {
       }
     }
     
-    // Footer
+    // Footer with practice information
     yPos = Math.max(yPos + 20, 280);
     if (yPos > 270) {
       pdf.addPage();
@@ -117,9 +117,31 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.setFont(undefined, 'italic');
     pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
     
-    if (procedure.practicePhone) {
-      yPos += 8;
-      pdf.text(`Emergency Contact: ${formatPhoneNumber(procedure.practicePhone)}`, 20, yPos);
+    // Office Hours
+    if (procedure.practiceOfficeHours) {
+      yPos += 10;
+      pdf.setFont(undefined, 'bold');
+      pdf.text('Office Hours:', 20, yPos);
+      yPos += 6;
+      pdf.setFont(undefined, 'normal');
+      pdf.text(procedure.practiceOfficeHours, 20, yPos);
+    }
+    
+    // Emergency Contact
+    if (procedure.practiceEmergencyContact) {
+      yPos += 10;
+      pdf.setFont(undefined, 'bold');
+      pdf.text('Emergency Contact:', 20, yPos);
+      yPos += 6;
+      pdf.setFont(undefined, 'normal');
+      pdf.text(formatPhoneNumber(procedure.practiceEmergencyContact), 20, yPos);
+    } else if (procedure.practicePhone) {
+      yPos += 10;
+      pdf.setFont(undefined, 'bold');
+      pdf.text('Emergency Contact:', 20, yPos);
+      yPos += 6;
+      pdf.setFont(undefined, 'normal');
+      pdf.text(formatPhoneNumber(procedure.practicePhone), 20, yPos);
     }
     
     // Generate filename
