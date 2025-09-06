@@ -1304,6 +1304,115 @@ const AdminDashboard = () => {
             )}
           </CustomTabsContent>
 
+          <CustomTabsContent value="registrations" activeTab={activeTab} className="space-y-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center space-x-2">
+                  <UserX className="h-5 w-5 text-blue-600" />
+                  <span>New Registrations</span>
+                </CardTitle>
+                <Button onClick={loadRegistrations} variant="outline" size="sm">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {registrationsLoading ? (
+                  <div className="flex justify-center py-8">
+                    <LoadingSpinner />
+                  </div>
+                ) : registrations.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <UserX className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p className="text-lg font-medium">No registration attempts found</p>
+                    <p className="text-sm">Registration attempts will appear here</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {registrations.map((registration, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-semibold text-lg">{registration.practiceName}</h3>
+                              <Badge 
+                                variant={registration.status === 'success' ? 'default' : 
+                                        registration.status === 'blocked' ? 'destructive' : 'secondary'}
+                                className={
+                                  registration.status === 'success' ? 'bg-green-100 text-green-800 border-green-200' :
+                                  registration.status === 'blocked' ? 'bg-red-100 text-red-800 border-red-200' :
+                                  'bg-yellow-100 text-yellow-800 border-yellow-200'
+                                }
+                              >
+                                {registration.status === 'success' ? '✅ PAID' : 
+                                 registration.status === 'blocked' ? '❌ BLOCKED' : 
+                                 registration.status === 'trial_registered' ? '⚠️ TRIAL' : registration.status}
+                              </Badge>
+                              {registration.registration_type === 'samcart' && (
+                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                  SamCart
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <span className="font-medium text-gray-600">Email:</span> {registration.email}
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-600">Date:</span> {
+                                  new Date(registration.attempted_at).toLocaleString()
+                                }
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-600">Payment Verified:</span> {
+                                  registration.payment_verified ? (
+                                    <span className="text-green-600 font-medium">✅ Yes</span>
+                                  ) : (
+                                    <span className="text-red-600 font-medium">❌ No</span>
+                                  )
+                                }
+                              </div>
+                              {registration.registration_type && (
+                                <div>
+                                  <span className="font-medium text-gray-600">Type:</span> {
+                                    registration.registration_type === 'samcart' ? 'SamCart Payment' : 'Trial Registration'
+                                  }
+                                </div>
+                              )}
+                              {registration.reason && (
+                                <div className="md:col-span-2">
+                                  <span className="font-medium text-gray-600">Reason:</span> 
+                                  <span className="text-red-600 ml-1">{registration.reason}</span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {registration.practice_id && (
+                              <div className="mt-2 text-xs text-gray-500">
+                                Practice ID: {registration.practice_id}
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="ml-4">
+                            {registration.status === 'success' ? (
+                              <CheckCircle className="h-6 w-6 text-green-500" />
+                            ) : registration.status === 'blocked' ? (
+                              <XCircle className="h-6 w-6 text-red-500" />
+                            ) : (
+                              <AlertTriangle className="h-6 w-6 text-yellow-500" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </CustomTabsContent>
+
           <CustomTabsContent value="system" activeTab={activeTab} className="space-y-6">
             <Card>
               <CardHeader>
