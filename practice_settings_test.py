@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, List
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://dentist-portal-3.emergent.host/api"
+BACKEND_URL = "http://localhost:8001/api"
 
 class PracticeSettingsTester:
     def __init__(self, base_url: str):
