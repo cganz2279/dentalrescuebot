@@ -435,6 +435,37 @@ const PracticeSettingsPage = () => {
 
               <Separator />
 
+              {/* Office Hours and Emergency Contact - Separate Section */}
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Office Hours</label>
+                  <Input
+                    name="officeHours"
+                    value={formData.officeHours || ''}
+                    onChange={handleInputChange}
+                    placeholder="Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM"
+                  />
+                  <p className="text-xs text-gray-500">These will appear at the bottom of PDF care guides</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Emergency Contact Number</label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      name="emergencyContact"
+                      value={formData.emergencyContact || ''}
+                      onChange={handleInputChange}
+                      className="pl-10"
+                      placeholder="(555) 123-4567"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500">After-hours emergency contact for urgent situations</p>
+                </div>
+              </div>
+
+              <Separator />
+
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center space-x-2">
                   <MapPin className="h-4 w-4 text-blue-600" />
