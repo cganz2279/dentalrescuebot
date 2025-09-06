@@ -1,66 +1,80 @@
 <analysis>
-The AI engineer's work involved a highly iterative process tackling a range of issues: persistent environment configuration problems, frontend UI regressions, and critical data corruption affecting PDF generation. A recurring challenge was the  mismatch, leading to authentication and data loading failures. Frontend builds and deployments were also complicated by caching, missing build directories, and the  package. Multiple Python scripts were developed to fix  data, eventually discovering and correcting an issue where the wrong MongoDB database was being updated. Despite numerous fixes and rebuilds, the user reported that changes, especially to PDF structure and UI elements, were not visible, indicating persistent deployment/caching issues and a possible misinvocation of PDF generation functions in the deployed code.
+The AI engineer's work largely revolved around persistent, complex issues related to PDF generation and content accuracy. Initial attempts focused on UI layout and frontend deployment, repeatedly encountering caching, stale builds, and  misconfigurations. A significant breakthrough revealed the fundamental problem: the database never actually contained the user's original PDF content, instead holding generic templates. This led to a fresh start for content import. Subsequently, the AI engineer implemented new features for practice settings (office hours, emergency contact) and integrated them into the PDFs. The trajectory concludes with the AI troubleshooting the visibility of these new fields in the UI, indicating a recurring frontend rendering/caching challenge.
 </analysis>
 
 <product_requirements>
-The application is a multi-tenant B2B SaaS platform for dentists. Its primary function is to generate customized post-operative PDF care guides for patients, alongside managing practice administration and patient/procedure data. Future integration with SamCart is planned. Key features implemented include robust login functionality (despite recurring platform-level issues), iteratively enhanced PDF care guide generation (from  to print-optimized HTML, then WYSIWYG, and finally simplified to only overview), an improved procedure library with PDF download, an expanded admin portal, and multi-tenancy support for personalized PDFs. The most critical ongoing problem is persistent data corruption in the  field for ~95% of procedures in the MongoDB database, where content is mixed, truncated, or incorrect. Additionally, there are persistent UI/UX issues and deployment challenges that hinder the visibility of implemented fixes.
+The application is a multi-tenant B2B SaaS platform for dentists, designed to generate customized post-operative PDF care guides for patients. It also manages practice administration, patient, and procedure data, with planned future integration with SamCart. Key features include login, an improved procedure library with PDF download, an expanded admin portal, and multi-tenancy.
+
+The primary problems requiring resolution were:
+1.  **PDF Content Accuracy**: The most critical issue was that PDFs were generated with generic template content (What Was Done) instead of the user's specific, professional post-operative care instructions provided in . This required fixing PDF extraction, database content, and ensuring the correct content was served and rendered.
+2.  **PDF Formatting**: Initially, PDFs were showing all sections (Medications, Diet, etc.) when only an Overview was desired, and then they were not generated as actual PDF files, but HTML.
+3.  **Frontend/Deployment Instability**: Persistent issues with frontend builds, service restarts, caching (Babel cache, browser cache), incorrect  configurations, and  package pathing repeatedly prevented UI changes and content updates from reflecting in production.
+4.  **Practice Customization**: A new requirement emerged to add Office Hours and Emergency Contact Number to practice settings and embed this information into the generated PDF care guides.
 </product_requirements>
 
 <key_technical_concepts>
-- **React.js**: Frontend UI, routing, state management with AuthContext.
-- **FastAPI**: Python backend for API services.
-- **MongoDB**: NoSQL database for data persistence.
-- **JWT Authentication**: Token-based security.
-- **Kubernetes Ingress**: Manages external routing.
-- **Environment Variables**: Configuration via  files.
-- **Supervisor**: Process control for services.
-- **HTML-to-PDF Conversion**: Iterative approach for PDF rendering.
-- **Git/GitHub**: Version control, deployment source.
-- ** package**: For frontend serving.
-- **PDF Extraction**: Python libraries for parsing PDF content.
+-   **React.js**: Frontend UI, state management.
+-   **FastAPI**: Python backend API.
+-   **MongoDB**: NoSQL database for data.
+-   **Environment Variables**: Configuration ().
+-   **Supervisor**: Process control for services.
+-   ****: JavaScript library for client-side PDF generation.
+-   **Python PDF Extraction**: Scripts for parsing PDF content.
+-   **Babel Cache**: Frontend build process caching.
+-   **Kubernetes Ingress**: Routing rules (implicitly managed).
 </key_technical_concepts>
 
 <code_architecture>
 
-
-- ****:
-    - **Summary**: This file is central to generating PDF care guides.
-    - **Changes**: Iteratively modified to move from generic content/formats to a simplified structure showing *only* the Overview section, titled Post-Operative Care Instructions. Multiple redundant or unused HTML generation functions (, , ) were removed to streamline the output.
-- ****:
-    - **Summary**: Handles patient creation.
-    - **Changes**: Modified to incorporate a dentist selection dropdown, allowing a dentist to be assigned to a new patient at creation.
-- ****:
-    - **Summary**: Facilitates assigning procedures to patients.
-    - **Changes**: Updated API call from  to  to correctly fetch available procedures, addressing an issue where no procedures were displayed.
-- ****:
-    - **Summary**: Displays the main practice dashboard.
-    - **Changes**: Fixed an issue where Dr. was redundantly prefixed to dentist names in the Recent Procedures section, now conditionally displaying it correctly.
-- ****:
-    - **Summary**: Critical for frontend configuration.
-    - **Changes**:  was frequently misconfigured or reverted, causing repeated authentication and data loading failures in the frontend. It was corrected to  but this fix required multiple reinstantiations due to environment instability.
-- ****:
-    - **Summary**: Backend environment configuration.
-    - **Changes**: Explicitly confirmed  as the active database, revealing that earlier PDF content fixes were applied to the wrong (default) MongoDB database.
-- ** (Multiple new PDF processing scripts)**:
-    - **Summary**: A series of Python scripts (, , , , ) were created.
-    - **Changes**: These scripts were developed to extract and re-categorize content (especially  and ) from original PDF files, iteratively refining the parsing logic to be more precise, avoid fragments, and match specific content from the source PDFs, and ultimately update the correct .
+-   ****:
+    -   **Summary**: Central to generating post-operative care guide PDFs.
+    -   **Changes**: Initially simplified to show only Overview (Chat Message 11). Later, it was modified to use  for actual PDF file generation (instead of HTML) and to directly integrate practice-specific Office Hours and Emergency Contact information into the PDF footer (Chat Message 145, 364).
+-   ****:
+    -   **Summary**: Handles display and modification of practice-specific settings.
+    -   **Changes**: Updated to include UI fields for Office Hours and Emergency Contact Number, with corresponding state management for input and saving (Chat Message 354-360, 446).
+-   ****:
+    -   **Summary**: Renders the detailed view of a single procedure.
+    -   **Changes**: Modified to remove explicit rendering of Immediate Aftercare, Diet Restrictions, Warning Signs, Recovery Timeline, and Medications sections, ensuring only the Overview content is displayed to match the simplified PDF generation (Chat Message 166, 240).
+-   ****:
+    -   **Summary**: Frontend environment configuration.
+    -   **Changes**: Repeatedly fixed for  to point to  to correct backend routing, which was often misconfigured to  or reverted.
+-   ****:
+    -   **Summary**: Backend environment configuration.
+    -   **Changes**: Confirmed  was sometimes used for preview, while production used . Explicit changes were made to ensure a consistent database was referenced.
+-   ****:
+    -   **Summary**: Script for initial bulk PDF processing to populate the database.
+    -   **Changes**: Used to extract PDFs from  to  and process them. Its parsing logic was found to be insufficient, often putting all content into the overview field or failing to find procedures.
+-   ** (New)**:
+    -   **Summary**: A temporary script created to manually extract and correctly store specific PDF content (e.g., Denture Delivery) after  failed.
+-   ** (New)**:
+    -   **Summary**: Identified as a problematic script that was generating generic What Was Done content and overwriting the user's original data in the database (Chat Message 307-309). This script was a source of content corruption.
+-   ** (New)**:
+    -   **Summary**: Created as a fresh start approach to reliably extract and import ALL 81 original PDF documents from  into the database, replacing all generic content with authentic instructions (Chat Message 340).
+-   ****:
+    -   **Summary**: Handles practice-related API endpoints, including updates.
+    -   **Changes**:  model and  function were extended to accept and store new  and  fields (Chat Message 376, 378).
+-   ****:
+    -   **Summary**: Main FastAPI application entry point, defines core API routes.
+    -   **Changes**: The  endpoint was modified to include the associated practice's  and  information when a procedure is fetched, making this data available to the frontend (Chat Message 384).
 </code_architecture>
 
 <pending_tasks>
-- **Deploy Frontend Code Changes**: Successfully deploy all local frontend changes (simplified PDF generator, Dr repetition fix, Add Patient dentist selection) to the production environment.
-- **Troubleshoot Frontend Caching/Deployment**: Investigate and resolve why frontend code changes are not consistently reflected on the live site, specifically why the simplified PDF structure is not appearing, and address underlying caching or build issues.
-- **SamCart Webhook Integration**: Automate account activation/deactivation and tracking.
-- **Enhanced Website Integration**: Add dedicated pages and navigation links on .
+-   **Verify New Practice Settings UI**: Confirm the Office Hours and Emergency Contact Number fields are visible in the Practice Settings page after resolving any caching issues.
+-   **Verify PDF Integration of New Fields**: Ensure the newly added office hours and emergency contact number appear correctly at the bottom of the generated PDF files.
+-   **SamCart Webhook Integration**: Automate account activation/deactivation and tracking.
+-   **Enhanced Website Integration**: Add dedicated pages and navigation links on .
 </pending_tasks>
 
 <current_work>
-The AI engineer is currently investigating a critical discrepancy: the user reports that PDF content and UI fixes are *still not visible* on the production site, specifically that all sections (Medications, Diet, etc.) are still present in PDFs, despite extensive local code modifications in  to show *only* the  content.
+The AI engineer has just implemented the feature to add Office Hours and Emergency Contact Number to the Practice Settings page and integrate them into the PDF care guides. This involved modifying:
+-    to add the input fields to the UI and handle their state.
+-    to include this information in the PDF footer using .
+-    to update the  Pydantic model and the  API endpoint to persist these new fields in the database.
+-    to modify the  endpoint, ensuring that the fetched procedure data also includes the associated practice's  and  for PDF generation.
 
-Recent work involved rediscovering and fixing that the frontend's  file had reverted to an incorrect , which was preventing all frontend builds from incorporating any changes. This was corrected, and the frontend was rebuilt and restarted.
-
-The immediate focus is to understand why the deployed application's PDFs are not reflecting the simplified structure. The AI has observed that the new, simplified PDF generation function *exists* in the deployed JavaScript bundle but suspects that either an older, more complex PDF generation function is still present and being invoked, or that a persistent caching issue on the production environment is preventing the updated JavaScript from being served. The AI engineer is at the point of trying to confirm which PDF generation function is actually being executed in the deployed code.
+After rebuilding the frontend and restarting services, the user reported that the new fields were not available in the Practice Settings UI. The AI engineer verified that the changes are present in the source code and the built JavaScript files (). The immediate problem is the fields are not rendering in the deployed application's UI, despite being correctly compiled. The AI is currently preparing to test this by performing a hard refresh, suspecting a browser caching issue or a deployment propagation problem.
 </current_work>
 
 <optional_next_step>
-Investigate the deployed production code to determine which PDF generation function is actively being called and why the simplified PDF structure is not visible.
+Perform a hard refresh of the browser to verify the visibility of the new Office Hours and Emergency Contact Number fields in Practice Settings.
 </optional_next_step>
