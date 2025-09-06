@@ -406,7 +406,7 @@ const PracticeSettingsPage = () => {
                   </div>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-medium text-gray-700">Office Hours</label>
                   <Input
                     name="officeHours"
@@ -417,7 +417,7 @@ const PracticeSettingsPage = () => {
                   <p className="text-xs text-gray-500">These will appear at the bottom of PDF care guides</p>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-medium text-gray-700">Emergency Contact Number</label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
