@@ -207,10 +207,34 @@ async def get_procedure(procedure_id: str):
         logging.error(f"Error fetching procedure {procedure_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-# Include the router in the main app
+# Include routers BEFORE defining public endpoints
 app.include_router(api_router)
+app.include_router(auth_router)
+app.include_router(practice_router)
+app.include_router(payments_router)
+app.include_router(webhooks_router)
+app.include_router(admin_router)
+app.include_router(patients_router)
 
-# Serve the full HTML admin dashboard
+# PUBLIC ENDPOINTS (no authentication required)
+@app.get("/api/procedures/{procedure_id}")
+async def get_procedure_public(procedure_id: str):
+    """PUBLIC endpoint to get procedure details - no authentication required"""
+    try:
+        procedure = await db.procedures.find_one(
+            {"id": procedure_id}, 
+            {"_id": 0, "createdAt": 0, "updatedAt": 0}
+        )
+        
+        if not procedure:
+            raise HTTPException(status_code=404, detail="Procedure not found")
+        
+        return {"success": True, "data": procedure}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error fetching procedure {procedure_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 @app.get("/admin-dashboard", response_class=HTMLResponse)
 async def get_admin_dashboard():
     """Serve the complete HTML admin dashboard"""
