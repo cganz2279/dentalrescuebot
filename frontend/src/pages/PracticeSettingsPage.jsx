@@ -410,17 +410,6 @@ const PracticeSettingsPage = () => {
                   <label className="text-sm font-medium text-gray-700">Office Hours</label>
                   <Input
                     name="officeHours"
-                    value={formData.officeHours}
-                    onChange={handleInputChange}
-                    placeholder="Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM"
-                  />
-                  <p className="text-xs text-gray-500">These will appear at the bottom of PDF care guides</p>
-                </div>
-                
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">Office Hours</label>
-                  <Input
-                    name="officeHours"
                     value={formData.officeHours || ''}
                     onChange={handleInputChange}
                     placeholder="Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM"
