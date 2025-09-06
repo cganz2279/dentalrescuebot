@@ -35,6 +35,8 @@ class PracticeUpdate(BaseModel):
     name: Optional[str] = None
     phone: Optional[str] = None
     website: Optional[str] = None
+    officeHours: Optional[str] = None
+    emergencyContact: Optional[str] = None
     address: Optional[dict] = None
     branding: Optional[BrandingUpdate] = None
     newPassword: Optional[str] = None
