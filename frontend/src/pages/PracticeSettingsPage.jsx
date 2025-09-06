@@ -250,6 +250,8 @@ const PracticeSettingsPage = () => {
           name: formData.name,
           phone: formData.phone,
           website: formData.website,
+          officeHours: formData.officeHours,
+          emergencyContact: formData.emergencyContact,
           address: {
             street: formData.street,
             city: formData.city,
