@@ -499,6 +499,7 @@ const AdminDashboard = () => {
             <CustomTabsTrigger value="practices" activeTab={activeTab} onTabChange={setActiveTab}>Practices</CustomTabsTrigger>
             <CustomTabsTrigger value="users" activeTab={activeTab} onTabChange={setActiveTab}>Users</CustomTabsTrigger>
             <CustomTabsTrigger value="procedures" activeTab={activeTab} onTabChange={setActiveTab}>Procedures</CustomTabsTrigger>
+            <CustomTabsTrigger value="registrations" activeTab={activeTab} onTabChange={setActiveTab}>New Registrations</CustomTabsTrigger>
             <CustomTabsTrigger value="analytics" activeTab={activeTab} onTabChange={setActiveTab}>Analytics</CustomTabsTrigger>
             <CustomTabsTrigger value="system" activeTab={activeTab} onTabChange={setActiveTab}>System</CustomTabsTrigger>
           </CustomTabsList>
