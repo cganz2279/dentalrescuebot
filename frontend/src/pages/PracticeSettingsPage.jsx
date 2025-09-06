@@ -48,6 +48,8 @@ const PracticeSettingsPage = () => {
     city: '',
     state: '',
     zipCode: '',
+    officeHours: '',
+    emergencyContact: '',
     
     // Branding
     logo: '',
