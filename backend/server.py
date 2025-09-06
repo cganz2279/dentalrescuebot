@@ -187,13 +187,9 @@ async def search_procedures(q: str = Query(..., min_length=1)):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 # Include routers BEFORE defining public endpoints
-app.include_router(api_router)
-app.include_router(auth_router)
-app.include_router(practice_router)
-app.include_router(payments_router)
-app.include_router(webhooks_router)
-app.include_router(admin_router)
-app.include_router(patients_router)
+app.include_router(auth_router)    # Auth router first (has registration endpoints)
+app.include_router(webhooks_router)  # Webhooks router (might be public)
+app.include_router(api_router)     # General API router
 
 # PUBLIC ENDPOINTS (no authentication required)
 @app.get("/api/procedures/{procedure_id}")
@@ -214,6 +210,12 @@ async def get_procedure_public(procedure_id: str):
     except Exception as e:
         logging.error(f"Error fetching procedure {procedure_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+# PROTECTED ROUTERS (require authentication)
+app.include_router(practice_router)
+app.include_router(payments_router)
+app.include_router(admin_router)
+app.include_router(patients_router)
 @app.get("/admin-dashboard", response_class=HTMLResponse)
 async def get_admin_dashboard():
     """Serve the complete HTML admin dashboard"""
