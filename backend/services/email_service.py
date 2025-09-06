@@ -32,6 +32,9 @@ class EmailService:
                 html_content=html_content
             )
             
+            # Add reply-to address
+            message.reply_to = "support@theoncallbot.com"
+            
             response = self.sg.send(message)
             return response.status_code == 202
             
