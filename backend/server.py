@@ -12,8 +12,8 @@ import uuid
 from datetime import datetime
 
 # Import the new auth, practice, payment, webhook, admin, and patient routes
-from routes.auth import router as auth_router, get_current_user
-from routes.practice import router as practice_router
+from routes.auth import router as auth_router
+from routes.practice import router as practice_router, get_current_user
 from routes.payments import router as payments_router
 from routes.webhooks import router as webhooks_router
 from routes.admin import router as admin_router
