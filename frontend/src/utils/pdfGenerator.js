@@ -55,7 +55,7 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Improved PDF Generator with better popup handling
+// Improved PDF Generator with direct download (no popups)
 export const generateProcedurePDF = async (procedure) => {
   try {
     console.log('🎨 Starting PDF generation...');
@@ -63,50 +63,34 @@ export const generateProcedurePDF = async (procedure) => {
     // Create optimized HTML content with print-specific styling
     const printContent = createOptimizedPrintHTML(procedure);
     
-    // Create new window with specific parameters to prevent blocking
-    const printWindow = window.open('', 'PDFWindow', 'width=800,height=600,scrollbars=yes,resizable=yes');
+    // Create blob and download directly (no popup needed)
+    const blob = new Blob([printContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
     
-    if (!printWindow) {
-      throw new Error('Popup blocked. Please allow popups and try again.');
-    }
+    // Create temporary download link
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = `${procedure.name.replace(/[^a-zA-Z0-9]/g, '_')}_Care_Guide.html`;
+    downloadLink.style.display = 'none';
     
-    // Write content to window
-    printWindow.document.open();
-    printWindow.document.write(printContent);
-    printWindow.document.close();
+    // Add to DOM, click, and clean up
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
     
-    // Wait for content to fully load before showing
-    printWindow.addEventListener('load', () => {
-      console.log('✅ PDF content loaded successfully');
-      
-      // Focus and show print dialog after a longer delay
-      setTimeout(() => {
-        printWindow.focus();
-        
-        // Add user instruction
-        if (!printWindow.closed) {
-          printWindow.print();
-        }
-        
-        // Don't auto-close - let user close manually
-        printWindow.onafterprint = () => {
-          console.log('✅ Print dialog completed');
-          // Optional: auto-close after 30 seconds
-          setTimeout(() => {
-            if (!printWindow.closed) {
-              printWindow.close();
-            }
-          }, 30000);
-        };
-        
-      }, 1500); // Longer delay to ensure content is ready
-    });
+    // Clean up blob URL
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+    
+    console.log('✅ PDF downloaded successfully');
+    
+    // Show success message
+    alert('✅ Care Guide Downloaded!\n\nThe PDF has been downloaded to your device. Open the file and use your browser\'s print function (Ctrl+P) to print or save as PDF.');
     
     return true;
     
   } catch (error) {
     console.error('❌ PDF generation failed:', error);
-    alert('PDF generation failed: ' + error.message + '\n\nPlease check your popup blocker settings.');
+    alert('PDF generation failed: ' + error.message);
     return false;
   }
 };
