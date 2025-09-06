@@ -310,6 +310,8 @@ const AdminDashboard = () => {
     } else if (activeTab === 'users') {
       // Load practices for the users tab so user can select a practice
       loadPractices();
+    } else if (activeTab === 'registrations') {
+      loadRegistrations();
     }
   }, [activeTab]);
 
