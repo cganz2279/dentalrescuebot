@@ -277,6 +277,44 @@ async def register_practice(request: PracticeRegisterRequest):
         await db.practices.insert_one(practice_doc)
         await db.users.insert_one(admin_user_doc)
         
+        # Log trial registration
+        await db.registration_attempts.insert_one({
+            "email": request.email.lower(),
+            "practiceName": request.practiceName,
+            "attempted_at": datetime.utcnow(),
+            "payment_verified": False,
+            "status": "trial_registered",
+            "registration_type": "trial",
+            "practice_id": practice_id
+        })
+        
+        # Send email notification to admin for trial registration
+        if EMAIL_ENABLED:
+            try:
+                registration_data = {
+                    "practiceName": request.practiceName,
+                    "email": request.email,
+                    "phone": request.phone,
+                    "website": request.website,
+                    "adminFirstName": request.adminFirstName,
+                    "adminLastName": request.adminLastName,
+                    "street": request.street,
+                    "city": request.city,
+                    "state": request.state,
+                    "zipCode": request.zipCode
+                }
+                
+                email_sent = email_service.send_registration_notification(
+                    registration_data, 
+                    "trial"
+                )
+                
+                if not email_sent:
+                    print(f"Failed to send email notification for trial registration: {request.email}")
+                    
+            except Exception as e:
+                print(f"Email notification error for trial {request.email}: {e}")
+        
         # Return practice info and flag for payment setup requirement
         return {
             "success": True,
