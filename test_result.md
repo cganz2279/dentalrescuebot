@@ -621,6 +621,18 @@ backend:
           agent: "testing"
           comment: "POST /api/auth/reset-password working correctly. Tested with valid reset token - successfully resets password and marks token as used. Tested with invalid token - properly rejects with 400 error. Tested with weak password (less than 6 chars, no numbers) - properly validates password strength and rejects with appropriate error message. Password reset flow is secure and functional."
 
+  - task: "Registration Endpoints for New Customer Signup"
+    implemented: true
+    working: true
+    file: "backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "🎯 COMPREHENSIVE REGISTRATION ENDPOINTS TESTING COMPLETED SUCCESSFULLY: ✅ ALL 16 TESTS PASSED (100% SUCCESS RATE): Conducted thorough testing of both registration endpoints as specifically requested in review. DETAILED TEST RESULTS: (1) ✅ POST /api/auth/register-practice ENDPOINT: Successfully tested with exact review request data (practiceName: Test Dental Practice, email: test@dentalpractice.com, website: www.testdental.com, adminPassword: TestPass123) - registration successful with payment setup requirement as expected, (2) ✅ POST /api/auth/register-practice-samcart ENDPOINT: Successfully tested SamCart integration - practice gets activated immediately with status 'active' as requested, (3) ✅ WEBSITE FIELD VALIDATION FIXED: Confirmed website field accepts www.domain.com format WITHOUT requiring https:// prefix - tested multiple formats (www.example.com, example.com, https://example.com, http://www.example.com, subdomain.example.com) all accepted successfully, (4) ✅ PASSWORD VALIDATION ENFORCED: Properly rejects passwords with only letters, only numbers, or under 6 characters with clear error message 'Password must be at least 6 characters with letters and numbers' - accepts valid passwords with letters + numbers + 6+ characters, (5) ✅ DUPLICATE EMAIL HANDLING: Correctly rejects duplicate email attempts with 'Email already registered' error, (6) ✅ MISSING REQUIRED FIELDS: Properly validates all required fields (practiceName, email, adminFirstName, adminLastName, adminPassword) with 422 validation errors, (7) ✅ ERROR HANDLING VERIFICATION: Returns proper HTTP status codes (200 success, 400/422 validation errors) with detailed error messages, (8) ✅ END-TO-END VERIFICATION: Newly registered SamCart users can login successfully with JWT tokens and proper practice association. CRITICAL FIXES CONFIRMED: All reported registration issues have been resolved - website field validation fixed to accept www.domain.com without https://, password validation synchronized between frontend/backend, clear error messages implemented for all failure scenarios. Registration system is fully functional and ready for production use."
+
   - task: "Super Admin Login API"
     implemented: true
     working: true
