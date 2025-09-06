@@ -1000,22 +1000,6 @@ const PracticeSettingsPage = () => {
                   </Button>
                 </div>
               </div>
-              
-              <div className="border-t pt-4">
-                <h4 className="font-medium text-gray-900 mb-3">Current Practice Dentists</h4>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center text-gray-500">
-                  <Users className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm">No dentists added yet. Add your first dentist above.</p>
-                  <p className="text-xs text-gray-400 mt-1">Dentists will appear here once added and can be edited or removed.</p>
-                </div>
-              </div>
-              
-              <div className="border border-indigo-200 bg-indigo-50 rounded-lg p-4">
-                <p className="text-indigo-800 text-sm">
-                  <strong>Note:</strong> Added dentists will be available for selection when assigning procedures to patients. 
-                  Make sure to include accurate contact information for each dentist.
-                </p>
-              </div>
             </CardContent>
           </Card>
 
