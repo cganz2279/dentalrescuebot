@@ -1255,15 +1255,17 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Add Patient with Dentist Selection"
-    - "Procedure Assignment Workflow"
+    - "Enhanced Payment Verification System (SamCart)"
+    - "Registration Logging System"
   stuck_tasks:
+    - "Enhanced Payment Verification System (SamCart)"
     - "Add Patient with Dentist Selection - Missing dentist dropdown field"
     - "Dentist Selection in Procedure Assignment - No procedures available for assignment"
     - "Update Patient API"
   test_all: false
   test_priority: "high_first"
   completed_new_features:
+    - "Email Notification System (SendGrid Integration)"
     - "Get Practice Doctors API"
     - "Get Procedure Assignment API"
     - "Update Procedure Assignment API"
