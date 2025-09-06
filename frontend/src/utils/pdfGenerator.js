@@ -1,39 +1,4 @@
-// Format original PDF content to match the user's provided structure
-const formatOriginalPDFContent = (content) => {
-  if (!content) return '<p>No content available</p>';
-  
-  // Split content by sections and format properly
-  let formattedContent = content
-    // Handle Purpose section
-    .replace(/Purpose:\s*/gi, '<h4>Purpose:</h4><p>')
-    // Handle First 24 Hours section
-    .replace(/First 24 Hours:\s*/gi, '</p><h4>First 24 Hours:</h4><p>')
-    // Handle Pain & Sensitivity section
-    .replace(/Pain & Sensitivity:\s*/gi, '</p><h4>Pain & Sensitivity:</h4><p>')
-    // Handle Oral Hygiene section
-    .replace(/Oral Hygiene:\s*/gi, '</p><h4>Oral Hygiene:</h4><p>')
-    // Handle Diet section
-    .replace(/Diet:\s*/gi, '</p><h4>Diet:</h4><p>')
-    // Handle Special Precautions section
-    .replace(/Special Precautions:\s*/gi, '</p><h4>Special Precautions:</h4><p>')
-    // Handle Follow-Up section
-    .replace(/Follow-Up:\s*/gi, '</p><h4>Follow-Up:</h4><p>')
-    // Handle bullet points starting with -
-    .replace(/- ([^-\n]+)/g, '<br>• $1')
-    // Clean up any double paragraph tags
-    .replace(/<\/p><p>/g, '<br><br>')
-    // Add closing paragraph tag
-    + '</p>';
-  
-  // Clean up any issues
-  formattedContent = formattedContent
-    .replace(/^<\/p>/, '') // Remove opening </p>
-    .replace(/<p><\/p>/g, '') // Remove empty paragraphs
-    .replace(/<br><br><h4>/g, '</p><h4>') // Fix spacing before headers
-    .replace(/<h4>/g, '<h4 style="color: #1f2937; font-weight: 600; margin: 16px 0 8px 0;">');
-  
-  return formattedContent;
-};
+import jsPDF from 'jspdf';
 
 // Helper function to format phone numbers
 const formatPhoneNumber = (phone) => {
@@ -55,36 +20,118 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Improved PDF Generator with direct download (no popups)
+// Format original PDF content to extract readable sections
+const formatOriginalPDFContent = (content) => {
+  if (!content) return 'No content available';
+  
+  // Extract and clean up the content to match your original PDF format
+  let cleanContent = content
+    // Remove any truncated text ending with "..."
+    .replace(/\.{3,}$/, '')
+    // Clean up spacing
+    .replace(/\s+/g, ' ')
+    .trim();
+  
+  return cleanContent;
+};
+
+// Generate actual PDF file using jsPDF (OVERVIEW ONLY)
 export const generateProcedurePDF = async (procedure) => {
   try {
     console.log('🎨 Starting PDF generation...');
     
-    // Create optimized HTML content with print-specific styling
-    const printContent = createOptimizedPrintHTML(procedure);
+    // Create new PDF document
+    const pdf = new jsPDF();
     
-    // Create blob and download directly (no popup needed)
-    const blob = new Blob([printContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
+    // Set up document properties
+    pdf.setProperties({
+      title: `${procedure.name} - Post-Operative Care Guide`,
+      subject: 'Post-Operative Care Instructions',
+      author: procedure.practiceName || 'Your Dental Practice',
+      creator: 'Dental Practice Management System'
+    });
     
-    // Create temporary download link
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = `${procedure.name.replace(/[^a-zA-Z0-9]/g, '_')}_Care_Guide.html`;
-    downloadLink.style.display = 'none';
+    // Header
+    pdf.setFontSize(20);
+    pdf.setFont(undefined, 'bold');
+    pdf.text(procedure.name, 20, 30);
     
-    // Add to DOM, click, and clean up
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    pdf.setFontSize(14);
+    pdf.setFont(undefined, 'normal');
+    pdf.text('Post-Operative Care Instructions', 20, 45);
     
-    // Clean up blob URL
-    setTimeout(() => URL.revokeObjectURL(url), 100);
+    // Practice info
+    let yPos = 60;
+    if (procedure.practiceName) {
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(procedure.practiceName, 20, yPos);
+      yPos += 10;
+    }
+    
+    if (procedure.practicePhone) {
+      pdf.setFont(undefined, 'normal');
+      pdf.text(`Phone: ${formatPhoneNumber(procedure.practicePhone)}`, 20, yPos);
+      yPos += 10;
+    }
+    
+    yPos += 10; // Add some space
+    
+    // ONLY OVERVIEW CONTENT - This is the key fix!
+    if (procedure.overview) {
+      pdf.setFontSize(16);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('Post-Operative Care Instructions', 20, yPos);
+      yPos += 15;
+      
+      // Format and add the overview content
+      const formattedContent = formatOriginalPDFContent(procedure.overview);
+      
+      pdf.setFontSize(11);
+      pdf.setFont(undefined, 'normal');
+      
+      // Split content into lines that fit the page width
+      const lines = pdf.splitTextToSize(formattedContent, 170);
+      
+      // Add each line to the PDF
+      for (let i = 0; i < lines.length; i++) {
+        // Check if we need a new page
+        if (yPos > 270) {
+          pdf.addPage();
+          yPos = 30;
+        }
+        
+        pdf.text(lines[i], 20, yPos);
+        yPos += 6;
+      }
+    }
+    
+    // Footer
+    yPos = Math.max(yPos + 20, 280);
+    if (yPos > 270) {
+      pdf.addPage();
+      yPos = 30;
+    }
+    
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'italic');
+    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
+    
+    if (procedure.practicePhone) {
+      yPos += 8;
+      pdf.text(`Emergency Contact: ${formatPhoneNumber(procedure.practicePhone)}`, 20, yPos);
+    }
+    
+    // Generate filename
+    const filename = `${procedure.name.replace(/[^a-zA-Z0-9]/g, '_')}_Care_Guide.pdf`;
+    
+    // Download the PDF
+    pdf.save(filename);
     
     console.log('✅ PDF downloaded successfully');
     
     // Show success message
-    alert('✅ Care Guide Downloaded!\n\nThe PDF has been downloaded to your device. Open the file and use your browser\'s print function (Ctrl+P) to print or save as PDF.');
+    alert('✅ Care Guide Downloaded!\n\nYour simplified post-operative care guide has been downloaded as a PDF file.');
     
     return true;
     
@@ -93,183 +140,6 @@ export const generateProcedurePDF = async (procedure) => {
     alert('PDF generation failed: ' + error.message);
     return false;
   }
-};
-
-// Create optimized HTML that matches the View page layout exactly
-const createOptimizedPrintHTML = (procedure) => {
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${procedure.name} - Care Guide</title>
-    <style>
-        @page {
-            size: A4;
-            margin: 1in;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #374151;
-            margin: 0;
-            padding: 0;
-            background: white;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 3px solid #2563eb;
-        }
-        
-        .procedure-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 8px;
-        }
-        
-        .specialty-badge {
-            display: inline-block;
-            background: #dbeafe;
-            color: #1d4ed8;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 16px;
-        }
-        
-        .practice-info {
-            margin-top: 16px;
-            font-size: 16px;
-            color: #4b5563;
-        }
-        
-        .practice-name {
-            font-weight: 600;
-            color: #1f2937;
-        }
-        
-        .content-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-        
-        .card-header {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .overview-content p {
-            margin-bottom: 12px;
-            color: #4b5563;
-        }
-        
-        .overview-content h4 {
-            color: #1f2937;
-            font-weight: 600;
-            margin: 16px 0 8px 0;
-        }
-        
-        .overview-bullet {
-            display: flex;
-            margin-bottom: 8px;
-            align-items: flex-start;
-        }
-        
-        .overview-bullet-point {
-            color: #2563eb;
-            margin-right: 8px;
-            font-weight: bold;
-            margin-top: 2px;
-        }
-        
-        .footer-info {
-            margin-top: 32px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-        }
-        
-        .footer-info p {
-            margin: 4px 0;
-        }
-        
-        .footer-info strong {
-            color: #374151;
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <div class="header">
-        <div class="procedure-title">${procedure.name}</div>
-        ${procedure.specialtyName ? `<div class="specialty-badge">${procedure.specialtyName}</div>` : ''}
-        ${procedure.duration ? `<div style="color: #6b7280; font-size: 14px;">Estimated Duration: ${procedure.duration}</div>` : ''}
-        
-        ${procedure.practiceName || procedure.practicePhone || procedure.practiceAddress ? `
-            <div class="practice-info">
-                ${procedure.practiceName ? `<div class="practice-name">${procedure.practiceName}</div>` : ''}
-                ${procedure.practicePhone ? `<div>📞 ${formatPhoneNumber(procedure.practicePhone)}</div>` : ''}
-                ${procedure.practiceAddress ? `<div>📍 ${procedure.practiceAddress}</div>` : ''}
-                ${procedure.practiceEmail ? `<div>📧 ${procedure.practiceEmail}</div>` : ''}
-            </div>
-        ` : ''}
-    </div>
-    
-    <!-- ONLY Overview Content -->
-    ${procedure.overview ? `
-        <div class="content-card">
-            <div class="card-header">
-                <span style="margin-right: 8px;">📋</span>
-                Post-Operative Care Instructions
-            </div>
-            <div class="overview-content">
-                ${formatOriginalPDFContent(procedure.overview)}
-            </div>
-        </div>
-    ` : ''}
-    
-    <!-- Footer -->
-    <div class="footer-info">
-        <p>
-            Generated on ${new Date().toLocaleDateString()} | 
-            ${procedure.practiceName || 'Your Dental Practice'} | 
-            Post-Operative Care Guide
-        </p>
-        ${procedure.emergencyContact || procedure.practicePhone ? `
-            <p style="margin-top: 8px;">
-                <strong>Emergency Contact:</strong> ${formatPhoneNumber(procedure.emergencyContact || procedure.practicePhone)}
-            </p>
-        ` : ''}
-        ${procedure.afterHoursContact ? `
-            <p style="margin-top: 4px;">
-                <strong>After Hours:</strong> ${formatPhoneNumber(procedure.afterHoursContact)}
-            </p>
-        ` : ''}
-        ${procedure.dentistName ? `
-            <p style="margin-top: 8px;">
-                <strong>Your Doctor:</strong> ${procedure.dentistName}
-            </p>
-        ` : ''}
-    </div>
-</body>
-</html>
-  `;
 };
 
 
