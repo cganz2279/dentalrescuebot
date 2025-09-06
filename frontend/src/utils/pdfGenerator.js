@@ -86,355 +86,176 @@ const createOptimizedPrintHTML = (procedure) => {
     <style>
         @page {
             size: A4;
-            margin: 0.75in;
-        }
-        
-        * {
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            margin: 1in;
         }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             color: #374151;
-            background: white !important;
             margin: 0;
             padding: 0;
-            font-size: 14px;
+            background: white;
         }
         
-        /* Page numbering */
-        .page-footer {
-            position: fixed;
-            bottom: 0.5in;
-            right: 0.75in;
-            font-size: 10px;
-            color: #6b7280;
-        }
-        
-        .page-footer:after {
-            counter-increment: page;
-            content: "Page " counter(page);
-        }
-        
-        /* Header section - matches View exactly */
-        .header-section {
-            margin-bottom: 24px;
-            border-bottom: 1px solid #e5e7eb;
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
             padding-bottom: 24px;
+            border-bottom: 3px solid #2563eb;
         }
         
-        .specialty-badge {
-            background: #f3f4f6 !important;
-            color: #4b5563 !important;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-block;
+        .procedure-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
             margin-bottom: 8px;
         }
         
-        .main-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #111827;
-            margin: 0 0 8px 0;
-        }
-        
-        .duration {
-            color: #6b7280;
+        .specialty-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 4px 12px;
+            border-radius: 6px;
             font-size: 14px;
-            display: flex;
-            align-items: center;
+            font-weight: 500;
             margin-bottom: 16px;
         }
         
         .practice-info {
-            background: #2563eb !important;
-            color: white !important;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
+            margin-top: 16px;
+            font-size: 16px;
+            color: #4b5563;
         }
         
         .practice-name {
-            font-size: 18px;
             font-weight: 600;
-            margin: 0 0 8px 0;
-            color: white !important;
+            color: #1f2937;
         }
         
-        .practice-contact {
-            font-size: 14px;
-            color: #bfdbfe !important;
-            margin: 4px 0;
-        }
-        
-        /* Card styling to match View */
         .content-card {
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
+            padding: 24px;
             margin-bottom: 24px;
-            overflow: hidden;
-            break-inside: avoid;
         }
         
         .card-header {
-            padding: 16px;
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .card-content {
-            padding: 16px;
-        }
-        
-        /* Overview specific styling */
-        .overview-header {
-            background: #f9fafb !important;
-            color: #2563eb !important;
-        }
-        
-        .overview-content {
-            line-height: 1.6;
         }
         
         .overview-content p {
             margin-bottom: 12px;
-            color: #374151;
+            color: #4b5563;
         }
         
         .overview-content h4 {
-            font-weight: bold;
-            color: #111827;
-            margin: 24px 0 12px 0;
-            font-size: 16px;
+            color: #1f2937;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
         }
         
         .overview-bullet {
             display: flex;
-            align-items: flex-start;
             margin-bottom: 8px;
-            margin-left: 16px;
+            align-items: flex-start;
         }
         
         .overview-bullet-point {
             color: #2563eb;
-            margin-right: 12px;
-            font-size: 16px;
-            line-height: 1;
-        }
-        
-        /* Grid layout for sections */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-        
-        /* Section-specific colors */
-        .aftercare .card-header {
-            background: #dcfce7 !important;
-            color: #16a34a !important;
-        }
-        
-        .aftercare {
-            border-left: 4px solid #16a34a !important;
-        }
-        
-        .diet .card-header {
-            background: #fef3c7 !important;
-            color: #d97706 !important;
-        }
-        
-        .diet {
-            border-left: 4px solid #d97706 !important;
-        }
-        
-        .warnings {
-            background: #fef2f2 !important;
-            border-left: 4px solid #ef4444 !important;
-        }
-        
-        .warnings .card-header {
-            background: #fee2e2 !important;
-            color: #dc2626 !important;
-        }
-        
-        .timeline .card-header {
-            background: #ede9fe !important;
-            color: #7c3aed !important;
-        }
-        
-        .timeline {
-            border-left: 4px solid #7c3aed !important;
-        }
-        
-        .medications .card-header {
-            background: #dbeafe !important;
-            color: #2563eb !important;
-        }
-        
-        .medications {
-            border-left: 4px solid #2563eb !important;
-        }
-        
-        /* List styling */
-        .section-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .section-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .item-number {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            margin-right: 12px;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
-        
-        .aftercare .item-number {
-            background: #dcfce7 !important;
-            color: #16a34a !important;
-        }
-        
-        .diet .item-number {
-            background: #fef3c7 !important;
-            color: #d97706 !important;
-        }
-        
-        .timeline .item-number {
-            background: #ede9fe !important;
-            color: #7c3aed !important;
-            border-radius: 16px;
-            padding: 4px 12px;
-            width: auto;
-            min-width: 60px;
-            font-size: 11px;
-        }
-        
-        .warning-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            color: #991b1b;
-        }
-        
-        .warning-icon {
-            color: #ef4444;
             margin-right: 8px;
+            font-weight: bold;
             margin-top: 2px;
-            flex-shrink: 0;
         }
         
         .footer-info {
-            background: #f9fafb !important;
-            padding: 16px;
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-            border-top: 1px solid #e5e7eb;
             margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
         }
         
-        @media print {
-            .content-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
+        .footer-info p {
+            margin: 4px 0;
+        }
+        
+        .footer-info strong {
+            color: #374151;
         }
     </style>
 </head>
 <body>
-    <div class="page-footer"></div>
-    
-    <!-- Header section - matches View page exactly -->
-    <div class="header-section">
-        <div class="specialty-badge">${procedure.specialtyName || 'Dental Procedure'}</div>
-        <h1 class="main-title">${procedure.name}</h1>
-        ${procedure.duration ? `
-            <div class="duration">⏰ Duration: ${procedure.duration}</div>
-        ` : ''}
+    <!-- Header -->
+    <div class="header">
+        <div class="procedure-title">${procedure.name}</div>
+        ${procedure.specialtyName ? `<div class="specialty-badge">${procedure.specialtyName}</div>` : ''}
+        ${procedure.duration ? `<div style="color: #6b7280; font-size: 14px;">Estimated Duration: ${procedure.duration}</div>` : ''}
         
-        ${procedure.practiceName ? `
+        ${procedure.practiceName || procedure.practicePhone || procedure.practiceAddress ? `
             <div class="practice-info">
-                <div class="practice-name">${procedure.practiceName}</div>
-                ${procedure.practicePhone ? `<div class="practice-contact">📞 ${formatPhoneNumber(procedure.practicePhone)}</div>` : ''}
-                ${procedure.practiceAddress ? `<div class="practice-contact">📍 ${procedure.practiceAddress}</div>` : ''}
-                ${procedure.practiceEmail ? `<div class="practice-contact">📧 ${procedure.practiceEmail}</div>` : ''}
+                ${procedure.practiceName ? `<div class="practice-name">${procedure.practiceName}</div>` : ''}
+                ${procedure.practicePhone ? `<div>📞 ${formatPhoneNumber(procedure.practicePhone)}</div>` : ''}
+                ${procedure.practiceAddress ? `<div>📍 ${procedure.practiceAddress}</div>` : ''}
+                ${procedure.practiceEmail ? `<div>📧 ${procedure.practiceEmail}</div>` : ''}
             </div>
         ` : ''}
     </div>
     
-    <!-- Complete Care Instructions - Overview Only -->
+    <!-- ONLY Overview Content -->
     ${procedure.overview ? `
         <div class="content-card">
-            <div class="card-header overview-header">
+            <div class="card-header">
                 <span style="margin-right: 8px;">📋</span>
                 Post-Operative Care Instructions
             </div>
-            <div class="card-content">
-                <div class="overview-content">
-                    ${procedure.overview.split('\n').map(line => {
-                        const trimmedLine = line.trim();
-                        
-                        if (trimmedLine === '') {
-                            return '<div style="margin-bottom: 8px;"></div>';
+            <div class="overview-content">
+                ${procedure.overview.split('\n').map(line => {
+                    const trimmedLine = line.trim();
+                    
+                    if (trimmedLine === '') {
+                        return '<div style="margin-bottom: 8px;"></div>';
+                    }
+                    
+                    if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                        const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
+                        return `
+                            <div class="overview-bullet">
+                                <span class="overview-bullet-point">•</span>
+                                <span>${bulletText}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (trimmedLine.includes('**')) {
+                        if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.length > 4) {
+                            const headerText = trimmedLine.replace(/\*\*/g, '');
+                            return `<h4>${headerText}</h4>`;
+                        } else {
+                            const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/);
+                            return `<p>${parts.map(part => {
+                                if (part.startsWith('**') && part.endsWith('**')) {
+                                    return `<strong>${part.replace(/\*\*/g, '')}</strong>`;
+                                }
+                                return part;
+                            }).join('')}</p>`;
                         }
-                        
-                        if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-                            const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
-                            return `
-                                <div class="overview-bullet">
-                                    <span class="overview-bullet-point">•</span>
-                                    <span>${bulletText}</span>
-                                </div>
-                            `;
-                        }
-                        
-                        if (trimmedLine.includes('**')) {
-                            if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.length > 4) {
-                                const headerText = trimmedLine.replace(/\*\*/g, '');
-                                return `<h4>${headerText}</h4>`;
-                            } else {
-                                const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/);
-                                return `<p>${parts.map(part => {
-                                    if (part.startsWith('**') && part.endsWith('**')) {
-                                        return `<strong>${part.replace(/\*\*/g, '')}</strong>`;
-                                    }
-                                    return part;
-                                }).join('')}</p>`;
-                            }
-                        }
-                        
-                        if (trimmedLine.length > 0) {
-                            return `<p>${trimmedLine}</p>`;
-                        }
-                        
-                        return '';
-                    }).join('')}
-                </div>
+                    }
+                    
+                    if (trimmedLine.length > 0) {
+                        return `<p>${trimmedLine}</p>`;
+                    }
+                    
+                    return '';
+                }).join('')}
             </div>
         </div>
     ` : ''}
