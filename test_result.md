@@ -184,6 +184,18 @@ backend:
           agent: "testing"
           comment: "REVIEW REQUEST DENTIST MANAGEMENT VERIFICATION COMPLETED SUCCESSFULLY: ✅ PRIORITY 2 REQUIREMENTS FULLY VERIFIED: (1) ✅ Authentication with cganz2279@gmail.com/password123 successful (Practice ID: 0b08d321-ae1a-43d5-b69a-4850cfa3a9fc), (2) ✅ GET /api/practice/dentists working (retrieved 1 dentist), (3) ✅ POST /api/practice/dentists working (created test dentist with ID: d2827a46-f0d2-4820-9001-16c16fd5472f), (4) ✅ PUT /api/practice/dentists/{id} working (successfully updated dentist information), (5) ✅ DELETE /api/practice/dentists/{id} working (soft delete successful). ALL DENTIST CRUD OPERATIONS VERIFIED: Complete dentist management functionality is operational at production backend https://careplan-builder.preview.emergentagent.com/api. All endpoints properly authenticated, validated, and returning correct responses. Dentist management system is production-ready and meets all review request specifications."
 
+  - task: "Practice Settings API (officeHours & emergencyContact)"
+    implemented: true
+    working: true
+    file: "backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "COMPREHENSIVE PRACTICE SETTINGS TESTING COMPLETED SUCCESSFULLY: ✅ ALL 8 TESTS PASSED (100% success rate). DETAILED TEST RESULTS: (1) ✅ PRACTICE ADMIN AUTHENTICATION: Successfully authenticated with cganz2279@gmail.com/password123 credentials (Practice ID: 0b08d321-ae1a-43d5-b69a-4850cfa3a9fc), (2) ✅ PUT /api/practice/update ENDPOINT: Successfully updates officeHours and emergencyContact fields with realistic data ('Monday-Friday: 8:00 AM - 5:00 PM, Saturday: 9:00 AM - 2:00 PM' and '(555) 123-4567'), (3) ✅ DATABASE INTEGRATION: Verified that practice settings are properly stored and retrieved from MongoDB - officeHours and emergencyContact fields persist correctly in practices collection, (4) ✅ PDF INTEGRATION: GET /api/procedures/{id} endpoint correctly returns practice information including practiceOfficeHours and practiceEmergencyContact fields for PDF generation, verified with root-canal-therapy procedure, (5) ✅ DATA VALIDATION: Successfully tested various input formats including 24/7 format, compact format, extended format, international phone numbers, extensions, multiple numbers, and text instructions - all formats accepted and stored correctly, (6) ✅ EDGE CASES: Properly handles empty strings, null values, very long text, and special characters without errors, (7) ✅ SECURITY: Unauthorized access properly blocked with 403 Forbidden status, requires valid JWT token with practice_admin role, (8) ✅ CRITICAL FIX APPLIED: Resolved import issue in server.py where wrong get_current_user function was imported - changed from routes.auth (route handler) to routes.practice (dependency function), enabling proper practice information lookup in procedure endpoints. BACKEND FUNCTIONALITY VERIFIED: Complete practice settings workflow working end-to-end from update → storage → retrieval → PDF integration. All requested functionality from review request is operational and production-ready."
+
   - task: "Health Check API"
     implemented: true
     working: true
