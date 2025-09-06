@@ -1,3 +1,40 @@
+// Format original PDF content to match the user's provided structure
+const formatOriginalPDFContent = (content) => {
+  if (!content) return '<p>No content available</p>';
+  
+  // Split content by sections and format properly
+  let formattedContent = content
+    // Handle Purpose section
+    .replace(/Purpose:\s*/gi, '<h4>Purpose:</h4><p>')
+    // Handle First 24 Hours section
+    .replace(/First 24 Hours:\s*/gi, '</p><h4>First 24 Hours:</h4><p>')
+    // Handle Pain & Sensitivity section
+    .replace(/Pain & Sensitivity:\s*/gi, '</p><h4>Pain & Sensitivity:</h4><p>')
+    // Handle Oral Hygiene section
+    .replace(/Oral Hygiene:\s*/gi, '</p><h4>Oral Hygiene:</h4><p>')
+    // Handle Diet section
+    .replace(/Diet:\s*/gi, '</p><h4>Diet:</h4><p>')
+    // Handle Special Precautions section
+    .replace(/Special Precautions:\s*/gi, '</p><h4>Special Precautions:</h4><p>')
+    // Handle Follow-Up section
+    .replace(/Follow-Up:\s*/gi, '</p><h4>Follow-Up:</h4><p>')
+    // Handle bullet points starting with -
+    .replace(/- ([^-\n]+)/g, '<br>• $1')
+    // Clean up any double paragraph tags
+    .replace(/<\/p><p>/g, '<br><br>')
+    // Add closing paragraph tag
+    + '</p>';
+  
+  // Clean up any issues
+  formattedContent = formattedContent
+    .replace(/^<\/p>/, '') // Remove opening </p>
+    .replace(/<p><\/p>/g, '') // Remove empty paragraphs
+    .replace(/<br><br><h4>/g, '</p><h4>') // Fix spacing before headers
+    .replace(/<h4>/g, '<h4 style="color: #1f2937; font-weight: 600; margin: 16px 0 8px 0;">');
+  
+  return formattedContent;
+};
+
 // Helper function to format phone numbers
 const formatPhoneNumber = (phone) => {
   if (!phone) return '';
