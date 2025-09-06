@@ -90,6 +90,10 @@ const AdminDashboard = () => {
     medications: ['']
   });
 
+  // Registrations state
+  const [registrations, setRegistrations] = useState([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+
   const API_BASE = `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}/api/admin`;
 
   useEffect(() => {
