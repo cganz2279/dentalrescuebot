@@ -66,6 +66,11 @@ class PracticeRegisterRequest(BaseModel):
     city: Optional[str] = None
     state: Optional[str] = None
     zipCode: Optional[str] = None
+    # Payment verification (for SamCart)
+    paymentVerified: Optional[bool] = False
+    paymentSource: Optional[str] = None
+    samcartOrderId: Optional[str] = None
+    samcartCustomerId: Optional[str] = None
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
