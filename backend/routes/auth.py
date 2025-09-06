@@ -305,6 +305,23 @@ async def register_practice(request: PracticeRegisterRequest):
 async def register_practice_samcart(request: PracticeRegisterRequest):
     """Register practice after SamCart payment verification"""
     try:
+        # Enhanced Payment Verification for SamCart
+        if not request.paymentVerified:
+            # Log unauthorized registration attempt
+            await db.registration_attempts.insert_one({
+                "email": request.email.lower(),
+                "practiceName": request.practiceName,
+                "attempted_at": datetime.utcnow(),
+                "payment_verified": False,
+                "status": "blocked",
+                "reason": "Payment not verified"
+            })
+            
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Payment verification required. Please complete your payment through SamCart first."
+            )
+        
         # Validate password
         if not validate_password(request.adminPassword):
             raise HTTPException(
@@ -348,7 +365,9 @@ async def register_practice_samcart(request: PracticeRegisterRequest):
                 "paymentSource": "samcart",
                 "monthlyAmount": 49.0,
                 "activatedAt": datetime.utcnow(),
-                "nextBillingDate": datetime.utcnow() + timedelta(days=30)
+                "nextBillingDate": datetime.utcnow() + timedelta(days=30),
+                "samcartOrderId": request.samcartOrderId,
+                "samcartCustomerId": request.samcartCustomerId
             },
             "settings": {
                 "allowPatientRegistration": False,
