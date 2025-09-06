@@ -9,7 +9,7 @@ import json
 import time
 from datetime import datetime
 
-BACKEND_URL = "https://dentistpdf.preview.emergentagent.com/api"
+BACKEND_URL = "https://careplan-debug.preview.emergentagent.com/api"
 
 class RegistrationTester:
     def __init__(self):

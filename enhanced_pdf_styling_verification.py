@@ -21,7 +21,7 @@ import os
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dentistpdf.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://careplan-debug.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 print(f"🎨 Enhanced PDF Styling Requirements Verification")
