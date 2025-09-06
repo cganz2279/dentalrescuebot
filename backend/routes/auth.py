@@ -11,10 +11,22 @@ from typing import Optional
 import re
 from dotenv import load_dotenv
 from pathlib import Path
+import sys
+
+# Add the backend directory to the path so we can import services
+sys.path.append(str(Path(__file__).parent.parent))
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Import email service
+try:
+    from services.email_service import email_service
+    EMAIL_ENABLED = True
+except Exception as e:
+    print(f"Email service not available: {e}")
+    EMAIL_ENABLED = False
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
 security = HTTPBearer()
