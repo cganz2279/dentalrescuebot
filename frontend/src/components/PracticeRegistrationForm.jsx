@@ -179,7 +179,7 @@ const PracticeRegistrationForm = ({ onSwitchToLogin }) => {
                     <Input
                       id="website"
                       name="website"
-                      type="url"
+                      type="text"
                       value={formData.website}
                       onChange={handleInputChange}
                       className="pl-10"
