@@ -399,6 +399,46 @@ async def register_practice_samcart(request: PracticeRegisterRequest):
         await db.practices.insert_one(practice_doc)
         await db.users.insert_one(admin_user_doc)
         
+        # Log successful registration
+        await db.registration_attempts.insert_one({
+            "email": request.email.lower(),
+            "practiceName": request.practiceName,
+            "attempted_at": datetime.utcnow(),
+            "payment_verified": True,
+            "status": "success",
+            "registration_type": "samcart",
+            "practice_id": practice_id
+        })
+        
+        # Send email notification to admin
+        if EMAIL_ENABLED:
+            try:
+                registration_data = {
+                    "practiceName": request.practiceName,
+                    "email": request.email,
+                    "phone": request.phone,
+                    "website": request.website,
+                    "adminFirstName": request.adminFirstName,
+                    "adminLastName": request.adminLastName,
+                    "street": request.street,
+                    "city": request.city,
+                    "state": request.state,
+                    "zipCode": request.zipCode,
+                    "samcartOrderId": request.samcartOrderId,
+                    "samcartCustomerId": request.samcartCustomerId
+                }
+                
+                email_sent = email_service.send_registration_notification(
+                    registration_data, 
+                    "samcart"
+                )
+                
+                if not email_sent:
+                    print(f"Failed to send email notification for registration: {request.email}")
+                    
+            except Exception as e:
+                print(f"Email notification error for {request.email}: {e}")
+        
         return {
             "success": True,
             "message": "Registration completed successfully - account is active",
