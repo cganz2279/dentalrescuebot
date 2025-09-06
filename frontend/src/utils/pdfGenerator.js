@@ -387,12 +387,12 @@ const createOptimizedPrintHTML = (procedure) => {
         ` : ''}
     </div>
     
-    <!-- Overview Section - ON PAGE 1 like View -->
+    <!-- Complete Care Instructions - Overview Only -->
     ${procedure.overview ? `
         <div class="content-card">
             <div class="card-header overview-header">
                 <span style="margin-right: 8px;">📋</span>
-                Overview
+                Post-Operative Care Instructions
             </div>
             <div class="card-content">
                 <div class="overview-content">
@@ -438,103 +438,6 @@ const createOptimizedPrintHTML = (procedure) => {
             </div>
         </div>
     ` : ''}
-    
-    <!-- Main Content Grid -->
-    <div class="content-grid">
-        <!-- Immediate Aftercare -->
-        <div class="content-card aftercare">
-            <div class="card-header">
-                <span style="margin-right: 8px;">⚡</span>
-                Immediate Aftercare
-            </div>
-            <div class="card-content">
-                <ul class="section-list">
-                    ${procedure.immediateAftercare?.map((instruction, index) => `
-                        <li class="section-item">
-                            <div class="item-number">${index + 1}</div>
-                            <span>${instruction}</span>
-                        </li>
-                    `).join('') || '<li>No specific aftercare instructions provided.</li>'}
-                </ul>
-            </div>
-        </div>
-        
-        <!-- Diet Restrictions -->
-        <div class="content-card diet">
-            <div class="card-header">
-                <span style="margin-right: 8px;">🍽️</span>
-                Diet Restrictions
-            </div>
-            <div class="card-content">
-                <ul class="section-list">
-                    ${procedure.dietRestrictions?.map((restriction, index) => `
-                        <li class="section-item">
-                            <div class="item-number">${index + 1}</div>
-                            <span>${restriction}</span>
-                        </li>
-                    `).join('') || '<li>No specific diet restrictions.</li>'}
-                </ul>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Warning Signs -->
-    <div class="content-card warnings">
-        <div class="card-header">
-            <span style="margin-right: 8px;">⚠️</span>
-            Warning Signs - Call Your Dentist
-        </div>
-        <div class="card-content">
-            <p style="font-weight: 500; margin-bottom: 12px; color: #b91c1c;">
-                Contact your dental office immediately if you experience any of the following:
-            </p>
-            ${procedure.warningSignsToCallDoctor?.map((sign) => `
-                <div class="warning-item">
-                    <span class="warning-icon">⚠️</span>
-                    <span>${sign}</span>
-                </div>
-            `).join('') || '<div class="warning-item"><span>Please contact your dentist if you have any concerns.</span></div>'}
-        </div>
-    </div>
-    
-    <!-- Bottom Grid -->
-    <div class="content-grid">
-        <!-- Recovery Timeline -->
-        <div class="content-card timeline">
-            <div class="card-header">
-                <span style="margin-right: 8px;">📅</span>
-                Recovery Timeline
-            </div>
-            <div class="card-content">
-                <ul class="section-list">
-                    ${procedure.recoveryTimeline?.map((timeline) => `
-                        <li class="section-item">
-                            <div class="item-number">Day ${timeline.day}</div>
-                            <span style="font-size: 14px;">${timeline.activity}</span>
-                        </li>
-                    `).join('') || '<li>Standard recovery timeline applies.</li>'}
-                </ul>
-            </div>
-        </div>
-        
-        <!-- Medications -->
-        <div class="content-card medications">
-            <div class="card-header">
-                <span style="margin-right: 8px;">💊</span>
-                Medications
-            </div>
-            <div class="card-content">
-                <ul class="section-list">
-                    ${procedure.medications?.map((medication) => `
-                        <li class="section-item">
-                            <span style="color: #2563eb; margin-right: 8px; margin-top: 4px; flex-shrink: 0;">💊</span>
-                            <span style="font-size: 14px;">${medication}</span>
-                        </li>
-                    `).join('') || '<li>No specific medications prescribed.</li>'}
-                </ul>
-            </div>
-        </div>
-    </div>
     
     <!-- Footer -->
     <div class="footer-info">
