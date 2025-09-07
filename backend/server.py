@@ -208,8 +208,9 @@ async def search_procedures(q: str = Query(..., min_length=1)):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 # Include routers - authentication will NOT affect the procedure endpoint defined above
-app.include_router(auth_router)    # Auth router first (has registration endpoints)
-app.include_router(webhooks_router)  # Webhooks router (might be public)
+app.include_router(public_router)  # PUBLIC router FIRST - no authentication
+app.include_router(auth_router)    # Auth router 
+app.include_router(webhooks_router)  # Webhooks router
 app.include_router(api_router)     # General API router
 
 # PROTECTED ROUTERS (require authentication)
