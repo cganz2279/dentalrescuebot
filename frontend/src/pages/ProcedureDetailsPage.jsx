@@ -587,48 +587,32 @@ const ProcedureDetailsPage = () => {
           </CardContent>
         </Card>
 
-        {/* Practice Notes - Editable */}
-        {(procedureData.practiceNotes || isEditing) && (
+        {/* Office Hours */}
+        {practice?.officeHours && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Practice Notes</CardTitle>
+              <CardTitle className="flex items-center text-blue-700">
+                <Clock className="h-5 w-5 mr-2" />
+                Office Hours
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {isEditing ? (
-                <Textarea
-                  value={editData.practiceNotes}
-                  onChange={(e) => handleInputChange('practiceNotes', e.target.value)}
-                  placeholder="Add practice notes..."
-                  rows={3}
-                />
-              ) : (
-                <p className="text-gray-700">{procedureData.practiceNotes}</p>
-              )}
+              <p className="text-gray-700 font-medium">{practice.officeHours}</p>
             </CardContent>
           </Card>
         )}
 
-        {/* Custom Instructions - Editable */}
-        {(procedureData.customInstructions?.length > 0 || isEditing) && (
+        {/* Emergency Contact */}
+        {practice?.emergencyContact && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Custom Instructions</CardTitle>
+              <CardTitle className="flex items-center text-red-700">
+                <Phone className="h-5 w-5 mr-2" />
+                Emergency Contact
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {isEditing ? (
-                <Textarea
-                  value={editData.customInstructions}
-                  onChange={(e) => handleInputChange('customInstructions', e.target.value)}
-                  placeholder="Add custom instructions, one per line..."
-                  rows={4}
-                />
-              ) : (
-                <ul className="list-disc list-inside space-y-2">
-                  {procedureData.customInstructions.map((instruction, index) => (
-                    <li key={index} className="text-gray-700">{instruction}</li>
-                  ))}
-                </ul>
-              )}
+              <p className="text-gray-700 font-medium">{practice.emergencyContact}</p>
             </CardContent>
           </Card>
         )}
