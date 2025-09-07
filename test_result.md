@@ -970,6 +970,18 @@ backend:
           comment: "COMPREHENSIVE REGISTRATION TESTING COMPLETED SUCCESSFULLY: ✅ ALL 8 TESTS PASSED (100% SUCCESS RATE): Conducted thorough testing of POST /api/auth/register-practice-samcart endpoint as requested in review. DETAILED TEST RESULTS: (1) ✅ VALID REGISTRATION: Successfully registered practice 'Sunrise Dental Care' with proper data including www.sunrisedental.com website format, admin user Dr. Sarah Johnson, password SecurePass123, returns active status immediately, (2) ✅ PASSWORD VALIDATION - LETTERS ONLY: Correctly rejected password 'OnlyLetters' with error 'Password must be at least 6 characters with letters and numbers', (3) ✅ PASSWORD VALIDATION - NUMBERS ONLY: Correctly rejected password '123456789' with same validation error, (4) ✅ PASSWORD VALIDATION - TOO SHORT: Correctly rejected password 'Ab1' for being under 6 characters, (5) ✅ PASSWORD VALIDATION - VALID: Successfully accepted password 'ValidPass123' with letters+numbers+6+ chars, (6) ✅ EMAIL VALIDATION - DUPLICATE: Correctly rejected duplicate email registration with error 'Email already registered', (7) ✅ WEBSITE FIELD VALIDATION: Successfully accepted www.websitetest.com format without requiring https://, (8) ✅ ERROR HANDLING - MISSING FIELDS: Correctly returned 422 validation error for incomplete registration data. ADDITIONAL VERIFICATION: ✅ END-TO-END LOGIN: Verified newly registered users can login successfully with JWT token generation, proper user details, and practice association. CRITICAL FIXES CONFIRMED: Website field now accepts www.domain.com format as requested, password validation properly enforces letters AND numbers requirement with clear error messages, duplicate email handling working correctly. Registration functionality is fully operational and meets all review request requirements."
 
 frontend:
+  - task: "PDF Generation - Practice Information Integration"
+    implemented: false
+    working: false
+    file: "frontend/src/pages/ProcedureViewPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL ISSUE IDENTIFIED: PDF generation is working but practice information (Office Hours and Emergency Contact) from Practice Settings is NOT being passed to PDF generator. Root cause: API call to /api/procedures/{id} returns procedure data without practice fields (practiceOfficeHours, practiceEmergencyContact, practiceName, practicePhone). Current PDF generator expects these fields but they're missing, causing PDFs to show generic placeholder text 'Contact your dental office during regular business hours' instead of actual practice information like 'Mon-Fri: 8:00 AM - 5:00 PM (EST/EDT) • Sat: 9:00 AM - 2:00 PM' and '📞 (555) 123-4567 • 🚨 Emergency Line'. User's report is accurate - PDFs are showing generic content instead of personalized practice information. SOLUTION NEEDED: Modify PDF generation flow to fetch and include practice data from Practice Settings API (/api/practice/dashboard) and pass it to PDF generator."
+
   - task: "Comprehensive PDF Generation Testing Across All Entry Points"
     implemented: true
     working: true
