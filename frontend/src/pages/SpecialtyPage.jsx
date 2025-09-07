@@ -78,6 +78,8 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
         // Contact and emergency info specific to this practice
         emergencyContact: practice?.emergencyPhone || practice?.phone,
         afterHoursContact: practice?.afterHoursPhone,
+        practiceOfficeHours: practice?.officeHours || '',
+        practiceEmergencyContact: practice?.emergencyContact || practice?.emergencyPhone || practice?.phone,
         
         // Metadata for tracking
         generatedBy: `${user?.firstName} ${user?.lastName}` || user?.email,
