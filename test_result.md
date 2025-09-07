@@ -1293,6 +1293,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Root Canal Procedure Database Structure Verification"
     - "Enhanced Payment Verification System (SamCart)"
     - "Registration Logging System"
   stuck_tasks:
