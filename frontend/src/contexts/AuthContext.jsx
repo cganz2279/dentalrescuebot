@@ -39,12 +39,35 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = (userData, authToken, practiceData = null) => {
+  const login = async (userData, authToken, practiceData = null) => {
     console.log('Login called with:', { userData, authToken: authToken?.substring(0, 50) + '...', practiceData });
     setUser(userData);
-    setPractice(practiceData);
     setToken(authToken);
     localStorage.setItem('dentalToken', authToken);
+    
+    // Fetch complete practice data from dashboard API
+    if (authToken && !practiceData) {
+      try {
+        console.log('Fetching practice data from dashboard API...');
+        const practiceApi = (await import('../services/authApi')).practiceApi;
+        const dashboardData = await practiceApi.getDashboard();
+        console.log('Dashboard data received:', dashboardData);
+        
+        if (dashboardData.success && dashboardData.data?.practice) {
+          const fullPracticeData = dashboardData.data.practice;
+          console.log('Setting complete practice data:', fullPracticeData);
+          setPractice(fullPracticeData);
+        } else {
+          console.warn('No practice data in dashboard response:', dashboardData);
+          setPractice(practiceData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch practice data:', error);
+        setPractice(practiceData);
+      }
+    } else {
+      setPractice(practiceData);
+    }
     
     // Force a small delay to ensure state updates are processed
     setTimeout(() => {
