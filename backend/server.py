@@ -35,26 +35,6 @@ print(f"Using database: {os.environ.get('DB_NAME', 'test_database')}")
 # Create the main app without a prefix
 app = FastAPI()
 
-# CRITICAL: Define PUBLIC endpoints FIRST before any routers with authentication
-@app.get("/api/procedures/{procedure_id}")
-async def get_procedure_public(procedure_id: str):
-    """PUBLIC endpoint to get procedure details - no authentication required"""
-    try:
-        procedure = await db.procedures.find_one(
-            {"id": procedure_id}, 
-            {"_id": 0, "createdAt": 0, "updatedAt": 0}
-        )
-        
-        if not procedure:
-            raise HTTPException(status_code=404, detail="Procedure not found")
-        
-        return {"success": True, "data": procedure}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logging.error(f"Error fetching procedure {procedure_id}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
