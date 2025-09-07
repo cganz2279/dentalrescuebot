@@ -200,7 +200,7 @@ async def fix_procedure_structure():
     
     # Connect to MongoDB
     client = AsyncIOMotorClient(MONGO_URL)
-    db = client.dental_app
+    db = client[DB_NAME]
     collection = db.procedures
     
     try:
