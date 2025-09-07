@@ -13,7 +13,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime
 
 # MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/dental_app')
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.environ.get('DB_NAME', 'dentist_management')
 
 def parse_medical_content(overview_text):
     """
