@@ -61,6 +61,10 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
         variant: "default",
       });
       
+      console.log('🏥 PDF Generation - Practice Context (ProcedurePage):', practice);
+      console.log('📊 Practice officeHours:', practice?.officeHours);
+      console.log('📞 Practice emergencyContact:', practice?.emergencyContact);
+      
       const procedureForPDF = {
         ...procedure,
         practiceName: practice?.name || 'Dental Practice',
@@ -70,6 +74,12 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
         practiceOfficeHours: practice?.officeHours || '',
         practiceEmergencyContact: practice?.emergencyContact || ''
       };
+      
+      console.log('📄 Final procedure object for PDF (ProcedurePage):', {
+        practiceName: procedureForPDF.practiceName,
+        practiceOfficeHours: procedureForPDF.practiceOfficeHours,
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+      });
       
       const success = await generateProcedurePDF(procedureForPDF);
       
