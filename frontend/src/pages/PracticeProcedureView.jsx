@@ -25,6 +25,7 @@ import LoadingSpinner, { ErrorMessage } from '../components/LoadingSpinner';
 import { practiceApi } from '../services/authApi';
 import { generateProcedurePDF } from '../utils/pdfGenerator';
 import { useToast } from '../hooks/use-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const PracticeProcedureView = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
   const [procedure, setProcedure] = useState(null);
