@@ -31,7 +31,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
       
       if (response.success) {
         // Pass the user data, token, and practice to AuthContext
-        login(response.user, response.token, response.practice);
+        await login(response.user, response.token, response.practice);
         
         toast({
           title: "Login Successful",
