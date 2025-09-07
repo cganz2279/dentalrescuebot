@@ -976,6 +976,18 @@ backend:
           comment: "COMPREHENSIVE REGISTRATION TESTING COMPLETED SUCCESSFULLY: ✅ ALL 8 TESTS PASSED (100% SUCCESS RATE): Conducted thorough testing of POST /api/auth/register-practice-samcart endpoint as requested in review. DETAILED TEST RESULTS: (1) ✅ VALID REGISTRATION: Successfully registered practice 'Sunrise Dental Care' with proper data including www.sunrisedental.com website format, admin user Dr. Sarah Johnson, password SecurePass123, returns active status immediately, (2) ✅ PASSWORD VALIDATION - LETTERS ONLY: Correctly rejected password 'OnlyLetters' with error 'Password must be at least 6 characters with letters and numbers', (3) ✅ PASSWORD VALIDATION - NUMBERS ONLY: Correctly rejected password '123456789' with same validation error, (4) ✅ PASSWORD VALIDATION - TOO SHORT: Correctly rejected password 'Ab1' for being under 6 characters, (5) ✅ PASSWORD VALIDATION - VALID: Successfully accepted password 'ValidPass123' with letters+numbers+6+ chars, (6) ✅ EMAIL VALIDATION - DUPLICATE: Correctly rejected duplicate email registration with error 'Email already registered', (7) ✅ WEBSITE FIELD VALIDATION: Successfully accepted www.websitetest.com format without requiring https://, (8) ✅ ERROR HANDLING - MISSING FIELDS: Correctly returned 422 validation error for incomplete registration data. ADDITIONAL VERIFICATION: ✅ END-TO-END LOGIN: Verified newly registered users can login successfully with JWT token generation, proper user details, and practice association. CRITICAL FIXES CONFIRMED: Website field now accepts www.domain.com format as requested, password validation properly enforces letters AND numbers requirement with clear error messages, duplicate email handling working correctly. Registration functionality is fully operational and meets all review request requirements."
 
 frontend:
+  - task: "AuthContext Practice Data Fix (Dashboard API Integration)"
+    implemented: false
+    working: false
+    file: "frontend/src/contexts/AuthContext.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL ISSUE: AuthContext modification to fetch practice data from dashboard API is NOT working. During login with cganz2279@gmail.com/password123, the required console messages are missing: 'Fetching practice data from dashboard API...', 'Dashboard data received:', 'Setting complete practice data:'. The code exists in AuthContext.jsx lines 48-70 but is not executing. Additionally, practice dashboard API returns NULL values for officeHours and emergencyContact fields. This means PDFs will continue showing generic placeholders instead of actual practice information. ROOT CAUSE: (1) AuthContext not calling dashboard API despite code being present, (2) Practice data in database lacks officeHours/emergencyContact values. IMPACT: User's reported issue of PDFs showing 'Assignment Information' instead of Office Hours and Emergency Contact will persist until this is fixed."
+
   - task: "PDF Generation - Practice Information Integration"
     implemented: false
     working: false
