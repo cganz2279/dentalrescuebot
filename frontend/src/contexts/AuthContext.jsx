@@ -25,8 +25,30 @@ export const AuthProvider = ({ children }) => {
         try {
           const response = await authApi.getCurrentUser(savedToken);
           setUser(response.user);
-          setPractice(response.practice);
           setToken(savedToken);
+          
+          // If practice data is incomplete, fetch from dashboard API
+          if (!response.practice || !response.practice.officeHours || !response.practice.emergencyContact) {
+            console.log('🏥 Practice data incomplete in getCurrentUser, fetching from dashboard...');
+            try {
+              const practiceApi = (await import('../services/authApi')).practiceApi;
+              const dashboardData = await practiceApi.getDashboard();
+              
+              if (dashboardData.success && dashboardData.data?.practice) {
+                console.log('✅ Setting complete practice data from dashboard:', dashboardData.data.practice);
+                setPractice(dashboardData.data.practice);
+              } else {
+                console.warn('⚠️ Dashboard fetch failed, using incomplete practice data');
+                setPractice(response.practice);
+              }
+            } catch (dashboardError) {
+              console.error('❌ Dashboard fetch error:', dashboardError);
+              setPractice(response.practice);
+            }
+          } else {
+            console.log('✅ Complete practice data available from getCurrentUser');
+            setPractice(response.practice);
+          }
         } catch (error) {
           console.error('Token validation failed:', error);
           localStorage.removeItem('dentalToken');
