@@ -1335,7 +1335,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Database Structure Fix - Root Canal Content Verification"
+    - "PDF Generation - Practice Information Integration"
   stuck_tasks:
     - "Enhanced Payment Verification System (SamCart)"
     - "Add Patient with Dentist Selection - Missing dentist dropdown field"
