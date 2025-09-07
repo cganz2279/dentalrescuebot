@@ -40,38 +40,43 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (userData, authToken, practiceData = null) => {
-    console.log('Login called with:', { userData, authToken: authToken?.substring(0, 50) + '...', practiceData });
+    console.log('🔐 Login called with:', { userData: userData?.email, authToken: authToken ? 'TOKEN_PROVIDED' : 'NO_TOKEN', practiceData: practiceData ? 'PRACTICE_PROVIDED' : 'NO_PRACTICE' });
     setUser(userData);
     setToken(authToken);
     localStorage.setItem('dentalToken', authToken);
     
     // Fetch complete practice data from dashboard API
+    console.log('🔍 Checking if should fetch practice data:', { hasToken: !!authToken, hasPracticeData: !!practiceData });
+    
     if (authToken && !practiceData) {
       try {
-        console.log('Fetching practice data from dashboard API...');
+        console.log('🏥 Fetching practice data from dashboard API...');
         const practiceApi = (await import('../services/authApi')).practiceApi;
         const dashboardData = await practiceApi.getDashboard();
-        console.log('Dashboard data received:', dashboardData);
+        console.log('📊 Dashboard data received:', dashboardData);
         
         if (dashboardData.success && dashboardData.data?.practice) {
           const fullPracticeData = dashboardData.data.practice;
-          console.log('Setting complete practice data:', fullPracticeData);
+          console.log('✅ Setting complete practice data:', fullPracticeData);
+          console.log('🏢 Practice has officeHours:', !!fullPracticeData.officeHours);
+          console.log('📞 Practice has emergencyContact:', !!fullPracticeData.emergencyContact);
           setPractice(fullPracticeData);
         } else {
-          console.warn('No practice data in dashboard response:', dashboardData);
+          console.warn('⚠️ No practice data in dashboard response:', dashboardData);
           setPractice(practiceData);
         }
       } catch (error) {
-        console.error('Failed to fetch practice data:', error);
+        console.error('❌ Failed to fetch practice data:', error);
         setPractice(practiceData);
       }
     } else {
+      console.log('⏭️ Skipping dashboard fetch, using provided practice data');
       setPractice(practiceData);
     }
     
     // Force a small delay to ensure state updates are processed
     setTimeout(() => {
-      console.log('After login - user:', userData?.email, 'token exists:', !!authToken);
+      console.log('✅ After login - user:', userData?.email, 'token exists:', !!authToken);
     }, 100);
     
     return { success: true };
