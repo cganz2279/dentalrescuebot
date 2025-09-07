@@ -206,6 +206,53 @@ def test_procedure_api_practice_data():
         print(f"❌ Procedure request failed: {str(e)}")
         return None
 
+def test_authcontext_behavior():
+    """Test how AuthContext should behave based on login response"""
+    print_section("AUTHCONTEXT BEHAVIOR ANALYSIS")
+    
+    login_url = f"{BACKEND_URL}/auth/login"
+    credentials = {
+        "email": "cganz2279@gmail.com",
+        "password": "password123"
+    }
+    
+    try:
+        response = requests.post(login_url, json=credentials)
+        if response.status_code == 200:
+            login_data = response.json()
+            practice_data = login_data.get('practice')
+            
+            print("🔍 SIMULATING AUTHCONTEXT LOGIC:")
+            print(f"   - Login provides practice data: {'✅ YES' if practice_data else '❌ NO'}")
+            
+            if practice_data:
+                print(f"   - AuthContext should: ⏭️ SKIP dashboard fetch (practice provided)")
+                print(f"   - Practice data available to components: ✅ YES")
+                
+                # Check if the provided practice data has the required fields
+                has_office_hours = practice_data.get('officeHours') not in [None, '', 'null']
+                has_emergency_contact = practice_data.get('emergencyContact') not in [None, '', 'null']
+                
+                print(f"\n📋 PRACTICE DATA COMPLETENESS:")
+                print(f"   - Office Hours present: {'✅ YES' if has_office_hours else '❌ NO'}")
+                print(f"   - Emergency Contact present: {'✅ YES' if has_emergency_contact else '❌ NO'}")
+                
+                if has_office_hours and has_emergency_contact:
+                    print(f"\n✅ EXPECTED BEHAVIOR: PDFs should show actual practice information")
+                    print(f"   - Office Hours: {practice_data.get('officeHours')}")
+                    print(f"   - Emergency Contact: {practice_data.get('emergencyContact')}")
+                else:
+                    print(f"\n❌ EXPECTED BEHAVIOR: PDFs will show generic placeholders")
+                    print(f"   - Missing fields cause fallback to generic text")
+            else:
+                print(f"   - AuthContext should: 🏥 FETCH from dashboard API")
+                print(f"   - Practice data available to components: ❓ DEPENDS on dashboard API")
+                
+        return login_data
+    except Exception as e:
+        print(f"❌ Failed to test AuthContext behavior: {str(e)}")
+        return None
+
 def main():
     """Main test execution"""
     print("🎯 AUTHCONTEXT DEBUG TEST - PRACTICE DATA INVESTIGATION")
@@ -234,27 +281,52 @@ def main():
     # Step 4: Check procedure API
     test_procedure_api_practice_data()
     
+    # Step 5: Analyze AuthContext behavior
+    test_authcontext_behavior()
+    
     # Final analysis
     print_section("FINAL ANALYSIS & CONCLUSIONS")
+    
+    print("🎯 ANSWERING THE CRITICAL QUESTION:")
+    print("   'Is the login API actually returning the complete practice data with officeHours and emergencyContact fields?'")
     
     if login_practice:
         has_office_hours = login_practice.get('officeHours') not in [None, '', 'null']
         has_emergency_contact = login_practice.get('emergencyContact') not in [None, '', 'null']
         
-        print(f"🎯 CRITICAL FINDINGS:")
+        print(f"\n📊 LOGIN API ANALYSIS:")
         print(f"   - Login API provides practice data: ✅ YES")
         print(f"   - Practice has Office Hours: {'✅ YES' if has_office_hours else '❌ NO'}")
         print(f"   - Practice has Emergency Contact: {'✅ YES' if has_emergency_contact else '❌ NO'}")
         
         if has_office_hours and has_emergency_contact:
-            print(f"\n✅ CONCLUSION: Login API DOES provide complete practice data")
-            print(f"   The issue is likely in frontend AuthContext implementation")
+            print(f"\n✅ ANSWER: YES - Login API DOES return complete practice data")
+            print(f"   - Office Hours: '{login_practice.get('officeHours')}'")
+            print(f"   - Emergency Contact: '{login_practice.get('emergencyContact')}'")
+            print(f"\n🔍 ROOT CAUSE: The issue is NOT in the login API response")
+            print(f"   - AuthContext receives complete data but may not be using it correctly")
+            print(f"   - Frontend components may not be accessing practice data properly")
+            print(f"   - PDF generator may not be receiving practice data from AuthContext")
         else:
-            print(f"\n❌ CONCLUSION: Login API provides INCOMPLETE practice data")
-            print(f"   Missing fields need to be populated in the database")
+            print(f"\n❌ ANSWER: NO - Login API returns INCOMPLETE practice data")
+            print(f"   - Missing Office Hours: {not has_office_hours}")
+            print(f"   - Missing Emergency Contact: {not has_emergency_contact}")
+            print(f"\n🔍 ROOT CAUSE: Database lacks complete practice information")
+            print(f"   - Practice record needs to be updated with missing fields")
     else:
-        print(f"❌ CONCLUSION: Login API does NOT provide practice data")
-        print(f"   AuthContext needs to fetch from dashboard API")
+        print(f"\n❌ ANSWER: NO - Login API does NOT provide practice data at all")
+        print(f"   - AuthContext should fetch from dashboard API but may not be doing so")
+        print(f"\n🔍 ROOT CAUSE: Login response structure issue")
+        
+    print(f"\n🎯 RECOMMENDATION:")
+    if login_practice and login_practice.get('officeHours') and login_practice.get('emergencyContact'):
+        print(f"   - Investigate frontend data flow from AuthContext to PDF generator")
+        print(f"   - Verify practice data is being passed to PDF generation components")
+        print(f"   - Check if PDF generator is using practice data correctly")
+    else:
+        print(f"   - Fix database to include complete practice information")
+        print(f"   - Ensure AuthContext fetches from dashboard API when needed")
+        print(f"   - Verify dashboard API returns complete practice data")
 
 if __name__ == "__main__":
     main()
