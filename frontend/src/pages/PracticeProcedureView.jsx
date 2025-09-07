@@ -35,6 +35,7 @@ const PracticeProcedureView = ({ procedureId, onBackToHome, onBackToSpecialty })
   const [editedData, setEditedData] = useState({});
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  const { practice } = useAuth();
 
   useEffect(() => {
     if (procedureId) {
