@@ -41,6 +41,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (userData, authToken, practiceData = null) => {
     console.log('🔐 Login called with:', { userData: userData?.email, authToken: authToken ? 'TOKEN_PROVIDED' : 'NO_TOKEN', practiceData: practiceData ? 'PRACTICE_PROVIDED' : 'NO_PRACTICE' });
+    console.log('🏥 PRACTICE DATA DETAILS:', practiceData);
+    console.log('📊 Practice has officeHours:', practiceData?.officeHours);
+    console.log('📞 Practice has emergencyContact:', practiceData?.emergencyContact);
+    
     setUser(userData);
     setToken(authToken);
     localStorage.setItem('dentalToken', authToken);
@@ -71,12 +75,14 @@ export const AuthProvider = ({ children }) => {
       }
     } else {
       console.log('⏭️ Skipping dashboard fetch, using provided practice data');
+      console.log('🔧 Setting practice data:', practiceData);
       setPractice(practiceData);
     }
     
-    // Force a small delay to ensure state updates are processed
+    // Add delay and check practice state after setting
     setTimeout(() => {
       console.log('✅ After login - user:', userData?.email, 'token exists:', !!authToken);
+      console.log('🏥 Practice state should be set now');
     }, 100);
     
     return { success: true };
