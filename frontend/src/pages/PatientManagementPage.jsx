@@ -116,7 +116,9 @@ const PatientManagementPage = () => {
         practiceName: practice?.name || 'Dental Practice',
         practiceAddress: practice?.address || practice?.location || '',
         practicePhone: practice?.phone || '',
-        practiceWebsite: practice?.website || ''
+        practiceWebsite: practice?.website || '',
+        practiceOfficeHours: practice?.officeHours || '',
+        practiceEmergencyContact: practice?.emergencyContact || ''
       };
       
       const success = generateProcedurePDF(procedureForPDF);
