@@ -1321,9 +1321,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Root Canal Procedure Database Structure Verification"
-    - "Enhanced Payment Verification System (SamCart)"
-    - "Registration Logging System"
+    - "Database Structure Fix - Root Canal Content Verification"
   stuck_tasks:
     - "Enhanced Payment Verification System (SamCart)"
     - "Add Patient with Dentist Selection - Missing dentist dropdown field"
