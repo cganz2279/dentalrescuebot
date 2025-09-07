@@ -48,7 +48,7 @@ const PatientLoginPage = () => {
       const response = await authApi.login(loginData.email, loginData.password);
       
       if (response.success && response.user.role === 'patient') {
-        login(response.user, response.token, response.practice);
+        await login(response.user, response.token, response.practice);
         toast({
           title: "Welcome back!",
           description: "Successfully logged into your patient portal.",
