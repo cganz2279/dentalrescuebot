@@ -1,53 +1,99 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Dental Post-Operative Care App
-Tests all backend endpoints to ensure proper functionality
+Backend Testing Script for PDF Generation with Practice Office Hours and Emergency Contact
+Review Request: Test authentication, practice settings, and procedure API endpoints
 """
 
 import requests
 import json
 import sys
-from typing import Dict, Any, List
+from datetime import datetime
 
-# Get backend URL from frontend .env file
+# Backend URL from frontend configuration
 BACKEND_URL = "https://postop-care.preview.emergentagent.com/api"
 
-class DentalAPITester:
-    def __init__(self, base_url: str):
-        self.base_url = base_url
+class BackendTester:
+    def __init__(self):
         self.session = requests.Session()
+        self.jwt_token = None
+        self.practice_id = None
         self.test_results = []
-        self.auth_token = None
         
-    def log_test(self, test_name: str, success: bool, details: str = ""):
+    def log_test(self, test_name, success, details, expected_result=None):
         """Log test results"""
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}")
-        if details:
-            print(f"   Details: {details}")
-        
-        self.test_results.append({
+        result = {
             "test": test_name,
             "success": success,
-            "details": details
-        })
-    
-    def test_health_check(self):
-        """Test GET /api/ endpoint"""
+            "details": details,
+            "expected": expected_result,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        print(f"   Details: {details}")
+        if expected_result:
+            print(f"   Expected: {expected_result}")
+        print()
+        
+    def test_authentication(self):
+        """Test 1: Authentication with cganz2279@gmail.com/password123"""
+        print("🔐 Testing Authentication...")
+        
         try:
-            response = self.session.get(f"{self.base_url}/")
+            response = self.session.post(
+                f"{BACKEND_URL}/auth/login",
+                json={
+                    "email": "cganz2279@gmail.com",
+                    "password": "password123"
+                },
+                headers={"Content-Type": "application/json"}
+            )
             
             if response.status_code == 200:
                 data = response.json()
-                if "message" in data:
-                    self.log_test("Health Check (GET /api/)", True, f"Response: {data}")
+                if "token" in data:
+                    self.jwt_token = data["token"]
+                    self.practice_id = data.get("user", {}).get("practiceId")
+                    
+                    # Set authorization header for future requests
+                    self.session.headers.update({
+                        "Authorization": f"Bearer {self.jwt_token}"
+                    })
+                    
+                    self.log_test(
+                        "Authentication Test",
+                        True,
+                        f"Successfully authenticated. User: {data.get('user', {}).get('email')}, Role: {data.get('user', {}).get('role')}, Practice: {data.get('user', {}).get('practiceName', 'N/A')}",
+                        "Login should work and return JWT token with practice info"
+                    )
                     return True
                 else:
-                    self.log_test("Health Check (GET /api/)", False, "Missing 'message' in response")
+                    self.log_test(
+                        "Authentication Test",
+                        False,
+                        f"Login successful but no token in response: {data}",
+                        "Should return JWT token"
+                    )
                     return False
             else:
-                self.log_test("Health Check (GET /api/)", False, f"Status: {response.status_code}")
+                self.log_test(
+                    "Authentication Test",
+                    False,
+                    f"Login failed with status {response.status_code}: {response.text}",
+                    "Should return 200 with JWT token"
+                )
                 return False
+                
+        except Exception as e:
+            self.log_test(
+                "Authentication Test",
+                False,
+                f"Authentication request failed: {str(e)}",
+                "Should successfully connect and authenticate"
+            )
+            return False
                 
         except Exception as e:
             self.log_test("Health Check (GET /api/)", False, f"Exception: {str(e)}")
