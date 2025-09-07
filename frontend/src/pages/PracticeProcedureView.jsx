@@ -154,7 +154,17 @@ const PracticeProcedureView = ({ procedureId, onBackToHome, onBackToSpecialty })
 
   const handleDownloadPDF = async () => {
     try {
-      const success = await generateProcedurePDF(procedure);
+      const procedureForPDF = {
+        ...procedure,
+        practiceName: practice?.name || 'Dental Practice',
+        practiceAddress: practice?.address || practice?.location || '',
+        practicePhone: practice?.phone || '',
+        practiceWebsite: practice?.website || '',
+        practiceOfficeHours: practice?.officeHours || '',
+        practiceEmergencyContact: practice?.emergencyContact || ''
+      };
+      
+      const success = await generateProcedurePDF(procedureForPDF);
       if (success) {
         toast({
           title: "Success",
