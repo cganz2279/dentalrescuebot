@@ -27,6 +27,7 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { toast } = useToast();
+  const { practice } = useAuth();
 
   useEffect(() => {
     if (procedureId) {
