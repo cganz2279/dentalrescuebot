@@ -236,7 +236,9 @@ const PatientDashboard = () => {
                           </div>
                           <div className="flex items-center">
                             <User className="h-4 w-4 mr-2" />
-                            Dr. {assignment.dentistName}
+                            {assignment.dentistName && assignment.dentistName.startsWith('Dr.') 
+                              ? assignment.dentistName 
+                              : `Dr. ${assignment.dentistName}`}
                           </div>
                           {assignment.followUpDate && (
                             <div className="flex items-center">
