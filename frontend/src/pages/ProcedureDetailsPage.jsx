@@ -373,6 +373,61 @@ const ProcedureDetailsPage = () => {
           <h3 className="text-xl text-gray-700">{procedureData.procedureName} for {procedureData.patientName}</h3>
         </div>
 
+        {/* Post-Operative Care Instructions - MOVED TO TOP */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold text-blue-600">Post-Operative Care Instructions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2">Medical Instructions</h4>
+                <div className="text-gray-700 leading-relaxed bg-blue-50 p-4 rounded-lg">
+                  {procedureData.procedureDetails.overview.split('\n').map((line, index) => {
+                    const trimmedLine = line.trim();
+                    
+                    // Handle empty lines - create spacing
+                    if (trimmedLine === '') {
+                      return <div key={index} className="mb-2"></div>;
+                    }
+                    
+                    // Handle bullet points
+                    if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                      const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
+                      return (
+                        <div key={index} className="flex items-start mb-2 ml-4">
+                          <span className="text-blue-600 mr-3 text-lg leading-none">•</span>
+                          <span className="flex-1 text-gray-700">{bulletText}</span>
+                        </div>
+                      );
+                    }
+                    
+                    // Handle section headers (Purpose:, First 24 Hours:, etc.)
+                    if (trimmedLine.endsWith(':') && trimmedLine.length < 50) {
+                      return (
+                        <h5 key={index} className="font-bold text-blue-800 mt-4 mb-2 text-base">
+                          {trimmedLine}
+                        </h5>
+                      );
+                    }
+                    
+                    // Regular paragraphs
+                    if (trimmedLine.length > 0) {
+                      return (
+                        <p key={index} className="mb-2 text-gray-700 leading-relaxed">
+                          {trimmedLine}
+                        </p>
+                      );
+                    }
+                    
+                    return null;
+                  }).filter(Boolean)}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Assignment Information */}
         <Card className="mb-6">
           <CardHeader>
