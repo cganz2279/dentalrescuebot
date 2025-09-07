@@ -13,7 +13,7 @@ import os
 import bcrypt
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://careplan-builder.preview.emergentagent.com/api"
+BACKEND_URL = "https://postop-care.preview.emergentagent.com/api"
 
 class DetailedPatientInvestigator:
     def __init__(self, base_url: str):

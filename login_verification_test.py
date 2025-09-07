@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://careplan-builder.preview.emergentagent.com/api"
+BACKEND_URL = "https://postop-care.preview.emergentagent.com/api"
 
 def test_login_after_registration():
     """Test login functionality with a newly registered user"""
