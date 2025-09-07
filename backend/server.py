@@ -11,13 +11,14 @@ from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
 
-# Import the new auth, practice, payment, webhook, admin, and patient routes
+# Import the new auth, practice, payment, webhook, admin, patient, and public routes
 from routes.auth import router as auth_router
 from routes.practice import router as practice_router
 from routes.payments import router as payments_router
 from routes.webhooks import router as webhooks_router
 from routes.admin import router as admin_router
 from routes.patients import router as patients_router
+from routes.public import router as public_router
 
 
 ROOT_DIR = Path(__file__).parent
