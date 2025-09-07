@@ -1371,6 +1371,7 @@ test_plan:
     - "PDF Generation - Practice Information Integration"
   stuck_tasks:
     - "AuthContext Practice Data Fix (Dashboard API Integration)"
+    - "PDF Generation - Practice Information Integration"
     - "Enhanced Payment Verification System (SamCart)"
     - "Add Patient with Dentist Selection - Missing dentist dropdown field"
     - "Dentist Selection in Procedure Assignment - No procedures available for assignment"
