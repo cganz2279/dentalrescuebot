@@ -124,13 +124,17 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
     
     // Office Hours
+    console.log('📅 Adding Office Hours to PDF:', procedure.practiceOfficeHours);
     if (procedure.practiceOfficeHours) {
+      console.log('✅ Office Hours found, adding to PDF');
       yPos += 10;
       pdf.setFont(undefined, 'bold');
       pdf.text('Office Hours:', 20, yPos);
       yPos += 6;
       pdf.setFont(undefined, 'normal');
       pdf.text(procedure.practiceOfficeHours, 20, yPos);
+    } else {
+      console.log('❌ No Office Hours found in procedure object');
     }
     
     // Emergency Contact
