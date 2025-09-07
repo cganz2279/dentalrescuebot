@@ -94,60 +94,120 @@ class BackendTester:
                 "Should successfully connect and authenticate"
             )
             return False
-                
-        except Exception as e:
-            self.log_test("Health Check (GET /api/)", False, f"Exception: {str(e)}")
-            return False
     
-    def test_get_specialties(self):
-        """Test GET /api/specialties endpoint"""
+    def test_practice_settings(self):
+        """Test 2: Verify practice has officeHours and emergencyContact fields"""
+        print("🏥 Testing Practice Settings...")
+        
+        if not self.jwt_token:
+            self.log_test(
+                "Practice Settings Test",
+                False,
+                "Cannot test practice settings - no JWT token available",
+                "Requires valid authentication"
+            )
+            return False
+            
         try:
-            response = self.session.get(f"{self.base_url}/specialties")
+            response = self.session.get(f"{BACKEND_URL}/practice")
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("success") and "data" in data:
-                    specialties = data["data"]
-                    if len(specialties) == 7:  # Should have 7 dental specialties
-                        # Check if each specialty has required fields
-                        required_fields = ["id", "name", "description", "procedureCount"]
-                        all_valid = True
-                        for specialty in specialties:
-                            for field in required_fields:
-                                if field not in specialty:
-                                    all_valid = False
-                                    break
-                        
-                        if all_valid:
-                            self.log_test("Get All Specialties", True, f"Found {len(specialties)} specialties with procedure counts")
-                            return True
-                        else:
-                            self.log_test("Get All Specialties", False, "Missing required fields in specialties")
-                            return False
-                    else:
-                        self.log_test("Get All Specialties", False, f"Expected 7 specialties, got {len(specialties)}")
-                        return False
+                practice_data = data.get("data", {}) if data.get("success") else data
+                
+                # Check for officeHours and emergencyContact fields
+                office_hours = practice_data.get("officeHours")
+                emergency_contact = practice_data.get("emergencyContact")
+                
+                if office_hours is not None and emergency_contact is not None:
+                    self.log_test(
+                        "Practice Settings Test",
+                        True,
+                        f"Practice contains both fields - Office Hours: '{office_hours}', Emergency Contact: '{emergency_contact}'",
+                        "Practice should have officeHours and emergencyContact fields"
+                    )
+                    return True
                 else:
-                    self.log_test("Get All Specialties", False, "Invalid response format")
+                    missing_fields = []
+                    if office_hours is None:
+                        missing_fields.append("officeHours")
+                    if emergency_contact is None:
+                        missing_fields.append("emergencyContact")
+                    
+                    self.log_test(
+                        "Practice Settings Test",
+                        False,
+                        f"Practice missing fields: {missing_fields}. Available fields: {list(practice_data.keys())}",
+                        "Practice should have both officeHours and emergencyContact fields"
+                    )
                     return False
             else:
-                self.log_test("Get All Specialties", False, f"Status: {response.status_code}")
+                self.log_test(
+                    "Practice Settings Test",
+                    False,
+                    f"Failed to get practice info - Status: {response.status_code}, Response: {response.text}",
+                    "Should return 200 with practice information"
+                )
                 return False
                 
         except Exception as e:
-            self.log_test("Get All Specialties", False, f"Exception: {str(e)}")
+            self.log_test(
+                "Practice Settings Test",
+                False,
+                f"Practice settings request failed: {str(e)}",
+                "Should successfully retrieve practice information"
+            )
             return False
     
-    def test_get_specialty_by_id(self):
-        """Test GET /api/specialties/{id} endpoint"""
+    def test_procedure_api(self):
+        """Test 3: Test GET /api/procedures/root-canal-therapy for practice information"""
+        print("🦷 Testing Procedure API...")
+        
         try:
-            # Test with oral-surgery specialty
-            response = self.session.get(f"{self.base_url}/specialties/oral-surgery")
+            response = self.session.get(f"{BACKEND_URL}/procedures/root-canal-therapy")
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("success") and "data" in data:
-                    specialty = data["data"]
+                procedure_data = data.get("data", {}) if data.get("success") else data
+                
+                # Check if procedure includes practice information
+                practice_office_hours = procedure_data.get("practiceOfficeHours")
+                practice_emergency_contact = procedure_data.get("practiceEmergencyContact")
+                
+                # According to the review request, the procedure endpoint should NOT include practice info
+                if practice_office_hours is None and practice_emergency_contact is None:
+                    self.log_test(
+                        "Procedure API Test",
+                        True,
+                        f"Procedure endpoint correctly does NOT include practice info. Available fields: {list(procedure_data.keys())}",
+                        "Procedure endpoint should NOT include practice info (frontend adds it)"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Procedure API Test",
+                        False,
+                        f"Procedure endpoint unexpectedly includes practice info - practiceOfficeHours: {practice_office_hours}, practiceEmergencyContact: {practice_emergency_contact}",
+                        "Procedure endpoint should NOT include practice info"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Procedure API Test",
+                    False,
+                    f"Failed to get procedure info - Status: {response.status_code}, Response: {response.text}",
+                    "Should return 200 with procedure information"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Procedure API Test",
+                False,
+                f"Procedure API request failed: {str(e)}",
+                "Should successfully retrieve procedure information"
+            )
+            return False
                     required_fields = ["id", "name", "description", "procedures"]
                     
                     if all(field in specialty for field in required_fields):
