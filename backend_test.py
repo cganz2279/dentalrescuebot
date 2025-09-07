@@ -114,7 +114,8 @@ class BackendTester:
             
             if response.status_code == 200:
                 data = response.json()
-                practice_data = data.get("data", {}) if data.get("success") else data
+                dashboard_data = data.get("data", {}) if data.get("success") else data
+                practice_data = dashboard_data.get("practice", {}) if "practice" in dashboard_data else dashboard_data
                 
                 # Check for officeHours and emergencyContact fields
                 office_hours = practice_data.get("officeHours")
