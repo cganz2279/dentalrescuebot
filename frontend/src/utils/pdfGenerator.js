@@ -138,7 +138,9 @@ export const generateProcedurePDF = async (procedure) => {
     }
     
     // Emergency Contact
+    console.log('📞 Adding Emergency Contact to PDF:', procedure.practiceEmergencyContact);
     if (procedure.practiceEmergencyContact) {
+      console.log('✅ Emergency Contact found, adding to PDF');
       yPos += 10;
       pdf.setFont(undefined, 'bold');
       pdf.text('Emergency Contact:', 20, yPos);
@@ -146,12 +148,15 @@ export const generateProcedurePDF = async (procedure) => {
       pdf.setFont(undefined, 'normal');
       pdf.text(formatPhoneNumber(procedure.practiceEmergencyContact), 20, yPos);
     } else if (procedure.practicePhone) {
+      console.log('📞 Using practicePhone as Emergency Contact');
       yPos += 10;
       pdf.setFont(undefined, 'bold');
       pdf.text('Emergency Contact:', 20, yPos);
       yPos += 6;
       pdf.setFont(undefined, 'normal');
       pdf.text(formatPhoneNumber(procedure.practicePhone), 20, yPos);
+    } else {
+      console.log('❌ No Emergency Contact found in procedure object');
     }
     
     // Generate filename
