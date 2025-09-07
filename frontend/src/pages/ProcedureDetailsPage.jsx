@@ -191,7 +191,7 @@ const ProcedureDetailsPage = () => {
 
       // Prepare procedure data for PDF with practice information
       const procedureForPDF = {
-        ...procedureData.procedure,
+        ...procedureData.procedureDetails,
         practiceName: practice?.name || 'Dental Practice',
         practiceAddress: practice?.address || practice?.location || '',
         practicePhone: practice?.phone || '',
