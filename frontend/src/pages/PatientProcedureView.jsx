@@ -52,10 +52,47 @@ const PatientProcedureView = () => {
   const handlePrint = async () => {
     try {
       await patientsApi.trackDownload(assignmentId);
-      window.print();
+      
+      // Generate proper PDF with Office Hours and Emergency Contact
+      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
+      const { practice } = useAuth();
+      
+      if (!procedure) {
+        console.error('No procedure data available for PDF generation');
+        return;
+      }
+
+      // Prepare procedure data for PDF with practice information
+      const procedureForPDF = {
+        ...procedure,
+        practiceName: practice?.name || 'Dental Practice',
+        practiceAddress: practice?.address || practice?.location || '',
+        practicePhone: practice?.phone || '',
+        practiceWebsite: practice?.website || '',
+        practiceOfficeHours: practice?.officeHours || '',
+        practiceEmergencyContact: practice?.emergencyContact || '',
+        // Include patient information
+        patientName: procedure.patientName || 'Patient',
+        patientEmail: procedure.patientEmail || '',
+        dentistName: procedure.dentistName || '',
+        performedDate: procedure.performedDate || '',
+        followUpDate: procedure.followUpDate || null,
+        status: procedure.status || '',
+        practiceNotes: procedure.practiceNotes || '',
+        customInstructions: procedure.customInstructions || []
+      };
+      
+      console.log('🏥 PatientProcedureView - Generating PDF with practice data:', {
+        practiceName: procedureForPDF.practiceName,
+        practiceOfficeHours: procedureForPDF.practiceOfficeHours,
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+      });
+
+      await generateProcedurePDF(procedureForPDF);
+      
     } catch (error) {
       console.error('Print tracking error:', error);
-      // Still allow printing even if tracking fails
+      // Fallback to window.print if PDF generation fails
       window.print();
     }
   };
