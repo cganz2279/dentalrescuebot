@@ -71,7 +71,7 @@ export const dentalApi = {
   // Get specific procedure details
   getProcedure: async (procedureId) => {
     try {
-      const response = await api.get(`/api/public/procedures/${procedureId}`);
+      const response = await api.get(`/api/procedures/${procedureId}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to fetch procedure');
