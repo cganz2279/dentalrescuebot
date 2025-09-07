@@ -471,6 +471,18 @@ backend:
           agent: "testing"
           comment: "GET /api/patients/procedures/{assignment_id} working correctly with proper authentication. Verifies patient ownership of assignment, returns detailed procedure information, practice branding, and increments view count for analytics. Proper 404 handling for invalid assignments."
 
+  - task: "Procedure Content Structure for PDF Generation"
+    implemented: false
+    working: false
+    file: "backend/database/procedures"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL DATABASE STRUCTURE ISSUE IDENTIFIED: Comprehensive investigation revealed that all 81 procedures in database lack the required structured medical content fields (immediateAftercare, dietRestrictions, warningSignsToCallDoctor, recoveryTimeline, medications) that PDF generation expects. Current structure only has basic fields (id, name, overview, specialty, duration, contentSource). Medical content exists in 'overview' field with procedure-specific terminology, but PDF generation code expects structured arrays. This explains user's report of 'generic test content' in PDFs - the code falls back to placeholder content when expected fields are missing. Root Canal Therapy confirmed to have medical content ('root canal', 'pulp', 'canal', 'tooth', 'infection') but in wrong format. Database needs complete restructuring to parse overview content into required structured fields for proper PDF generation."
+
   - task: "Patient Download Tracking API"
     implemented: true
     working: true
