@@ -172,9 +172,66 @@ const ProcedureDetailsPage = () => {
     }
   };
 
-  const handlePrint = () => {
-    // Use browser's built-in print functionality to print this exact page
-    window.print();
+  const handlePrint = async () => {
+    // Generate proper PDF with Office Hours and Emergency Contact
+    try {
+      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
+      
+      // Get practice data from context
+      const { practice } = useAuth();
+      
+      if (!procedureData) {
+        toast({
+          title: "Error",
+          description: "Procedure data not available for PDF generation.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Prepare procedure data for PDF with practice information
+      const procedureForPDF = {
+        ...procedureData.procedure,
+        practiceName: practice?.name || 'Dental Practice',
+        practiceAddress: practice?.address || practice?.location || '',
+        practicePhone: practice?.phone || '',
+        practiceWebsite: practice?.website || '',
+        practiceOfficeHours: practice?.officeHours || '',
+        practiceEmergencyContact: practice?.emergencyContact || '',
+        // Include patient information if available
+        patientName: procedureData.patient ? `${procedureData.patient.firstName} ${procedureData.patient.lastName}` : 'Patient',
+        patientEmail: procedureData.patient?.email || '',
+        dentistName: procedureData.assignment?.dentistName || '',
+        performedDate: procedureData.assignment?.performedDate ? new Date(procedureData.assignment.performedDate).toLocaleDateString() : '',
+        followUpDate: procedureData.assignment?.followUpDate ? new Date(procedureData.assignment.followUpDate).toLocaleDateString() : null,
+        status: procedureData.assignment?.status || '',
+        practiceNotes: procedureData.assignment?.practiceNotes || '',
+        customInstructions: procedureData.assignment?.customInstructions || []
+      };
+      
+      console.log('🏥 Generating PDF with practice data:', {
+        practiceName: procedureForPDF.practiceName,
+        practiceOfficeHours: procedureForPDF.practiceOfficeHours,
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+      });
+
+      const success = await generateProcedurePDF(procedureForPDF);
+      
+      if (success) {
+        toast({
+          title: "PDF Generated",
+          description: "Your post-operative care guide has been downloaded.",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      toast({
+        title: "PDF Generation Failed",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleInputChange = (field, value) => {
