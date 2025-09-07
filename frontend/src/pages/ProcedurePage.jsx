@@ -20,6 +20,7 @@ import Footer from '../components/Footer';
 import { dentalApi } from '../services/api';
 import { generateProcedurePDF } from '../utils/pdfGenerator';
 import { useToast } from '../hooks/use-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
   const [procedure, setProcedure] = useState(null);
