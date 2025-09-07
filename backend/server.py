@@ -187,6 +187,25 @@ async def search_procedures(q: str = Query(..., min_length=1)):
         logging.error(f"Error searching procedures: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@api_router.get("/procedures/{procedure_id}")
+async def get_procedure(procedure_id: str):
+    """Get procedure details - NO authentication required"""
+    try:
+        procedure = await db.procedures.find_one(
+            {"id": procedure_id}, 
+            {"_id": 0, "createdAt": 0, "updatedAt": 0}
+        )
+        
+        if not procedure:
+            raise HTTPException(status_code=404, detail="Procedure not found")
+        
+        return {"success": True, "data": procedure}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error fetching procedure {procedure_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 # Include routers - authentication will NOT affect the procedure endpoint defined above
 app.include_router(public_router)  # PUBLIC router FIRST - no authentication
 app.include_router(auth_router)    # Auth router 
