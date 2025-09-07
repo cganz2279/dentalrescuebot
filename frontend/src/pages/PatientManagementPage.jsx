@@ -94,6 +94,10 @@ const PatientManagementPage = () => {
       
       const { generateProcedurePDF } = await import('../utils/pdfGenerator');
       
+      console.log('🏥 PDF Generation - Practice Context:', practice);
+      console.log('📊 Practice officeHours:', practice?.officeHours);
+      console.log('📞 Practice emergencyContact:', practice?.emergencyContact);
+      
       const procedureForPDF = {
         id: data.procedure.id,
         name: data.assignment.procedureName,
@@ -120,6 +124,12 @@ const PatientManagementPage = () => {
         practiceOfficeHours: practice?.officeHours || '',
         practiceEmergencyContact: practice?.emergencyContact || ''
       };
+      
+      console.log('📄 Final procedure object for PDF:', {
+        practiceName: procedureForPDF.practiceName,
+        practiceOfficeHours: procedureForPDF.practiceOfficeHours,
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+      });
       
       const success = generateProcedurePDF(procedureForPDF);
       
