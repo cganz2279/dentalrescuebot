@@ -109,7 +109,8 @@ class BackendTester:
             return False
             
         try:
-            response = self.session.get(f"{BACKEND_URL}/practice")
+            # Try the dashboard endpoint which should contain practice information
+            response = self.session.get(f"{BACKEND_URL}/practice/dashboard")
             
             if response.status_code == 200:
                 data = response.json()
