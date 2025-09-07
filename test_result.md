@@ -1000,13 +1000,16 @@ frontend:
     implemented: false
     working: false
     file: "frontend/src/pages/ProcedureViewPage.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
           comment: "🚨 CRITICAL ISSUE IDENTIFIED: PDF generation is working but practice information (Office Hours and Emergency Contact) from Practice Settings is NOT being passed to PDF generator. Root cause: API call to /api/procedures/{id} returns procedure data without practice fields (practiceOfficeHours, practiceEmergencyContact, practiceName, practicePhone). Current PDF generator expects these fields but they're missing, causing PDFs to show generic placeholder text 'Contact your dental office during regular business hours' instead of actual practice information like 'Mon-Fri: 8:00 AM - 5:00 PM (EST/EDT) • Sat: 9:00 AM - 2:00 PM' and '📞 (555) 123-4567 • 🚨 Emergency Line'. User's report is accurate - PDFs are showing generic content instead of personalized practice information. SOLUTION NEEDED: Modify PDF generation flow to fetch and include practice data from Practice Settings API (/api/practice/dashboard) and pass it to PDF generator."
+        - working: false
+          agent: "testing"
+          comment: "🎯 CRITICAL PDF DEBUG TESTING COMPLETED - ROOT CAUSE CONFIRMED: Conducted comprehensive PDF generation testing with debug logs as specifically requested in review. ✅ AUTHENTICATION SUCCESSFUL: Successfully logged in with cganz2279@gmail.com/password123 credentials as specified. ✅ ALL DEBUG MESSAGES CAPTURED: Successfully captured ALL requested debug messages from PDF generator: (1) ✅ '🎯 PDF Generator Entry - Procedure Object:' - FOUND, (2) ✅ '🏢 PDF Generator - Practice Info:' - FOUND, (3) ✅ '📅 Adding Office Hours to PDF:' - FOUND, (4) ❌ '❌ No Office Hours found in procedure object' - FOUND, (5) ✅ '📞 Adding Emergency Contact to PDF:' - FOUND, (6) ❌ '❌ No Emergency Contact found in procedure object' - FOUND. 🔍 ROOT CAUSE DEFINITIVELY IDENTIFIED: Practice information is NOT reaching PDF generator. Debug logs show: practiceOfficeHours: '' (empty string), practiceEmergencyContact: undefined. The practice context from AuthContext is showing 'Your Dental Practice' as practice name instead of 'Cary Ganz DDS PC', indicating the practice data from login is not being properly stored or retrieved. 🚨 CRITICAL FINDING: The issue is NOT in PDF generator logic (which is working correctly) but in the data flow from AuthContext to PDF generation. Practice information exists in backend but is not being passed through the frontend context to the PDF generator. IMPACT: User's report is 100% accurate - PDFs show generic placeholders because practice.officeHours and practice.emergencyContact are empty/undefined when PDF generator runs. SOLUTION REQUIRED: Fix AuthContext to properly fetch and store complete practice data including officeHours and emergencyContact fields so they are available to PDF generator."
 
   - task: "Comprehensive PDF Generation Testing Across All Entry Points"
     implemented: true
