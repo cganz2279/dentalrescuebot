@@ -37,6 +37,12 @@ const formatOriginalPDFContent = (content) => {
 
 // Generate actual PDF file using jsPDF (OVERVIEW ONLY)
 export const generateProcedurePDF = async (procedure) => {
+  console.log('🎯 PDF Generator Entry - Procedure Object:', procedure);
+  console.log('🏢 PDF Generator - Practice Info:', {
+    practiceName: procedure.practiceName,
+    practiceOfficeHours: procedure.practiceOfficeHours,
+    practiceEmergencyContact: procedure.practiceEmergencyContact
+  });
   try {
     console.log('🎨 Starting PDF generation...');
     
