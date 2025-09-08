@@ -98,6 +98,8 @@ export const AuthProvider = ({ children }) => {
     } else {
       console.log('⏭️ Skipping dashboard fetch, using provided practice data');
       console.log('🔧 Setting practice data:', practiceData);
+      console.log('🏢 Practice data has officeHours:', practiceData?.officeHours);
+      console.log('📞 Practice data has emergencyContact:', practiceData?.emergencyContact);
       setPractice(practiceData);
     }
     
