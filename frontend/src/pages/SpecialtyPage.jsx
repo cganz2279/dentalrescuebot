@@ -76,10 +76,10 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
       const personalizedProcedure = {
         ...fullProcedure,
         // Practice personalization for this subscriber
-        practiceName: practice?.name || practice?.practiceName || 'Your Dental Practice',
-        practicePhone: practice?.phone || practice?.contactInfo?.phone || practice?.practicePhone,
-        practiceAddress: practice?.address || practice?.location,
-        practiceEmail: practice?.email || practice?.contactInfo?.email,
+        practiceName: practiceData?.name || practiceData?.practiceName || 'Your Dental Practice',
+        practicePhone: practiceData?.phone || practiceData?.contactInfo?.phone || practiceData?.practicePhone,
+        practiceAddress: practiceData?.address || practiceData?.location,
+        practiceEmail: practiceData?.email || practiceData?.contactInfo?.email,
         
         // Dentist personalization for this subscriber
         dentistName: user?.firstName && user?.lastName 
@@ -88,17 +88,17 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
         
         // Additional subscriber context
         subscriberId: user?.id || user?.practiceId,
-        subscriptionTier: practice?.subscriptionTier || 'Standard',
+        subscriptionTier: practiceData?.subscriptionTier || 'Standard',
         
         // Branding customization (if available)
-        practiceLogoUrl: practice?.logoUrl,
-        practiceColors: practice?.brandingColors,
+        practiceLogoUrl: practiceData?.logoUrl,
+        practiceColors: practiceData?.brandingColors,
         
         // Contact and emergency info specific to this practice
-        emergencyContact: practice?.emergencyPhone || practice?.phone,
-        afterHoursContact: practice?.afterHoursPhone,
-        practiceOfficeHours: practice?.officeHours || '',
-        practiceEmergencyContact: practice?.emergencyContact || practice?.emergencyPhone || practice?.phone,
+        emergencyContact: practiceData?.emergencyPhone || practiceData?.phone,
+        afterHoursContact: practiceData?.afterHoursPhone,
+        practiceOfficeHours: practiceData?.officeHours || '',
+        practiceEmergencyContact: practiceData?.emergencyContact || practiceData?.emergencyPhone || practiceData?.phone,
         
         // Metadata for tracking
         generatedBy: `${user?.firstName} ${user?.lastName}` || user?.email,
