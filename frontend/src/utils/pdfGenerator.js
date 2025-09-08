@@ -91,7 +91,10 @@ export const generateProcedurePDF = async (procedure) => {
     
     // Helper function to add section
     const addSection = (title, items, isArray = true) => {
-      if (items && (isArray ? items.length > 0 : items.trim())) {
+      if (!items) return;
+      
+      // Handle array of items
+      if (isArray && Array.isArray(items) && items.length > 0) {
         // Check if we need a new page
         if (yPos > 250) {
           pdf.addPage();
@@ -106,29 +109,57 @@ export const generateProcedurePDF = async (procedure) => {
         pdf.setFontSize(11);
         pdf.setFont(undefined, 'normal');
         
-        if (isArray) {
-          items.forEach(item => {
-            if (yPos > 270) {
-              pdf.addPage();
-              yPos = 20;
-            }
-            const lines = pdf.splitTextToSize(`• ${item}`, 170);
+        items.forEach(item => {
+          if (yPos > 270) {
+            pdf.addPage();
+            yPos = 20;
+          }
+          
+          // Convert item to string properly
+          let itemText = '';
+          if (typeof item === 'string') {
+            itemText = item;
+          } else if (typeof item === 'object' && item !== null) {
+            itemText = JSON.stringify(item, null, 2);
+          } else {
+            itemText = String(item);
+          }
+          
+          if (itemText.trim()) {
+            const lines = pdf.splitTextToSize(`• ${itemText}`, 170);
             lines.forEach(line => {
               pdf.text(line, 25, yPos);
               yPos += 7;
             });
-          });
-        } else {
-          const lines = pdf.splitTextToSize(items, 170);
-          lines.forEach(line => {
-            if (yPos > 270) {
-              pdf.addPage();
-              yPos = 20;
-            }
-            pdf.text(line, 20, yPos);
-            yPos += 7;
-          });
+          }
+        });
+        yPos += 10;
+        
+      // Handle single string item
+      } else if (!isArray && typeof items === 'string' && items.trim()) {
+        // Check if we need a new page
+        if (yPos > 250) {
+          pdf.addPage();
+          yPos = 20;
         }
+        
+        pdf.setFontSize(14);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(title, 20, yPos);
+        yPos += 10;
+        
+        pdf.setFontSize(11);
+        pdf.setFont(undefined, 'normal');
+        
+        const lines = pdf.splitTextToSize(items, 170);
+        lines.forEach(line => {
+          if (yPos > 270) {
+            pdf.addPage();
+            yPos = 20;
+          }
+          pdf.text(line, 20, yPos);
+          yPos += 7;
+        });
         yPos += 10;
       }
     };
