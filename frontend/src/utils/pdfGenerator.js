@@ -83,33 +83,79 @@ export const generateProcedurePDF = async (procedure) => {
     
     yPos += 10; // Add some space
     
-    // ONLY OVERVIEW CONTENT - This is the key fix!
-    if (procedure.overview) {
-      pdf.setFontSize(16);
-      pdf.setFont(undefined, 'bold');
-      pdf.text('Post-Operative Care Instructions', 20, yPos);
-      yPos += 15;
-      
-      // Format and add the overview content
-      const formattedContent = formatOriginalPDFContent(procedure.overview);
-      
-      pdf.setFontSize(11);
-      pdf.setFont(undefined, 'normal');
-      
-      // Split content into lines that fit the page width
-      const lines = pdf.splitTextToSize(formattedContent, 170);
-      
-      // Add each line to the PDF
-      for (let i = 0; i < lines.length; i++) {
+    // STRUCTURED MEDICAL CONTENT - Use structured fields for proper formatting
+    pdf.setFontSize(16);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('Post-Operative Care Instructions', 20, yPos);
+    yPos += 15;
+    
+    // Helper function to add section
+    const addSection = (title, items, isArray = true) => {
+      if (items && (isArray ? items.length > 0 : items.trim())) {
         // Check if we need a new page
-        if (yPos > 270) {
+        if (yPos > 250) {
           pdf.addPage();
-          yPos = 30;
+          yPos = 20;
         }
         
-        pdf.text(lines[i], 20, yPos);
-        yPos += 6;
+        pdf.setFontSize(14);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(title, 20, yPos);
+        yPos += 10;
+        
+        pdf.setFontSize(11);
+        pdf.setFont(undefined, 'normal');
+        
+        if (isArray) {
+          items.forEach(item => {
+            if (yPos > 270) {
+              pdf.addPage();
+              yPos = 20;
+            }
+            const lines = pdf.splitTextToSize(`• ${item}`, 170);
+            lines.forEach(line => {
+              pdf.text(line, 25, yPos);
+              yPos += 7;
+            });
+          });
+        } else {
+          const lines = pdf.splitTextToSize(items, 170);
+          lines.forEach(line => {
+            if (yPos > 270) {
+              pdf.addPage();
+              yPos = 20;
+            }
+            pdf.text(line, 20, yPos);
+            yPos += 7;
+          });
+        }
+        yPos += 10;
       }
+    };
+    
+    // Add structured medical content sections
+    addSection('Immediate Aftercare', procedure.immediateAftercare);
+    addSection('Diet Restrictions', procedure.dietRestrictions);
+    addSection('Warning Signs - Call Doctor Immediately', procedure.warningSignsToCallDoctor);
+    addSection('Recovery Timeline', procedure.recoveryTimeline);
+    addSection('Medications', procedure.medications);
+    
+    // Fallback to overview if structured content is not available
+    if ((!procedure.immediateAftercare || procedure.immediateAftercare.length === 0) && 
+        (!procedure.dietRestrictions || procedure.dietRestrictions.length === 0) && 
+        procedure.overview) {
+      console.log('📄 Using overview as fallback for structured content');
+      const formattedContent = formatOriginalPDFContent(procedure.overview);
+      const lines = pdf.splitTextToSize(formattedContent, 170);
+      
+      lines.forEach(line => {
+        if (yPos > 270) {
+          pdf.addPage();
+          yPos = 20;
+        }
+        pdf.text(line, 20, yPos);
+        yPos += 7;
+      });
     }
     
     // Footer with practice information
