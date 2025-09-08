@@ -65,14 +65,33 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
       console.log('📊 Practice officeHours:', practice?.officeHours);
       console.log('📞 Practice emergencyContact:', practice?.emergencyContact);
       
+      // If practice data is not available, try to fetch it from dashboard API
+      let practiceData = practice;
+      if (!practice || !practice.officeHours || !practice.emergencyContact) {
+        console.log('🔄 Practice data incomplete, fetching from dashboard API...');
+        try {
+          const practiceApi = (await import('../services/authApi')).practiceApi;
+          const dashboardData = await practiceApi.getDashboard();
+          
+          if (dashboardData.success && dashboardData.data?.practice) {
+            practiceData = dashboardData.data.practice;
+            console.log('✅ Fetched complete practice data:', practiceData);
+          } else {
+            console.warn('⚠️ Dashboard fetch failed, using incomplete practice data');
+          }
+        } catch (error) {
+          console.error('❌ Failed to fetch practice data from dashboard:', error);
+        }
+      }
+      
       const procedureForPDF = {
         ...procedure,
-        practiceName: practice?.name || 'Dental Practice',
-        practiceAddress: practice?.address || practice?.location || '',
-        practicePhone: practice?.phone || '',
-        practiceWebsite: practice?.website || '',
-        practiceOfficeHours: practice?.officeHours || '',
-        practiceEmergencyContact: practice?.emergencyContact || ''
+        practiceName: practiceData?.name || 'Dental Practice',
+        practiceAddress: practiceData?.address || practiceData?.location || '',
+        practicePhone: practiceData?.phone || '',
+        practiceWebsite: practiceData?.website || '',
+        practiceOfficeHours: practiceData?.officeHours || '',
+        practiceEmergencyContact: practiceData?.emergencyContact || ''
       };
       
       console.log('📄 Final procedure object for PDF (ProcedurePage):', {
