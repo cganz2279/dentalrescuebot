@@ -53,6 +53,25 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
       const procedureResponse = await dentalApi.getProcedure(procedure.id);
       const fullProcedure = procedureResponse.data;
       
+      // If practice data is not available, try to fetch it from dashboard API
+      let practiceData = practice;
+      if (!practice || !practice.officeHours || !practice.emergencyContact) {
+        console.log('🔄 SpecialtyPage - Practice data incomplete, fetching from dashboard API...');
+        try {
+          const practiceApi = (await import('../services/authApi')).practiceApi;
+          const dashboardData = await practiceApi.getDashboard();
+          
+          if (dashboardData.success && dashboardData.data?.practice) {
+            practiceData = dashboardData.data.practice;
+            console.log('✅ SpecialtyPage - Fetched complete practice data:', practiceData);
+          } else {
+            console.warn('⚠️ SpecialtyPage - Dashboard fetch failed, using incomplete practice data');
+          }
+        } catch (error) {
+          console.error('❌ SpecialtyPage - Failed to fetch practice data from dashboard:', error);
+        }
+      }
+      
       // Add subscriber-specific personalization to the procedure data
       const personalizedProcedure = {
         ...fullProcedure,
