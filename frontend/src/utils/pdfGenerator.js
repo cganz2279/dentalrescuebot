@@ -20,20 +20,6 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Format original PDF content to extract readable sections
-const formatOriginalPDFContent = (content) => {
-  if (!content) return 'No content available';
-  
-  // Extract and clean up the content to match your original PDF format
-  let cleanContent = content
-    // Remove any truncated text ending with "..."
-    .replace(/\.{3,}$/, '')
-    // Clean up spacing
-    .replace(/\s+/g, ' ')
-    .trim();
-  
-  return cleanContent;
-};
 
 // Generate actual PDF file using jsPDF (OVERVIEW ONLY)
 export const generateProcedurePDF = async (procedure) => {
