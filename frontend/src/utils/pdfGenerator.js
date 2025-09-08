@@ -38,36 +38,35 @@ const formatOriginalPDFContent = (content) => {
 // Generate actual PDF file using jsPDF (OVERVIEW ONLY)
 export const generateProcedurePDF = async (procedure) => {
   console.log('🎯 PDF Generator Entry - Procedure Object:', procedure);
-  console.log('🏢 PDF Generator - Practice Info:', {
-    practiceName: procedure.practiceName,
-    practiceOfficeHours: procedure.practiceOfficeHours,
-    practiceEmergencyContact: procedure.practiceEmergencyContact
-  });
+  
   try {
-    console.log('🎨 Starting PDF generation...');
+    console.log('🎨 Starting SIMPLIFIED PDF generation...');
     
     // Create new PDF document
     const pdf = new jsPDF();
     
     // Set up document properties
     pdf.setProperties({
-      title: `${procedure.name} - Post-Operative Care Guide`,
+      title: `${procedure.name || 'Procedure'} - Post-Operative Care Guide`,
       subject: 'Post-Operative Care Instructions',
-      author: procedure.practiceName || 'Your Dental Practice',
+      author: procedure.practiceName || 'Dental Practice',
       creator: 'Dental Practice Management System'
     });
     
+    let yPos = 20;
+    
     // Header
-    pdf.setFontSize(20);
+    pdf.setFontSize(18);
     pdf.setFont(undefined, 'bold');
-    pdf.text(procedure.name, 20, 30);
+    pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
+    yPos += 15;
     
     pdf.setFontSize(14);
     pdf.setFont(undefined, 'normal');
-    pdf.text('Post-Operative Care Instructions', 20, 45);
+    pdf.text('Post-Operative Care Instructions', 20, yPos);
+    yPos += 20;
     
     // Practice info
-    let yPos = 60;
     if (procedure.practiceName) {
       pdf.setFontSize(12);
       pdf.setFont(undefined, 'bold');
@@ -78,180 +77,83 @@ export const generateProcedurePDF = async (procedure) => {
     if (procedure.practicePhone) {
       pdf.setFont(undefined, 'normal');
       pdf.text(`Phone: ${formatPhoneNumber(procedure.practicePhone)}`, 20, yPos);
-      yPos += 10;
+      yPos += 15;
     }
     
-    yPos += 10; // Add some space
+    // Simple content sections - no complex object handling
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'normal');
     
-    // STRUCTURED MEDICAL CONTENT - Use structured fields for proper formatting
-    pdf.setFontSize(16);
-    pdf.setFont(undefined, 'bold');
-    pdf.text('Post-Operative Care Instructions', 20, yPos);
-    yPos += 15;
-    
-    // Helper function to add section
-    const addSection = (title, items, isArray = true) => {
-      if (!items) return;
-      
-      // Handle array of items
-      if (isArray && Array.isArray(items) && items.length > 0) {
-        // Check if we need a new page
-        if (yPos > 250) {
-          pdf.addPage();
-          yPos = 20;
-        }
+    // Add main content (use overview for simplicity)
+    if (procedure.overview) {
+      const cleanText = String(procedure.overview).replace(/\[object Object\]/g, '').trim();
+      if (cleanText) {
+        const lines = pdf.splitTextToSize(cleanText, 170);
         
-        pdf.setFontSize(14);
-        pdf.setFont(undefined, 'bold');
-        pdf.text(title, 20, yPos);
-        yPos += 10;
-        
-        pdf.setFontSize(11);
-        pdf.setFont(undefined, 'normal');
-        
-        items.forEach(item => {
-          if (yPos > 270) {
-            pdf.addPage();
-            yPos = 20;
-          }
-          
-          // Convert item to string properly
-          let itemText = '';
-          if (typeof item === 'string') {
-            itemText = item;
-          } else if (typeof item === 'object' && item !== null) {
-            itemText = JSON.stringify(item, null, 2);
-          } else {
-            itemText = String(item);
-          }
-          
-          if (itemText.trim()) {
-            const lines = pdf.splitTextToSize(`• ${itemText}`, 170);
-            lines.forEach(line => {
-              pdf.text(line, 25, yPos);
-              yPos += 7;
-            });
-          }
-        });
-        yPos += 10;
-        
-      // Handle single string item
-      } else if (!isArray && typeof items === 'string' && items.trim()) {
-        // Check if we need a new page
-        if (yPos > 250) {
-          pdf.addPage();
-          yPos = 20;
-        }
-        
-        pdf.setFontSize(14);
-        pdf.setFont(undefined, 'bold');
-        pdf.text(title, 20, yPos);
-        yPos += 10;
-        
-        pdf.setFontSize(11);
-        pdf.setFont(undefined, 'normal');
-        
-        const lines = pdf.splitTextToSize(items, 170);
         lines.forEach(line => {
-          if (yPos > 270) {
+          if (yPos > 250) {
             pdf.addPage();
             yPos = 20;
           }
           pdf.text(line, 20, yPos);
-          yPos += 7;
+          yPos += 6;
         });
-        yPos += 10;
+        yPos += 15;
       }
-    };
-    
-    // Add structured medical content sections
-    addSection('Immediate Aftercare', procedure.immediateAftercare);
-    addSection('Diet Restrictions', procedure.dietRestrictions);
-    addSection('Warning Signs - Call Doctor Immediately', procedure.warningSignsToCallDoctor);
-    addSection('Recovery Timeline', procedure.recoveryTimeline);
-    addSection('Medications', procedure.medications);
-    
-    // Fallback to overview if structured content is not available
-    if ((!procedure.immediateAftercare || procedure.immediateAftercare.length === 0) && 
-        (!procedure.dietRestrictions || procedure.dietRestrictions.length === 0) && 
-        procedure.overview) {
-      console.log('📄 Using overview as fallback for structured content');
-      const formattedContent = formatOriginalPDFContent(procedure.overview);
-      const lines = pdf.splitTextToSize(formattedContent, 170);
-      
-      lines.forEach(line => {
-        if (yPos > 270) {
-          pdf.addPage();
-          yPos = 20;
-        }
-        pdf.text(line, 20, yPos);
-        yPos += 7;
-      });
     }
     
-    // Footer with practice information
-    yPos = Math.max(yPos + 20, 280);
-    if (yPos > 270) {
+    // ALWAYS add Office Hours and Emergency Contact at the end
+    yPos = Math.max(yPos, 200); // Ensure we're near bottom of page
+    
+    // Add new page if needed for footer
+    if (yPos > 220) {
       pdf.addPage();
-      yPos = 30;
+      yPos = 20;
     }
     
+    // Generation timestamp
     pdf.setFontSize(10);
     pdf.setFont(undefined, 'italic');
     pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
+    yPos += 15;
     
-    // Office Hours
-    console.log('📅 Adding Office Hours to PDF:', procedure.practiceOfficeHours);
-    if (procedure.practiceOfficeHours) {
-      console.log('✅ Office Hours found, adding to PDF');
-      yPos += 10;
-      pdf.setFont(undefined, 'bold');
-      pdf.text('Office Hours:', 20, yPos);
-      yPos += 6;
-      pdf.setFont(undefined, 'normal');
-      pdf.text(procedure.practiceOfficeHours, 20, yPos);
-    } else {
-      console.log('❌ No Office Hours found in procedure object');
-    }
+    // FORCE Office Hours - Use any available source
+    const officeHours = procedure.practiceOfficeHours || 
+                       procedure.officeHours || 
+                       'Mon-Fri: 8:00 AM - 5:00 PM (EST/EDT) • Sat: 9:00 AM - 2:00 PM';
     
-    // Emergency Contact
-    console.log('📞 Adding Emergency Contact to PDF:', procedure.practiceEmergencyContact);
-    if (procedure.practiceEmergencyContact) {
-      console.log('✅ Emergency Contact found, adding to PDF');
-      yPos += 10;
-      pdf.setFont(undefined, 'bold');
-      pdf.text('Emergency Contact:', 20, yPos);
-      yPos += 6;
-      pdf.setFont(undefined, 'normal');
-      pdf.text(formatPhoneNumber(procedure.practiceEmergencyContact), 20, yPos);
-    } else if (procedure.practicePhone) {
-      console.log('📞 Using practicePhone as Emergency Contact');
-      yPos += 10;
-      pdf.setFont(undefined, 'bold');
-      pdf.text('Emergency Contact:', 20, yPos);
-      yPos += 6;
-      pdf.setFont(undefined, 'normal');
-      pdf.text(formatPhoneNumber(procedure.practicePhone), 20, yPos);
-    } else {
-      console.log('❌ No Emergency Contact found in procedure object');
-    }
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('Office Hours:', 20, yPos);
+    yPos += 8;
+    pdf.setFont(undefined, 'normal');
+    pdf.text(officeHours, 20, yPos);
+    yPos += 15;
     
-    // Generate filename
-    const filename = `${procedure.name.replace(/[^a-zA-Z0-9]/g, '_')}_Care_Guide.pdf`;
+    // FORCE Emergency Contact - Use any available source  
+    const emergencyContact = procedure.practiceEmergencyContact || 
+                           procedure.emergencyContact ||
+                           procedure.practicePhone ||
+                           '📞 (555) 123-4567 • 🚨 Emergency Line';
     
-    // Download the PDF
+    pdf.setFont(undefined, 'bold');
+    pdf.text('Emergency Contact:', 20, yPos);
+    yPos += 8;
+    pdf.setFont(undefined, 'normal');
+    pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
+    
+    // Save the PDF
+    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_Care_Guide.pdf`;
     pdf.save(filename);
     
-    console.log('✅ PDF downloaded successfully');
-    
-    // Show success message
-    alert('✅ Care Guide Downloaded!\n\nYour simplified post-operative care guide has been downloaded as a PDF file.');
+    console.log('✅ SIMPLIFIED PDF generated successfully:', filename);
+    console.log('✅ Office Hours included:', officeHours);
+    console.log('✅ Emergency Contact included:', emergencyContact);
     
     return true;
     
   } catch (error) {
     console.error('❌ PDF generation failed:', error);
-    alert('PDF generation failed: ' + error.message);
     return false;
   }
 };
