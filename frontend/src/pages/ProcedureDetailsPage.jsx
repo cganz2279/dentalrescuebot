@@ -189,6 +189,9 @@ const ProcedureDetailsPage = () => {
         return;
       }
 
+      console.log('🔍 Debug - procedureData structure:', procedureData);
+      console.log('🔍 Debug - procedureDetails:', procedureData.procedureDetails);
+      
       // Prepare procedure data for PDF with practice information
       const procedureForPDF = {
         ...procedureData.procedureDetails,
@@ -208,6 +211,15 @@ const ProcedureDetailsPage = () => {
         practiceNotes: procedureData.assignment?.practiceNotes || '',
         customInstructions: procedureData.assignment?.customInstructions || []
       };
+      
+      console.log('📋 Final procedure object structure:', {
+        hasImmediateAftercare: !!procedureForPDF.immediateAftercare,
+        hasDietRestrictions: !!procedureForPDF.dietRestrictions,
+        hasWarningSignsToCallDoctor: !!procedureForPDF.warningSignsToCallDoctor,
+        hasRecoveryTimeline: !!procedureForPDF.recoveryTimeline,
+        hasMedications: !!procedureForPDF.medications,
+        hasOverview: !!procedureForPDF.overview
+      });
       
       console.log('🏥 Generating PDF with practice data:', {
         practiceName: procedureForPDF.practiceName,
