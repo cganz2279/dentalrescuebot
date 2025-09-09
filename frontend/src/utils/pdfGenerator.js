@@ -89,32 +89,27 @@ export const generateProcedurePDF = async (procedure) => {
     }
     
     // ALWAYS add Office Hours and Emergency Contact at the end
-    yPos = Math.max(yPos, 200); // Ensure we're near bottom of page
-    
-    // Add new page if needed for footer
-    if (yPos > 220) {
-      pdf.addPage();
-      yPos = 20;
-    }
-    
-    // Generation timestamp
-    pdf.setFontSize(10);
-    pdf.setFont(undefined, 'italic');
-    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
-    yPos += 15;
+    // Force a new page for footer to ensure visibility
+    pdf.addPage();
+    yPos = 30;
     
     // FORCE Office Hours - Use any available source
     const officeHours = procedure.practiceOfficeHours || 
                        procedure.officeHours || 
                        'Mon-Fri: 8:00 AM - 5:00 PM (EST/EDT) • Sat: 9:00 AM - 2:00 PM';
     
+    pdf.setFontSize(14);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('Practice Information', 20, yPos);
+    yPos += 20;
+    
     pdf.setFontSize(12);
     pdf.setFont(undefined, 'bold');
     pdf.text('Office Hours:', 20, yPos);
-    yPos += 8;
+    yPos += 10;
     pdf.setFont(undefined, 'normal');
     pdf.text(officeHours, 20, yPos);
-    yPos += 15;
+    yPos += 20;
     
     // FORCE Emergency Contact - Use any available source  
     const emergencyContact = procedure.practiceEmergencyContact || 
@@ -124,9 +119,15 @@ export const generateProcedurePDF = async (procedure) => {
     
     pdf.setFont(undefined, 'bold');
     pdf.text('Emergency Contact:', 20, yPos);
-    yPos += 8;
+    yPos += 10;
     pdf.setFont(undefined, 'normal');
     pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
+    yPos += 20;
+    
+    // Generation timestamp
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'italic');
+    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
     
     // Save the PDF
     const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_Care_Guide.pdf`;
