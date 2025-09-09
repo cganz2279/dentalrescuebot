@@ -186,9 +186,10 @@ const ProcedureDetailsPage = () => {
         return;
       }
 
-      console.log('🔍 Debug - procedureData structure:', procedureData);
-      console.log('🔍 Debug - procedureDetails:', procedureData.procedureDetails);
-      
+      console.log('🏥 Print Handler - Practice data:', practice);
+      console.log('📊 Practice officeHours:', practice?.officeHours);
+      console.log('📞 Practice emergencyContact:', practice?.emergencyContact);
+
       // Prepare procedure data for PDF with practice information
       const procedureForPDF = {
         ...procedureData.procedureDetails,
