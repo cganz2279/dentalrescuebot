@@ -177,9 +177,6 @@ const ProcedureDetailsPage = () => {
     try {
       const { generateProcedurePDF } = await import('../utils/pdfGenerator');
       
-      // Get practice data from context
-      const { practice } = useAuth();
-      
       if (!procedureData) {
         toast({
           title: "Error",
