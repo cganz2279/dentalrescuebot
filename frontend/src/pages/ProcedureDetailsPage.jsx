@@ -632,15 +632,14 @@ const ProcedureDetailsPage = () => {
                                       <p className="text-gray-700 leading-relaxed m-0" 
                                          dangerouslySetInnerHTML={{
                                            __html: element.content
-                                             // Bold text formatting
+                                             // Generic text formatting - no hard-coded words
                                              .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
                                              .replace(/\*(.*?)\*/g, '<em class="italic text-gray-800">$1</em>')
-                                             // Important warnings in red
-                                             .replace(/(IMPORTANT|WARNING|CAUTION|AVOID|DO NOT|NEVER)/gi, '<span class="font-bold text-red-600 bg-red-100 px-1 rounded">$1</span>')
-                                             // Time periods in blue
-                                             .replace(/(\d+\s*(hours?|days?|weeks?|months?))/gi, '<span class="font-semibold text-blue-600">$1</span>')
-                                             // Phone numbers
-                                             .replace(/(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/g, '<span class="font-mono font-semibold text-green-600">$1</span>')
+                                             // Generic pattern-based formatting
+                                             .replace(/\b([A-Z]{2,})\b/g, '<span class="font-semibold text-gray-800">$1</span>') // All caps words
+                                             .replace(/(\d+\s*[-–]\s*\d+\s*(hours?|days?|weeks?|months?))/gi, '<span class="font-semibold text-blue-600">$1</span>') // Time ranges
+                                             .replace(/(\d+\s+(hours?|days?|weeks?|months?))/gi, '<span class="font-semibold text-blue-600">$1</span>') // Time periods
+                                             .replace(/(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/g, '<span class="font-mono font-semibold text-green-600">$1</span>') // Phone numbers
                                          }}
                                       />
                                     </div>
