@@ -444,11 +444,28 @@ const PracticeDashboard = () => {
                       }`}
                     >
                       <div>
-                        <p className="font-medium">{patient.firstName} {patient.lastName}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{patient.firstName} {patient.lastName}</p>
+                          <Badge 
+                            variant={patient.status === 'Active' ? 'default' : 'secondary'}
+                            className={`text-xs ${
+                              patient.status === 'Active' 
+                                ? 'bg-green-100 text-green-800 border-green-200' 
+                                : 'bg-gray-100 text-gray-600 border-gray-200'
+                            }`}
+                          >
+                            {patient.status || 'Active'}
+                          </Badge>
+                        </div>
                         <p className="text-sm text-gray-600">{patient.email}</p>
                         {patient.lastLoginAt && (
                           <p className="text-xs text-gray-400">
                             Last login: {new Date(patient.lastLoginAt).toLocaleDateString()}
+                          </p>
+                        )}
+                        {patient.status === 'Inactive' && patient.deactivatedAt && (
+                          <p className="text-xs text-red-400">
+                            Deactivated: {new Date(patient.deactivatedAt).toLocaleDateString()}
                           </p>
                         )}
                       </div>
