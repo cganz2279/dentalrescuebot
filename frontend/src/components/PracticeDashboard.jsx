@@ -400,13 +400,13 @@ const PracticeDashboard = () => {
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Patients */}
+          {/* Recent Patient Procedures */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center">
                   <Users className="h-5 w-5 mr-2 text-blue-600" />
-                  Recent Patients
+                  Recent Patient Procedures
                   {patientSearchTerm && (
                     <Badge variant="outline" className="ml-2">
                       Search: "{patientSearchTerm}"
@@ -431,7 +431,7 @@ const PracticeDashboard = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Search patients by name or email..."
+                  placeholder="Search by patient name, procedure, or dentist..."
                   value={patientSearchTerm}
                   onChange={(e) => setPatientSearchTerm(e.target.value)}
                   className="pl-10"
@@ -440,115 +440,91 @@ const PracticeDashboard = () => {
               
               {/* Filter Controls */}
               <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="showTestPatients"
-                    checked={showTestPatients}
-                    onChange={(e) => setShowTestPatients(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="showTestPatients" className="text-sm text-gray-600">
-                    Show test patients
-                  </label>
+                <div className="text-sm text-gray-600">
+                  Showing procedures for real patients only
                 </div>
                 <div className="text-xs text-gray-500">
-                  {filteredPatients.length} patients shown
+                  {filteredPatientProcedures.length} procedures shown
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              {filteredPatients.length > 0 ? (
+              {filteredPatientProcedures.length > 0 ? (
                 <div className="space-y-4">
-                  {filteredPatients.map((patient) => (
+                  {filteredPatientProcedures.map((procedure) => (
                     <div 
-                      key={patient.id} 
-                      onClick={() => handlePatientClick(patient.id)}
-                      className={`flex justify-between items-center p-3 rounded-lg cursor-pointer transition-colors ${
-                        selectedPatientId === patient.id 
-                          ? 'bg-blue-100 border-2 border-blue-300' 
-                          : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
+                      key={procedure.id} 
+                      className="flex justify-between items-start p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors border"
                     >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">{patient.firstName} {patient.lastName}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-medium text-lg text-blue-700">{procedure.procedureName}</h4>
                           <Badge 
-                            variant={patient.status === 'Active' ? 'default' : 'secondary'}
+                            variant={procedure.status === 'active' ? 'default' : 'secondary'}
                             className={`text-xs ${
-                              patient.status === 'Active' 
+                              procedure.status === 'active' 
                                 ? 'bg-green-100 text-green-800 border-green-200' 
                                 : 'bg-gray-100 text-gray-600 border-gray-200'
                             }`}
                           >
-                            {patient.status || 'Active'}
+                            {procedure.status || 'Active'}
                           </Badge>
-                          {isTestPatient(patient) && (
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs bg-orange-50 text-orange-600 border-orange-200"
-                            >
-                              Test
-                            </Badge>
+                        </div>
+                        
+                        <div className="space-y-1 text-sm text-gray-600">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1">
+                              <User className="h-4 w-4" />
+                              <span className="font-medium">{procedure.patientName}</span>
+                            </div>
+                            {procedure.dentistName && (
+                              <div className="flex items-center gap-1">
+                                <Users className="h-4 w-4" />
+                                <span>{procedure.dentistName}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {procedure.performedDate && (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              <span>Performed: {new Date(procedure.performedDate).toLocaleDateString()}</span>
+                            </div>
                           )}
-                          {isRealPatient(patient) && (
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs bg-blue-50 text-blue-600 border-blue-200"
-                            >
-                              Real
-                            </Badge>
+                          
+                          {procedure.followUpDate && (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              <span>Follow-up: {new Date(procedure.followUpDate).toLocaleDateString()}</span>
+                            </div>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600">{patient.email}</p>
-                        {patient.lastLoginAt && (
-                          <p className="text-xs text-gray-400">
-                            Last login: {new Date(patient.lastLoginAt).toLocaleDateString()}
-                          </p>
-                        )}
-                        {patient.status === 'Inactive' && patient.deactivatedAt && (
-                          <p className="text-xs text-red-400">
-                            Deactivated: {new Date(patient.deactivatedAt).toLocaleDateString()}
-                          </p>
-                        )}
                       </div>
-                      <div className="text-right">
-                        <Users className={`h-4 w-4 ${selectedPatientId === patient.id ? 'text-blue-600' : 'text-gray-400'}`} />
-                        {selectedPatientId === patient.id && (
-                          <p className="text-xs text-blue-600 mt-1">Selected</p>
-                        )}
+                      
+                      <div className="flex items-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/procedure-details/${procedure.id}`)}
+                          className="text-xs"
+                        >
+                          <Eye className="h-3 w-3 mr-1" />
+                          View Details
+                        </Button>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  {patientSearchTerm ? (
-                    <div>
-                      <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p>No patients found matching "{patientSearchTerm}"</p>
-                      <Button
-                        onClick={() => setPatientSearchTerm('')}
-                        variant="outline"
-                        className="mt-2"
-                        size="sm"
-                      >
-                        Clear Search
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p>No patients added yet</p>
-                      <Button
-                        onClick={() => navigate('/add-patient')}
-                        className="mt-2"
-                        size="sm"
-                      >
-                        Add First Patient
-                      </Button>
-                    </div>
-                  )}
+                  <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg mb-2">No procedures found</p>
+                  <p className="text-sm">
+                    {patientSearchTerm 
+                      ? `No procedures match "${patientSearchTerm}"`
+                      : "No recent procedures for real patients"
+                    }
+                  </p>
                 </div>
               )}
             </CardContent>
