@@ -204,7 +204,11 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
         
         # Add status information to recent patients
         for patient in recent_patients:
-            patient["status"] = "Active" if patient.get("isActive", True) else "Inactive"
+            # Default to active if isActive field is not set
+            is_active = patient.get("isActive")
+            if is_active is None:
+                is_active = True  # Default to active for existing patients without the field
+            patient["status"] = "Active" if is_active else "Inactive"
         
         # Get recent procedures (last 10) with patient names
         recent_procedures = await db.patientprocedures.find(
