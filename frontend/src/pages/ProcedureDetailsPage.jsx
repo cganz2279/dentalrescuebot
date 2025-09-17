@@ -461,44 +461,67 @@ const ProcedureDetailsPage = () => {
           <CardContent className="p-6">
             <div className="space-y-6">
               {(() => {
-                // Parse content into sections
-                const lines = procedureData.procedureDetails.overview.split('\n');
+                // Parse content into sections - handle both line-by-line and sentence-based content
+                const overviewText = procedureData.procedureDetails.overview || '';
                 const sections = [];
                 let currentSection = null;
                 
-                lines.forEach(line => {
-                  const trimmedLine = line.trim();
-                  if (!trimmedLine) return;
-                  
-                  // Check if this is a section header (ends with colon)
-                  if (trimmedLine.endsWith(':') && trimmedLine.length < 80 && !trimmedLine.includes('•') && !trimmedLine.includes('-')) {
-                    // Save previous section if exists
-                    if (currentSection) {
-                      sections.push(currentSection);
-                    }
-                    // Start new section
-                    currentSection = {
-                      title: trimmedLine,
-                      content: []
-                    };
-                  } else if (currentSection) {
-                    // Add content to current section
-                    currentSection.content.push(trimmedLine);
-                  } else {
-                    // Content before any section header
-                    if (!sections.find(s => s.title === 'General Instructions:')) {
-                      sections.unshift({
-                        title: 'General Instructions:',
-                        content: []
-                      });
-                    }
-                    sections[0].content.push(trimmedLine);
-                  }
-                });
+                // First, try to split by common section patterns in the overview
+                // Split by section headers that are followed by content
+                const sectionPattern = /\b([A-Z][a-zA-Z\s&]+):\s*/g;
+                let lastIndex = 0;
+                let match;
                 
-                // Add the last section
+                while ((match = sectionPattern.exec(overviewText)) !== null) {
+                  // If we have a previous section, get its content
+                  if (currentSection) {
+                    const sectionContent = overviewText.substring(lastIndex, match.index).trim();
+                    if (sectionContent) {
+                      // Split content by sentences and bullet points
+                      const contentLines = sectionContent
+                        .split(/[.]\s+/) // Split by sentences
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0)
+                        .map(line => line.endsWith('.') ? line : line + '.'); // Ensure sentences end with period
+                      
+                      currentSection.content = contentLines;
+                    }
+                    sections.push(currentSection);
+                  }
+                  
+                  // Start new section
+                  currentSection = {
+                    title: match[1] + ':',
+                    content: []
+                  };
+                  lastIndex = match.index + match[0].length;
+                }
+                
+                // Handle the last section
                 if (currentSection) {
+                  const sectionContent = overviewText.substring(lastIndex).trim();
+                  if (sectionContent) {
+                    const contentLines = sectionContent
+                      .split(/[.]\s+/)
+                      .map(line => line.trim())
+                      .filter(line => line.length > 0)
+                      .map(line => line.endsWith('.') ? line : line + '.');
+                    
+                    currentSection.content = contentLines;
+                  }
                   sections.push(currentSection);
+                }
+                
+                // If no sections were found, treat the entire content as one section
+                if (sections.length === 0 && overviewText) {
+                  sections.push({
+                    title: 'Post-Operative Instructions:',
+                    content: overviewText
+                      .split(/[.]\s+/)
+                      .map(line => line.trim())
+                      .filter(line => line.length > 0)
+                      .map(line => line.endsWith('.') ? line : line + '.')
+                  });
                 }
                 
                 // Render sections
