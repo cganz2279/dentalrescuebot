@@ -798,7 +798,7 @@ async def update_patient(
                 detail="Patient not found"
             )
         
-        # Handle delete operations
+        # Handle delete operations FIRST
         if patient_data.action in ["deactivate", "remove"] and patient_data.confirmDelete:
             # Check if patient has active procedure assignments
             active_procedures = await db.patientprocedures.count_documents({
@@ -826,7 +826,7 @@ async def update_patient(
                 if result.deleted_count == 0:
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,
-                        detail="Patient not found"
+                        detail="Patient not found for removal"
                     )
                 
                 return {
@@ -852,7 +852,7 @@ async def update_patient(
                 if result.modified_count == 0:
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,
-                        detail="Patient not found"
+                        detail="Patient not found for deactivation"
                     )
                 
                 return {
@@ -862,7 +862,13 @@ async def update_patient(
                     "note": "Procedure assignments have been preserved"
                 }
         
-        # Regular patient update logic
+        # Regular patient update logic (only if no delete action)
+        if patient_data.action is not None:
+            # If action is provided but not a valid delete action, reject it
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid action. Use 'deactivate' or 'remove' with confirmDelete=true for delete operations."
+            )
         # Check if email is being updated and ensure it's unique
         if patient_data.email and patient_data.email != patient.get('email'):
             existing_email = await db.users.find_one({
