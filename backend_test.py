@@ -564,7 +564,7 @@ class BackendTester:
         # Test 2: Create test patients (only if authentication succeeded)
         create_success = False
         if auth_success:
-            create_success = self.test_create_test_patients()
+            create_success = self.create_test_patients()
         
         # Test 3: POST Soft Delete (only if patients created)
         soft_delete_success = False
