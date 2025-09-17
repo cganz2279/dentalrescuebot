@@ -179,8 +179,28 @@ const PracticeDashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await practiceApi.getDashboard();
-      setDashboardData(response.data);
+      
+      // Load dashboard data and real patients separately
+      const [dashboardResponse, patientsResponse] = await Promise.all([
+        practiceApi.getDashboard(),
+        practiceApi.getPatients()
+      ]);
+      
+      setDashboardData(dashboardResponse.data);
+      
+      // Filter for only Gmail patients (real patients)
+      const gmailPatients = patientsResponse.data.filter(patient => 
+        patient.email.toLowerCase().includes('@gmail.com')
+      );
+      
+      // Add status to Gmail patients
+      const gmailPatientsWithStatus = gmailPatients.map(patient => ({
+        ...patient,
+        status: patient.isActive !== false ? 'Active' : 'Inactive'
+      }));
+      
+      setRealPatients(gmailPatientsWithStatus);
+      
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to load dashboard');
       toast({
