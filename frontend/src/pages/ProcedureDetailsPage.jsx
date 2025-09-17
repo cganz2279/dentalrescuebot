@@ -651,35 +651,67 @@ const ProcedureDetailsPage = () => {
           </CardContent>
         </Card>
 
-        {/* Office Hours */}
-        {practice?.officeHours && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center text-blue-700">
-                <Clock className="h-5 w-5 mr-2" />
-                Office Hours
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-700 font-medium">{practice.officeHours}</p>
-            </CardContent>
-          </Card>
-        )}
+        {/* Enhanced Practice Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Office Hours */}
+          {practice?.officeHours && (
+            <Card className="shadow-md border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
+              <CardHeader className="bg-blue-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center text-lg">
+                  <Clock className="h-6 w-6 mr-3" />
+                  Office Hours
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <p className="text-gray-800 font-semibold text-lg leading-relaxed">
+                    {practice.officeHours}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Emergency Contact */}
-        {practice?.emergencyContact && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center text-red-700">
-                <Phone className="h-5 w-5 mr-2" />
-                Emergency Contact
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-700 font-medium">{practice.emergencyContact}</p>
-            </CardContent>
-          </Card>
-        )}
+          {/* Emergency Contact */}
+          {practice?.emergencyContact && (
+            <Card className="shadow-md border-red-200 bg-gradient-to-br from-red-50 to-red-100">
+              <CardHeader className="bg-red-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center text-lg">
+                  <Phone className="h-6 w-6 mr-3" />
+                  Emergency Contact
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <p className="text-gray-800 font-semibold text-lg leading-relaxed">
+                    {practice.emergencyContact}
+                  </p>
+                  <p className="text-sm text-red-600 mt-2 font-medium">
+                    Available 24/7 for dental emergencies
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Important Notice */}
+        <Card className="mb-6 border-amber-200 bg-amber-50">
+          <CardContent className="p-4">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-amber-200 rounded-full flex items-center justify-center">
+                  <span className="text-amber-800 font-bold">!</span>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-amber-800 font-medium">
+                  Please follow all post-operative instructions carefully. Contact our office if you have any questions or concerns about your recovery.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
