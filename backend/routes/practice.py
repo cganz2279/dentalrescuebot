@@ -774,7 +774,7 @@ async def update_patient(
     patient_data: PatientUpdate,
     current_user: dict = Depends(get_current_user)
 ):
-    """Update patient information"""
+    """Update patient information or handle delete operations"""
     try:
         practice_id = current_user["practiceId"]
         role = current_user["role"]
@@ -798,6 +798,71 @@ async def update_patient(
                 detail="Patient not found"
             )
         
+        # Handle delete operations
+        if patient_data.action in ["deactivate", "remove"] and patient_data.confirmDelete:
+            # Check if patient has active procedure assignments
+            active_procedures = await db.patientprocedures.count_documents({
+                "patientId": patient_id,
+                "practiceId": practice_id,
+                "status": "active"
+            })
+            
+            if patient_data.action == "remove":
+                # Permanent removal
+                if active_procedures > 0:
+                    # For permanent removal, delete all procedure assignments
+                    await db.patientprocedures.delete_many({
+                        "patientId": patient_id,
+                        "practiceId": practice_id
+                    })
+                
+                # Completely remove patient from database
+                result = await db.users.delete_one({
+                    "id": patient_id,
+                    "practiceId": practice_id,
+                    "role": "patient"
+                })
+                
+                if result.deleted_count == 0:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail="Patient not found"
+                    )
+                
+                return {
+                    "success": True,
+                    "message": f"Patient {patient['firstName']} {patient['lastName']} has been permanently removed",
+                    "deletedProcedures": active_procedures
+                }
+            else:
+                # Deactivation (soft delete)
+                result = await db.users.update_one(
+                    {
+                        "id": patient_id,
+                        "practiceId": practice_id,
+                        "role": "patient"
+                    },
+                    {"$set": {
+                        "isActive": False,
+                        "deactivatedAt": datetime.utcnow(),
+                        "updatedAt": datetime.utcnow()
+                    }}
+                )
+                
+                if result.modified_count == 0:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail="Patient not found"
+                    )
+                
+                return {
+                    "success": True,
+                    "message": f"Patient {patient['firstName']} {patient['lastName']} has been deactivated",
+                    "activeProcedures": active_procedures,
+                    "note": "Procedure assignments have been preserved"
+                }
+        
+        # Regular patient update logic
         # Check if email is being updated and ensure it's unique
         if patient_data.email and patient_data.email != patient.get('email'):
             existing_email = await db.users.find_one({
@@ -810,7 +875,7 @@ async def update_patient(
                     detail="Email address already in use"
                 )
         
-        # Build update document with only provided fields
+        # Build update document with only provided fields (excluding delete action fields)
         update_data = {"updatedAt": datetime.utcnow()}
         
         if patient_data.firstName is not None:
