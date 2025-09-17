@@ -20,9 +20,76 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Helper function to add structured content sections matching original PDF format
-const addStructuredSection = (pdf, title, content, yPos) => {
-  if (!content || (Array.isArray(content) && content.length === 0)) {
+// Helper function to parse the overview text and extract sections exactly as in original PDFs
+const parseOverviewSections = (overviewText) => {
+  if (!overviewText) return [];
+  
+  const sections = [];
+  
+  // Define the section patterns exactly as they appear in original PDFs
+  const sectionPatterns = [
+    'Purpose:',
+    'First 24 Hours:',
+    'Pain & Sensitivity:',
+    'Oral Hygiene:',
+    'Diet:',
+    'Special Precautions:',
+    'Follow-Up:'
+  ];
+  
+  // Find all section positions
+  const sectionPositions = [];
+  sectionPatterns.forEach(pattern => {
+    const index = overviewText.indexOf(pattern);
+    if (index !== -1) {
+      sectionPositions.push({ pattern, index });
+    }
+  });
+  
+  // Sort by position
+  sectionPositions.sort((a, b) => a.index - b.index);
+  
+  // Extract each section's content
+  sectionPositions.forEach((section, i) => {
+    const startIndex = section.index + section.pattern.length;
+    const endIndex = i < sectionPositions.length - 1 
+      ? sectionPositions[i + 1].index 
+      : overviewText.length;
+    
+    const content = overviewText.substring(startIndex, endIndex).trim();
+    
+    if (content) {
+      // Split content by bullet points or sentences
+      const items = content
+        .split(/(?:^|\s+)-\s+/) // Split by bullet points
+        .map(item => item.trim())
+        .filter(item => item.length > 0)
+        .map(item => {
+          // Clean up and ensure proper formatting
+          if (!item.startsWith('-') && !item.startsWith('•')) {
+            // For non-bullet items, check if they should be split into bullets
+            if (item.includes('. ') && item.length > 100) {
+              return item.split('. ').filter(s => s.length > 0).map(s => s.endsWith('.') ? s : s + '.');
+            }
+            return [item];
+          }
+          return [item.replace(/^[-•]\s*/, '')];
+        })
+        .flat();
+      
+      sections.push({
+        title: section.pattern,
+        content: items
+      });
+    }
+  });
+  
+  return sections;
+};
+
+// Helper function to add a section to PDF with exact original formatting
+const addPDFSection = (pdf, title, content, yPos) => {
+  if (!content || content.length === 0) {
     return yPos;
   }
 
@@ -33,21 +100,17 @@ const addStructuredSection = (pdf, title, content, yPos) => {
   }
 
   // Section title
-  pdf.setFontSize(14);
+  pdf.setFontSize(12);
   pdf.setFont(undefined, 'bold');
   pdf.text(title, 20, yPos);
-  yPos += 12;
+  yPos += 10;
 
   // Section content
   pdf.setFontSize(11);
   pdf.setFont(undefined, 'normal');
 
-  // Handle array or string content
-  const contentItems = Array.isArray(content) ? content : content.split('\n');
-  
-  contentItems.forEach((item) => {
-    const line = typeof item === 'string' ? item.trim() : '';
-    if (!line) return;
+  content.forEach((item) => {
+    if (!item || item.trim().length === 0) return;
 
     // Check if we need a new page
     if (yPos > 250) {
@@ -55,32 +118,36 @@ const addStructuredSection = (pdf, title, content, yPos) => {
       yPos = 20;
     }
 
-    // Clean up the line - remove existing bullet markers
-    const cleanLine = line.replace(/^[•\-\*]\s*/, '');
+    const cleanItem = item.trim();
     
-    // Add bullet point
-    const wrappedLines = pdf.splitTextToSize(`- ${cleanLine}`, 170);
-    wrappedLines.forEach(wrappedLine => {
-      pdf.text(wrappedLine, 25, yPos);
-      yPos += 6;
-    });
+    // Add bullet point formatting for content items
+    if (title !== 'Purpose:') {
+      const wrappedLines = pdf.splitTextToSize(`- ${cleanItem}`, 170);
+      wrappedLines.forEach(line => {
+        pdf.text(line, 25, yPos);
+        yPos += 6;
+      });
+    } else {
+      // Purpose section - no bullets
+      const wrappedLines = pdf.splitTextToSize(cleanItem, 170);
+      wrappedLines.forEach(line => {
+        pdf.text(line, 20, yPos);
+        yPos += 6;
+      });
+    }
   });
 
-  yPos += 10; // Spacing after section
+  yPos += 8; // Spacing after section
   return yPos;
 };
 
-// Generate PDF matching exact original format
+// Generate PDF matching exact original PostOp document format
 export const generateProcedurePDF = async (procedure) => {
-  console.log('🎯 PDF Generator - Creating PDF matching original PostOp format');
-  console.log('📄 Procedure data:', {
+  console.log('🎯 PDF Generator - Creating PDF matching exact original PostOp format');
+  console.log('📄 Input procedure:', {
     name: procedure.name,
     hasOverview: !!procedure.overview,
-    hasImmediateAftercare: !!procedure.immediateAftercare,
-    hasDietRestrictions: !!procedure.dietRestrictions,
-    hasWarningSignsToCallDoctor: !!procedure.warningSignsToCallDoctor,
-    hasRecoveryTimeline: !!procedure.recoveryTimeline,
-    hasMedications: !!procedure.medications
+    overviewLength: procedure.overview ? procedure.overview.length : 0
   });
   
   try {
@@ -97,111 +164,57 @@ export const generateProcedurePDF = async (procedure) => {
     
     let yPos = 20;
     
-    // DENTAL RESCUE BOT Header (matching original)
-    pdf.setFontSize(16);
+    // DENTAL RESCUE BOT Header (exactly as in original)
+    pdf.setFontSize(14);
     pdf.setFont(undefined, 'bold');
     pdf.text('DENTAL RESCUE BOT', 20, yPos);
     yPos += 20;
     
-    // Procedure Name
-    pdf.setFontSize(14);
+    // Procedure Name (exactly as in original)
+    pdf.setFontSize(12);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
     yPos += 20;
     
-    // Purpose section (from overview if available)
+    // Parse and render sections from overview
     if (procedure.overview) {
-      // Extract purpose from overview or use overview as purpose
-      let purposeText = procedure.overview;
+      console.log('📖 Parsing overview content...');
+      const sections = parseOverviewSections(procedure.overview);
+      console.log('📑 Found sections:', sections.map(s => s.title));
       
-      // Try to extract purpose if it exists in the overview
-      const purposeMatch = purposeText.match(/Purpose:\s*([^\.]+\.)/i);
-      if (purposeMatch) {
-        purposeText = purposeMatch[1];
-      } else {
-        // If no specific purpose found, use first sentence or brief description
-        const firstSentence = purposeText.split('.')[0] + '.';
-        if (firstSentence.length < 200) {
-          purposeText = firstSentence;
-        }
-      }
-      
-      pdf.setFontSize(12);
-      pdf.setFont(undefined, 'bold');
-      pdf.text('Purpose:', 20, yPos);
-      yPos += 8;
-      
-      pdf.setFont(undefined, 'normal');
-      const wrappedPurpose = pdf.splitTextToSize(purposeText, 170);
-      wrappedPurpose.forEach(line => {
-        pdf.text(line, 20, yPos);
-        yPos += 6;
+      sections.forEach(section => {
+        yPos = addPDFSection(pdf, section.title, section.content, yPos);
       });
-      yPos += 15;
-    }
-    
-    // First 24 Hours (from immediateAftercare)
-    if (procedure.immediateAftercare) {
-      yPos = addStructuredSection(pdf, 'First 24 Hours:', procedure.immediateAftercare, yPos);
-    }
-    
-    // Pain & Sensitivity (from medications if available, or extract from overview)
-    if (procedure.medications) {
-      // Look for pain-related content in medications
-      const painContent = Array.isArray(procedure.medications) 
-        ? procedure.medications.filter(med => 
-            med.toLowerCase().includes('pain') || 
-            med.toLowerCase().includes('otc') ||
-            med.toLowerCase().includes('medication')
-          ) 
-        : procedure.medications.split('\n').filter(med => 
-            med.toLowerCase().includes('pain') || 
-            med.toLowerCase().includes('otc') ||
-            med.toLowerCase().includes('medication')
-          );
+    } else {
+      // Fallback if no overview - use structured fields
+      console.log('⚠️ No overview found, using structured fields...');
       
-      if (painContent.length > 0) {
-        yPos = addStructuredSection(pdf, 'Pain & Sensitivity:', painContent, yPos);
+      if (procedure.immediateAftercare) {
+        yPos = addPDFSection(pdf, 'First 24 Hours:', 
+          Array.isArray(procedure.immediateAftercare) 
+            ? procedure.immediateAftercare 
+            : procedure.immediateAftercare.split('\n'), 
+          yPos);
+      }
+      
+      if (procedure.dietRestrictions) {
+        yPos = addPDFSection(pdf, 'Diet:', 
+          Array.isArray(procedure.dietRestrictions) 
+            ? procedure.dietRestrictions 
+            : procedure.dietRestrictions.split('\n'), 
+          yPos);
+      }
+      
+      if (procedure.warningSignsToCallDoctor) {
+        yPos = addPDFSection(pdf, 'Follow-Up:', 
+          Array.isArray(procedure.warningSignsToCallDoctor) 
+            ? procedure.warningSignsToCallDoctor 
+            : procedure.warningSignsToCallDoctor.split('\n'), 
+          yPos);
       }
     }
     
-    // Oral Hygiene (extract from overview or use general instruction)
-    const oralHygieneContent = ['Brush and floss normally, avoiding excessive pressure on the treated area.'];
-    yPos = addStructuredSection(pdf, 'Oral Hygiene:', oralHygieneContent, yPos);
-    
-    // Diet (from dietRestrictions)
-    if (procedure.dietRestrictions) {
-      yPos = addStructuredSection(pdf, 'Diet:', procedure.dietRestrictions, yPos);
-    }
-    
-    // Special Precautions (from warningSignsToCallDoctor or overview)
-    if (procedure.warningSignsToCallDoctor) {
-      // Convert warning signs to precautions format
-      const precautionContent = Array.isArray(procedure.warningSignsToCallDoctor)
-        ? procedure.warningSignsToCallDoctor.map(warning => 
-            `Watch for ${warning.toLowerCase()}`)
-        : procedure.warningSignsToCallDoctor.split('\n').map(warning => 
-            `Watch for ${warning.toLowerCase()}`);
-      
-      yPos = addStructuredSection(pdf, 'Special Precautions:', precautionContent, yPos);
-    }
-    
-    // Follow-Up (from recoveryTimeline or general instruction)
-    let followUpContent = [];
-    if (procedure.recoveryTimeline) {
-      followUpContent = Array.isArray(procedure.recoveryTimeline) 
-        ? procedure.recoveryTimeline 
-        : procedure.recoveryTimeline.split('\n');
-    } else {
-      followUpContent = ['Contact the office if pain worsens, swelling develops, or you notice signs of infection.'];
-    }
-    
-    // Add standard follow-up instruction
-    followUpContent.push('Follow-up appointments are important for monitoring healing progress.');
-    
-    yPos = addStructuredSection(pdf, 'Follow-Up:', followUpContent, yPos);
-    
-    // Practice Information Footer
+    // Add some spacing before practice information
     yPos += 20;
     
     // Check if we need a new page for practice info
@@ -210,17 +223,18 @@ export const generateProcedurePDF = async (procedure) => {
       yPos = 30;
     }
     
-    pdf.setFontSize(14);
+    // Practice Information Section
+    pdf.setFontSize(12);
     pdf.setFont(undefined, 'bold');
     pdf.text('Practice Information', 20, yPos);
-    yPos += 20;
+    yPos += 15;
     
     // Practice name
     if (procedure.practiceName) {
-      pdf.setFontSize(12);
+      pdf.setFontSize(11);
       pdf.setFont(undefined, 'bold');
       pdf.text(procedure.practiceName, 20, yPos);
-      yPos += 15;
+      yPos += 12;
     }
     
     // Office Hours
@@ -228,7 +242,7 @@ export const generateProcedurePDF = async (procedure) => {
                        procedure.officeHours || 
                        'Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM';
     
-    pdf.setFontSize(11);
+    pdf.setFontSize(10);
     pdf.setFont(undefined, 'bold');
     pdf.text('Office Hours:', 20, yPos);
     yPos += 8;
@@ -238,7 +252,7 @@ export const generateProcedurePDF = async (procedure) => {
       pdf.text(line, 20, yPos);
       yPos += 6;
     });
-    yPos += 10;
+    yPos += 8;
     
     // Emergency Contact
     const emergencyContact = procedure.practiceEmergencyContact || 
@@ -250,10 +264,10 @@ export const generateProcedurePDF = async (procedure) => {
     yPos += 8;
     pdf.setFont(undefined, 'normal');
     pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
-    yPos += 15;
+    yPos += 12;
     
     // Generation timestamp
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
     pdf.setFont(undefined, 'italic');
     pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
     
@@ -261,7 +275,12 @@ export const generateProcedurePDF = async (procedure) => {
     const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_Care_Guide.pdf`;
     pdf.save(filename);
     
-    console.log('✅ PDF generated successfully matching original format:', filename);
+    console.log('✅ PDF generated successfully matching original PostOp format:', filename);
+    console.log('✅ Practice info included:', {
+      name: procedure.practiceName,
+      hours: officeHours,
+      emergency: emergencyContact
+    });
     
     return true;
     
