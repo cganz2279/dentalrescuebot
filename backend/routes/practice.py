@@ -1369,7 +1369,7 @@ async def delete_patient(
             detail="Failed to delete patient"
         )
 
-@router.put("/patients/{patient_id}/status")
+@router.put("/patient-status/{patient_id}")
 async def update_patient_status(
     patient_id: str,
     request: dict,
