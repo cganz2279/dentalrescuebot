@@ -274,7 +274,6 @@ async def get_practice_patients(current_user: dict = Depends(get_current_user)):
             )
         
         # Get all active patients for this practice
-        print(f"DEBUG: Looking for patients with practiceId: {practice_id}")
         patients = await db.users.find(
             {
                 "practiceId": practice_id,
@@ -286,10 +285,6 @@ async def get_practice_patients(current_user: dict = Depends(get_current_user)):
                 "password": 0
             }
         ).sort("lastName", 1).to_list(length=None)
-        
-        print(f"DEBUG: Found {len(patients)} patients for practice {practice_id}")
-        if patients:
-            print(f"DEBUG: First patient: {patients[0].get('firstName')} {patients[0].get('lastName')}")
         
         # Get procedure count for each patient
         for patient in patients:
