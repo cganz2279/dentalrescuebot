@@ -183,12 +183,11 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
             "status": "active"
         })
         
-        # Get recent patients (last 10)
+        # Get recent patients (last 10, both active and inactive)
         recent_patients = await db.users.find(
             {
                 "practiceId": practice_id,
-                "role": "patient",
-                "isActive": True
+                "role": "patient"
             },
             {
                 "_id": 0,
@@ -197,9 +196,15 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                 "lastName": 1,
                 "email": 1,
                 "createdAt": 1,
-                "lastLoginAt": 1
+                "lastLoginAt": 1,
+                "isActive": 1,
+                "deactivatedAt": 1
             }
         ).sort("createdAt", -1).limit(10).to_list(length=None)
+        
+        # Add status information to recent patients
+        for patient in recent_patients:
+            patient["status"] = "Active" if patient.get("isActive", True) else "Inactive"
         
         # Get recent procedures (last 10) with patient names
         recent_procedures = await db.patientprocedures.find(
