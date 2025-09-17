@@ -398,13 +398,13 @@ const PracticeDashboard = () => {
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Patient Procedures */}
+          {/* Recent Patients */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center">
                   <Users className="h-5 w-5 mr-2 text-blue-600" />
-                  Recent Patient Procedures
+                  Recent Patients
                   {patientSearchTerm && (
                     <Badge variant="outline" className="ml-2">
                       Search: "{patientSearchTerm}"
@@ -429,86 +429,86 @@ const PracticeDashboard = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Search by patient name, procedure, or dentist..."
+                  placeholder="Search patients by name or email..."
                   value={patientSearchTerm}
                   onChange={(e) => setPatientSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
               
-              {/* Filter Controls */}
+              {/* Filter Info */}
               <div className="flex items-center justify-between mt-3">
                 <div className="text-sm text-gray-600">
-                  Showing procedures for real patients only
+                  Showing real patients only (Gmail addresses)
                 </div>
                 <div className="text-xs text-gray-500">
-                  {filteredPatientProcedures.length} procedures shown
+                  {filteredRealPatients.length} patients shown
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              {filteredPatientProcedures.length > 0 ? (
+              {filteredRealPatients.length > 0 ? (
                 <div className="space-y-4">
-                  {filteredPatientProcedures.map((procedure) => (
+                  {filteredRealPatients.map((patient) => (
                     <div 
-                      key={procedure.id} 
-                      className="flex justify-between items-start p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors border"
+                      key={patient.id} 
+                      onClick={() => handlePatientClick(patient.id)}
+                      className={`flex justify-between items-center p-4 rounded-lg cursor-pointer transition-colors border ${
+                        selectedPatientId === patient.id 
+                          ? 'bg-blue-100 border-2 border-blue-300' 
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
                     >
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-medium text-lg text-blue-700">{procedure.procedureName}</h4>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium text-lg">{patient.firstName} {patient.lastName}</h4>
                           <Badge 
-                            variant={procedure.status === 'active' ? 'default' : 'secondary'}
+                            variant={patient.status === 'Active' ? 'default' : 'secondary'}
                             className={`text-xs ${
-                              procedure.status === 'active' 
+                              patient.status === 'Active' 
                                 ? 'bg-green-100 text-green-800 border-green-200' 
                                 : 'bg-gray-100 text-gray-600 border-gray-200'
                             }`}
                           >
-                            {procedure.status || 'Active'}
+                            {patient.status || 'Active'}
+                          </Badge>
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs bg-blue-50 text-blue-600 border-blue-200"
+                          >
+                            Real Patient
                           </Badge>
                         </div>
                         
                         <div className="space-y-1 text-sm text-gray-600">
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1">
-                              <User className="h-4 w-4" />
-                              <span className="font-medium">{procedure.patientName}</span>
-                            </div>
-                            {procedure.dentistName && (
-                              <div className="flex items-center gap-1">
-                                <Users className="h-4 w-4" />
-                                <span>{procedure.dentistName}</span>
-                              </div>
-                            )}
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            <span>{patient.email}</span>
                           </div>
                           
-                          {procedure.performedDate && (
+                          {patient.lastLoginAt && (
                             <div className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
-                              <span>Performed: {new Date(procedure.performedDate).toLocaleDateString()}</span>
+                              <span>Last login: {new Date(patient.lastLoginAt).toLocaleDateString()}</span>
                             </div>
                           )}
                           
-                          {procedure.followUpDate && (
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              <span>Follow-up: {new Date(procedure.followUpDate).toLocaleDateString()}</span>
+                          {patient.status === 'Inactive' && patient.deactivatedAt && (
+                            <div className="flex items-center gap-1 text-red-600">
+                              <AlertCircle className="h-4 w-4" />
+                              <span>Deactivated: {new Date(patient.deactivatedAt).toLocaleDateString()}</span>
                             </div>
                           )}
                         </div>
                       </div>
                       
                       <div className="flex items-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate(`/procedure-details/${procedure.id}`)}
-                          className="text-xs"
-                        >
-                          <Eye className="h-3 w-3 mr-1" />
-                          View Details
-                        </Button>
+                        <div className={`flex items-center ${selectedPatientId === patient.id ? 'text-blue-600' : 'text-gray-400'}`}>
+                          <Users className="h-5 w-5" />
+                          {selectedPatientId === patient.id && (
+                            <span className="ml-2 text-xs font-medium">Selected</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -516,11 +516,11 @@ const PracticeDashboard = () => {
               ) : (
                 <div className="text-center py-8 text-gray-500">
                   <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                  <p className="text-lg mb-2">No procedures found</p>
+                  <p className="text-lg mb-2">No patients found</p>
                   <p className="text-sm">
                     {patientSearchTerm 
-                      ? `No procedures match "${patientSearchTerm}"`
-                      : "No recent procedures for real patients"
+                      ? `No patients match "${patientSearchTerm}"`
+                      : "No real patients found"
                     }
                   </p>
                 </div>
