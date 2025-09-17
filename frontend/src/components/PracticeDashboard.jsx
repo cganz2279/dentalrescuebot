@@ -139,7 +139,7 @@ const PracticeDashboard = () => {
   };
 
   // Filter and sort real patients only - search by patient name or email
-  const filteredRealPatients = dashboardData?.recentPatients?.filter(patient => {
+  const filteredRealPatients = realPatients?.filter(patient => {
     if (patientSearchTerm) {
       const searchLower = patientSearchTerm.toLowerCase();
       return (
