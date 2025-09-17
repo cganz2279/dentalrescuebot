@@ -84,6 +84,47 @@ const PatientManagementPage = () => {
     navigate('/edit-patient', { state: { patient } });
   };
 
+  const handleDeletePatient = (patient) => {
+    setPatientToDelete(patient);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeletePatient = async (hardDelete = false) => {
+    if (!patientToDelete) return;
+
+    try {
+      await practiceApi.deletePatient(patientToDelete.id, hardDelete);
+      
+      toast({
+        title: "Success!",
+        description: hardDelete 
+          ? `${patientToDelete.firstName} ${patientToDelete.lastName} has been permanently deleted.`
+          : `${patientToDelete.firstName} ${patientToDelete.lastName} has been deactivated.`,
+        variant: "default",
+      });
+
+      // Refresh the patients list
+      await loadPatients();
+      
+      // Clear selection if the deleted patient was selected
+      if (selectedPatient?.id === patientToDelete.id) {
+        setSelectedPatient(null);
+        setPatientProcedures([]);
+      }
+      
+    } catch (error) {
+      console.error('Delete patient error:', error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to delete patient. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setPatientToDelete(null);
+    }
+  };
+
   const handlePrintProcedure = async (procedureId) => {
     try {
       toast({
