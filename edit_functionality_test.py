@@ -235,7 +235,7 @@ class EditFunctionalityTester:
             if response.status_code in [200, 201]:
                 data = response.json()
                 assignment_data = data.get("data", {}) if data.get("success") else data
-                self.test_assignment_id = assignment_data.get("id")
+                self.test_assignment_id = assignment_data.get("assignmentId")
                 
                 if self.test_assignment_id:
                     self.log_test(
