@@ -307,7 +307,7 @@ const AddPatientPage = () => {
                       <SelectValue placeholder="Select a primary dentist" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">
+                      <SelectItem value="none">
                         <div className="flex items-center text-gray-500">
                           <UserCheck className="h-4 w-4 mr-2" />
                           No primary dentist assigned
