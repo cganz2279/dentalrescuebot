@@ -220,12 +220,15 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                     "practiceId": practice_id,
                     "role": "patient"
                 },
-                {"firstName": 1, "lastName": 1, "_id": 0}
+                {"firstName": 1, "lastName": 1, "isActive": 1, "_id": 0}
             )
             if patient:
                 procedure["patientName"] = f"{patient['firstName']} {patient['lastName']}"
+                procedure["patientStatus"] = "Active" if patient.get("isActive", True) else "Inactive"
             else:
-                procedure["patientName"] = "Unknown Patient"
+                # Patient was permanently deleted
+                procedure["patientName"] = "[Deleted Patient]"
+                procedure["patientStatus"] = "Deleted"
         
         return {
             "success": True,
