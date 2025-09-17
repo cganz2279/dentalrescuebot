@@ -136,45 +136,20 @@ const PracticeDashboard = () => {
     setProcedureSearchTerm('');
   };
 
-  // Helper function to identify test patients
-  const isTestPatient = (patient) => {
-    const email = patient.email.toLowerCase();
-    const firstName = patient.firstName.toLowerCase();
-    const lastName = patient.lastName.toLowerCase();
-    
-    return (
-      email.includes('test') ||
-      email.includes('delete') ||
-      email.includes('temp') ||
-      email.includes('example.com') ||
-      email.includes('cleaned') ||
-      firstName.includes('test') ||
-      firstName.includes('temp') ||
-      firstName.includes('[cleaned]') ||
-      lastName.includes('test') ||
-      lastName.includes('405test') ||
-      (firstName === 'john' && lastName === 'doe') ||
-      firstName === 'freshtest' ||
-      firstName === 'testdelete' ||
-      firstName === 'deletetest'
-    );
-  };
-
-  // Helper function to identify real patients
+  // Helper function to identify real patients (Gmail addresses only)
   const isRealPatient = (patient) => {
     const email = patient.email.toLowerCase();
-    const lastName = patient.lastName.toLowerCase();
-    
-    return (
-      email.includes('@gmail.com') ||
-      lastName === 'ganz' ||
-      lastName === 'smith'
-    );
+    return email.includes('@gmail.com');
   };
 
-  // Filter and sort patients - prioritize real patients and filter test patients based on search
+  // Helper function to identify test patients  
+  const isTestPatient = (patient) => {
+    return !isRealPatient(patient); // If not Gmail, it's a test patient
+  };
+
+  // Filter and sort patients - show ONLY real patients by default, all patients when searching
   const filteredPatients = dashboardData?.recentPatients?.filter(patient => {
-    // If there's a search term, show matching patients (including test patients if they match)
+    // If there's a search term, show matching patients from all patients
     if (patientSearchTerm) {
       const searchLower = patientSearchTerm.toLowerCase();
       const matchesSearch = (
@@ -183,31 +158,30 @@ const PracticeDashboard = () => {
         patient.email.toLowerCase().includes(searchLower)
       );
       
-      // If searching, show matching patients, but filter test patients unless explicitly shown
+      // When searching, show matching patients but still respect the test patient toggle
       if (!showTestPatients && isTestPatient(patient)) {
         return false;
       }
       return matchesSearch;
     }
     
-    // If no search term, show based on patient type and toggle
-    if (isRealPatient(patient)) {
-      return true; // Always show real patients
+    // If no search term, show only real patients by default
+    if (showTestPatients) {
+      return true; // Show all patients when toggle is enabled
     }
     
-    // Show test patients only if toggle is enabled
-    return showTestPatients;
+    return isRealPatient(patient); // Show only Gmail patients by default
   })
   .sort((a, b) => {
-    // Sort real patients first, then by creation date
+    // Sort real patients first, then by last name
     const aIsReal = isRealPatient(a);
     const bIsReal = isRealPatient(b);
     
     if (aIsReal && !bIsReal) return -1;
     if (!aIsReal && bIsReal) return 1;
     
-    // If both are real or both are test, sort by creation date (newest first)
-    return new Date(b.createdAt) - new Date(a.createdAt);
+    // If both are real or both are test, sort by last name
+    return a.lastName.localeCompare(b.lastName);
   }) || [];
 
   // Filter procedures based on selected patient and search term
