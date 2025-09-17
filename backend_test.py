@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for PDF Generation with Practice Office Hours and Emergency Contact
-Review Request: Test authentication, practice settings, and procedure API endpoints
+Backend Testing Script for POST-based Patient Delete Endpoint
+Review Request: Test new POST /api/practice/patients/{patient_id}/delete endpoint with soft/hard delete functionality
 """
 
 import requests
@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend configuration
-BACKEND_URL = "https://care-guide-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentist-portal-3.emergent.host/api"
 
 class BackendTester:
     def __init__(self):
