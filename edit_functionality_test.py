@@ -219,8 +219,11 @@ class EditFunctionalityTester:
             test_assignment = {
                 "patientId": patients[0].get("id"),
                 "procedureId": procedures[0].get("id"),
-                "notes": "Test assignment for edit functionality testing",
-                "status": "assigned"
+                "procedureName": procedures[0].get("name"),
+                "performedDate": "2024-01-15T10:00:00Z",
+                "dentistName": "Dr. Test Dentist",
+                "practiceNotes": "Test assignment for edit functionality testing",
+                "followUpDate": "2024-01-22T10:00:00Z"
             }
             
             response = self.session.post(
