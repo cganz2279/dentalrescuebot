@@ -491,6 +491,25 @@ const PracticeDashboard = () => {
                   className="pl-10"
                 />
               </div>
+              
+              {/* Filter Controls */}
+              <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="showTestPatients"
+                    checked={showTestPatients}
+                    onChange={(e) => setShowTestPatients(e.target.checked)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="showTestPatients" className="text-sm text-gray-600">
+                    Show test patients
+                  </label>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {filteredPatients.length} patients shown
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               {filteredPatients.length > 0 ? (
