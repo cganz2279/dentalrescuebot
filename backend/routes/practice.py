@@ -252,11 +252,12 @@ async def get_practice_patients(current_user: dict = Depends(get_current_user)):
                 detail="Access denied"
             )
         
-        # Get all patients for this practice
+        # Get all active patients for this practice
         patients = await db.users.find(
             {
                 "practiceId": practice_id,
-                "role": "patient"
+                "role": "patient",
+                "isActive": True
             },
             {
                 "_id": 0,
