@@ -267,6 +267,14 @@ const PatientManagementPage = () => {
                     className="pl-10"
                   />
                 </div>
+                
+                {/* Filter Info */}
+                <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
+                  <span>Showing real patients only (Gmail addresses)</span>
+                  <Badge variant="outline" className="text-xs">
+                    {filteredPatients.length} patients
+                  </Badge>
+                </div>
               </CardHeader>
               <CardContent>
                 {loading ? (
