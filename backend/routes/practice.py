@@ -1369,17 +1369,17 @@ async def delete_patient(
             detail="Failed to delete patient"
         )
 
-@router.post("/patients/{patient_id}/remove")
-async def remove_patient(
+@router.put("/patients/{patient_id}/status")
+async def update_patient_status(
     patient_id: str,
     request: dict,
     current_user: dict = Depends(get_current_user)
 ):
-    """Remove or deactivate a patient (workaround for infrastructure limitations)"""
+    """Update patient status - supports deactivation and permanent removal"""
     try:
         practice_id = current_user["practiceId"]
         role = current_user["role"]
-        permanent = request.get("permanent", False)
+        action = request.get("action", "deactivate")  # "deactivate" or "remove"
         
         if role not in ['practice_admin', 'practice_staff']:
             raise HTTPException(
@@ -1407,7 +1407,8 @@ async def remove_patient(
             "status": "active"
         })
         
-        if permanent:
+        if action == "remove":
+            # Permanent removal
             if active_procedures > 0:
                 # For permanent removal, delete all procedure assignments
                 await db.patientprocedures.delete_many({
@@ -1434,7 +1435,7 @@ async def remove_patient(
                 "deletedProcedures": active_procedures
             }
         else:
-            # Soft delete - mark as inactive
+            # Deactivation (soft delete)
             result = await db.users.update_one(
                 {
                     "id": patient_id,
@@ -1464,10 +1465,10 @@ async def remove_patient(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Remove patient error: {e}")
+        print(f"Update patient status error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to remove patient"
+            detail="Failed to update patient status"
         )
 
 # ======= PRACTICE-SPECIFIC PROCEDURE OVERRIDE ENDPOINTS =======
