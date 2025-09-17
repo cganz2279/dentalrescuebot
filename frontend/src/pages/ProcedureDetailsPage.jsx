@@ -516,34 +516,141 @@ const ProcedureDetailsPage = () => {
                     
                     {/* Section Content */}
                     <div className="p-6">
-                      <div className="space-y-3">
-                        {section.content.map((contentLine, contentIndex) => {
-                          const trimmedContent = contentLine.trim();
+                      <div className="space-y-4">
+                        {(() => {
+                          // Enhanced content parser for better formatting
+                          const parseContent = (contentArray) => {
+                            const elements = [];
+                            let i = 0;
+                            
+                            while (i < contentArray.length) {
+                              const line = contentArray[i].trim();
+                              if (!line) {
+                                i++;
+                                continue;
+                              }
+                              
+                              // Check for sub-headers (capitalize words, no bullet, not too long)
+                              if (line.length < 60 && 
+                                  !line.startsWith('•') && 
+                                  !line.startsWith('-') && 
+                                  (line.includes('Pain') || line.includes('Swelling') || line.includes('Bleeding') || 
+                                   line.includes('Activity') || line.includes('Hygiene') || line.includes('Diet') || 
+                                   line.includes('Medication') || line.includes('Follow') || line.includes('Contact') ||
+                                   line.includes('Purpose') || line.includes('Procedure') || line.includes('Recovery') ||
+                                   line.includes('Hours') || line.includes('Days') || line.includes('Week') ||
+                                   /^[A-Z][a-z\s]+[A-Z]/.test(line) || // Mixed case words
+                                   /^[A-Z\s]+:?$/.test(line))) { // All caps or title case
+                                
+                                elements.push({
+                                  type: 'subheader',
+                                  content: line,
+                                  index: i
+                                });
+                              }
+                              // Handle bullet points and dashes
+                              else if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+                                const bulletText = line.replace(/^[•\-*]\s*/, '');
+                                elements.push({
+                                  type: 'bullet',
+                                  content: bulletText,
+                                  index: i
+                                });
+                              }
+                              // Handle numbered lists
+                              else if (/^\d+[\.)]\s/.test(line)) {
+                                const numberedText = line.replace(/^\d+[\.)]\s*/, '');
+                                elements.push({
+                                  type: 'numbered',
+                                  content: numberedText,
+                                  number: line.match(/^\d+/)[0],
+                                  index: i
+                                });
+                              }
+                              // Regular paragraphs
+                              else if (line.length > 0) {
+                                elements.push({
+                                  type: 'paragraph',
+                                  content: line,
+                                  index: i
+                                });
+                              }
+                              
+                              i++;
+                            }
+                            
+                            return elements;
+                          };
                           
-                          // Handle bullet points
-                          if (trimmedContent.startsWith('•') || trimmedContent.startsWith('-')) {
-                            const bulletText = trimmedContent.replace(/^[•-]\s*/, '');
-                            return (
-                              <div key={contentIndex} className="flex items-start bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-                                <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                                  <span className="text-white text-xs font-bold">•</span>
-                                </div>
-                                <span className="flex-1 text-gray-800 leading-relaxed font-medium">{bulletText}</span>
-                              </div>
-                            );
-                          }
+                          const parsedContent = parseContent(section.content);
                           
-                          // Regular content paragraphs
-                          if (trimmedContent.length > 0) {
-                            return (
-                              <div key={contentIndex} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                <p className="text-gray-700 leading-relaxed">{trimmedContent}</p>
-                              </div>
-                            );
-                          }
-                          
-                          return null;
-                        }).filter(Boolean)}
+                          return parsedContent.map((element, elementIndex) => {
+                            switch (element.type) {
+                              case 'subheader':
+                                return (
+                                  <div key={elementIndex} className="mt-6 mb-4 first:mt-0">
+                                    <div className="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-2 rounded-lg shadow-md">
+                                      <h5 className="font-bold text-base flex items-center">
+                                        <div className="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-2">
+                                          <span className="text-white text-xs">⭐</span>
+                                        </div>
+                                        {element.content}
+                                      </h5>
+                                    </div>
+                                  </div>
+                                );
+                              
+                              case 'bullet':
+                                return (
+                                  <div key={elementIndex} className="flex items-start bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 shadow-sm">
+                                    <div className="flex-shrink-0 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                                      <span className="text-white text-sm font-bold">•</span>
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-gray-800 leading-relaxed font-medium">{element.content}</p>
+                                    </div>
+                                  </div>
+                                );
+                              
+                              case 'numbered':
+                                return (
+                                  <div key={elementIndex} className="flex items-start bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-sm">
+                                    <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                                      <span className="text-white font-bold text-sm">{element.number}</span>
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-gray-800 leading-relaxed font-medium">{element.content}</p>
+                                    </div>
+                                  </div>
+                                );
+                              
+                              case 'paragraph':
+                                return (
+                                  <div key={elementIndex} className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                                    <div className="prose prose-sm max-w-none">
+                                      <p className="text-gray-700 leading-relaxed m-0" 
+                                         dangerouslySetInnerHTML={{
+                                           __html: element.content
+                                             // Bold text formatting
+                                             .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
+                                             .replace(/\*(.*?)\*/g, '<em class="italic text-gray-800">$1</em>')
+                                             // Important warnings in red
+                                             .replace(/(IMPORTANT|WARNING|CAUTION|AVOID|DO NOT|NEVER)/gi, '<span class="font-bold text-red-600 bg-red-100 px-1 rounded">$1</span>')
+                                             // Time periods in blue
+                                             .replace(/(\d+\s*(hours?|days?|weeks?|months?))/gi, '<span class="font-semibold text-blue-600">$1</span>')
+                                             // Phone numbers
+                                             .replace(/(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/g, '<span class="font-mono font-semibold text-green-600">$1</span>')
+                                         }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              
+                              default:
+                                return null;
+                            }
+                          });
+                        })()}
                       </div>
                     </div>
                   </div>
