@@ -136,8 +136,8 @@ const PracticeDashboard = () => {
     setProcedureSearchTerm('');
   };
 
-  // Filter and sort procedures - search by patient name, procedure name, or dentist
-  const filteredProcedures = dashboardData?.recentPatients?.filter(procedure => {
+  // Filter and sort patient procedures - search by patient name, procedure name, or dentist
+  const filteredPatientProcedures = dashboardData?.recentPatients?.filter(procedure => {
     if (patientSearchTerm) {
       const searchLower = patientSearchTerm.toLowerCase();
       return (
