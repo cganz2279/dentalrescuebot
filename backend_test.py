@@ -18,6 +18,8 @@ class BackendTester:
         self.jwt_token = None
         self.practice_id = None
         self.test_results = []
+        self.test_patient_id = None
+        self.test_patient_id_2 = None
         
     def log_test(self, test_name, success, details, expected_result=None):
         """Log test results"""
@@ -95,119 +97,458 @@ class BackendTester:
             )
             return False
     
-    def test_practice_settings(self):
-        """Test 2: Verify practice has officeHours and emergencyContact fields"""
-        print("🏥 Testing Practice Settings...")
+    def create_test_patients(self):
+        """Create test patients for delete testing"""
+        print("👥 Creating Test Patients...")
         
         if not self.jwt_token:
             self.log_test(
-                "Practice Settings Test",
+                "Create Test Patients",
                 False,
-                "Cannot test practice settings - no JWT token available",
+                "Cannot create test patients - no JWT token available",
                 "Requires valid authentication"
             )
             return False
             
         try:
-            # Try the dashboard endpoint which should contain practice information
-            response = self.session.get(f"{BACKEND_URL}/practice/dashboard")
+            # Create first test patient
+            patient_data_1 = {
+                "email": f"test.patient.1.{datetime.now().timestamp()}@example.com",
+                "firstName": "Test",
+                "lastName": "Patient One",
+                "phone": "555-0001"
+            }
+            
+            response = self.session.post(
+                f"{BACKEND_URL}/practice/patients",
+                json=patient_data_1,
+                headers={"Content-Type": "application/json"}
+            )
             
             if response.status_code == 200:
                 data = response.json()
-                dashboard_data = data.get("data", {}) if data.get("success") else data
-                practice_data = dashboard_data.get("practice", {}) if "practice" in dashboard_data else dashboard_data
-                
-                # Check for officeHours and emergencyContact fields
-                office_hours = practice_data.get("officeHours")
-                emergency_contact = practice_data.get("emergencyContact")
-                
-                if office_hours is not None and emergency_contact is not None:
-                    self.log_test(
-                        "Practice Settings Test",
-                        True,
-                        f"Practice contains both fields - Office Hours: '{office_hours}', Emergency Contact: '{emergency_contact}'",
-                        "Practice should have officeHours and emergencyContact fields"
-                    )
-                    return True
-                else:
-                    missing_fields = []
-                    if office_hours is None:
-                        missing_fields.append("officeHours")
-                    if emergency_contact is None:
-                        missing_fields.append("emergencyContact")
+                if data.get("success") and data.get("data", {}).get("id"):
+                    self.test_patient_id = data["data"]["id"]
                     
+                    # Create second test patient
+                    patient_data_2 = {
+                        "email": f"test.patient.2.{datetime.now().timestamp()}@example.com",
+                        "firstName": "Test",
+                        "lastName": "Patient Two",
+                        "phone": "555-0002"
+                    }
+                    
+                    response_2 = self.session.post(
+                        f"{BACKEND_URL}/practice/patients",
+                        json=patient_data_2,
+                        headers={"Content-Type": "application/json"}
+                    )
+                    
+                    if response_2.status_code == 200:
+                        data_2 = response_2.json()
+                        if data_2.get("success") and data_2.get("data", {}).get("id"):
+                            self.test_patient_id_2 = data_2["data"]["id"]
+                            
+                            self.log_test(
+                                "Create Test Patients",
+                                True,
+                                f"Successfully created 2 test patients: {self.test_patient_id} and {self.test_patient_id_2}",
+                                "Should create test patients for delete testing"
+                            )
+                            return True
+                        else:
+                            self.log_test(
+                                "Create Test Patients",
+                                False,
+                                f"Failed to create second test patient: {data_2}",
+                                "Should create second test patient"
+                            )
+                            return False
+                    else:
+                        self.log_test(
+                            "Create Test Patients",
+                            False,
+                            f"Failed to create second test patient - Status: {response_2.status_code}, Response: {response_2.text}",
+                            "Should return 200 with patient data"
+                        )
+                        return False
+                else:
                     self.log_test(
-                        "Practice Settings Test",
+                        "Create Test Patients",
                         False,
-                        f"Practice missing fields: {missing_fields}. Available fields: {list(practice_data.keys())}",
-                        "Practice should have both officeHours and emergencyContact fields"
+                        f"Failed to create first test patient: {data}",
+                        "Should create first test patient"
                     )
                     return False
             else:
                 self.log_test(
-                    "Practice Settings Test",
+                    "Create Test Patients",
                     False,
-                    f"Failed to get practice info - Status: {response.status_code}, Response: {response.text}",
-                    "Should return 200 with practice information"
+                    f"Failed to create first test patient - Status: {response.status_code}, Response: {response.text}",
+                    "Should return 200 with patient data"
                 )
                 return False
                 
         except Exception as e:
             self.log_test(
-                "Practice Settings Test",
+                "Create Test Patients",
                 False,
-                f"Practice settings request failed: {str(e)}",
-                "Should successfully retrieve practice information"
+                f"Create test patients request failed: {str(e)}",
+                "Should successfully create test patients"
             )
             return False
     
-    def test_procedure_api(self):
-        """Test 3: Test GET /api/procedures/root-canal-therapy for practice information"""
-        print("🦷 Testing Procedure API...")
+    def test_post_soft_delete(self):
+        """Test 2: POST /api/practice/patients/{patient_id}/delete with hard_delete=false"""
+        print("🗑️ Testing POST Soft Delete...")
         
+        if not self.jwt_token or not self.test_patient_id:
+            self.log_test(
+                "POST Soft Delete Test",
+                False,
+                "Cannot test soft delete - no JWT token or test patient available",
+                "Requires valid authentication and test patient"
+            )
+            return False
+            
         try:
-            response = self.session.get(f"{BACKEND_URL}/procedures/root-canal-therapy")
+            response = self.session.post(
+                f"{BACKEND_URL}/practice/patients/{self.test_patient_id}/delete",
+                json={"hard_delete": False},
+                headers={"Content-Type": "application/json"}
+            )
             
             if response.status_code == 200:
                 data = response.json()
-                procedure_data = data.get("data", {}) if data.get("success") else data
-                
-                # Check if procedure includes practice information
-                practice_office_hours = procedure_data.get("practiceOfficeHours")
-                practice_emergency_contact = procedure_data.get("practiceEmergencyContact")
-                
-                # According to the review request, the procedure endpoint should NOT include practice info
-                if practice_office_hours is None and practice_emergency_contact is None:
-                    self.log_test(
-                        "Procedure API Test",
-                        True,
-                        f"Procedure endpoint correctly does NOT include practice info. Available fields: {list(procedure_data.keys())}",
-                        "Procedure endpoint should NOT include practice info (frontend adds it)"
-                    )
-                    return True
+                if data.get("success"):
+                    message = data.get("message", "")
+                    if "deactivated" in message.lower():
+                        self.log_test(
+                            "POST Soft Delete Test",
+                            True,
+                            f"Successfully soft deleted patient. Message: {message}",
+                            "Should deactivate patient with hard_delete=false"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "POST Soft Delete Test",
+                            False,
+                            f"Unexpected response message: {message}",
+                            "Should contain 'deactivated' in message"
+                        )
+                        return False
                 else:
                     self.log_test(
-                        "Procedure API Test",
+                        "POST Soft Delete Test",
                         False,
-                        f"Procedure endpoint unexpectedly includes practice info - practiceOfficeHours: {practice_office_hours}, practiceEmergencyContact: {practice_emergency_contact}",
-                        "Procedure endpoint should NOT include practice info"
+                        f"API returned success=false: {data}",
+                        "Should return success=true"
                     )
                     return False
             else:
                 self.log_test(
-                    "Procedure API Test",
+                    "POST Soft Delete Test",
                     False,
-                    f"Failed to get procedure info - Status: {response.status_code}, Response: {response.text}",
-                    "Should return 200 with procedure information"
+                    f"Failed to soft delete patient - Status: {response.status_code}, Response: {response.text}",
+                    "Should return 200 with success response"
                 )
                 return False
                 
         except Exception as e:
             self.log_test(
-                "Procedure API Test",
+                "POST Soft Delete Test",
                 False,
-                f"Procedure API request failed: {str(e)}",
-                "Should successfully retrieve procedure information"
+                f"Soft delete request failed: {str(e)}",
+                "Should successfully soft delete patient"
+            )
+            return False
+    
+    def test_post_hard_delete(self):
+        """Test 3: POST /api/practice/patients/{patient_id}/delete with hard_delete=true"""
+        print("💥 Testing POST Hard Delete...")
+        
+        if not self.jwt_token or not self.test_patient_id_2:
+            self.log_test(
+                "POST Hard Delete Test",
+                False,
+                "Cannot test hard delete - no JWT token or second test patient available",
+                "Requires valid authentication and second test patient"
+            )
+            return False
+            
+        try:
+            response = self.session.post(
+                f"{BACKEND_URL}/practice/patients/{self.test_patient_id_2}/delete",
+                json={"hard_delete": True},
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    message = data.get("message", "")
+                    if "permanently deleted" in message.lower():
+                        self.log_test(
+                            "POST Hard Delete Test",
+                            True,
+                            f"Successfully hard deleted patient. Message: {message}",
+                            "Should permanently delete patient with hard_delete=true"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "POST Hard Delete Test",
+                            False,
+                            f"Unexpected response message: {message}",
+                            "Should contain 'permanently deleted' in message"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "POST Hard Delete Test",
+                        False,
+                        f"API returned success=false: {data}",
+                        "Should return success=true"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "POST Hard Delete Test",
+                    False,
+                    f"Failed to hard delete patient - Status: {response.status_code}, Response: {response.text}",
+                    "Should return 200 with success response"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "POST Hard Delete Test",
+                False,
+                f"Hard delete request failed: {str(e)}",
+                "Should successfully hard delete patient"
+            )
+            return False
+    
+    def test_patient_list_filtering(self):
+        """Test 4: Verify deleted patients don't appear in active patients list"""
+        print("📋 Testing Patient List Filtering...")
+        
+        if not self.jwt_token:
+            self.log_test(
+                "Patient List Filtering Test",
+                False,
+                "Cannot test patient list filtering - no JWT token available",
+                "Requires valid authentication"
+            )
+            return False
+            
+        try:
+            response = self.session.get(f"{BACKEND_URL}/practice/patients")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    patients = data.get("data", [])
+                    
+                    # Check if soft deleted patient is excluded
+                    soft_deleted_found = any(p.get("id") == self.test_patient_id for p in patients)
+                    # Check if hard deleted patient is excluded
+                    hard_deleted_found = any(p.get("id") == self.test_patient_id_2 for p in patients)
+                    
+                    if not soft_deleted_found and not hard_deleted_found:
+                        self.log_test(
+                            "Patient List Filtering Test",
+                            True,
+                            f"Patient list correctly excludes deleted patients. Found {len(patients)} active patients",
+                            "Deleted patients should not appear in active patients list"
+                        )
+                        return True
+                    else:
+                        issues = []
+                        if soft_deleted_found:
+                            issues.append("soft deleted patient still appears")
+                        if hard_deleted_found:
+                            issues.append("hard deleted patient still appears")
+                        
+                        self.log_test(
+                            "Patient List Filtering Test",
+                            False,
+                            f"Patient list filtering failed: {', '.join(issues)}",
+                            "Deleted patients should not appear in active patients list"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "Patient List Filtering Test",
+                        False,
+                        f"API returned success=false: {data}",
+                        "Should return success=true with patients list"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Patient List Filtering Test",
+                    False,
+                    f"Failed to get patients list - Status: {response.status_code}, Response: {response.text}",
+                    "Should return 200 with patients list"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Patient List Filtering Test",
+                False,
+                f"Patient list filtering request failed: {str(e)}",
+                "Should successfully retrieve filtered patients list"
+            )
+            return False
+    
+    def test_error_handling_nonexistent_patient(self):
+        """Test 5: Error handling for non-existent patients"""
+        print("🚫 Testing Error Handling for Non-existent Patient...")
+        
+        if not self.jwt_token:
+            self.log_test(
+                "Error Handling Test",
+                False,
+                "Cannot test error handling - no JWT token available",
+                "Requires valid authentication"
+            )
+            return False
+            
+        try:
+            # Use a fake patient ID
+            fake_patient_id = "00000000-0000-0000-0000-000000000000"
+            
+            response = self.session.post(
+                f"{BACKEND_URL}/practice/patients/{fake_patient_id}/delete",
+                json={"hard_delete": False},
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 404:
+                data = response.json()
+                if "not found" in data.get("detail", "").lower():
+                    self.log_test(
+                        "Error Handling Test",
+                        True,
+                        f"Correctly returned 404 for non-existent patient: {data.get('detail')}",
+                        "Should return 404 with 'not found' message for non-existent patient"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Error Handling Test",
+                        False,
+                        f"Returned 404 but unexpected message: {data}",
+                        "Should return 'not found' message"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Error Handling Test",
+                    False,
+                    f"Expected 404 but got {response.status_code}: {response.text}",
+                    "Should return 404 for non-existent patient"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Error Handling Test",
+                False,
+                f"Error handling test request failed: {str(e)}",
+                "Should successfully handle non-existent patient error"
+            )
+            return False
+    
+    def test_405_method_not_allowed_resolved(self):
+        """Test 6: Verify 405 Method Not Allowed error is resolved"""
+        print("✅ Testing 405 Method Not Allowed Resolution...")
+        
+        if not self.jwt_token:
+            self.log_test(
+                "405 Resolution Test",
+                False,
+                "Cannot test 405 resolution - no JWT token available",
+                "Requires valid authentication"
+            )
+            return False
+            
+        try:
+            # Create a temporary test patient for this test
+            temp_patient_data = {
+                "email": f"temp.405.test.{datetime.now().timestamp()}@example.com",
+                "firstName": "Temp",
+                "lastName": "405Test",
+                "phone": "555-0405"
+            }
+            
+            create_response = self.session.post(
+                f"{BACKEND_URL}/practice/patients",
+                json=temp_patient_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if create_response.status_code == 200:
+                temp_patient_id = create_response.json().get("data", {}).get("id")
+                
+                if temp_patient_id:
+                    # Test the POST delete endpoint (should work)
+                    delete_response = self.session.post(
+                        f"{BACKEND_URL}/practice/patients/{temp_patient_id}/delete",
+                        json={"hard_delete": True},
+                        headers={"Content-Type": "application/json"}
+                    )
+                    
+                    if delete_response.status_code == 200:
+                        self.log_test(
+                            "405 Resolution Test",
+                            True,
+                            "POST delete endpoint works correctly - 405 Method Not Allowed error is resolved",
+                            "POST delete should work without 405 error"
+                        )
+                        return True
+                    elif delete_response.status_code == 405:
+                        self.log_test(
+                            "405 Resolution Test",
+                            False,
+                            "Still getting 405 Method Not Allowed error - issue not resolved",
+                            "Should not return 405 error"
+                        )
+                        return False
+                    else:
+                        self.log_test(
+                            "405 Resolution Test",
+                            False,
+                            f"Unexpected status code {delete_response.status_code}: {delete_response.text}",
+                            "Should return 200 for successful delete"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "405 Resolution Test",
+                        False,
+                        "Failed to get temp patient ID from create response",
+                        "Should create temp patient for testing"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "405 Resolution Test",
+                    False,
+                    f"Failed to create temp patient - Status: {create_response.status_code}",
+                    "Should create temp patient for testing"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "405 Resolution Test",
+                False,
+                f"405 resolution test failed: {str(e)}",
+                "Should successfully test POST delete endpoint"
             )
             return False
     
