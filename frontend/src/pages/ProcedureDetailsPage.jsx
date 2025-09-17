@@ -459,52 +459,96 @@ const ProcedureDetailsPage = () => {
             <p className="text-sm text-blue-600 mt-2">Please follow these instructions carefully for optimal healing</p>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="bg-white rounded-lg border border-gray-100">
-              <div className="p-6">
-                {procedureData.procedureDetails.overview.split('\n').map((line, index) => {
+            <div className="space-y-6">
+              {(() => {
+                // Parse content into sections
+                const lines = procedureData.procedureDetails.overview.split('\n');
+                const sections = [];
+                let currentSection = null;
+                
+                lines.forEach(line => {
                   const trimmedLine = line.trim();
+                  if (!trimmedLine) return;
                   
-                  // Handle empty lines - create spacing
-                  if (trimmedLine === '') {
-                    return <div key={index} className="mb-3"></div>;
+                  // Check if this is a section header (ends with colon)
+                  if (trimmedLine.endsWith(':') && trimmedLine.length < 80 && !trimmedLine.includes('•') && !trimmedLine.includes('-')) {
+                    // Save previous section if exists
+                    if (currentSection) {
+                      sections.push(currentSection);
+                    }
+                    // Start new section
+                    currentSection = {
+                      title: trimmedLine,
+                      content: []
+                    };
+                  } else if (currentSection) {
+                    // Add content to current section
+                    currentSection.content.push(trimmedLine);
+                  } else {
+                    // Content before any section header
+                    if (!sections.find(s => s.title === 'General Instructions:')) {
+                      sections.unshift({
+                        title: 'General Instructions:',
+                        content: []
+                      });
+                    }
+                    sections[0].content.push(trimmedLine);
                   }
-                  
-                  // Handle bullet points
-                  if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-                    const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
-                    return (
-                      <div key={index} className="flex items-start mb-3 p-2 hover:bg-blue-25 rounded">
-                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                          <span className="text-blue-600 text-sm font-bold">•</span>
+                });
+                
+                // Add the last section
+                if (currentSection) {
+                  sections.push(currentSection);
+                }
+                
+                // Render sections
+                return sections.map((section, sectionIndex) => (
+                  <div key={sectionIndex} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                    {/* Section Header */}
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3">
+                      <h4 className="font-bold text-lg flex items-center">
+                        <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                          <span className="text-white font-bold text-sm">{sectionIndex + 1}</span>
                         </div>
-                        <span className="flex-1 text-gray-700 leading-relaxed">{bulletText}</span>
+                        {section.title}
+                      </h4>
+                    </div>
+                    
+                    {/* Section Content */}
+                    <div className="p-6">
+                      <div className="space-y-3">
+                        {section.content.map((contentLine, contentIndex) => {
+                          const trimmedContent = contentLine.trim();
+                          
+                          // Handle bullet points
+                          if (trimmedContent.startsWith('•') || trimmedContent.startsWith('-')) {
+                            const bulletText = trimmedContent.replace(/^[•-]\s*/, '');
+                            return (
+                              <div key={contentIndex} className="flex items-start bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                                <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                                  <span className="text-white text-xs font-bold">•</span>
+                                </div>
+                                <span className="flex-1 text-gray-800 leading-relaxed font-medium">{bulletText}</span>
+                              </div>
+                            );
+                          }
+                          
+                          // Regular content paragraphs
+                          if (trimmedContent.length > 0) {
+                            return (
+                              <div key={contentIndex} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <p className="text-gray-700 leading-relaxed">{trimmedContent}</p>
+                              </div>
+                            );
+                          }
+                          
+                          return null;
+                        }).filter(Boolean)}
                       </div>
-                    );
-                  }
-                  
-                  // Handle section headers (Purpose:, First 24 Hours:, etc.)
-                  if (trimmedLine.endsWith(':') && trimmedLine.length < 50) {
-                    return (
-                      <div key={index} className="mt-6 mb-3 first:mt-0">
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg">
-                          <h5 className="font-bold text-base">{trimmedLine}</h5>
-                        </div>
-                      </div>
-                    );
-                  }
-                  
-                  // Regular paragraphs
-                  if (trimmedLine.length > 0) {
-                    return (
-                      <p key={index} className="mb-3 text-gray-700 leading-relaxed pl-2">
-                        {trimmedLine}
-                      </p>
-                    );
-                  }
-                  
-                  return null;
-                }).filter(Boolean)}
-              </div>
+                    </div>
+                  </div>
+                ));
+              })()}
             </div>
           </CardContent>
         </Card>
