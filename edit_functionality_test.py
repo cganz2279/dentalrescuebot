@@ -300,11 +300,22 @@ class EditFunctionalityTester:
                 data = response.json()
                 assignment_data = data.get("data", {}) if data.get("success") else data
                 
-                if assignment_data.get("id") == self.test_assignment_id:
+                # Debug: Print the actual response structure
+                print(f"DEBUG: Assignment retrieval response: {data}")
+                
+                # The assignment data might be nested differently
+                if isinstance(assignment_data, dict) and "assignment" in assignment_data:
+                    actual_assignment = assignment_data["assignment"]
+                    assignment_id = actual_assignment.get("id")
+                else:
+                    actual_assignment = assignment_data
+                    assignment_id = assignment_data.get("id")
+                
+                if assignment_id == self.test_assignment_id:
                     self.log_test(
                         "Assignment Retrieval Test",
                         True,
-                        f"Successfully retrieved assignment. ID: {assignment_data.get('id')}, Patient: {assignment_data.get('patientId')}, Procedure: {assignment_data.get('procedureId')}, Status: {assignment_data.get('status')}",
+                        f"Successfully retrieved assignment. ID: {assignment_id}, Patient: {actual_assignment.get('patientId')}, Procedure: {actual_assignment.get('procedureId')}, Status: {actual_assignment.get('status')}",
                         "Should retrieve assignment details for editing"
                     )
                     return True
@@ -312,7 +323,7 @@ class EditFunctionalityTester:
                     self.log_test(
                         "Assignment Retrieval Test",
                         False,
-                        f"Retrieved assignment but ID mismatch. Expected: {self.test_assignment_id}, Got: {assignment_data.get('id')}",
+                        f"Retrieved assignment but ID mismatch. Expected: {self.test_assignment_id}, Got: {assignment_id}. Full response: {assignment_data}",
                         "Should return correct assignment"
                     )
                     return False
