@@ -434,62 +434,76 @@ const ProcedureDetailsPage = () => {
           <hr className="my-4" />
         </div>
 
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Procedure Details</h2>
-          <h3 className="text-xl text-gray-700">{procedureData.procedureName} for {procedureData.patientName}</h3>
+        {/* Enhanced Title Section */}
+        <div className="text-center mb-8 border-b border-gray-200 pb-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Post-Operative Care Guide</h2>
+            <h3 className="text-xl font-semibold text-blue-700 mb-2">{procedureData.procedureName}</h3>
+            <div className="flex items-center justify-center text-gray-600">
+              <User className="h-5 w-5 mr-2" />
+              <span className="text-lg">Patient: {procedureData.patientName}</span>
+            </div>
+            <div className="mt-2 text-sm text-gray-500">
+              Generated on {new Date().toLocaleDateString()} • {practice?.name || 'Dental Practice'}
+            </div>
+          </div>
         </div>
 
-        {/* Post-Operative Care Instructions - MOVED TO TOP */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg font-bold text-blue-600">Post-Operative Care Instructions</CardTitle>
+        {/* Enhanced Post-Operative Care Instructions */}
+        <Card className="mb-8 shadow-lg border-blue-200">
+          <CardHeader className="bg-blue-50 border-b border-blue-200">
+            <CardTitle className="text-xl font-bold text-blue-800 flex items-center">
+              <FileText className="h-6 w-6 mr-3" />
+              Post-Operative Care Instructions
+            </CardTitle>
+            <p className="text-sm text-blue-600 mt-2">Please follow these instructions carefully for optimal healing</p>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Medical Instructions</h4>
-                <div className="text-gray-700 leading-relaxed bg-blue-50 p-4 rounded-lg">
-                  {procedureData.procedureDetails.overview.split('\n').map((line, index) => {
-                    const trimmedLine = line.trim();
-                    
-                    // Handle empty lines - create spacing
-                    if (trimmedLine === '') {
-                      return <div key={index} className="mb-2"></div>;
-                    }
-                    
-                    // Handle bullet points
-                    if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-                      const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
-                      return (
-                        <div key={index} className="flex items-start mb-2 ml-4">
-                          <span className="text-blue-600 mr-3 text-lg leading-none">•</span>
-                          <span className="flex-1 text-gray-700">{bulletText}</span>
+          <CardContent className="p-6">
+            <div className="bg-white rounded-lg border border-gray-100">
+              <div className="p-6">
+                {procedureData.procedureDetails.overview.split('\n').map((line, index) => {
+                  const trimmedLine = line.trim();
+                  
+                  // Handle empty lines - create spacing
+                  if (trimmedLine === '') {
+                    return <div key={index} className="mb-3"></div>;
+                  }
+                  
+                  // Handle bullet points
+                  if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                    const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
+                    return (
+                      <div key={index} className="flex items-start mb-3 p-2 hover:bg-blue-25 rounded">
+                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                          <span className="text-blue-600 text-sm font-bold">•</span>
                         </div>
-                      );
-                    }
-                    
-                    // Handle section headers (Purpose:, First 24 Hours:, etc.)
-                    if (trimmedLine.endsWith(':') && trimmedLine.length < 50) {
-                      return (
-                        <h5 key={index} className="font-bold text-blue-800 mt-4 mb-2 text-base">
-                          {trimmedLine}
-                        </h5>
-                      );
-                    }
-                    
-                    // Regular paragraphs
-                    if (trimmedLine.length > 0) {
-                      return (
-                        <p key={index} className="mb-2 text-gray-700 leading-relaxed">
-                          {trimmedLine}
-                        </p>
-                      );
-                    }
-                    
-                    return null;
-                  }).filter(Boolean)}
-                </div>
+                        <span className="flex-1 text-gray-700 leading-relaxed">{bulletText}</span>
+                      </div>
+                    );
+                  }
+                  
+                  // Handle section headers (Purpose:, First 24 Hours:, etc.)
+                  if (trimmedLine.endsWith(':') && trimmedLine.length < 50) {
+                    return (
+                      <div key={index} className="mt-6 mb-3 first:mt-0">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg">
+                          <h5 className="font-bold text-base">{trimmedLine}</h5>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  // Regular paragraphs
+                  if (trimmedLine.length > 0) {
+                    return (
+                      <p key={index} className="mb-3 text-gray-700 leading-relaxed pl-2">
+                        {trimmedLine}
+                      </p>
+                    );
+                  }
+                  
+                  return null;
+                }).filter(Boolean)}
               </div>
             </div>
           </CardContent>
