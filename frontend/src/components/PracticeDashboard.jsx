@@ -136,52 +136,22 @@ const PracticeDashboard = () => {
     setProcedureSearchTerm('');
   };
 
-  // Helper function to identify real patients (Gmail addresses only)
-  const isRealPatient = (patient) => {
-    const email = patient.email.toLowerCase();
-    return email.includes('@gmail.com');
-  };
-
-  // Helper function to identify test patients  
-  const isTestPatient = (patient) => {
-    return !isRealPatient(patient); // If not Gmail, it's a test patient
-  };
-
-  // Filter and sort patients - show ONLY real patients by default, all patients when searching
-  const filteredPatients = dashboardData?.recentPatients?.filter(patient => {
-    // If there's a search term, show matching patients from all patients
+  // Filter and sort procedures - search by patient name, procedure name, or dentist
+  const filteredProcedures = dashboardData?.recentPatients?.filter(procedure => {
     if (patientSearchTerm) {
       const searchLower = patientSearchTerm.toLowerCase();
-      const matchesSearch = (
-        patient.firstName.toLowerCase().includes(searchLower) ||
-        patient.lastName.toLowerCase().includes(searchLower) ||
-        patient.email.toLowerCase().includes(searchLower)
+      return (
+        procedure.patientName?.toLowerCase().includes(searchLower) ||
+        procedure.procedureName?.toLowerCase().includes(searchLower) ||
+        procedure.dentistName?.toLowerCase().includes(searchLower) ||
+        procedure.patientEmail?.toLowerCase().includes(searchLower)
       );
-      
-      // When searching, show matching patients but still respect the test patient toggle
-      if (!showTestPatients && isTestPatient(patient)) {
-        return false;
-      }
-      return matchesSearch;
     }
-    
-    // If no search term, show only real patients by default
-    if (showTestPatients) {
-      return true; // Show all patients when toggle is enabled
-    }
-    
-    return isRealPatient(patient); // Show only Gmail patients by default
+    return true; // Show all procedures when no search term
   })
   .sort((a, b) => {
-    // Sort real patients first, then by last name
-    const aIsReal = isRealPatient(a);
-    const bIsReal = isRealPatient(b);
-    
-    if (aIsReal && !bIsReal) return -1;
-    if (!aIsReal && bIsReal) return 1;
-    
-    // If both are real or both are test, sort by last name
-    return a.lastName.localeCompare(b.lastName);
+    // Sort by most recent first
+    return new Date(b.createdAt || b.performedDate) - new Date(a.createdAt || a.performedDate);
   }) || [];
 
   // Filter procedures based on selected patient and search term
