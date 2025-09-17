@@ -17,8 +17,8 @@ import sys
 from datetime import datetime
 import uuid
 
-# Backend URL from review request
-BACKEND_URL = "https://dentist-portal-3.emergent.host/api"
+# Backend URL - using local backend since production doesn't have DELETE routes deployed
+BACKEND_URL = "http://localhost:8001/api"
 
 class DeletePatientTester:
     def __init__(self):
