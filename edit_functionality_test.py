@@ -224,7 +224,7 @@ class EditFunctionalityTester:
             }
             
             response = self.session.post(
-                f"{BACKEND_URL}/practice/assignments",
+                f"{BACKEND_URL}/practice/assign-procedure",
                 json=test_assignment,
                 headers={"Content-Type": "application/json"}
             )
