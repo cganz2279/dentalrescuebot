@@ -1369,17 +1369,17 @@ async def delete_patient(
             detail="Failed to delete patient"
         )
 
-@router.post("/patients/{patient_id}/delete")
-async def delete_patient_post(
+@router.post("/patients/{patient_id}/remove")
+async def remove_patient(
     patient_id: str,
     request: dict,
     current_user: dict = Depends(get_current_user)
 ):
-    """Delete or deactivate a patient via POST method (workaround for infrastructure limitations)"""
+    """Remove or deactivate a patient (workaround for infrastructure limitations)"""
     try:
         practice_id = current_user["practiceId"]
         role = current_user["role"]
-        hard_delete = request.get("hard_delete", False)
+        permanent = request.get("permanent", False)
         
         if role not in ['practice_admin', 'practice_staff']:
             raise HTTPException(
@@ -1407,9 +1407,9 @@ async def delete_patient_post(
             "status": "active"
         })
         
-        if hard_delete:
+        if permanent:
             if active_procedures > 0:
-                # For hard delete, we warn but allow deletion of assignments
+                # For permanent removal, delete all procedure assignments
                 await db.patientprocedures.delete_many({
                     "patientId": patient_id,
                     "practiceId": practice_id
@@ -1430,7 +1430,7 @@ async def delete_patient_post(
             
             return {
                 "success": True,
-                "message": f"Patient {patient['firstName']} {patient['lastName']} has been permanently deleted",
+                "message": f"Patient {patient['firstName']} {patient['lastName']} has been permanently removed",
                 "deletedProcedures": active_procedures
             }
         else:
@@ -1464,10 +1464,10 @@ async def delete_patient_post(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Delete patient error: {e}")
+        print(f"Remove patient error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete patient"
+            detail="Failed to remove patient"
         )
 
 # ======= PRACTICE-SPECIFIC PROCEDURE OVERRIDE ENDPOINTS =======
