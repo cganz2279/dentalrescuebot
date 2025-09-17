@@ -380,44 +380,6 @@ const PracticeDashboard = () => {
           </Button>
         </div>
 
-        {/* Dentist Management Section */}
-        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Users className="h-6 w-6 mr-3 text-indigo-600" />
-                <div>
-                  <h2 className="text-xl font-semibold text-indigo-900">Dentist Management</h2>
-                  <p className="text-sm text-indigo-700">Manage your practice dentists for procedure assignments</p>
-                </div>
-              </div>
-              <Button 
-                onClick={() => navigate('/dentist-management')}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Manage Dentists
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4 text-indigo-800">
-              <div className="flex items-center space-x-2">
-                <span className="inline-block w-3 h-3 bg-indigo-500 rounded-full"></span>
-                <span>Add new dentists to your practice</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="inline-block w-3 h-3 bg-purple-500 rounded-full"></span>
-                <span>Edit dentist information and specialties</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="inline-block w-3 h-3 bg-blue-500 rounded-full"></span>
-                <span>Assign procedures to specific dentists</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Patients */}
           <Card>
