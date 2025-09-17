@@ -135,8 +135,45 @@ const PracticeDashboard = () => {
     setProcedureSearchTerm('');
   };
 
-  // Filter patients based on search term
+  // Helper function to identify test patients
+  const isTestPatient = (patient) => {
+    const email = patient.email.toLowerCase();
+    const firstName = patient.firstName.toLowerCase();
+    const lastName = patient.lastName.toLowerCase();
+    
+    return (
+      email.includes('test') ||
+      email.includes('delete') ||
+      email.includes('temp') ||
+      email.includes('example.com') ||
+      email.includes('cleaned') ||
+      firstName.includes('test') ||
+      firstName.includes('temp') ||
+      firstName.includes('[cleaned]') ||
+      lastName.includes('test') ||
+      lastName.includes('405test') ||
+      (firstName === 'john' && lastName === 'doe') ||
+      firstName === 'freshtest' ||
+      firstName === 'testdelete' ||
+      firstName === 'deletetest'
+    );
+  };
+
+  // Helper function to identify real patients
+  const isRealPatient = (patient) => {
+    const email = patient.email.toLowerCase();
+    const lastName = patient.lastName.toLowerCase();
+    
+    return (
+      email.includes('@gmail.com') ||
+      lastName === 'ganz' ||
+      lastName === 'smith'
+    );
+  };
+
+  // Filter and sort patients - prioritize real patients and filter test patients based on search
   const filteredPatients = dashboardData?.recentPatients?.filter(patient => {
+    // If there's a search term, show matching patients (including test patients if they match)
     if (patientSearchTerm) {
       const searchLower = patientSearchTerm.toLowerCase();
       return (
@@ -145,7 +182,25 @@ const PracticeDashboard = () => {
         patient.email.toLowerCase().includes(searchLower)
       );
     }
-    return true;
+    
+    // If no search term, prioritize real patients and limit test patients
+    if (isRealPatient(patient)) {
+      return true; // Always show real patients
+    }
+    
+    // Limit test patients to 3 when no search is active
+    return false;
+  })
+  .sort((a, b) => {
+    // Sort real patients first, then by creation date
+    const aIsReal = isRealPatient(a);
+    const bIsReal = isRealPatient(b);
+    
+    if (aIsReal && !bIsReal) return -1;
+    if (!aIsReal && bIsReal) return 1;
+    
+    // If both are real or both are test, sort by creation date (newest first)
+    return new Date(b.createdAt) - new Date(a.createdAt);
   }) || [];
 
   // Filter procedures based on selected patient and search term
