@@ -509,102 +509,142 @@ const ProcedureDetailsPage = () => {
           </CardContent>
         </Card>
 
-        {/* Assignment Information */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="h-5 w-5 mr-2 text-blue-600" />
-              Assignment Information
+        {/* Enhanced Assignment Information */}
+        <Card className="mb-8 shadow-md border-gray-200">
+          <CardHeader className="bg-gray-50 border-b border-gray-200">
+            <CardTitle className="flex items-center text-gray-800">
+              <Calendar className="h-6 w-6 mr-3 text-gray-600" />
+              Treatment Information
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Patient Details</h3>
-                <p className="text-sm text-gray-600">
-                  <User className="h-4 w-4 inline mr-2" />
-                  {procedureData.patientName}
-                </p>
-                <p className="text-sm text-gray-600">{procedureData.patientEmail}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Treatment Details</h3>
-                
-                {/* Performed Date - Editable */}
-                <div className="text-sm text-gray-600 mb-1">
-                  <Calendar className="h-4 w-4 inline mr-2" />
-                  Performed: {isEditing ? (
-                    <Input
-                      type="date"
-                      value={editData.performedDate}
-                      onChange={(e) => handleInputChange('performedDate', e.target.value)}
-                      className="inline-block w-auto ml-2"
-                      size="sm"
-                    />
-                  ) : (
-                    new Date(procedureData.performedDate).toLocaleDateString()
-                  )}
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Patient Information */}
+              <div className="bg-blue-25 rounded-lg p-4 border border-blue-100">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+                  <User className="h-5 w-5 mr-2 text-blue-600" />
+                  Patient Information
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 w-20">Name:</span>
+                    <span className="text-gray-900 font-semibold">{procedureData.patientName}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 w-20">Email:</span>
+                    <span className="text-gray-600">{procedureData.patientEmail}</span>
+                  </div>
                 </div>
-                
-                {/* Follow-up Date - Editable */}
-                {(procedureData.followUpDate || isEditing) && (
-                  <div className="text-sm text-gray-600 mb-1">
-                    Follow-up: {isEditing ? (
+              </div>
+
+              {/* Treatment Details */}
+              <div className="bg-green-25 rounded-lg p-4 border border-green-100">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-green-600" />
+                  Treatment Details
+                </h3>
+                <div className="space-y-3">
+                  {/* Performed Date - Editable */}
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 w-24">Performed:</span>
+                    {isEditing ? (
                       <Input
                         type="date"
-                        value={editData.followUpDate}
-                        onChange={(e) => handleInputChange('followUpDate', e.target.value)}
-                        className="inline-block w-auto ml-2"
+                        value={editData.performedDate}
+                        onChange={(e) => handleInputChange('performedDate', e.target.value)}
+                        className="w-auto"
                         size="sm"
                       />
                     ) : (
-                      procedureData.followUpDate ? new Date(procedureData.followUpDate).toLocaleDateString() : 'Not set'
+                      <span className="text-gray-900 font-semibold">
+                        {new Date(procedureData.performedDate).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
                     )}
                   </div>
-                )}
-                
-                {/* Dentist Name - Editable */}
-                <div className="text-sm text-gray-600 mb-2">
-                  Dentist: {isEditing ? (
-                    <Select
-                      value={editData.dentistName}
-                      onValueChange={(value) => handleInputChange('dentistName', value)}
-                    >
-                      <SelectTrigger className="inline-block w-auto ml-2 h-8">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {doctors.map((doctor) => (
-                          <SelectItem key={doctor.id} value={doctor.name}>
-                            {doctor.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    procedureData.dentistName
+                  
+                  {/* Follow-up Date - Editable */}
+                  {(procedureData.followUpDate || isEditing) && (
+                    <div className="flex items-center">
+                      <span className="font-medium text-gray-700 w-24">Follow-up:</span>
+                      {isEditing ? (
+                        <Input
+                          type="date"
+                          value={editData.followUpDate}
+                          onChange={(e) => handleInputChange('followUpDate', e.target.value)}
+                          className="w-auto"
+                          size="sm"
+                        />
+                      ) : (
+                        <span className="text-gray-900 font-semibold">
+                          {procedureData.followUpDate ? 
+                            new Date(procedureData.followUpDate).toLocaleDateString('en-US', {
+                              weekday: 'short',
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            }) : 'Not scheduled'
+                          }
+                        </span>
+                      )}
+                    </div>
                   )}
-                </div>
-                
-                {/* Status - Editable */}
-                <div>
-                  Status: {isEditing ? (
-                    <Select
-                      value={editData.status}
-                      onValueChange={(value) => handleInputChange('status', value)}
-                    >
-                      <SelectTrigger className="inline-block w-auto ml-2 h-8">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant="outline" className="ml-2">{procedureData.status}</Badge>
-                  )}
+                  
+                  {/* Dentist Name - Editable */}
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 w-24">Dentist:</span>
+                    {isEditing ? (
+                      <Select
+                        value={editData.dentistName}
+                        onValueChange={(value) => handleInputChange('dentistName', value)}
+                      >
+                        <SelectTrigger className="w-auto">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {doctors.map((doctor) => (
+                            <SelectItem key={doctor.id} value={doctor.name}>
+                              {doctor.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="text-gray-900 font-semibold">{procedureData.dentistName}</span>
+                    )}
+                  </div>
+                  
+                  {/* Status - Editable */}
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 w-24">Status:</span>
+                    {isEditing ? (
+                      <Select
+                        value={editData.status}
+                        onValueChange={(value) => handleInputChange('status', value)}
+                      >
+                        <SelectTrigger className="w-auto">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge 
+                        variant={procedureData.status === 'completed' ? 'default' : 
+                                procedureData.status === 'active' ? 'secondary' : 'outline'}
+                        className="font-semibold"
+                      >
+                        {procedureData.status.charAt(0).toUpperCase() + procedureData.status.slice(1)}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
