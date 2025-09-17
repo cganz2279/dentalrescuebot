@@ -16,7 +16,9 @@ import {
   AlertCircle,
   Search,
   X,
-  UserPlus
+  UserPlus,
+  Eye,
+  User
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
