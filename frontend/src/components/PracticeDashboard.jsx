@@ -137,22 +137,21 @@ const PracticeDashboard = () => {
     setProcedureSearchTerm('');
   };
 
-  // Filter and sort patient procedures - search by patient name, procedure name, or dentist
-  const filteredPatientProcedures = dashboardData?.recentPatients?.filter(procedure => {
+  // Filter and sort real patients only - search by patient name or email
+  const filteredRealPatients = dashboardData?.recentPatients?.filter(patient => {
     if (patientSearchTerm) {
       const searchLower = patientSearchTerm.toLowerCase();
       return (
-        procedure.patientName?.toLowerCase().includes(searchLower) ||
-        procedure.procedureName?.toLowerCase().includes(searchLower) ||
-        procedure.dentistName?.toLowerCase().includes(searchLower) ||
-        procedure.patientEmail?.toLowerCase().includes(searchLower)
+        patient.firstName?.toLowerCase().includes(searchLower) ||
+        patient.lastName?.toLowerCase().includes(searchLower) ||
+        patient.email?.toLowerCase().includes(searchLower)
       );
     }
-    return true; // Show all procedures when no search term
+    return true; // Show all real patients when no search term
   })
   .sort((a, b) => {
-    // Sort by most recent first
-    return new Date(b.createdAt || b.performedDate) - new Date(a.createdAt || a.performedDate);
+    // Sort by last name alphabetically
+    return a.lastName.localeCompare(b.lastName);
   }) || [];
 
   // Filter procedures based on selected patient and search term
