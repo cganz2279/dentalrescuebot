@@ -869,11 +869,6 @@ async def update_patient(
             detail="Failed to update patient"
         )
 
-@router.get("/test-delete")
-async def test_delete_endpoint():
-    """Test endpoint to verify DELETE method works"""
-    return {"message": "DELETE method is working on practice routes"}
-
 @router.put("/branding")
 async def update_practice_branding(
     branding: BrandingUpdate,
