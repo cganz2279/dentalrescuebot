@@ -1369,6 +1369,107 @@ async def delete_patient(
             detail="Failed to delete patient"
         )
 
+@router.post("/patients/{patient_id}/delete")
+async def delete_patient_post(
+    patient_id: str,
+    request: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete or deactivate a patient via POST method (workaround for infrastructure limitations)"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        hard_delete = request.get("hard_delete", False)
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Verify patient belongs to this practice
+        patient = await db.users.find_one({
+            "id": patient_id,
+            "practiceId": practice_id,
+            "role": "patient"
+        })
+        
+        if not patient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+        
+        # Check if patient has active procedure assignments
+        active_procedures = await db.patientprocedures.count_documents({
+            "patientId": patient_id,
+            "practiceId": practice_id,
+            "status": "active"
+        })
+        
+        if hard_delete:
+            if active_procedures > 0:
+                # For hard delete, we warn but allow deletion of assignments
+                await db.patientprocedures.delete_many({
+                    "patientId": patient_id,
+                    "practiceId": practice_id
+                })
+            
+            # Completely remove patient from database
+            result = await db.users.delete_one({
+                "id": patient_id,
+                "practiceId": practice_id,
+                "role": "patient"
+            })
+            
+            if result.deleted_count == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Patient not found"
+                )
+            
+            return {
+                "success": True,
+                "message": f"Patient {patient['firstName']} {patient['lastName']} has been permanently deleted",
+                "deletedProcedures": active_procedures
+            }
+        else:
+            # Soft delete - mark as inactive
+            result = await db.users.update_one(
+                {
+                    "id": patient_id,
+                    "practiceId": practice_id,
+                    "role": "patient"
+                },
+                {"$set": {
+                    "isActive": False,
+                    "deactivatedAt": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                }}
+            )
+            
+            if result.modified_count == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Patient not found"
+                )
+            
+            return {
+                "success": True,
+                "message": f"Patient {patient['firstName']} {patient['lastName']} has been deactivated",
+                "activeProcedures": active_procedures,
+                "note": "Procedure assignments have been preserved"
+            }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Delete patient error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete patient"
+        )
+
 # ======= PRACTICE-SPECIFIC PROCEDURE OVERRIDE ENDPOINTS =======
 
 @router.get("/procedures")
