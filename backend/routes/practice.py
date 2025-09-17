@@ -58,6 +58,9 @@ class PatientUpdate(BaseModel):
     # Delete action fields
     action: Optional[str] = None  # "deactivate" or "remove" for delete operations
     confirmDelete: Optional[bool] = None  # Confirmation flag for delete operations
+    
+    class Config:
+        extra = "allow"  # Allow extra fields to pass through
 
 class ProcedureAssignment(BaseModel):
     patientId: str
