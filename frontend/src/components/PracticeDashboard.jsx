@@ -177,20 +177,26 @@ const PracticeDashboard = () => {
     // If there's a search term, show matching patients (including test patients if they match)
     if (patientSearchTerm) {
       const searchLower = patientSearchTerm.toLowerCase();
-      return (
+      const matchesSearch = (
         patient.firstName.toLowerCase().includes(searchLower) ||
         patient.lastName.toLowerCase().includes(searchLower) ||
         patient.email.toLowerCase().includes(searchLower)
       );
+      
+      // If searching, show matching patients, but filter test patients unless explicitly shown
+      if (!showTestPatients && isTestPatient(patient)) {
+        return false;
+      }
+      return matchesSearch;
     }
     
-    // If no search term, prioritize real patients and limit test patients
+    // If no search term, show based on patient type and toggle
     if (isRealPatient(patient)) {
       return true; // Always show real patients
     }
     
-    // Limit test patients to 3 when no search is active
-    return false;
+    // Show test patients only if toggle is enabled
+    return showTestPatients;
   })
   .sort((a, b) => {
     // Sort real patients first, then by creation date
