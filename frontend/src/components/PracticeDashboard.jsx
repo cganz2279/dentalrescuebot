@@ -28,6 +28,7 @@ import { useToast } from '../hooks/use-toast';
 const PracticeDashboard = () => {
   const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
+  const [realPatients, setRealPatients] = useState([]);  // Store real patients separately
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPatientId, setSelectedPatientId] = useState(null);
