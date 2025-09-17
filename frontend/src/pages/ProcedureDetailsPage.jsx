@@ -530,17 +530,18 @@ const ProcedureDetailsPage = () => {
                                 continue;
                               }
                               
-                              // Check for sub-headers (capitalize words, no bullet, not too long)
-                              if (line.length < 60 && 
+                              // Check for sub-headers (dynamic detection based on content structure)
+                              if (line.length < 80 && 
                                   !line.startsWith('•') && 
                                   !line.startsWith('-') && 
-                                  (line.includes('Pain') || line.includes('Swelling') || line.includes('Bleeding') || 
-                                   line.includes('Activity') || line.includes('Hygiene') || line.includes('Diet') || 
-                                   line.includes('Medication') || line.includes('Follow') || line.includes('Contact') ||
-                                   line.includes('Purpose') || line.includes('Procedure') || line.includes('Recovery') ||
-                                   line.includes('Hours') || line.includes('Days') || line.includes('Week') ||
-                                   /^[A-Z][a-z\s]+[A-Z]/.test(line) || // Mixed case words
-                                   /^[A-Z\s]+:?$/.test(line))) { // All caps or title case
+                                  !line.startsWith('*') &&
+                                  !/^\d+[\.)]\s/.test(line) &&
+                                  (
+                                    // Detect patterns that indicate headers
+                                    /^[A-Z][a-zA-Z\s&]+:?\s*$/.test(line) || // Title case ending with optional colon
+                                    /^[A-Z\s&]+:?\s*$/.test(line) || // All caps with optional colon
+                                    (line.length < 40 && /^[A-Z]/.test(line) && !/[.!?]$/.test(line)) // Short lines starting with capital, not ending with punctuation
+                                  )) {
                                 
                                 elements.push({
                                   type: 'subheader',
