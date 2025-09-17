@@ -382,24 +382,46 @@ class EditFunctionalityTester:
             
             if response.status_code == 200:
                 data = response.json()
-                assignment_data = data.get("data", {}) if data.get("success") else data
                 
-                # Verify the update was successful
-                if (assignment_data.get("practiceNotes") == updated_assignment["practiceNotes"] and 
-                    assignment_data.get("status") == updated_assignment["status"]):
-                    self.log_test(
-                        "Assignment Update Test",
-                        True,
-                        f"Successfully updated assignment. New notes: '{assignment_data.get('practiceNotes')}', New status: '{assignment_data.get('status')}'",
-                        "Should update assignment with new data"
-                    )
-                    return True
+                # The update endpoint returns success message, not the updated data
+                if data.get("success") and data.get("message"):
+                    # Verify the update by retrieving the assignment again
+                    verify_response = self.session.get(f"{BACKEND_URL}/practice/assignment/{self.test_assignment_id}")
+                    if verify_response.status_code == 200:
+                        verify_data = verify_response.json()
+                        verify_assignment = verify_data.get("data", {}).get("assignment", {})
+                        
+                        if (verify_assignment.get("practiceNotes") == updated_assignment["practiceNotes"] and 
+                            verify_assignment.get("status") == updated_assignment["status"]):
+                            self.log_test(
+                                "Assignment Update Test",
+                                True,
+                                f"Successfully updated assignment. New notes: '{verify_assignment.get('practiceNotes')}', New status: '{verify_assignment.get('status')}'",
+                                "Should update assignment with new data"
+                            )
+                            return True
+                        else:
+                            self.log_test(
+                                "Assignment Update Test",
+                                False,
+                                f"Update succeeded but verification failed. Expected notes: '{updated_assignment['practiceNotes']}', Got: '{verify_assignment.get('practiceNotes')}'. Expected status: '{updated_assignment['status']}', Got: '{verify_assignment.get('status')}'",
+                                "Should update assignment fields correctly"
+                            )
+                            return False
+                    else:
+                        self.log_test(
+                            "Assignment Update Test",
+                            False,
+                            f"Update succeeded but could not verify changes - Status: {verify_response.status_code}",
+                            "Should be able to verify updated data"
+                        )
+                        return False
                 else:
                     self.log_test(
                         "Assignment Update Test",
                         False,
-                        f"Update response received but data not updated correctly. Expected notes: '{updated_assignment['practiceNotes']}', Got: '{assignment_data.get('practiceNotes')}'. Expected status: '{updated_assignment['status']}', Got: '{assignment_data.get('status')}'",
-                        "Should update assignment fields correctly"
+                        f"Update response format unexpected: {data}",
+                        "Should return success message"
                     )
                     return False
             else:
