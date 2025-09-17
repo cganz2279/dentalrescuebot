@@ -145,7 +145,7 @@ const AddPatientPage = () => {
       
       toast({
         title: "Success!",
-        description: `Patient ${patientName} has been added successfully with ${formData.primaryDentist || 'no assigned dentist'}.`,
+        description: `Patient ${patientName} has been added successfully with ${(formData.primaryDentist && formData.primaryDentist !== 'none') ? formData.primaryDentist : 'no assigned dentist'}.`,
         variant: "default",
         action: (
           <ToastAction
