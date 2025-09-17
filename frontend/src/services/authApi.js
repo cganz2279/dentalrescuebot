@@ -185,6 +185,11 @@ export const practiceApi = {
     return response.data;
   },
 
+  deletePatient: async (patientId, hardDelete = false) => {
+    const response = await practiceAxios.delete(`/api/practice/patients/${patientId}?hard_delete=${hardDelete}`);
+    return response.data;
+  },
+
   // Dentist management
   getDentists: async () => {
     const response = await practiceAxios.get('/api/practice/dentists');
