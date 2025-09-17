@@ -554,20 +554,42 @@ class BackendTester:
     
     def run_all_tests(self):
         """Run all tests in sequence"""
-        print("🚀 Starting PDF Generation Backend Testing")
+        print("🚀 Starting POST Delete Endpoint Backend Testing")
         print(f"Backend URL: {BACKEND_URL}")
         print("=" * 60)
         
         # Test 1: Authentication
         auth_success = self.test_authentication()
         
-        # Test 2: Practice Settings (only if authentication succeeded)
-        practice_success = False
+        # Test 2: Create test patients (only if authentication succeeded)
+        create_success = False
         if auth_success:
-            practice_success = self.test_practice_settings()
+            create_success = self.test_create_test_patients()
         
-        # Test 3: Procedure API (can run independently)
-        procedure_success = self.test_procedure_api()
+        # Test 3: POST Soft Delete (only if patients created)
+        soft_delete_success = False
+        if create_success:
+            soft_delete_success = self.test_post_soft_delete()
+        
+        # Test 4: POST Hard Delete (only if patients created)
+        hard_delete_success = False
+        if create_success:
+            hard_delete_success = self.test_post_hard_delete()
+        
+        # Test 5: Patient List Filtering (only if deletes worked)
+        filtering_success = False
+        if soft_delete_success or hard_delete_success:
+            filtering_success = self.test_patient_list_filtering()
+        
+        # Test 6: Error Handling (can run if authenticated)
+        error_handling_success = False
+        if auth_success:
+            error_handling_success = self.test_error_handling_nonexistent_patient()
+        
+        # Test 7: 405 Resolution Test (can run if authenticated)
+        resolution_success = False
+        if auth_success:
+            resolution_success = self.test_405_method_not_allowed_resolved()
         
         # Summary
         print("=" * 60)
@@ -591,13 +613,31 @@ class BackendTester:
         print()
         print("🎯 REVIEW REQUEST ANALYSIS:")
         print(f"✅ Authentication Test: {'PASSED' if auth_success else 'FAILED'}")
-        print(f"✅ Practice Settings Test: {'PASSED' if practice_success else 'FAILED'}")  
-        print(f"✅ Procedure API Test: {'PASSED' if procedure_success else 'FAILED'}")
+        print(f"✅ Create Test Patients: {'PASSED' if create_success else 'FAILED'}")  
+        print(f"✅ POST Soft Delete Test: {'PASSED' if soft_delete_success else 'FAILED'}")
+        print(f"✅ POST Hard Delete Test: {'PASSED' if hard_delete_success else 'FAILED'}")
+        print(f"✅ Patient List Filtering: {'PASSED' if filtering_success else 'FAILED'}")
+        print(f"✅ Error Handling Test: {'PASSED' if error_handling_success else 'FAILED'}")
+        print(f"✅ 405 Resolution Test: {'PASSED' if resolution_success else 'FAILED'}")
         
-        if auth_success and practice_success and procedure_success:
-            print("\n🎉 ALL TESTS PASSED - PDF generation backend is ready!")
+        if all([auth_success, create_success, soft_delete_success, hard_delete_success, filtering_success, error_handling_success, resolution_success]):
+            print("\n🎉 ALL TESTS PASSED - POST delete endpoint is working correctly!")
+            print("✅ 405 Method Not Allowed error has been resolved")
+            print("✅ Soft delete (hard_delete=false) works correctly")
+            print("✅ Hard delete (hard_delete=true) works correctly")
+            print("✅ Patient list filtering excludes deleted patients")
+            print("✅ Error handling for non-existent patients works")
         else:
-            print(f"\n⚠️  {total_tests - passed_tests} test(s) failed - see details above")
+            failed_tests = []
+            if not auth_success: failed_tests.append("Authentication")
+            if not create_success: failed_tests.append("Create Test Patients")
+            if not soft_delete_success: failed_tests.append("POST Soft Delete")
+            if not hard_delete_success: failed_tests.append("POST Hard Delete")
+            if not filtering_success: failed_tests.append("Patient List Filtering")
+            if not error_handling_success: failed_tests.append("Error Handling")
+            if not resolution_success: failed_tests.append("405 Resolution")
+            
+            print(f"\n⚠️  {len(failed_tests)} test(s) failed: {', '.join(failed_tests)}")
         
         return passed_tests == total_tests
 
