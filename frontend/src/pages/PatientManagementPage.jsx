@@ -427,6 +427,18 @@ const PatientManagementPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Patient Dialog */}
+      <DeletePatientDialog
+        patient={patientToDelete}
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setPatientToDelete(null);
+        }}
+        onConfirm={confirmDeletePatient}
+        activeProcedures={patientToDelete?.procedureCount || 0}
+      />
     </div>
   );
 };
