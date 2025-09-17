@@ -802,6 +802,8 @@ async def update_patient(
             )
         
         # Handle delete operations FIRST
+        print(f"DEBUG: Raw patient_data attributes: {dir(patient_data)}")
+        print(f"DEBUG: patient_data dict: {patient_data.dict()}")
         if hasattr(patient_data, 'action') and patient_data.action in ["deactivate", "remove"] and hasattr(patient_data, 'confirmDelete') and patient_data.confirmDelete:
             # Check if patient has active procedure assignments
             active_procedures = await db.patientprocedures.count_documents({
