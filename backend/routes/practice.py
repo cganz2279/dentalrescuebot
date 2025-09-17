@@ -799,8 +799,7 @@ async def update_patient(
             )
         
         # Handle delete operations FIRST
-        print(f"DEBUG: action={patient_data.action}, confirmDelete={patient_data.confirmDelete}")
-        if patient_data.action in ["deactivate", "remove"] and patient_data.confirmDelete:
+        if hasattr(patient_data, 'action') and patient_data.action in ["deactivate", "remove"] and hasattr(patient_data, 'confirmDelete') and patient_data.confirmDelete:
             # Check if patient has active procedure assignments
             active_procedures = await db.patientprocedures.count_documents({
                 "patientId": patient_id,
@@ -864,12 +863,13 @@ async def update_patient(
                 }
         
         # Regular patient update logic (only if no delete action)
-        if patient_data.action is not None:
+        if hasattr(patient_data, 'action') and patient_data.action is not None and patient_data.action not in ["deactivate", "remove"]:
             # If action is provided but not a valid delete action, reject it
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid action. Use 'deactivate' or 'remove' with confirmDelete=true for delete operations."
             )
+        
         # Check if email is being updated and ensure it's unique
         if patient_data.email and patient_data.email != patient.get('email'):
             existing_email = await db.users.find_one({
