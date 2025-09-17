@@ -374,12 +374,12 @@ class EditFunctionalityTester:
                 assignment_data = data.get("data", {}) if data.get("success") else data
                 
                 # Verify the update was successful
-                if (assignment_data.get("notes") == updated_assignment["notes"] and 
+                if (assignment_data.get("practiceNotes") == updated_assignment["practiceNotes"] and 
                     assignment_data.get("status") == updated_assignment["status"]):
                     self.log_test(
                         "Assignment Update Test",
                         True,
-                        f"Successfully updated assignment. New notes: '{assignment_data.get('notes')}', New status: '{assignment_data.get('status')}'",
+                        f"Successfully updated assignment. New notes: '{assignment_data.get('practiceNotes')}', New status: '{assignment_data.get('status')}'",
                         "Should update assignment with new data"
                     )
                     return True
@@ -387,7 +387,7 @@ class EditFunctionalityTester:
                     self.log_test(
                         "Assignment Update Test",
                         False,
-                        f"Update response received but data not updated correctly. Expected notes: '{updated_assignment['notes']}', Got: '{assignment_data.get('notes')}'. Expected status: '{updated_assignment['status']}', Got: '{assignment_data.get('status')}'",
+                        f"Update response received but data not updated correctly. Expected notes: '{updated_assignment['practiceNotes']}', Got: '{assignment_data.get('practiceNotes')}'. Expected status: '{updated_assignment['status']}', Got: '{assignment_data.get('status')}'",
                         "Should update assignment fields correctly"
                     )
                     return False
