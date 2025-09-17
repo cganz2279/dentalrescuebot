@@ -55,6 +55,9 @@ class PatientUpdate(BaseModel):
     dateOfBirth: Optional[str] = None
     address: Optional[dict] = None
     emergencyContact: Optional[dict] = None
+    # Delete action fields
+    action: Optional[str] = None  # "deactivate" or "remove" for delete operations
+    confirmDelete: Optional[bool] = None  # Confirmation flag for delete operations
 
 class ProcedureAssignment(BaseModel):
     patientId: str
