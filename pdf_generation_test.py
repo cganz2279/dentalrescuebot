@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, List
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://view-print-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-pdf-sync.preview.emergentagent.com/api"
 
 class PDFGenerationTester:
     def __init__(self, base_url: str):
