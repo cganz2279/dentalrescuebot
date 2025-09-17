@@ -541,44 +541,47 @@ const ProcedureDetailsPage = () => {
                     <div className="p-6">
                       <div className="space-y-4">
                         {(() => {
-                          // Enhanced content parser for better formatting
+                          // Enhanced content parser for sentence and bullet-based content
                           const parseContent = (contentArray) => {
                             const elements = [];
-                            let i = 0;
                             
-                            while (i < contentArray.length) {
-                              const line = contentArray[i].trim();
-                              if (!line) {
-                                i++;
-                                continue;
-                              }
+                            contentArray.forEach((item, index) => {
+                              const line = typeof item === 'string' ? item.trim() : '';
+                              if (!line) return;
                               
-                              // Check for sub-headers (dynamic detection based on content structure)
-                              if (line.length < 80 && 
-                                  !line.startsWith('•') && 
-                                  !line.startsWith('-') && 
-                                  !line.startsWith('*') &&
-                                  !/^\d+[\.)]\s/.test(line) &&
-                                  (
-                                    // Detect patterns that indicate headers
-                                    /^[A-Z][a-zA-Z\s&]+:?\s*$/.test(line) || // Title case ending with optional colon
-                                    /^[A-Z\s&]+:?\s*$/.test(line) || // All caps with optional colon
-                                    (line.length < 40 && /^[A-Z]/.test(line) && !/[.!?]$/.test(line)) // Short lines starting with capital, not ending with punctuation
-                                  )) {
+                              // Check if the line contains bullet points or dashes within it
+                              if (line.includes(' - ') || line.includes(' • ')) {
+                                // Split the line by bullet markers and create separate bullet items
+                                const parts = line.split(/\s+[-•]\s+/);
+                                const introText = parts[0].trim();
                                 
-                                elements.push({
-                                  type: 'subheader',
-                                  content: line,
-                                  index: i
+                                // Add intro text if it exists
+                                if (introText && !introText.match(/^[-•]/)) {
+                                  elements.push({
+                                    type: 'paragraph',
+                                    content: introText,
+                                    index: `${index}-intro`
+                                  });
+                                }
+                                
+                                // Add bullet points
+                                parts.slice(1).forEach((bulletText, bulletIndex) => {
+                                  if (bulletText.trim()) {
+                                    elements.push({
+                                      type: 'bullet',
+                                      content: bulletText.trim(),
+                                      index: `${index}-bullet-${bulletIndex}`
+                                    });
+                                  }
                                 });
                               }
-                              // Handle bullet points and dashes
+                              // Handle lines that start with bullet points
                               else if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
                                 const bulletText = line.replace(/^[•\-*]\s*/, '');
                                 elements.push({
                                   type: 'bullet',
                                   content: bulletText,
-                                  index: i
+                                  index: index
                                 });
                               }
                               // Handle numbered lists
@@ -588,20 +591,18 @@ const ProcedureDetailsPage = () => {
                                   type: 'numbered',
                                   content: numberedText,
                                   number: line.match(/^\d+/)[0],
-                                  index: i
+                                  index: index
                                 });
                               }
-                              // Regular paragraphs
+                              // Regular sentences/paragraphs
                               else if (line.length > 0) {
                                 elements.push({
                                   type: 'paragraph',
                                   content: line,
-                                  index: i
+                                  index: index
                                 });
                               }
-                              
-                              i++;
-                            }
+                            });
                             
                             return elements;
                           };
