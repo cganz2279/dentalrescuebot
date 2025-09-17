@@ -184,11 +184,12 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
         })
         
         # Get only real patients (Gmail addresses only) - no test patients
+        print("DEBUG: Looking for Gmail patients only")
         recent_patients = await db.users.find(
             {
                 "practiceId": practice_id,
                 "role": "patient",
-                "email": {"$regex": "@gmail.com$"}  # Only Gmail addresses (real patients)
+                "email": {"$regex": "@gmail\\.com$"}  # Only Gmail addresses (real patients)
             },
             {
                 "_id": 0,
@@ -202,6 +203,10 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                 "deactivatedAt": 1
             }
         ).sort("lastName", 1).to_list(length=None)  # Sort by last name
+        
+        print(f"DEBUG: Found {len(recent_patients)} Gmail patients")
+        for patient in recent_patients:
+            print(f"DEBUG: Patient {patient['firstName']} {patient['lastName']} ({patient['email']})")
         
         # Add status information to recent patients
         for patient in recent_patients:
