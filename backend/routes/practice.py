@@ -799,6 +799,7 @@ async def update_patient(
             )
         
         # Handle delete operations FIRST
+        print(f"DEBUG: action={patient_data.action}, confirmDelete={patient_data.confirmDelete}")
         if patient_data.action in ["deactivate", "remove"] and patient_data.confirmDelete:
             # Check if patient has active procedure assignments
             active_procedures = await db.patientprocedures.count_documents({
