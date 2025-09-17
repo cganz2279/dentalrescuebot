@@ -359,7 +359,7 @@ class EditFunctionalityTester:
         try:
             # Update the assignment with new data
             updated_assignment = {
-                "notes": "Updated test assignment for edit functionality testing - EDITED",
+                "practiceNotes": "Updated test assignment for edit functionality testing - EDITED",
                 "status": "completed"
             }
             
