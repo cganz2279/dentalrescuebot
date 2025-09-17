@@ -186,8 +186,9 @@ export const practiceApi = {
   },
 
   deletePatient: async (patientId, hardDelete = false) => {
-    const response = await practiceAxios.put(`/api/practice/patient-status/${patientId}`, {
-      action: hardDelete ? "remove" : "deactivate"
+    const response = await practiceAxios.put(`/api/practice/patients/${patientId}`, {
+      action: hardDelete ? "remove" : "deactivate",
+      confirmDelete: true
     });
     return response.data;
   },
