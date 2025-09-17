@@ -21,12 +21,12 @@ const formatPhoneNumber = (phone) => {
 };
 
 
-// Generate actual PDF file using jsPDF (OVERVIEW ONLY)
+// Generate actual PDF file using jsPDF with proper formatting to match screen display
 export const generateProcedurePDF = async (procedure) => {
   console.log('🎯 PDF Generator Entry - Procedure Object:', procedure);
   
   try {
-    console.log('🎨 Starting SIMPLIFIED PDF generation...');
+    console.log('🎨 Starting STRUCTURED PDF generation...');
     
     // Create new PDF document
     const pdf = new jsPDF();
@@ -66,25 +66,11 @@ export const generateProcedurePDF = async (procedure) => {
       yPos += 15;
     }
     
-    // Simple content sections - no complex object handling
-    pdf.setFontSize(12);
-    pdf.setFont(undefined, 'normal');
-    
-    // Add main content (use overview for simplicity)
+    // Parse and format the overview content with proper sections
     if (procedure.overview) {
-      const cleanText = String(procedure.overview).replace(/\[object Object\]/g, '').trim();
-      if (cleanText) {
-        const lines = pdf.splitTextToSize(cleanText, 170);
-        
-        lines.forEach(line => {
-          if (yPos > 250) {
-            pdf.addPage();
-            yPos = 20;
-          }
-          pdf.text(line, 20, yPos);
-          yPos += 6;
-        });
-        yPos += 15;
+      const overviewText = String(procedure.overview).replace(/\[object Object\]/g, '').trim();
+      if (overviewText) {
+        yPos = addFormattedContent(pdf, overviewText, yPos);
       }
     }
     
