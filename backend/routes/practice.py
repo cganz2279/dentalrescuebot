@@ -183,8 +183,8 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
             "status": "active"
         })
         
-        # Get only real patients (Gmail addresses only) and their recent procedures
-        real_patients = await db.users.find(
+        # Get only real patients (Gmail addresses only) - no test patients
+        recent_patients = await db.users.find(
             {
                 "practiceId": practice_id,
                 "role": "patient",
@@ -196,45 +196,20 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                 "firstName": 1,
                 "lastName": 1,
                 "email": 1,
-                "isActive": 1
+                "createdAt": 1,
+                "lastLoginAt": 1,
+                "isActive": 1,
+                "deactivatedAt": 1
             }
-        ).to_list(length=None)
+        ).sort("lastName", 1).to_list(length=None)  # Sort by last name
         
-        # Get recent procedures for real patients only
-        real_patient_ids = [patient["id"] for patient in real_patients]
-        recent_patient_procedures = []
-        
-        if real_patient_ids:
-            procedures = await db.patientprocedures.find(
-                {
-                    "practiceId": practice_id,
-                    "patientId": {"$in": real_patient_ids}
-                },
-                {
-                    "_id": 0,
-                    "id": 1,
-                    "patientId": 1,
-                    "procedureName": 1,
-                    "performedDate": 1,
-                    "followUpDate": 1,
-                    "dentistName": 1,
-                    "status": 1,
-                    "createdAt": 1
-                }
-            ).sort("createdAt", -1).limit(20).to_list(length=None)  # Last 20 procedures
-            
-            # Add patient information to each procedure
-            patient_lookup = {p["id"]: p for p in real_patients}
-            for procedure in procedures:
-                patient = patient_lookup.get(procedure["patientId"])
-                if patient:
-                    procedure["patientName"] = f"{patient['firstName']} {patient['lastName']}"
-                    procedure["patientEmail"] = patient["email"]
-                    procedure["patientStatus"] = "Active" if patient.get("isActive", True) else "Inactive"
-                    recent_patient_procedures.append(procedure)
-        
-        # Replace recentPatients with recentPatientProcedures
-        recent_patients = recent_patient_procedures
+        # Add status information to recent patients
+        for patient in recent_patients:
+            # Default to active if isActive field is not set
+            is_active = patient.get("isActive")
+            if is_active is None:
+                is_active = True  # Default to active for existing patients without the field
+            patient["status"] = "Active" if is_active else "Inactive"
         
         # Get recent procedures (last 10) with patient names
         recent_procedures = await db.patientprocedures.find(
