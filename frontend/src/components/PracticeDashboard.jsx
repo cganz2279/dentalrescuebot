@@ -537,6 +537,22 @@ const PracticeDashboard = () => {
                           >
                             {patient.status || 'Active'}
                           </Badge>
+                          {isTestPatient(patient) && (
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs bg-orange-50 text-orange-600 border-orange-200"
+                            >
+                              Test
+                            </Badge>
+                          )}
+                          {isRealPatient(patient) && (
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs bg-blue-50 text-blue-600 border-blue-200"
+                            >
+                              Real
+                            </Badge>
+                          )}
                         </div>
                         <p className="text-sm text-gray-600">{patient.email}</p>
                         {patient.lastLoginAt && (
