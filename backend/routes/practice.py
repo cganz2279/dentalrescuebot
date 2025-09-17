@@ -145,6 +145,35 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             detail="Invalid token"
         )
 
+@router.get("/debug-gmail-patients")
+async def debug_gmail_patients(current_user: dict = Depends(get_current_user)):
+    """Debug endpoint to check Gmail patients"""
+    try:
+        practice_id = current_user["practiceId"]
+        
+        # Get Gmail patients
+        gmail_patients = await db.users.find(
+            {
+                "practiceId": practice_id,
+                "role": "patient", 
+                "email": {"$regex": "@gmail\\.com$"}
+            }
+        ).to_list(length=None)
+        
+        return {
+            "success": True,
+            "gmail_patients_count": len(gmail_patients),
+            "gmail_patients": [
+                {
+                    "firstName": p["firstName"],
+                    "lastName": p["lastName"], 
+                    "email": p["email"]
+                } for p in gmail_patients
+            ]
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 @router.get("/dashboard")
 async def get_practice_dashboard(current_user: dict = Depends(get_current_user)):
     """Get practice dashboard data"""
