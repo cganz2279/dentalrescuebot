@@ -297,9 +297,27 @@ const PatientManagementPage = () => {
                             onClick={() => handlePatientSelect(patient)}
                             className="flex-1 cursor-pointer"
                           >
-                            <p className="font-medium text-sm">
-                              {patient.firstName} {patient.lastName}
-                            </p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="font-medium text-sm">
+                                {patient.firstName} {patient.lastName}
+                              </p>
+                              <Badge 
+                                variant="outline" 
+                                className="text-xs bg-blue-50 text-blue-600 border-blue-200"
+                              >
+                                Real Patient
+                              </Badge>
+                              <Badge 
+                                variant={patient.status === 'Active' ? 'default' : 'secondary'}
+                                className={`text-xs ${
+                                  patient.status === 'Active' 
+                                    ? 'bg-green-100 text-green-800 border-green-200' 
+                                    : 'bg-gray-100 text-gray-600 border-gray-200'
+                                }`}
+                              >
+                                {patient.status || 'Active'}
+                              </Badge>
+                            </div>
                             <p className="text-xs text-gray-500">{patient.email}</p>
                           </div>
                           <div className="flex items-center gap-1">
