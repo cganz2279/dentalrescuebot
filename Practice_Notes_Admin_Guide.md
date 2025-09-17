@@ -10,9 +10,9 @@
 ### **Main Application URLs**
 | Service | URL | Purpose |
 |---------|-----|---------|
-| **Main App** | `https://care-guide-fix.preview.emergentagent.com` | Primary dental practice application |
-| **Admin Console** | `https://care-guide-fix.preview.emergentagent.com/admin` | Full admin management interface |
-| **HTML Admin Dashboard** | `https://care-guide-fix.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
+| **Main App** | `https://view-print-sync.preview.emergentagent.com` | Primary dental practice application |
+| **Admin Console** | `https://view-print-sync.preview.emergentagent.com/admin` | Full admin management interface |
+| **HTML Admin Dashboard** | `https://view-print-sync.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
 
 ### **WordPress Integration URLs**
 | Page | URL | Purpose |
@@ -83,7 +83,7 @@
 ## 🛠 **System Management**
 
 ### **Backend API Endpoints**
-- **Base URL:** `https://care-guide-fix.preview.emergentagent.com/api`
+- **Base URL:** `https://view-print-sync.preview.emergentagent.com/api`
 - **Admin Login:** `POST /admin/login`
 - **Practice Management:** `GET /admin/practices`
 - **Procedure Requests:** `GET /admin/procedure-requests`

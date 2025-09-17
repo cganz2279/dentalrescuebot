@@ -313,7 +313,7 @@ async def get_practice_notes_login():
             content = practice_login_path.read_text()
             # Update API URLs to use current environment
             content = content.replace(
-                'https://care-guide-fix.preview.emergentagent.com',
+                'https://view-print-sync.preview.emergentagent.com',
                 os.environ.get('FRONTEND_URL', 'https://dentist-portal-3.emergent.host')
             )
             return content

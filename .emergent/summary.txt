@@ -1,75 +1,102 @@
 <analysis>
-The AI engineer's trajectory shows a persistent battle with deployment, caching, and frontend rendering issues, interspersed with critical feature development and bug fixes. Initially, the focus was on adding Office Hours and Emergency Contact to practice settings and PDFs, which repeatedly failed to appear in the UI due to deployment or caching problems despite correct code changes. A major turning point was addressing the critical issue of generic PDF content; the AI engineered a robust solution to re-import and correct all 81 PDF procedures. Concurrently, the AI implemented an email notification system for new registrations, enhanced payment verification, and an admin panel section for registrations, again facing deployment visibility challenges. The most recent task involved fixing corrupted procedure notes on the patient assignment page by adjusting the display order. The trajectory concludes with the AI still troubleshooting the visibility of the Office Hours and Emergency Contact fields, despite finding them in the compiled frontend code, indicating a recurring rendering or deployment sync problem.
+The AI engineer's trajectory involved addressing several critical user requests, often complicated by persistent platform and deployment issues. Initially, the focus was on the Add Patient form's  error, which was fixed but awaited deployment verification. The next major task was enabling patient deletion with soft/hard delete options. This revealed severe infrastructure restrictions, as standard DELETE and even POST to  or  endpoints were blocked, forcing a workaround by modifying an existing PUT endpoint and adapting Pydantic models to accept action parameters. This also led to fixing React key duplication.
+
+Concurrently, the dashboard's Recent Patients section displayed numerous test patients and failed to reflect real ones, leading to extensive debugging efforts across backend queries and frontend filtering. Despite fixing backend logic, caching/deployment issues repeatedly prevented changes from reflecting, leading to frontend-side filtering as a workaround. The final tasks included correcting patient display in the Patient Management section (also via frontend filtering) and removing a redundant Dentist Management UI block from the dashboard. The current task revolves around a discrepancy between a viewed and printed PDF care guide.
 </analysis>
 
 <product_requirements>
-The application serves as a multi-tenant B2B SaaS platform for dentists, facilitating the generation of customized post-operative PDF care guides for patients. It also handles practice, patient, and procedure data management. Future plans include integration with SamCart. The core problems addressed so far include:
-1.  **PDF Content Accuracy**: Originally, PDFs contained generic What Was Done content instead of specific instructions from . This necessitated robust PDF extraction and database updates.
-2.  **PDF Formatting & Generation**: PDFs were not initially generated as actual PDF files, and the content display was often incorrect or incomplete.
-3.  **Frontend/Deployment Instability**: Recurring issues with caching, stale builds, incorrect  in  files, and  package pathing plagued UI updates.
-4.  **Practice Customization**: Implementation of Office Hours and Emergency Contact Number fields in practice settings and their inclusion in generated PDFs.
-5.  **New User Registration**: Ensure new customer registration works correctly, including resolving website field validation (removing  requirement) and providing proper error messages.
-6.  **New User Notifications & Payment Verification**: Implement email notifications for new registrations (SamCart paid vs. trial) and enhance payment verification to block unauthorized access.
-7.  **Admin Panel Enhancements**: Add a New Registrations section to the admin dashboard for tracking.
-8.  **Procedure Details Corruption**: Correct the display of procedure details to show medical instructions rather than patient assignment data.
+The application serves dentists as a multi-tenant B2B SaaS platform for post-operative care. Key functionalities and issues addressed:
+
+1.  **PDF Content Accuracy & Formatting**: PDFs should display structured medical instructions from  with correct formatting (sections, bullets, styling).
+2.  **Practice Customization in PDFs**: Office Hours and Emergency Contact Number from practice settings must appear in PDF footers.
+3.  **UI for Practice Settings**: Input fields for Office Hours and Emergency Contact Number on the Practice Settings page.
+4.  **Dr. Dr. Duplication Fix**: Ensure dentist names are displayed without redundant Dr. prefixes.
+5.  **New User Registration & Notifications**: Implement email notifications for new registrations and enhance payment verification.
+6.  **Admin Panel Enhancements**: Add a New Registrations section to the admin dashboard.
+7.  **Procedure Details Corruption**: Correctly display medical instructions, removing extraneous sections, with professional, organized formatting and dynamic content parsing.
+8.  **Patient Creation**: Fix the Add Patient form to prevent errors related to empty dropdown values.
+9.  **Patient Edit Functionality**: Enable editing and saving patient data on the Procedure Details page.
+10. **Patient Deletion**: Allow soft-delete (inactive) and hard-delete of patients from the Patient Management list, with a confirmation warning, next to the edit button.
+11. **Dashboard Recent Patients Display**: Correctly display only real, active patients in the Recent Patients section, filter out test patients, make it searchable, and show proper status.
+12. **Patient Management List Display**: Filter the Patient Management list to show only real patients.
+13. **Dashboard UI Cleanup**: Remove redundant Dentist Management section from the dashboard, keeping only a compact button.
+14. **PDF View vs. Print Consistency**: Ensure the Post-Operative Care Guide viewed PDF matches the printed version.
 </product_requirements>
 
 <key_technical_concepts>
--   **React.js**: Frontend development for UI components and state management.
--   **FastAPI**: Python framework for building the backend API.
--   **MongoDB**: NoSQL database for data storage.
+-   **React.js**: Frontend UI, components, context (AuthContext), state management.
+-   **FastAPI**: Python backend API.
+-   **MongoDB**: NoSQL database.
 -   ****: JavaScript library for client-side PDF generation.
--   **SendGrid**: Email API for sending automated notifications.
--   **Environment Variables ()**: Configuration management for URLs and API keys.
--   **Supervisor**: Process control system for managing frontend and backend services.
--   **Kubernetes Ingress**: Implicitly handles routing rules ( prefix).
--   **Frontend Caching**: Browser and build-time (Babel) caching issues.
--   **PDF Content Extraction**: Python scripts for parsing and storing PDF data.
+-   **Environment Variables**: Configuration management.
+-   **Supervisor**: Process control for services.
+-   **Kubernetes Ingress**: API routing (implicitly '/api').
+-   **Frontend Caching**: Browser/build-time cache issues.
+-   **Pydantic**: Data validation and serialization for FastAPI.
 </key_technical_concepts>
 
 <code_architecture>
 
--   ****: Generates post-operative care guide PDFs using .
-    -   Changes: Modified to include practice-specific Office Hours and Emergency Contact information in the PDF footer.
--   ****: Manages practice-specific settings in the UI.
-    -   Changes: Updated multiple times to add UI fields for Office Hours and Emergency Contact Number, handle state, and fix layout issues. Also involved fixing duplicate Add Dentist buttons and sections.
--   ****: Frontend environment configuration.
-    -   Changes: Corrected  from preview to  to resolve deployment inconsistencies.
--   ****: Backend environment configuration.
-    -   Changes: Updated to include , ,  for email notifications.
--   ** (New)**: Script created to parse all 81 PDF documents from  and update the database with the correct, detailed content, fixing generic or misplaced content.
--   ****: Handles practice-related API endpoints.
-    -   Changes:  model and  function extended to store  and .
--   ****: Manages authentication and registration endpoints.
-    -   Changes: Modified to support enhanced payment verification for SamCart, send email notifications for new registrations (trial and paid), and log registration attempts.  and  were refined.
--   ****: Handles admin-specific API endpoints.
-    -   Changes: A new endpoint  was added to retrieve registration logs.
--   ** (New)**: Created as an attempt to make procedure fetching public, though its usage was later reverted in favor of fixing the main  endpoint.
--   ****: Main FastAPI application entry point.
-    -   Changes:  endpoint was modified multiple times to ensure it provides practice  and  information and, crucially, to remove unintended authentication requirements that were blocking access, making it publicly accessible. Router inclusion order was adjusted for middleware.
--   ** (New)**: Python service for sending emails using SendGrid.
-    -   Changes: Implemented to send registration notifications with practice and admin details, including payment status. Configured with From and Reply-To emails.
--   ****: Handles new user registration forms.
-    -   Changes: Website input field type changed from  to  to remove the  prefix requirement.
--   ****: Admin dashboard UI.
-    -   Changes: Added a Registrations tab with corresponding content to display new registration attempts. Includes state management for fetching this data.
--   ****: Displays detailed information for a procedure, specifically in the context of patient assignments.
-    -   Changes: Medical Post-Operative Care Instructions section was moved to the top and styled for prominence, and duplicate sections were removed to fix corrupted procedure note display.
+-   ****: Stores environment variables.
+    -   **Changes**:  was corrected to point to the correct backend host after troubleshooting.
+-   ****: Handles API routes related to practice management.
+    -   **Changes**:
+        -   Modified  Pydantic model to allow  and  fields ().
+        -   Modified  to handle patient deactivation/permanent deletion based on  and  fields. Logic was reordered to prioritize delete actions.
+        -   Removed duplicate  in  to prevent routing conflicts.
+        -   Added debug endpoints (later removed) to diagnose routing issues.
+-   ****: Frontend service for authentication and API calls.
+    -   **Changes**:
+        -   Added  function to call backend patient deletion endpoint. This function was repeatedly updated to match new backend endpoint patterns (, , , then finally integrating with  PUT with  parameter).
+-   ****: Displays details of a specific procedure.
+    -   **Changes**: Investigated for edit functionality and PDF generation.
+-   ****: Handles assigning procedures to patients/dentists.
+    -   **Changes**:
+        -   Fixed React key duplication error for  by ensuring unique keys and displaying email/license for duplicate names.
+-   ** (New)**: A new React component for confirming patient deletion.
+    -   **Changes**: Created to provide a confirmation dialog for patient deletion (soft or hard delete).
+-   ****: Manages the list of patients.
+    -   **Changes**:
+        -   Integrated  and  API call to allow soft/hard deletion of patients.
+        -   Added UI elements for delete button, confirmation, and status indicators.
+        -   Modified  to filter for real patients (matching ) and display only them, hiding test patients.
+        -   Updated header and added an info indicator to show filtering.
+        -   Added Real Patient badge to each patient entry.
+-   ****: Main dashboard for practice overview.
+    -   **Changes**:
+        -   Modified recent patients display logic to filter for real patients (matching ) and hide test patients.
+        -   Added a  toggle for debugging/display control.
+        -   Added visual indicators ( badge).
+        -   Removed a redundant, full-width Dentist Management section, retaining only a compact button in the banner.
+-   ** (Created)** and ** (Created)**: Scripts created to initialize or fix the  status for patients in the database.
+    -   **Summary**: Attempted to resolve  discrepancies but highlighted persistent database/API data mismatch.
+-   ** (Created)**, ** (Created)**, ** (Created)**, ** (Created)**, ** (Created)**: Various scripts created for debugging patient data consistency and attempting to clean up test patients directly in the database or via API.
+    -   **Summary**: These scripts repeatedly encountered issues with database consistency or API endpoint behavior, often showing different patient counts than the main API.
+-   ****: Displays patient-specific procedure views.
+    -   **Changes**: Currently being investigated for PDF viewing vs. printing inconsistencies.
 </code_architecture>
 
 <pending_tasks>
--   **Verify New Practice Settings UI**: Confirm the Office Hours and Emergency Contact Number fields are visible and functional in the Practice Settings page. This is a persistent frontend rendering issue.
--   **Verify PDF Integration of New Fields**: Ensure the newly added office hours and emergency contact number appear correctly at the bottom of the generated PDF files (UI verification).
--   **SamCart Webhook Integration**: Automate account activation/deactivation and tracking (beyond current payment verification).
--   **Enhanced Website Integration**: Add dedicated pages and navigation links on .
+-   **Deployment Stability**: The platform's deployment system is intermittently failing, preventing code changes from reaching the production environment. This needs external resolution from Emergent support.
+-   **Preview Environment Data**: The preview environment's database connection is broken, leading to empty data and functional errors. This is also a platform issue.
+-   **Content Verification for Dental Bridge**: User requested to verify if Dental Bridge Placement content in the database matches the original  file. (Blocked by inability to  locally and platform issues).
+-   **Patient Delete Backend (Final Resolution)**: The current patient deletion functionality is a workaround (modifying an existing PUT endpoint) due to infrastructure blocking DELETE methods. A cleaner, dedicated DELETE endpoint is still desirable if infrastructure issues can be resolved.
+-   **PDF View vs. Print Consistency**: Resolve the discrepancy between the viewed Post-Operative Care Guide PDF and the printed PDF.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was focused on two primary issues:
-1.  **Procedure Notes Corruption**: The user reported that the procedure details page was displaying patient assignment data instead of the actual medical instructions. The AI identified  as the culprit, a page designed for patient assignments but incorrectly used or rendered. The AI fixed this by modifying  to move the Post-Operative Care Instructions section to the top of the page, styling it prominently, and removing duplicate sections. After a frontend rebuild, the AI confirmed this visual fix was successful.
-2.  **Office Hours & Emergency Contact Visibility**: The user reiterated that the Office Hours and Emergency Contact Number fields were still not visible in the Practice Settings UI. The AI verified that the  services were running and, crucially, that  confirmed both Office Hours and New Registrations strings were present in the compiled frontend JavaScript bundle (). This indicates that the code is present in the deployed assets, but something is preventing its rendering in the UI. The immediate problem is debugging this persistent frontend rendering/deployment synchronization issue.
+Immediately before this summary request, the AI engineer was addressing the user's report that The Post-Operative Care Guide shows a different PDF then the printed PDF. Please correct the viewed PDF so that it matches the printed one.
+
+The AI engineer has begun investigating the discrepancy in PDF content between what is displayed (viewed) and what is generated for printing. This involves:
+1.  **Searching for PDF-related code** across the frontend, including , , and .
+2.  **Examining **: This file contains  functionality which uses  (from ) or . The AI is looking for any specific viewing functionality or HTML content that might be rendered differently from the PDF.
+3.  **Examining **: This page also has  and logic for generating PDFs. The AI has examined the  function to understand its process.
+4.  **Reviewing **: The core PDF generation utility is being checked for separate viewing vs. printing logic or content handling.
+5.  **Looking for PDF preview/viewer components**: The AI is searching for any , , or  tags, or specific preview or viewer functions that might display a different PDF version.
+
+The latest action involved examining the medical content display within  to see how the content is rendered in HTML, which could be the source of the visual difference compared to the  generated output.
 </current_work>
 
 <optional_next_step>
-Continue debugging the frontend rendering issue preventing Office Hours and Emergency Contact from appearing in the Practice Settings UI.
+Investigate how medical content is rendered in  and compare it to  logic to identify content discrepancies.
 </optional_next_step>

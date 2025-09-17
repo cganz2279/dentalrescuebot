@@ -11,7 +11,7 @@ from typing import Dict, Any
 
 # Backend URLs to test
 BACKEND_URLS = [
-    "https://care-guide-fix.preview.emergentagent.com/api",  # Preview URL
+    "https://view-print-sync.preview.emergentagent.com/api",  # Preview URL
     "http://localhost:8001/api"  # Local URL
 ]
 
