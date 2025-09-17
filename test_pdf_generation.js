@@ -1,5 +1,4 @@
 // Test script to validate the new PDF generation functionality
-const jsPDF = require('jspdf');
 
 // Mock procedure data (similar to what we get from the database)
 const mockProcedureData = {
