@@ -390,14 +390,29 @@ const AssignProcedurePage = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {dentists.length > 0 ? (
-                        dentists.map((dentist) => (
-                          <SelectItem key={dentist.id} value={`Dr. ${dentist.firstName} ${dentist.lastName}`}>
-                            <div className="flex items-center">
-                              <UserCheck className="h-4 w-4 mr-2" />
-                              Dr. {dentist.firstName} {dentist.lastName}
-                            </div>
-                          </SelectItem>
-                        ))
+                        dentists.map((dentist, index) => {
+                          // Create unique display name to handle duplicates
+                          const baseName = `Dr. ${dentist.firstName} ${dentist.lastName}`;
+                          const duplicates = dentists.filter(d => 
+                            `Dr. ${d.firstName} ${d.lastName}` === baseName
+                          );
+                          
+                          let displayName = baseName;
+                          if (duplicates.length > 1) {
+                            // Add email or license to distinguish duplicates
+                            const identifier = dentist.email || dentist.licenseNumber || `(${index + 1})`;
+                            displayName = `${baseName} - ${identifier}`;
+                          }
+                          
+                          return (
+                            <SelectItem key={dentist.id} value={displayName}>
+                              <div className="flex items-center">
+                                <UserCheck className="h-4 w-4 mr-2" />
+                                {displayName}
+                              </div>
+                            </SelectItem>
+                          );
+                        })
                       ) : (
                         <SelectItem value="no-dentists" disabled>
                           No dentists found - Add dentists in Practice Settings
