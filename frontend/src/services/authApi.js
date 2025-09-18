@@ -268,6 +268,20 @@ export const patientsApi = {
     return response.data;
   },
 
+  updateProcedureOverview: async (procedureId, overview) => {
+    const token = localStorage.getItem('dentalToken');
+    const response = await axios.put(`${BACKEND_URL}/api/procedures/${procedureId}/overview`, 
+      { overview }, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  },
+
   setupPassword: async (setupData) => {
     const response = await axios.post(`${BACKEND_URL}/api/auth/patient-setup`, setupData);
     return response.data;
