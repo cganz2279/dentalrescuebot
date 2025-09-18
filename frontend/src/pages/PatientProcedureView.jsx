@@ -44,6 +44,10 @@ const PatientProcedureView = () => {
       setLoading(true);
       const response = await patientsApi.getProcedure(assignmentId);
       setProcedureData(response.data);
+      // Initialize edited overview with current content
+      if (response.data?.procedure?.overview) {
+        setEditedOverview(response.data.procedure.overview);
+      }
     } catch (error) {
       console.error('Load procedure error:', error);
       toast({
@@ -54,6 +58,110 @@ const PatientProcedureView = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to save edited overview
+  const saveOverview = async () => {
+    try {
+      setSavingOverview(true);
+      
+      // Call API to update procedure overview
+      await patientsApi.updateProcedureOverview(procedureData.procedure.id, editedOverview);
+      
+      // Update local state
+      setProcedureData(prev => ({
+        ...prev,
+        procedure: {
+          ...prev.procedure,
+          overview: editedOverview
+        }
+      }));
+      
+      setIsEditingOverview(false);
+      
+      toast({
+        title: "Success",
+        description: "Overview updated successfully",
+      });
+      
+    } catch (error) {
+      console.error('Save overview error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save overview",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingOverview(false);
+    }
+  };
+
+  // Function to cancel editing
+  const cancelEditing = () => {
+    setEditedOverview(procedureData.procedure.overview);
+    setIsEditingOverview(false);
+  };
+
+  // Function to format overview content into structured sections
+  const formatOverviewContent = (overviewText) => {
+    if (!overviewText) return null;
+
+    const sections = [];
+    
+    // Split by section headers (Purpose:, First 24 Hours:, etc.)
+    const sectionRegex = /(Purpose|First 24 Hours|Pain & Sensitivity|Oral Hygiene|Diet|Special Precautions|Follow-Up):\s*/g;
+    let lastIndex = 0;
+    let match;
+    const matches = [];
+    
+    // Find all section headers
+    while ((match = sectionRegex.exec(overviewText)) !== null) {
+      matches.push({
+        title: match[1],
+        startIndex: match.index,
+        headerEnd: match.index + match[0].length
+      });
+    }
+    
+    // Extract content for each section
+    matches.forEach((currentMatch, index) => {
+      const nextMatch = matches[index + 1];
+      const endIndex = nextMatch ? nextMatch.startIndex : overviewText.length;
+      
+      const rawContent = overviewText.substring(currentMatch.headerEnd, endIndex).trim();
+      
+      if (rawContent) {
+        // Parse content into items (handle bullet points and sentences)
+        let contentItems = [];
+        
+        // Split by bullet points or sentences
+        if (rawContent.includes(' - ')) {
+          // Has bullet points
+          const parts = rawContent.split(' - ');
+          const intro = parts[0].trim();
+          
+          if (intro && !intro.match(/^-/)) {
+            contentItems.push({ type: 'text', content: intro });
+          }
+          
+          parts.slice(1).forEach(item => {
+            if (item.trim()) {
+              contentItems.push({ type: 'bullet', content: item.trim() });
+            }
+          });
+        } else {
+          // No bullet points, treat as regular text
+          contentItems.push({ type: 'text', content: rawContent });
+        }
+        
+        sections.push({
+          title: currentMatch.title,
+          items: contentItems
+        });
+      }
+    });
+    
+    return sections;
   };
 
   const handlePrint = async () => {
