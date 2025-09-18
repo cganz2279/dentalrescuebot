@@ -342,25 +342,28 @@ class DentalBackendTester:
 
 def main():
     """Main testing function"""
-    print("🦷 DENTAL PRACTICE BACKEND TESTING - PROCEDURE DATABASE INVESTIGATION")
+    print("🦷 URGENT: PDF FORMAT VERIFICATION - AMALGAM FILLINGS PROCEDURE")
     print("=" * 80)
-    print("Focus: Examining procedure database content as requested in review")
-    print(f"Backend URL: {BACKEND_URL}")
+    print("CRITICAL REQUEST: Show EXACT content in database for amalgam-fillings procedure")
+    print("Backend URL: https://dentist-portal-3.emergent.host/api")
+    print("Testing: GET /api/public/procedures/amalgam-fillings")
     
     tester = DentalBackendTester()
     
     # Authenticate with specified credentials
+    print(f"\n🔐 Authenticating with cganz2279@gmail.com/password123...")
     if not tester.authenticate("cganz2279@gmail.com", "password123"):
-        print("❌ Authentication failed. Cannot proceed with testing.")
-        sys.exit(1)
+        print("❌ Authentication failed. Proceeding with public endpoint test...")
+    else:
+        print("✅ Authentication successful. Testing both authenticated and public endpoints...")
     
-    # Test the specific procedures requested
-    tester.test_specific_procedures()
+    # Test the specific Amalgam Fillings procedure
+    tester.test_amalgam_fillings_procedure()
     
     print(f"\n🎯 TESTING COMPLETE")
     print("=" * 80)
-    print("Review the detailed analysis above to understand the current database content")
-    print("and how it compares to the expected original PDF content.")
+    print("Review the EXACT overview content above to verify it matches your format requirements.")
+    print("Expected format includes: Purpose, First 24 Hours, Pain & Sensitivity, Oral Hygiene, Diet, Special Precautions, Follow-Up")
 
 if __name__ == "__main__":
     main()
