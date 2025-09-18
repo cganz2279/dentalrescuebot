@@ -412,79 +412,104 @@ const PatientProcedureView = () => {
           </Card>
         )}
 
-        {/* Overview */}
+        {/* Formatted Overview with Edit Functionality */}
         {procedure.overview && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="h-5 w-5 mr-2 text-blue-600" />
-                Overview
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-blue-600" />
+                  Post-Operative Care Instructions
+                </CardTitle>
+                {!isEditingOverview ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditingOverview(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Edit3 className="h-4 w-4" />
+                    Edit
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={saveOverview}
+                      disabled={savingOverview}
+                      className="flex items-center gap-2"
+                    >
+                      <Save className="h-4 w-4" />
+                      {savingOverview ? 'Saving...' : 'Save'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={cancelEditing}
+                      disabled={savingOverview}
+                      className="flex items-center gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="prose max-w-none">
-                {procedure.overview.split('\n').map((line, index) => {
-                  const trimmedLine = line.trim();
-                  
-                  // Handle empty lines - create spacing
-                  if (trimmedLine === '') {
-                    return <div key={index} className="mb-2"></div>;
-                  }
-                  
-                  // Handle bullet points
-                  if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-                    const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
-                    return (
-                      <div key={index} className="flex items-start mb-2 ml-4">
-                        <span className="text-blue-600 mr-3 text-lg leading-none">•</span>
-                        <span className="flex-1 text-gray-700">{bulletText}</span>
+              {isEditingOverview ? (
+                // Edit Mode
+                <div className="space-y-4">
+                  <textarea
+                    value={editedOverview}
+                    onChange={(e) => setEditedOverview(e.target.value)}
+                    className="w-full h-64 p-4 border border-gray-300 rounded-lg resize-vertical font-mono text-sm"
+                    placeholder="Enter post-operative care instructions..."
+                  />
+                  <p className="text-sm text-gray-600">
+                    Format: Use section headers like "Purpose:", "First 24 Hours:", "Diet:", etc. 
+                    Use " - " for bullet points within sections.
+                  </p>
+                </div>
+              ) : (
+                // Display Mode - Formatted Content
+                <div className="prose max-w-none">
+                  {formatOverviewContent(procedure.overview)?.map((section, sectionIndex) => (
+                    <div key={sectionIndex} className="mb-6">
+                      {/* Section Header */}
+                      <h4 className="font-bold text-gray-900 text-lg mb-3 pb-2 border-b border-gray-200">
+                        {section.title}
+                      </h4>
+                      
+                      {/* Section Content */}
+                      <div className="ml-2">
+                        {section.items.map((item, itemIndex) => (
+                          <div key={itemIndex} className="mb-2">
+                            {item.type === 'bullet' ? (
+                              <div className="flex items-start">
+                                <span className="text-blue-600 mr-3 text-lg leading-none mt-1">•</span>
+                                <span className="flex-1 text-gray-700 text-base leading-relaxed">
+                                  {item.content}
+                                </span>
+                              </div>
+                            ) : (
+                              <p className="text-gray-700 text-base leading-relaxed mb-3">
+                                {item.content}
+                              </p>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    );
-                  }
-                  
-                  // Handle markdown-style headers - both single line and inline
-                  if (trimmedLine.includes('**')) {
-                    // If it's a complete header (starts and ends with **)
-                    if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.length > 4) {
-                      const headerText = trimmedLine.replace(/\*\*/g, '');
-                      return (
-                        <h4 key={index} className="font-bold text-gray-900 mt-6 mb-3 text-lg">
-                          {headerText}
-                        </h4>
-                      );
-                    }
-                    // Handle mixed content with headers inline
-                    else {
-                      const parts = trimmedLine.split(/(\*\*[^*]+\*\*)/);
-                      return (
-                        <p key={index} className="mb-3">
-                          {parts.map((part, partIndex) => {
-                            if (part.startsWith('**') && part.endsWith('**')) {
-                              return (
-                                <strong key={partIndex} className="font-semibold text-gray-900">
-                                  {part.replace(/\*\*/g, '')}
-                                </strong>
-                              );
-                            }
-                            return part;
-                          })}
-                        </p>
-                      );
-                    }
-                  }
-                  
-                  // Regular paragraphs
-                  if (trimmedLine.length > 0) {
-                    return (
-                      <p key={index} className="mb-3 text-gray-700 leading-relaxed">
-                        {trimmedLine}
-                      </p>
-                    );
-                  }
-                  
-                  return null;
-                }).filter(Boolean)}
-              </div>
+                    </div>
+                  )) || (
+                    // Fallback for unstructured content
+                    <div className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
+                      {procedure.overview}
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
