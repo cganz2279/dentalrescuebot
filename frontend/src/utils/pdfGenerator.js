@@ -20,14 +20,15 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Generate PDF with RAW overview content - NO FORMATTING OR PARSING
+// Generate PDF with RAW overview content - NO FORMATTING OR PARSING - Updated v2.0
 export const generateProcedurePDF = async (procedure) => {
-  console.log('🎯 PDF Generator - Creating PDF with RAW overview content (NO formatting)');
+  console.log('🚀 PDF Generator v2.0 - Creating PDF with RAW overview content (NO formatting)');
   console.log('📄 Input procedure:', {
     name: procedure.name,
     hasOverview: !!procedure.overview,
     overviewLength: procedure.overview ? procedure.overview.length : 0
   });
+  console.log('⚡ CACHE BUSTER: PDF Generator updated at', new Date().toISOString());
   
   try {
     // Create new PDF document
