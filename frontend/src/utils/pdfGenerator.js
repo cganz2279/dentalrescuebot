@@ -4,37 +4,24 @@ import jsPDF from 'jspdf';
 const formatPhoneNumber = (phone) => {
   if (!phone) return '';
   
-  // Remove all non-digit characters
   const cleaned = phone.replace(/\D/g, '');
   
-  // Format based on length
   if (cleaned.length === 10) {
-    // US format: (123) 456-7890
     return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
   } else if (cleaned.length === 11 && cleaned[0] === '1') {
-    // US format with country code: +1 (123) 456-7890
     return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
   } else {
-    // Return original if can't format
     return phone;
   }
 };
 
-// Generate PDF with RAW overview content - NO FORMATTING OR PARSING - Updated v2.0
+// Generate PDF with EXACT format matching user's sample
 export const generateProcedurePDF = async (procedure) => {
-  console.log('🚀 PDF Generator v2.0 - Creating PDF with RAW overview content (NO formatting)');
-  console.log('📄 Input procedure:', {
-    name: procedure.name,
-    hasOverview: !!procedure.overview,
-    overviewLength: procedure.overview ? procedure.overview.length : 0
-  });
-  console.log('⚡ CACHE BUSTER: PDF Generator updated at', new Date().toISOString());
+  console.log('🎯 PDF Generator - Creating PDF with EXACT user-specified format');
   
   try {
-    // Create new PDF document
     const pdf = new jsPDF();
     
-    // Set up document properties
     pdf.setProperties({
       title: `${procedure.name || 'Procedure'} - Post-Operative Care Guide`,
       subject: 'Post-Operative Care Instructions',
@@ -44,45 +31,60 @@ export const generateProcedurePDF = async (procedure) => {
     
     let yPos = 20;
     
-    // DENTAL RESCUE BOT Header
-    pdf.setFontSize(14);
-    pdf.setFont(undefined, 'bold');
-    pdf.text('DENTAL RESCUE BOT', 20, yPos);
-    yPos += 20;
-    
-    // Procedure Name
-    pdf.setFontSize(12);
+    // Procedure Name as title
+    pdf.setFontSize(16);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
-    yPos += 20;
+    yPos += 25;
     
-    // RAW Overview Content - NO PARSING, NO FORMATTING
+    // Display overview content EXACTLY as stored - no parsing, just proper line breaks
     if (procedure.overview) {
-      console.log('📖 Adding RAW overview content without any formatting...');
-      
       pdf.setFontSize(11);
       pdf.setFont(undefined, 'normal');
       
-      // Simply split the overview text to fit PDF width - NO OTHER PROCESSING
-      const rawText = String(procedure.overview);
-      const wrappedLines = pdf.splitTextToSize(rawText, 170);
+      // Split by lines and process each line
+      const lines = procedure.overview.split('\n');
       
-      wrappedLines.forEach(line => {
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        
+        // Skip empty lines but add spacing
+        if (!trimmedLine) {
+          yPos += 5;
+          continue;
+        }
+        
         // Check if we need a new page
-        if (yPos > 270) {
+        if (yPos > 260) {
           pdf.addPage();
           yPos = 20;
         }
         
-        pdf.text(line, 20, yPos);
-        yPos += 6;
-      });
-      
-      console.log(`📝 Added ${wrappedLines.length} lines of raw overview content`);
-    } else {
-      console.log('⚠️ No overview content found');
-      pdf.text('No post-operative care instructions available.', 20, yPos);
-      yPos += 20;
+        // Check if it's a section header (ends with :)
+        if (trimmedLine.endsWith(':')) {
+          pdf.setFont(undefined, 'bold');
+          pdf.text(trimmedLine, 20, yPos);
+          pdf.setFont(undefined, 'normal');
+          yPos += 12;
+        }
+        // Check if it's a bullet point (starts with -)
+        else if (trimmedLine.startsWith('- ')) {
+          const bulletText = trimmedLine.substring(2); // Remove "- "
+          const wrappedLines = pdf.splitTextToSize(`- ${bulletText}`, 170);
+          wrappedLines.forEach(wrappedLine => {
+            pdf.text(wrappedLine, 20, yPos);
+            yPos += 6;
+          });
+        }
+        // Regular text
+        else {
+          const wrappedLines = pdf.splitTextToSize(trimmedLine, 170);
+          wrappedLines.forEach(wrappedLine => {
+            pdf.text(wrappedLine, 20, yPos);
+            yPos += 6;
+          });
+        }
+      }
     }
     
     // Add spacing before practice information
@@ -94,15 +96,15 @@ export const generateProcedurePDF = async (procedure) => {
       yPos = 30;
     }
     
-    // Practice Information Section
-    pdf.setFontSize(12);
+    // Practice Information
+    pdf.setFontSize(14);
     pdf.setFont(undefined, 'bold');
     pdf.text('Practice Information', 20, yPos);
     yPos += 15;
     
     // Practice name
     if (procedure.practiceName) {
-      pdf.setFontSize(11);
+      pdf.setFontSize(12);
       pdf.setFont(undefined, 'bold');
       pdf.text(procedure.practiceName, 20, yPos);
       yPos += 12;
@@ -135,18 +137,12 @@ export const generateProcedurePDF = async (procedure) => {
     yPos += 8;
     pdf.setFont(undefined, 'normal');
     pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
-    yPos += 12;
-    
-    // Generation timestamp
-    pdf.setFontSize(8);
-    pdf.setFont(undefined, 'italic');
-    pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, yPos);
     
     // Save the PDF
     const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_Care_Guide.pdf`;
     pdf.save(filename);
     
-    console.log('✅ PDF generated with RAW overview content (no formatting):', filename);
+    console.log('✅ PDF generated with exact user format:', filename);
     
     return true;
     
