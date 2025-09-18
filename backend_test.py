@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend Testing Script for Dental Practice Management System
-Focus: Procedure Database Content Investigation as requested in review
+Focus: URGENT PDF FORMAT VERIFICATION - Amalgam Fillings Procedure Content
 """
 
 import requests
@@ -9,8 +9,8 @@ import json
 import sys
 from typing import Dict, Any, Optional
 
-# Backend URL from frontend/.env
-BACKEND_URL = "https://dental-pdf-sync.preview.emergentagent.com"
+# Backend URL from review request
+BACKEND_URL = "https://dentist-portal-3.emergent.host"
 
 class DentalBackendTester:
     def __init__(self):
