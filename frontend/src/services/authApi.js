@@ -270,7 +270,7 @@ export const patientsApi = {
 
   updateProcedureOverview: async (procedureId, overview) => {
     const token = localStorage.getItem('dentalToken');
-    const response = await axios.put(`${BACKEND_URL}/api/procedures/${procedureId}/overview`, 
+    const response = await axios.put(`${BACKEND_URL}/api/public/procedures/${procedureId}/overview`, 
       { overview }, 
       {
         headers: {
