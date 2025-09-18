@@ -196,61 +196,149 @@ class DentalBackendTester:
             else:
                 print("✅ NO GENERIC TEST CONTENT DETECTED")
     
-    def test_specific_procedures(self) -> None:
-        """Test the specific procedures requested in the review"""
-        requested_procedures = [
-            ("root-canal-therapy", "Root Canal Therapy"),
-            ("dental-bridge-placement", "Dental Bridge Placement"),
-            ("dental-implant-placement", "Dental Implant Placement")
+    def test_amalgam_fillings_procedure(self) -> None:
+        """Test the specific Amalgam Fillings procedure as requested in review"""
+        print(f"\n🎯 URGENT: TESTING AMALGAM FILLINGS PROCEDURE CONTENT")
+        print("=" * 80)
+        print("Request: Show EXACT content in overview field for amalgam-fillings procedure")
+        print("Expected format verification against user's requirements")
+        
+        # Test the public endpoint as specified in review
+        procedure_id = "amalgam-fillings"
+        print(f"\n🔍 Testing GET /api/public/procedures/{procedure_id}")
+        
+        try:
+            # Test public endpoint first (no auth required)
+            response = self.session.get(f"{self.base_url}/api/public/procedures/{procedure_id}")
+            print(f"Public endpoint response status: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    procedure = data.get("data", {})
+                    print(f"✅ Successfully retrieved from public endpoint: {procedure.get('name', 'Unknown')}")
+                    self.display_exact_overview_content(procedure)
+                    return
+                else:
+                    print(f"❌ Public API returned success=false: {data}")
+            else:
+                print(f"❌ Public endpoint failed: {response.status_code} - {response.text}")
+                
+        except Exception as e:
+            print(f"❌ Error with public endpoint: {str(e)}")
+        
+        # Fallback to regular procedure endpoint
+        print(f"\n🔄 Trying regular procedure endpoint...")
+        procedure_data = self.get_procedure_details(procedure_id)
+        if procedure_data:
+            self.display_exact_overview_content(procedure_data)
+        else:
+            print("❌ CRITICAL: Could not retrieve Amalgam Fillings procedure from any endpoint")
+    
+    def display_exact_overview_content(self, procedure: Dict[str, Any]) -> None:
+        """Display the EXACT overview content as requested"""
+        if not procedure:
+            print("❌ No procedure data to display")
+            return
+            
+        print(f"\n📋 EXACT DATABASE CONTENT FOR: {procedure.get('name', 'Unknown')}")
+        print("=" * 80)
+        
+        # Basic info
+        print(f"Procedure ID: {procedure.get('id', 'N/A')}")
+        print(f"Procedure Name: {procedure.get('name', 'N/A')}")
+        print(f"Specialty: {procedure.get('specialtyName', 'N/A')}")
+        
+        # EXACT overview content
+        overview = procedure.get('overview', '')
+        print(f"\n📄 EXACT OVERVIEW FIELD CONTENT:")
+        print("=" * 50)
+        print(f"Character Count: {len(overview)}")
+        print("=" * 50)
+        
+        if overview:
+            print(overview)
+        else:
+            print("❌ NO OVERVIEW CONTENT FOUND")
+        
+        print("=" * 50)
+        print("END OF EXACT OVERVIEW CONTENT")
+        
+        # Compare with expected format
+        self.compare_with_expected_amalgam_format(overview)
+    
+    def compare_with_expected_amalgam_format(self, overview_content: str) -> None:
+        """Compare with the user's expected Amalgam Fillings format"""
+        print(f"\n🔍 COMPARISON WITH USER'S EXPECTED FORMAT")
+        print("=" * 80)
+        
+        expected_sections = [
+            "Purpose:",
+            "First 24 Hours:",
+            "Pain & Sensitivity:",
+            "Oral Hygiene:",
+            "Diet:",
+            "Special Precautions:",
+            "Follow-Up:"
         ]
         
-        print(f"\n🎯 TESTING SPECIFIC PROCEDURES AS REQUESTED IN REVIEW")
-        print("=" * 80)
+        expected_keywords = [
+            "amalgam", "silver-colored", "restoration", "decayed", "damaged",
+            "numbness", "24 hours", "fully set", "chew", "opposite side",
+            "sensitivity", "pressure", "temperature", "OTC pain relievers",
+            "brush", "floss", "gentle", "hard", "sticky foods",
+            "bite feels uneven", "contact the office", "adjustment",
+            "gradually decrease", "pain worsens", "persists", "week"
+        ]
         
-        results = {}
+        print("🎯 CHECKING FOR EXPECTED SECTIONS:")
+        found_sections = []
+        missing_sections = []
         
-        for procedure_id, procedure_name in requested_procedures:
-            print(f"\n{'='*20} {procedure_name.upper()} {'='*20}")
-            
-            procedure_data = self.get_procedure_details(procedure_id)
-            if procedure_data:
-                self.analyze_procedure_content(procedure_data)
-                self.compare_with_expected_content(procedure_data, procedure_name)
-                results[procedure_name] = {
-                    "found": True,
-                    "has_overview": bool(procedure_data.get('overview')),
-                    "has_structured_content": bool(
-                        procedure_data.get('immediateAftercare') or
-                        procedure_data.get('dietRestrictions') or
-                        procedure_data.get('warningSignsToCallDoctor') or
-                        procedure_data.get('recoveryTimeline') or
-                        procedure_data.get('medications')
-                    ),
-                    "overview_length": len(procedure_data.get('overview', '')),
-                    "structured_fields": {
-                        'immediateAftercare': len(procedure_data.get('immediateAftercare', [])),
-                        'dietRestrictions': len(procedure_data.get('dietRestrictions', [])),
-                        'warningSignsToCallDoctor': len(procedure_data.get('warningSignsToCallDoctor', [])),
-                        'recoveryTimeline': len(procedure_data.get('recoveryTimeline', [])),
-                        'medications': len(procedure_data.get('medications', []))
-                    }
-                }
+        for section in expected_sections:
+            if section in overview_content:
+                found_sections.append(section)
+                print(f"✅ Found: {section}")
             else:
-                results[procedure_name] = {"found": False}
+                missing_sections.append(section)
+                print(f"❌ Missing: {section}")
         
-        # Summary
-        print(f"\n📊 SUMMARY OF REQUESTED PROCEDURES")
-        print("=" * 80)
+        print(f"\n📊 SECTION SUMMARY: {len(found_sections)}/{len(expected_sections)} sections found")
         
-        for procedure_name, result in results.items():
-            if result.get("found"):
-                print(f"✅ {procedure_name}:")
-                print(f"   Overview: {result['overview_length']} characters")
-                print(f"   Structured Content: {result['has_structured_content']}")
-                for field, count in result['structured_fields'].items():
-                    print(f"   - {field}: {count} items")
+        print("\n🎯 CHECKING FOR EXPECTED KEYWORDS:")
+        found_keywords = []
+        missing_keywords = []
+        
+        overview_lower = overview_content.lower()
+        for keyword in expected_keywords:
+            if keyword.lower() in overview_lower:
+                found_keywords.append(keyword)
             else:
-                print(f"❌ {procedure_name}: NOT FOUND")
+                missing_keywords.append(keyword)
+        
+        print(f"✅ Found keywords ({len(found_keywords)}/{len(expected_keywords)}): {', '.join(found_keywords[:10])}{'...' if len(found_keywords) > 10 else ''}")
+        if missing_keywords:
+            print(f"❌ Missing keywords ({len(missing_keywords)}): {', '.join(missing_keywords[:10])}{'...' if len(missing_keywords) > 10 else ''}")
+        
+        # Format analysis
+        print(f"\n📝 FORMAT ANALYSIS:")
+        lines = overview_content.split('\n')
+        print(f"Total lines: {len(lines)}")
+        print(f"Non-empty lines: {len([line for line in lines if line.strip()])}")
+        
+        # Check if it matches the expected structured format
+        has_structured_format = len(found_sections) >= 5  # At least 5 of the 7 expected sections
+        has_sufficient_keywords = len(found_keywords) >= len(expected_keywords) * 0.7  # At least 70% of keywords
+        
+        print(f"\n🎯 FINAL ASSESSMENT:")
+        if has_structured_format and has_sufficient_keywords:
+            print("✅ CONTENT MATCHES EXPECTED FORMAT - Database contains properly formatted Amalgam Fillings content")
+        elif has_structured_format:
+            print("⚠️ PARTIAL MATCH - Structure is correct but some keywords missing")
+        elif has_sufficient_keywords:
+            print("⚠️ PARTIAL MATCH - Keywords present but structure may differ")
+        else:
+            print("❌ CONTENT DOES NOT MATCH EXPECTED FORMAT - Database content differs significantly from user requirements")
 
 def main():
     """Main testing function"""
