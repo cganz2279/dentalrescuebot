@@ -55,3 +55,33 @@ async def get_all_procedures_public():
     except Exception as e:
         logging.error(f"Error fetching procedures: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.put("/procedures/{procedure_id}/overview")
+async def update_procedure_overview(procedure_id: str, overview_data: OverviewUpdate):
+    """Update procedure overview content"""
+    try:
+        # Update the procedure overview
+        result = await db.procedures.update_one(
+            {"id": procedure_id},
+            {
+                "$set": {
+                    "overview": overview_data.overview,
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Procedure not found")
+        
+        if result.modified_count == 0:
+            # No changes made (same content)
+            return {"success": True, "message": "No changes detected"}
+        
+        return {"success": True, "message": "Overview updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error updating procedure overview {procedure_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
