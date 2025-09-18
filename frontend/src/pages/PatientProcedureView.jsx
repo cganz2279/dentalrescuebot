@@ -14,7 +14,10 @@ import {
   Download,
   Printer,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Edit3,
+  Save,
+  X
 } from 'lucide-react';
 import { patientsApi } from '../services/authApi';
 import LoadingSpinner from '../components/LoadingSpinner';
