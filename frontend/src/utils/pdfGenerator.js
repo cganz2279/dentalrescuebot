@@ -20,75 +20,105 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Helper function to parse the overview text and extract sections exactly as in original PDFs
-const parseOverviewSections = (overviewText) => {
+// Helper function to parse overview text into exact sections matching original PostOp PDFs
+const parseOriginalPostOpSections = (overviewText) => {
   if (!overviewText) return [];
+  
+  console.log('📖 Parsing overview text:', overviewText.substring(0, 200) + '...');
   
   const sections = [];
   
-  // Define the section patterns exactly as they appear in original PDFs
-  const sectionPatterns = [
-    'Purpose:',
-    'First 24 Hours:',
-    'Pain & Sensitivity:',
-    'Oral Hygiene:',
-    'Diet:',
-    'Special Precautions:',
-    'Follow-Up:'
-  ];
+  // Split the overview by clear section patterns exactly as they appear in original PDFs
+  const sectionRegex = /(Purpose|First 24 Hours|Pain & Sensitivity|Oral Hygiene|Diet|Special Precautions|Follow-Up):\s*/g;
   
-  // Find all section positions
-  const sectionPositions = [];
-  sectionPatterns.forEach(pattern => {
-    const index = overviewText.indexOf(pattern);
-    if (index !== -1) {
-      sectionPositions.push({ pattern, index });
-    }
-  });
+  let lastIndex = 0;
+  let match;
+  const matches = [];
   
-  // Sort by position
-  sectionPositions.sort((a, b) => a.index - b.index);
+  // Find all section headers
+  while ((match = sectionRegex.exec(overviewText)) !== null) {
+    matches.push({
+      title: match[1] + ':',
+      startIndex: match.index,
+      headerEnd: match.index + match[0].length
+    });
+  }
   
-  // Extract each section's content
-  sectionPositions.forEach((section, i) => {
-    const startIndex = section.index + section.pattern.length;
-    const endIndex = i < sectionPositions.length - 1 
-      ? sectionPositions[i + 1].index 
-      : overviewText.length;
+  // Extract content for each section
+  matches.forEach((currentMatch, index) => {
+    const nextMatch = matches[index + 1];
+    const endIndex = nextMatch ? nextMatch.startIndex : overviewText.length;
     
-    const content = overviewText.substring(startIndex, endIndex).trim();
+    // Get the content between current header and next header (or end)
+    const rawContent = overviewText.substring(currentMatch.headerEnd, endIndex).trim();
     
-    if (content) {
-      // Split content by bullet points or sentences
-      const items = content
-        .split(/(?:^|\s+)-\s+/) // Split by bullet points
-        .map(item => item.trim())
-        .filter(item => item.length > 0)
-        .map(item => {
-          // Clean up and ensure proper formatting
-          if (!item.startsWith('-') && !item.startsWith('•')) {
-            // For non-bullet items, check if they should be split into bullets
-            if (item.includes('. ') && item.length > 100) {
-              return item.split('. ').filter(s => s.length > 0).map(s => s.endsWith('.') ? s : s + '.');
-            }
-            return [item];
-          }
-          return [item.replace(/^[-•]\s*/, '')];
-        })
-        .flat();
+    if (rawContent) {
+      // Parse content into bullet points, preserving original structure
+      let contentItems = [];
       
-      sections.push({
-        title: section.pattern,
-        content: items
-      });
+      // Split by lines first, then check for bullet patterns
+      const lines = rawContent.split(/\n+/).filter(line => line.trim());
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) continue;
+        
+        // Check if line contains bullet points (- markers)
+        if (trimmedLine.includes(' - ')) {
+          // Split by bullet markers and add each as separate item
+          const parts = trimmedLine.split(' - ');
+          const prefix = parts[0].trim();
+          
+          // If there's a prefix before bullets, add it
+          if (prefix && !prefix.match(/^-/)) {
+            contentItems.push(prefix);
+          }
+          
+          // Add each bullet point
+          parts.slice(1).forEach(bulletText => {
+            if (bulletText.trim()) {
+              contentItems.push(bulletText.trim());
+            }
+          });
+        } else if (trimmedLine.startsWith('- ')) {
+          // Already a bullet point
+          contentItems.push(trimmedLine.substring(2).trim());
+        } else {
+          // Regular content - split by sentences if very long
+          if (trimmedLine.length > 150 && trimmedLine.includes('. ')) {
+            const sentences = trimmedLine.split('. ').filter(s => s.trim());
+            sentences.forEach((sentence, i) => {
+              const cleanSentence = sentence.trim();
+              if (cleanSentence) {
+                // Add period back if not last sentence or doesn't end with punctuation
+                const finalSentence = cleanSentence.match(/[.!?]$/) || i === sentences.length - 1
+                  ? cleanSentence 
+                  : cleanSentence + '.';
+                contentItems.push(finalSentence);
+              }
+            });
+          } else {
+            contentItems.push(trimmedLine);
+          }
+        }
+      }
+      
+      if (contentItems.length > 0) {
+        sections.push({
+          title: currentMatch.title,
+          content: contentItems
+        });
+        console.log(`📑 Parsed section "${currentMatch.title}" with ${contentItems.length} items`);
+      }
     }
   });
   
+  console.log(`📚 Total sections parsed: ${sections.length}`);
   return sections;
 };
 
 // Helper function to add a section to PDF with exact original formatting
-const addPDFSection = (pdf, title, content, yPos) => {
+const addOriginalPDFSection = (pdf, title, content, yPos) => {
   if (!content || content.length === 0) {
     return yPos;
   }
@@ -99,11 +129,11 @@ const addPDFSection = (pdf, title, content, yPos) => {
     yPos = 20;
   }
 
-  // Section title
+  // Section title with exact original formatting
   pdf.setFontSize(12);
   pdf.setFont(undefined, 'bold');
   pdf.text(title, 20, yPos);
-  yPos += 10;
+  yPos += 12;
 
   // Section content
   pdf.setFontSize(11);
@@ -120,16 +150,17 @@ const addPDFSection = (pdf, title, content, yPos) => {
 
     const cleanItem = item.trim();
     
-    // Add bullet point formatting for content items
-    if (title !== 'Purpose:') {
-      const wrappedLines = pdf.splitTextToSize(`- ${cleanItem}`, 170);
+    // Format content with bullet points (except for Purpose section)
+    if (title === 'Purpose:') {
+      // Purpose section - no bullets, just plain text
+      const wrappedLines = pdf.splitTextToSize(cleanItem, 170);
       wrappedLines.forEach(line => {
-        pdf.text(line, 25, yPos);
+        pdf.text(line, 20, yPos);
         yPos += 6;
       });
     } else {
-      // Purpose section - no bullets
-      const wrappedLines = pdf.splitTextToSize(cleanItem, 170);
+      // All other sections - add bullet points
+      const wrappedLines = pdf.splitTextToSize(`- ${cleanItem}`, 170);
       wrappedLines.forEach(line => {
         pdf.text(line, 20, yPos);
         yPos += 6;
@@ -137,13 +168,13 @@ const addPDFSection = (pdf, title, content, yPos) => {
     }
   });
 
-  yPos += 8; // Spacing after section
+  yPos += 10; // Spacing after section
   return yPos;
 };
 
-// Generate PDF matching exact original PostOp document format
+// Generate PDF exactly matching original PostOp document format
 export const generateProcedurePDF = async (procedure) => {
-  console.log('🎯 PDF Generator - Creating PDF matching exact original PostOp format');
+  console.log('🎯 PDF Generator - Creating PDF matching EXACT original PostOp format');
   console.log('📄 Input procedure:', {
     name: procedure.name,
     hasOverview: !!procedure.overview,
@@ -164,57 +195,39 @@ export const generateProcedurePDF = async (procedure) => {
     
     let yPos = 20;
     
-    // DENTAL RESCUE BOT Header (exactly as in original)
+    // DENTAL RESCUE BOT Header (exactly as in original PDFs)
     pdf.setFontSize(14);
     pdf.setFont(undefined, 'bold');
     pdf.text('DENTAL RESCUE BOT', 20, yPos);
     yPos += 20;
     
-    // Procedure Name (exactly as in original)
+    // Procedure Name (exactly as in original PDFs)
     pdf.setFontSize(12);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
     yPos += 20;
     
-    // Parse and render sections from overview
+    // Parse and render sections from overview text
     if (procedure.overview) {
-      console.log('📖 Parsing overview content...');
-      const sections = parseOverviewSections(procedure.overview);
+      console.log('📖 Parsing overview content for exact original format...');
+      const sections = parseOriginalPostOpSections(procedure.overview);
       console.log('📑 Found sections:', sections.map(s => s.title));
       
+      // Render each section exactly as in original PDFs
       sections.forEach(section => {
-        yPos = addPDFSection(pdf, section.title, section.content, yPos);
+        yPos = addOriginalPDFSection(pdf, section.title, section.content, yPos);
       });
     } else {
-      // Fallback if no overview - use structured fields
-      console.log('⚠️ No overview found, using structured fields...');
+      console.log('⚠️ No overview found - cannot match original format');
       
-      if (procedure.immediateAftercare) {
-        yPos = addPDFSection(pdf, 'First 24 Hours:', 
-          Array.isArray(procedure.immediateAftercare) 
-            ? procedure.immediateAftercare 
-            : procedure.immediateAftercare.split('\n'), 
-          yPos);
-      }
-      
-      if (procedure.dietRestrictions) {
-        yPos = addPDFSection(pdf, 'Diet:', 
-          Array.isArray(procedure.dietRestrictions) 
-            ? procedure.dietRestrictions 
-            : procedure.dietRestrictions.split('\n'), 
-          yPos);
-      }
-      
-      if (procedure.warningSignsToCallDoctor) {
-        yPos = addPDFSection(pdf, 'Follow-Up:', 
-          Array.isArray(procedure.warningSignsToCallDoctor) 
-            ? procedure.warningSignsToCallDoctor 
-            : procedure.warningSignsToCallDoctor.split('\n'), 
-          yPos);
-      }
+      // Add a generic message
+      pdf.setFontSize(11);
+      pdf.setFont(undefined, 'normal');
+      pdf.text('Post-operative care instructions not available.', 20, yPos);
+      yPos += 20;
     }
     
-    // Add some spacing before practice information
+    // Add spacing before practice information
     yPos += 20;
     
     // Check if we need a new page for practice info
@@ -223,7 +236,7 @@ export const generateProcedurePDF = async (procedure) => {
       yPos = 30;
     }
     
-    // Practice Information Section
+    // Practice Information Section (as in original PDFs)
     pdf.setFontSize(12);
     pdf.setFont(undefined, 'bold');
     pdf.text('Practice Information', 20, yPos);
@@ -275,7 +288,7 @@ export const generateProcedurePDF = async (procedure) => {
     const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_Care_Guide.pdf`;
     pdf.save(filename);
     
-    console.log('✅ PDF generated successfully matching original PostOp format:', filename);
+    console.log('✅ PDF generated successfully matching EXACT original PostOp format:', filename);
     console.log('✅ Practice info included:', {
       name: procedure.practiceName,
       hours: officeHours,
