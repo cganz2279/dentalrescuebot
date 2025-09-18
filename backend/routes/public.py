@@ -1,13 +1,19 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Pydantic models
+class OverviewUpdate(BaseModel):
+    overview: str
 
 # Create PUBLIC router - NO AUTHENTICATION
 router = APIRouter(prefix="/api/public", tags=["public"])
