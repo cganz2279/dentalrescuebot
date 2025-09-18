@@ -15,9 +15,15 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Generate PDF with EXACT format matching user's sample
+// Generate PDF with EXACT format matching user's sample - CACHE BUSTER v3.0
 export const generateProcedurePDF = async (procedure) => {
-  console.log('🎯 PDF Generator - Creating PDF with EXACT user-specified format');
+  console.log('🔥 PDF Generator v3.0 - EXACT USER FORMAT - CACHE BUSTER:', new Date().toISOString());
+  console.log('🎯 GENERATING PDF WITH SIMPLE FORMAT - NO DENTAL RESCUE BOT HEADER');
+  console.log('📄 Procedure name:', procedure.name);
+  console.log('📝 Overview length:', procedure.overview ? procedure.overview.length : 0);
+  
+  // FORCE ALERT TO CONFIRM NEW CODE IS RUNNING
+  alert('PDF Generator v3.0 - New format loading...');
   
   try {
     const pdf = new jsPDF();
