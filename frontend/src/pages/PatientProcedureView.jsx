@@ -168,8 +168,8 @@ const PatientProcedureView = () => {
     try {
       await patientsApi.trackDownload(assignmentId);
       
-      // Generate proper PDF with Office Hours and Emergency Contact
-      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
+      // Generate proper PDF with Office Hours and Emergency Contact - NEW GENERATOR
+      const { generateProcedurePDF } = await import('../utils/newPdfGenerator');
       const { practice } = useAuth();
       
       if (!procedure) {
