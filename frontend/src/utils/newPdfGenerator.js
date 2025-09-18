@@ -15,11 +15,11 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// NEW PDF GENERATOR - EXACT USER FORMAT
+// NEW PDF GENERATOR - EXACT USER FORMAT v4.0
 export const generateProcedurePDF = async (procedure) => {
   // FORCE ALERT TO CONFIRM NEW CODE IS RUNNING
-  alert('🎯 BRAND NEW PDF GENERATOR LOADED! This should show your exact format!');
-  console.log('🔥 NEW PDF Generator - EXACT USER FORMAT - TIMESTAMP:', new Date().toISOString());
+  alert('🎯 PDF GENERATOR v4.0 - EXACT USER FORMAT LOADED!');
+  console.log('🔥 PDF Generator v4.0 - EXACT USER FORMAT - TIMESTAMP:', new Date().toISOString());
   
   try {
     const pdf = new jsPDF();
@@ -33,7 +33,7 @@ export const generateProcedurePDF = async (procedure) => {
     
     let yPos = 20;
     
-    // Procedure Name as title (NO DENTAL RESCUE BOT HEADER - as user requested)
+    // Procedure Name as title (NO DENTAL RESCUE BOT - as user requested)
     pdf.setFontSize(16);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
@@ -62,14 +62,15 @@ export const generateProcedurePDF = async (procedure) => {
           yPos = 20;
         }
         
-        // Section headers (end with :) - BOLD
+        // Check if it's a section header (ends with :)
+        // Handle all possible section headers including "First 24–48 Hours:"
         if (trimmedLine.endsWith(':')) {
           pdf.setFont(undefined, 'bold');
           pdf.text(trimmedLine, 20, yPos);
           pdf.setFont(undefined, 'normal');
           yPos += 12;
         }
-        // Bullet points (start with -)
+        // Check if it's a bullet point (starts with -)
         else if (trimmedLine.startsWith('- ')) {
           const bulletText = trimmedLine.substring(2); // Remove "- "
           const wrappedLines = pdf.splitTextToSize(`- ${bulletText}`, 170);
@@ -78,7 +79,7 @@ export const generateProcedurePDF = async (procedure) => {
             yPos += 6;
           });
         }
-        // Regular text
+        // Regular text (like Purpose description)
         else {
           const wrappedLines = pdf.splitTextToSize(trimmedLine, 170);
           wrappedLines.forEach(wrappedLine => {
@@ -141,10 +142,10 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
     
     // Save the PDF
-    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_NEW_FORMAT.pdf`;
+    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_EXACT_FORMAT.pdf`;
     pdf.save(filename);
     
-    console.log('✅ NEW PDF generated with exact user format:', filename);
+    console.log('✅ PDF generated with EXACT user format v4.0:', filename);
     
     return true;
     
