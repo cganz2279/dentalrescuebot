@@ -31,6 +31,9 @@ const PatientProcedureView = () => {
   
   const [procedureData, setProcedureData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditingOverview, setIsEditingOverview] = useState(false);
+  const [editedOverview, setEditedOverview] = useState('');
+  const [savingOverview, setSavingOverview] = useState(false);
 
   useEffect(() => {
     loadProcedure();
