@@ -15,15 +15,11 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// Generate PDF with EXACT format matching user's sample - CACHE BUSTER v3.0
-export const generateProcedurePDF = async (procedure) => {
-  console.log('🔥 PDF Generator v3.0 - EXACT USER FORMAT - CACHE BUSTER:', new Date().toISOString());
-  console.log('🎯 GENERATING PDF WITH SIMPLE FORMAT - NO DENTAL RESCUE BOT HEADER');
-  console.log('📄 Procedure name:', procedure.name);
-  console.log('📝 Overview length:', procedure.overview ? procedure.overview.length : 0);
-  
+// Generate PDF with EXACT format matching user's sample - FORCE NEW FUNCTION NAME
+export const generateProcedurePDF_v3 = async (procedure) => {
   // FORCE ALERT TO CONFIRM NEW CODE IS RUNNING
-  alert('PDF Generator v3.0 - New format loading...');
+  alert('🚀 NEW PDF GENERATOR v3.0 LOADED SUCCESSFULLY! 🚀');
+  console.log('🔥 PDF Generator v3.0 - EXACT USER FORMAT - TIMESTAMP:', new Date().toISOString());
   
   try {
     const pdf = new jsPDF();
@@ -37,18 +33,18 @@ export const generateProcedurePDF = async (procedure) => {
     
     let yPos = 20;
     
-    // Procedure Name as title
+    // Procedure Name as title (NO DENTAL RESCUE BOT HEADER)
     pdf.setFontSize(16);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
     yPos += 25;
     
-    // Display overview content EXACTLY as stored - no parsing, just proper line breaks
+    // Display overview content EXACTLY as user specified
     if (procedure.overview) {
       pdf.setFontSize(11);
       pdf.setFont(undefined, 'normal');
       
-      // Split by lines and process each line
+      // Split by lines and process each line exactly as user showed
       const lines = procedure.overview.split('\n');
       
       for (const line of lines) {
@@ -145,10 +141,10 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
     
     // Save the PDF
-    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_Care_Guide.pdf`;
+    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_Care_Guide_v3.pdf`;
     pdf.save(filename);
     
-    console.log('✅ PDF generated with exact user format:', filename);
+    console.log('✅ PDF generated with exact user format v3.0:', filename);
     
     return true;
     
@@ -157,6 +153,9 @@ export const generateProcedurePDF = async (procedure) => {
     return false;
   }
 };
+
+// Keep the old function name pointing to the new one for compatibility
+export const generateProcedurePDF = generateProcedurePDF_v3;
 
 
 
