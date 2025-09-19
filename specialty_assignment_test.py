@@ -28,12 +28,12 @@ def authenticate():
         
         if response.status_code == 200:
             data = response.json()
-            token = data.get("access_token")
+            token = data.get("token") or data.get("access_token")
             if token:
                 print("✅ Authentication successful")
                 return token
             else:
-                print("❌ No access token in response")
+                print("❌ No token in response")
                 print(f"Response: {data}")
                 return None
         else:
