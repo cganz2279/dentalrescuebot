@@ -15,11 +15,11 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// NEW PDF GENERATOR - EXACT USER FORMAT v4.0
+// SIMPLE PDF GENERATOR - EXACT UPLOADED PDF FORMAT
 export const generateProcedurePDF = async (procedure) => {
-  // FORCE ALERT TO CONFIRM NEW CODE IS RUNNING
-  alert('🎯 PDF GENERATOR v4.0 - EXACT USER FORMAT LOADED!');
-  console.log('🔥 PDF Generator v4.0 - EXACT USER FORMAT - TIMESTAMP:', new Date().toISOString());
+  // Alert to confirm new code is running
+  alert('🎯 SIMPLE PDF GENERATOR - EXACT UPLOADED PDF FORMAT!');
+  console.log('📄 Simple PDF Generator - Raw Overview Text Only');
   
   try {
     const pdf = new jsPDF();
@@ -33,61 +33,30 @@ export const generateProcedurePDF = async (procedure) => {
     
     let yPos = 20;
     
-    // Procedure Name as title (NO DENTAL RESCUE BOT - as user requested)
+    // Procedure Name as title
     pdf.setFontSize(16);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
     yPos += 25;
     
-    // Display overview content exactly as user showed in sample
+    // Raw overview text - NO FORMATTING, NO PARSING
     if (procedure.overview) {
       pdf.setFontSize(11);
       pdf.setFont(undefined, 'normal');
       
-      // Split by lines and process each line exactly as user sample shows
-      const lines = procedure.overview.split('\n');
+      // Simply wrap the text and display it exactly as stored
+      const wrappedText = pdf.splitTextToSize(procedure.overview, 170);
       
-      for (const line of lines) {
-        const trimmedLine = line.trim();
-        
-        // Skip empty lines but add spacing
-        if (!trimmedLine) {
-          yPos += 5;
-          continue;
-        }
-        
+      wrappedText.forEach(line => {
         // Check if we need a new page
-        if (yPos > 260) {
+        if (yPos > 270) {
           pdf.addPage();
           yPos = 20;
         }
         
-        // Check if it's a section header (ends with :)
-        // Handle all possible section headers including "First 24–48 Hours:"
-        if (trimmedLine.endsWith(':')) {
-          pdf.setFont(undefined, 'bold');
-          pdf.text(trimmedLine, 20, yPos);
-          pdf.setFont(undefined, 'normal');
-          yPos += 12;
-        }
-        // Check if it's a bullet point (starts with -)
-        else if (trimmedLine.startsWith('- ')) {
-          const bulletText = trimmedLine.substring(2); // Remove "- "
-          const wrappedLines = pdf.splitTextToSize(`- ${bulletText}`, 170);
-          wrappedLines.forEach(wrappedLine => {
-            pdf.text(wrappedLine, 20, yPos);
-            yPos += 6;
-          });
-        }
-        // Regular text (like Purpose description)
-        else {
-          const wrappedLines = pdf.splitTextToSize(trimmedLine, 170);
-          wrappedLines.forEach(wrappedLine => {
-            pdf.text(wrappedLine, 20, yPos);
-            yPos += 6;
-          });
-        }
-      }
+        pdf.text(line, 20, yPos);
+        yPos += 6;
+      });
     }
     
     // Add spacing before practice information
@@ -123,11 +92,7 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.text('Office Hours:', 20, yPos);
     yPos += 8;
     pdf.setFont(undefined, 'normal');
-    const wrappedHours = pdf.splitTextToSize(officeHours, 170);
-    wrappedHours.forEach(line => {
-      pdf.text(line, 20, yPos);
-      yPos += 6;
-    });
+    pdf.text(officeHours, 20, yPos);
     yPos += 8;
     
     // Emergency Contact
@@ -142,10 +107,10 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
     
     // Save the PDF
-    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_EXACT_FORMAT.pdf`;
+    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_ORIGINAL_FORMAT.pdf`;
     pdf.save(filename);
     
-    console.log('✅ PDF generated with EXACT user format v4.0:', filename);
+    console.log('✅ Simple PDF generated - raw overview text only:', filename);
     
     return true;
     
