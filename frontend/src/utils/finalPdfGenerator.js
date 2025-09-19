@@ -15,12 +15,11 @@ const formatPhoneNumber = (phone) => {
   }
 };
 
-// FINAL PDF GENERATOR - TIMESTAMP: 2025-09-19 - EXACT ORIGINAL PDF FORMAT
+// FINAL PDF GENERATOR - RAW OVERVIEW TEXT ONLY
 export const generateProcedurePDF = async (procedure) => {
-  // CRITICAL ALERT - ENSURE NEW CODE IS LOADING
-  alert('🚀 FINAL PDF GENERATOR v5.0 - LOADED SUCCESSFULLY! - ' + new Date().toISOString());
-  console.log('🔥🔥🔥 FINAL PDF GENERATOR v5.0 - TIMESTAMP:', new Date().toISOString());
-  console.log('📄 PROCEDURE DATA:', procedure);
+  // Alert to confirm new code is loading
+  alert('📄 RAW OVERVIEW TEXT ONLY - PDF Generator Loaded!');
+  console.log('📄 RAW OVERVIEW ONLY - PDF Generator - TIMESTAMP:', new Date().toISOString());
   
   try {
     const pdf = new jsPDF();
@@ -34,37 +33,35 @@ export const generateProcedurePDF = async (procedure) => {
     
     let yPos = 20;
     
-    // Procedure Name as title ONLY (no DENTAL RESCUE BOT as user requested)
+    // Procedure Name as title
     pdf.setFontSize(16);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Post-Operative Care', 20, yPos);
     yPos += 25;
     
-    // Raw overview text - ABSOLUTELY NO FORMATTING OR PROCESSING
+    // ONLY THE RAW OVERVIEW TEXT - NOTHING ELSE
     if (procedure.overview) {
-      console.log('📝 Overview content length:', procedure.overview.length);
-      console.log('📝 Overview preview:', procedure.overview.substring(0, 100));
+      console.log('📝 Adding RAW overview text only - no formatting');
       
       pdf.setFontSize(11);
       pdf.setFont(undefined, 'normal');
       
-      // Simply display the raw text exactly as stored - no parsing whatsoever
-      const wrappedText = pdf.splitTextToSize(procedure.overview, 170);
+      // Display the overview text exactly as it is - no processing at all
+      const lines = pdf.splitTextToSize(procedure.overview, 170);
       
-      wrappedText.forEach(line => {
+      lines.forEach(line => {
         // Check if we need a new page
         if (yPos > 270) {
           pdf.addPage();
           yPos = 20;
         }
         
+        // Just add the text line - no formatting, no processing
         pdf.text(line, 20, yPos);
         yPos += 6;
       });
     } else {
-      console.log('❌ No overview content found');
       pdf.text('No post-operative care instructions available.', 20, yPos);
-      yPos += 20;
     }
     
     // Add spacing before practice information
@@ -114,17 +111,16 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.setFont(undefined, 'normal');
     pdf.text(formatPhoneNumber(emergencyContact), 20, yPos);
     
-    // Save the PDF with unique timestamp filename
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_FINAL_v5_${timestamp}.pdf`;
+    // Save the PDF
+    const filename = `${(procedure.name || 'Procedure').replace(/\s+/g, '_')}_RAW_OVERVIEW.pdf`;
     pdf.save(filename);
     
-    console.log('✅ FINAL PDF v5.0 generated successfully:', filename);
+    console.log('✅ PDF generated with RAW overview text only:', filename);
     
     return true;
     
   } catch (error) {
-    console.error('❌ FINAL PDF generation failed:', error);
+    console.error('❌ PDF generation failed:', error);
     return false;
   }
 };
