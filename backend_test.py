@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for Dental Practice Management System
-Focus: URGENT PDF FORMAT VERIFICATION - Amalgam Fillings Procedure Content
+Backend Test for Procedure Listing - Review Request
+Testing GET /api/public/procedures endpoint to list all procedures
 """
 
 import requests
 import json
 import sys
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 # Backend URL from review request
 BACKEND_URL = "https://dentist-portal-3.emergent.host"
+
+# Test credentials from review request
+TEST_EMAIL = "cganz2279@gmail.com"
+TEST_PASSWORD = "password123"
 
 class DentalBackendTester:
     def __init__(self):
