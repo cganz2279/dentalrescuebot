@@ -231,10 +231,6 @@ const PracticeProcedureView = () => {
               <div>
                 <CardTitle className="text-2xl mb-2">{procedure.name}</CardTitle>
                 <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2" />
-                    Duration: {procedure.duration || 'Variable'}
-                  </div>
                   <Badge className="bg-blue-100 text-blue-800">
                     {procedure.specialtyName || procedure.specialty}
                   </Badge>
