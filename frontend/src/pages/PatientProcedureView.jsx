@@ -168,8 +168,8 @@ const PatientProcedureView = () => {
     try {
       await patientsApi.trackDownload(assignmentId);
       
-      // RAW OVERVIEW TEXT ONLY - NO FORMATTING
-      const { generateProcedurePDF } = await import('../utils/rawOverviewOnly');
+      // FINAL RAW TEXT ONLY - CACHE BUSTED
+      const { generateProcedurePDF } = await import('../utils/FINAL_RAW_TEXT_ONLY');
       const { practice } = useAuth();
       
       if (!procedure) {
