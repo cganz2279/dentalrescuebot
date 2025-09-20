@@ -7,7 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { dentalApi } from '../services/api';
 import { useToast } from '../hooks/use-toast';
-import { generateProcedurePDF } from '../utils/rawOverviewOnly';
+// FINAL RAW TEXT ONLY - CACHE BUSTED - Dynamic import
 import { useAuth } from '../contexts/AuthContext';
 
 const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
