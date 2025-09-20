@@ -111,6 +111,8 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
         subscriber: personalizedProcedure.subscriberId
       });
       
+      // FINAL RAW TEXT ONLY - CACHE BUSTED
+      const { generateProcedurePDF } = await import('../utils/FINAL_RAW_TEXT_ONLY');
       const success = await generateProcedurePDF(personalizedProcedure);
       
       if (success) {
