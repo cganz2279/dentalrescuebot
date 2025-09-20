@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner, { ErrorMessage } from '../components/LoadingSpinner';
 import { practiceApi } from '../services/authApi';
-import { generateProcedurePDF } from '../utils/pdfGenerator';
+import { generateProcedurePDF } from '../utils/rawOverviewOnly';
 import { useToast } from '../hooks/use-toast';
 import { useAuth } from '../contexts/AuthContext';
 
