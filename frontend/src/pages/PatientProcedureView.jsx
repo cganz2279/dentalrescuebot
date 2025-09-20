@@ -323,6 +323,13 @@ const PatientProcedureView = () => {
 
       {/* Print Header - Print Only */}
       <div className="print-only print-header max-w-4xl mx-auto px-4">
+        <div className="flex items-center justify-center mb-4">
+          <img 
+            src="https://customer-assets.emergentagent.com/job_dental-portal-fix-1/artifacts/3xodewns_ChatGPT%20Image%20Sep%2018%2C%202025%2C%2004_21_15%20PM.png" 
+            alt="Dental Rescue Notes"
+            className="h-24 w-auto object-contain"
+          />
+        </div>
         {practice?.branding?.logo && (
           <img 
             src={practice.branding.logo} 
