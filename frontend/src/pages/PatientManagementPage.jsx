@@ -149,7 +149,7 @@ const PatientManagementPage = () => {
       const response = await practiceApi.getProcedureAssignment(procedureId);
       const data = response.data;
       
-      const { generateProcedurePDF } = await import('../utils/pdfGenerator');
+      const { generateProcedurePDF } = await import('../utils/rawOverviewOnly');
       
       console.log('🏥 PDF Generation - Practice Context:', practice);
       console.log('📊 Practice officeHours:', practice?.officeHours);
