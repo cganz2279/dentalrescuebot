@@ -6,10 +6,7 @@ export const generateProcedurePDF = async (procedure) => {
   const timestamp = new Date().toISOString();
   const cacheKey = Date.now();
   
-  // TRIPLE ALERT TO CONFIRM THIS IS RUNNING
-  alert(`🚨 FINAL RAW TEXT ONLY GENERATOR - ${timestamp} - CACHE: ${cacheKey}`);
-  alert(`PROCEDURE: ${procedure.name || 'Unknown'}`);
-  alert(`OVERVIEW LENGTH: ${(procedure.overview || '').length} characters`);
+  // Silent generation - alerts removed for better user experience
   
   console.log('🚨🚨🚨 FINAL_RAW_TEXT_ONLY GENERATOR LOADED');
   console.log('🚨 TIMESTAMP:', timestamp);
