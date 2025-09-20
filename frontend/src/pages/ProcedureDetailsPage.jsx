@@ -175,7 +175,8 @@ const ProcedureDetailsPage = () => {
   const handlePrint = async () => {
     // Generate proper PDF with Office Hours and Emergency Contact
     try {
-      const { generateProcedurePDF } = await import('../utils/rawOverviewOnly');
+      // FINAL RAW TEXT ONLY - CACHE BUSTED
+      const { generateProcedurePDF } = await import('../utils/FINAL_RAW_TEXT_ONLY');
       
       if (!procedureData) {
         toast({
