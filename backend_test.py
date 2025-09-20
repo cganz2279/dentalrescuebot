@@ -531,29 +531,85 @@ class DentalBackendTester:
             print("❌ CONTENT DOES NOT MATCH EXPECTED FORMAT - Database content differs significantly from user requirements")
 
 def main():
-    """Main testing function"""
-    print("🦷 URGENT: PDF FORMAT VERIFICATION - AMALGAM FILLINGS PROCEDURE")
+    """Main testing function for dental application backend verification"""
+    print("🦷 DENTAL APPLICATION BACKEND API VERIFICATION")
     print("=" * 80)
-    print("CRITICAL REQUEST: Show EXACT content in database for amalgam-fillings procedure")
-    print("Backend URL: https://dentist-portal-3.emergent.host/api")
-    print("Testing: GET /api/public/procedures/amalgam-fillings")
+    print("REVIEW REQUEST: Verify dental application backend API")
+    print("1. Database Content Verification - Check all 82 procedures (81 from ZIP + IV Sedation)")
+    print("2. API Endpoint Testing - Test specific endpoints")
+    print("3. Specialty and Data Verification - Verify proper categorization")
+    print(f"Backend URL: {BACKEND_URL}")
+    print(f"Credentials: {TEST_EMAIL} / {TEST_PASSWORD}")
     
     tester = DentalBackendTester()
     
     # Authenticate with specified credentials
-    print(f"\n🔐 Authenticating with cganz2279@gmail.com/password123...")
-    if not tester.authenticate("cganz2279@gmail.com", "password123"):
-        print("❌ Authentication failed. Proceeding with public endpoint test...")
+    print(f"\n🔐 AUTHENTICATION")
+    print("=" * 40)
+    if not tester.authenticate(TEST_EMAIL, TEST_PASSWORD):
+        print("❌ CRITICAL: Authentication failed - cannot proceed with testing")
+        return
+    
+    # Track test results
+    test_results = {
+        "authentication": True,
+        "procedure_count": False,
+        "iv_sedation": False,
+        "alveoloplasty": False,
+        "specialty_verification": False,
+        "content_authenticity": False
+    }
+    
+    # 1. Test procedure count (82 total expected)
+    procedures_result = tester.test_all_procedures_count()
+    if procedures_result.get("success") and procedures_result.get("count") >= 81:
+        test_results["procedure_count"] = True
+        procedures = procedures_result.get("procedures", [])
     else:
-        print("✅ Authentication successful. Testing both authenticated and public endpoints...")
+        procedures = []
     
-    # Test the specific Amalgam Fillings procedure
-    tester.test_amalgam_fillings_procedure()
+    # 2. Test IV Sedation specifically
+    if tester.test_iv_sedation_procedure():
+        test_results["iv_sedation"] = True
     
-    print(f"\n🎯 TESTING COMPLETE")
+    # 3. Test Alveoloplasty sample procedure
+    if tester.test_alveoloplasty_procedure():
+        test_results["alveoloplasty"] = True
+    
+    # 4. Test specialty categorization
+    if procedures:
+        specialty_counts = tester.test_specialty_categorization(procedures)
+        if len(specialty_counts) >= 5:  # At least 5 different specialties
+            test_results["specialty_verification"] = True
+    
+    # 5. Verify content authenticity
+    if procedures:
+        content_results = tester.verify_content_authenticity(procedures)
+        if content_results["authentic_content"] >= content_results["total_checked"] * 0.8:
+            test_results["content_authenticity"] = True
+    
+    # Final summary
+    print(f"\n🎯 FINAL TEST RESULTS SUMMARY")
     print("=" * 80)
-    print("Review the EXACT overview content above to verify it matches your format requirements.")
-    print("Expected format includes: Purpose, First 24 Hours, Pain & Sensitivity, Oral Hygiene, Diet, Special Precautions, Follow-Up")
+    
+    passed_tests = sum(test_results.values())
+    total_tests = len(test_results)
+    
+    for test_name, passed in test_results.items():
+        status = "✅ PASS" if passed else "❌ FAIL"
+        print(f"   {test_name.replace('_', ' ').title()}: {status}")
+    
+    print(f"\n📊 OVERALL RESULT: {passed_tests}/{total_tests} tests passed")
+    
+    if passed_tests == total_tests:
+        print("🎉 ALL TESTS PASSED: Backend API is working correctly")
+    elif passed_tests >= total_tests * 0.8:
+        print("⚠️ MOSTLY WORKING: Backend API has minor issues")
+    else:
+        print("❌ CRITICAL ISSUES: Backend API has significant problems")
+    
+    print("\n" + "=" * 80)
+    print("TESTING COMPLETE - Review results above for detailed findings")
 
 if __name__ == "__main__":
     main()
