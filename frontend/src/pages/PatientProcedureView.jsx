@@ -353,11 +353,11 @@ const PatientProcedureView = () => {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Dental Rescue Notes Logo */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-8">
           <img 
             src="https://customer-assets.emergentagent.com/job_dental-portal-fix-1/artifacts/3xodewns_ChatGPT%20Image%20Sep%2018%2C%202025%2C%2004_21_15%20PM.png" 
             alt="Dental Rescue Notes"
-            className="h-20 w-auto object-contain"
+            className="h-32 w-auto object-contain"
           />
         </div>
         {/* Procedure Header */}
