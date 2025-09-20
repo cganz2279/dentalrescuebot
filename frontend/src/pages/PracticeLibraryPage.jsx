@@ -195,10 +195,7 @@ const PracticeLibraryPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Clock className="h-4 w-4 mr-2" />
-                    Duration: {formatDuration(procedure.duration)}
-                  </div>
+                  {/* Duration removed - not needed */}
                   
                   <p className="text-sm text-gray-700 line-clamp-3">
                     {procedure.overview?.substring(0, 120)}...
