@@ -203,44 +203,227 @@ class DentalBackendTester:
             else:
                 print("✅ NO GENERIC TEST CONTENT DETECTED")
     
-    def test_amalgam_fillings_procedure(self) -> None:
-        """Test the specific Amalgam Fillings procedure as requested in review"""
-        print(f"\n🎯 URGENT: TESTING AMALGAM FILLINGS PROCEDURE CONTENT")
+    def test_all_procedures_count(self) -> Dict[str, Any]:
+        """Test that all 82 procedures are present (81 from ZIP + IV Sedation)"""
+        print(f"\n🎯 1. DATABASE CONTENT VERIFICATION - PROCEDURE COUNT")
         print("=" * 80)
-        print("Request: Show EXACT content in overview field for amalgam-fillings procedure")
-        print("Expected format verification against user's requirements")
-        
-        # Test the public endpoint as specified in review
-        procedure_id = "amalgam-fillings"
-        print(f"\n🔍 Testing GET /api/public/procedures/{procedure_id}")
+        print("Expected: 82 procedures total (81 from PostOpProcedures.zip + IV Sedation)")
         
         try:
-            # Test public endpoint first (no auth required)
-            response = self.session.get(f"{self.base_url}/api/public/procedures/{procedure_id}")
-            print(f"Public endpoint response status: {response.status_code}")
+            response = self.session.get(f"{self.base_url}/api/procedures")
+            print(f"GET /api/procedures response status: {response.status_code}")
             
             if response.status_code == 200:
                 data = response.json()
                 if data.get("success"):
-                    procedure = data.get("data", {})
-                    print(f"✅ Successfully retrieved from public endpoint: {procedure.get('name', 'Unknown')}")
-                    self.display_exact_overview_content(procedure)
-                    return
+                    procedures = data.get("data", [])
+                    total_count = len(procedures)
+                    
+                    print(f"✅ Successfully retrieved procedures")
+                    print(f"📊 TOTAL PROCEDURES FOUND: {total_count}")
+                    
+                    if total_count == 82:
+                        print("✅ CORRECT COUNT: Found exactly 82 procedures as expected")
+                    elif total_count == 81:
+                        print("⚠️ MISSING 1 PROCEDURE: Found 81 procedures (IV Sedation may be missing)")
+                    else:
+                        print(f"❌ INCORRECT COUNT: Expected 82, found {total_count}")
+                    
+                    return {"success": True, "count": total_count, "procedures": procedures}
                 else:
-                    print(f"❌ Public API returned success=false: {data}")
+                    print(f"❌ API returned success=false: {data}")
+                    return {"success": False, "error": "API returned success=false"}
             else:
-                print(f"❌ Public endpoint failed: {response.status_code} - {response.text}")
+                print(f"❌ Failed to fetch procedures: {response.status_code}")
+                print(f"   Response: {response.text}")
+                return {"success": False, "error": f"HTTP {response.status_code}"}
                 
         except Exception as e:
-            print(f"❌ Error with public endpoint: {str(e)}")
+            print(f"❌ Error fetching procedures: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    def test_iv_sedation_procedure(self) -> bool:
+        """Test GET /api/procedures/iv-sedation specifically"""
+        print(f"\n🎯 2. IV SEDATION VERIFICATION")
+        print("=" * 80)
+        print("Testing: GET /api/procedures/iv-sedation")
+        print("Expected: IV Sedation procedure with complete, non-truncated content")
         
-        # Fallback to regular procedure endpoint
-        print(f"\n🔄 Trying regular procedure endpoint...")
-        procedure_data = self.get_procedure_details(procedure_id)
-        if procedure_data:
-            self.display_exact_overview_content(procedure_data)
+        procedure = self.get_procedure_details("iv-sedation")
+        if not procedure:
+            print("❌ CRITICAL: IV Sedation procedure not found")
+            return False
+        
+        print(f"✅ IV Sedation procedure found: {procedure.get('name', 'Unknown')}")
+        
+        # Check content completeness
+        overview = procedure.get('overview', '')
+        overview_length = len(overview)
+        
+        print(f"📄 Overview content length: {overview_length} characters")
+        
+        if overview_length < 100:
+            print("❌ CONTENT TOO SHORT: IV Sedation content appears truncated")
+            return False
+        elif overview_length < 500:
+            print("⚠️ CONTENT MAY BE TRUNCATED: IV Sedation content is shorter than expected")
         else:
-            print("❌ CRITICAL: Could not retrieve Amalgam Fillings procedure from any endpoint")
+            print("✅ CONTENT LENGTH ADEQUATE: IV Sedation appears to have complete content")
+        
+        # Check for IV sedation specific terms
+        iv_keywords = ["sedation", "iv", "intravenous", "conscious", "monitor", "recovery"]
+        found_keywords = [kw for kw in iv_keywords if kw.lower() in overview.lower()]
+        
+        print(f"🔍 IV Sedation keywords found: {found_keywords}")
+        
+        if len(found_keywords) >= 3:
+            print("✅ CONTENT VERIFICATION: IV Sedation content contains expected medical terminology")
+            return True
+        else:
+            print("❌ CONTENT VERIFICATION FAILED: IV Sedation content lacks expected terminology")
+            return False
+    
+    def test_alveoloplasty_procedure(self) -> bool:
+        """Test GET /api/procedures/alveoloplasty to check sample procedure"""
+        print(f"\n🎯 3. SAMPLE PROCEDURE VERIFICATION - ALVEOLOPLASTY")
+        print("=" * 80)
+        print("Testing: GET /api/procedures/alveoloplasty")
+        print("Expected: Complete overview content from original PDF")
+        
+        procedure = self.get_procedure_details("alveoloplasty")
+        if not procedure:
+            print("❌ CRITICAL: Alveoloplasty procedure not found")
+            return False
+        
+        print(f"✅ Alveoloplasty procedure found: {procedure.get('name', 'Unknown')}")
+        
+        # Analyze content quality
+        overview = procedure.get('overview', '')
+        overview_length = len(overview)
+        
+        print(f"📄 Overview content length: {overview_length} characters")
+        
+        # Check for medical terminology specific to alveoloplasty
+        alveolo_keywords = ["alveolar", "bone", "socket", "extraction", "contouring", "healing", "tissue"]
+        found_keywords = [kw for kw in alveolo_keywords if kw.lower() in overview.lower()]
+        
+        print(f"🔍 Alveoloplasty keywords found: {found_keywords}")
+        
+        # Check for generic test content
+        generic_indicators = ["test assignment", "automated testing", "placeholder", "lorem ipsum", "dummy"]
+        found_generic = [indicator for indicator in generic_indicators if indicator.lower() in overview.lower()]
+        
+        if found_generic:
+            print(f"❌ GENERIC CONTENT DETECTED: {found_generic}")
+            return False
+        else:
+            print("✅ NO GENERIC CONTENT: Procedure contains authentic medical content")
+        
+        if len(found_keywords) >= 3 and overview_length > 200:
+            print("✅ CONTENT QUALITY VERIFIED: Alveoloplasty contains authentic medical content")
+            return True
+        else:
+            print("❌ CONTENT QUALITY ISSUES: Alveoloplasty content may be incomplete or generic")
+            return False
+    
+    def test_specialty_categorization(self, procedures: List[Dict[str, Any]]) -> Dict[str, int]:
+        """Verify procedures are properly categorized by specialty"""
+        print(f"\n🎯 4. SPECIALTY AND DATA VERIFICATION")
+        print("=" * 80)
+        print("Analyzing procedure distribution across specialties")
+        
+        specialty_counts = {}
+        specialty_names = {}
+        
+        for procedure in procedures:
+            specialty_id = procedure.get('specialty', 'unknown')
+            specialty_name = procedure.get('specialtyName', 'Unknown')
+            
+            if specialty_id not in specialty_counts:
+                specialty_counts[specialty_id] = 0
+                specialty_names[specialty_id] = specialty_name
+            
+            specialty_counts[specialty_id] += 1
+        
+        print(f"📊 SPECIALTY DISTRIBUTION:")
+        total_procedures = sum(specialty_counts.values())
+        
+        for specialty_id, count in sorted(specialty_counts.items(), key=lambda x: x[1], reverse=True):
+            specialty_name = specialty_names[specialty_id]
+            percentage = (count / total_procedures) * 100
+            print(f"   {specialty_name}: {count} procedures ({percentage:.1f}%)")
+        
+        # Check for expected specialties
+        expected_specialties = ["oral-surgery", "periodontics", "endodontics", "prosthodontics", "orthodontics"]
+        found_specialties = [s for s in expected_specialties if s in specialty_counts]
+        
+        print(f"\n🔍 EXPECTED SPECIALTIES VERIFICATION:")
+        print(f"   Found: {len(found_specialties)}/{len(expected_specialties)} expected specialties")
+        
+        if len(found_specialties) >= 4:
+            print("✅ SPECIALTY COVERAGE: Good distribution across dental specialties")
+        else:
+            print("⚠️ LIMITED SPECIALTY COVERAGE: Some expected specialties may be missing")
+        
+        return specialty_counts
+    
+    def verify_content_authenticity(self, procedures: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Verify procedures contain original PDF content, not corrupted/generic content"""
+        print(f"\n🎯 5. CONTENT AUTHENTICITY VERIFICATION")
+        print("=" * 80)
+        print("Checking for corrupted or generic 'test' content")
+        
+        sample_size = min(10, len(procedures))
+        sample_procedures = procedures[:sample_size]
+        
+        results = {
+            "total_checked": sample_size,
+            "authentic_content": 0,
+            "generic_content": 0,
+            "corrupted_content": 0,
+            "issues": []
+        }
+        
+        generic_indicators = [
+            "test assignment from automated testing",
+            "placeholder content",
+            "lorem ipsum",
+            "dummy data",
+            "sample text"
+        ]
+        
+        for i, procedure in enumerate(sample_procedures, 1):
+            name = procedure.get('name', f'Procedure {i}')
+            overview = procedure.get('overview', '').lower()
+            
+            print(f"\n🔍 Checking {i}/{sample_size}: {name}")
+            
+            # Check for generic content
+            found_generic = [indicator for indicator in generic_indicators if indicator in overview]
+            
+            if found_generic:
+                print(f"   ❌ GENERIC CONTENT: {found_generic}")
+                results["generic_content"] += 1
+                results["issues"].append(f"{name}: Generic content detected")
+            elif len(overview) < 100:
+                print(f"   ⚠️ MINIMAL CONTENT: Only {len(overview)} characters")
+                results["corrupted_content"] += 1
+                results["issues"].append(f"{name}: Minimal content ({len(overview)} chars)")
+            else:
+                print(f"   ✅ AUTHENTIC CONTENT: {len(overview)} characters of medical content")
+                results["authentic_content"] += 1
+        
+        print(f"\n📊 CONTENT AUTHENTICITY SUMMARY:")
+        print(f"   Authentic content: {results['authentic_content']}/{sample_size}")
+        print(f"   Generic content: {results['generic_content']}/{sample_size}")
+        print(f"   Corrupted content: {results['corrupted_content']}/{sample_size}")
+        
+        if results["authentic_content"] >= sample_size * 0.8:
+            print("✅ CONTENT QUALITY: Majority of procedures have authentic medical content")
+        else:
+            print("❌ CONTENT QUALITY ISSUES: Significant number of procedures have problems")
+        
+        return results
     
     def display_exact_overview_content(self, procedure: Dict[str, Any]) -> None:
         """Display the EXACT overview content as requested"""
