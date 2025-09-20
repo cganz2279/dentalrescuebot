@@ -88,9 +88,9 @@ def create_admin_guide_pdf():
     story.append(Paragraph("Main Application URLs", subheading_style))
     url_data = [
         ['Service', 'URL', 'Purpose'],
-        ['Main App', 'https://dental-pdf-sync.preview.emergentagent.com', 'Primary dental practice application'],
-        ['Admin Console', 'https://dental-pdf-sync.preview.emergentagent.com/admin', 'Full admin management interface'],
-        ['HTML Admin Dashboard', 'https://dental-pdf-sync.preview.emergentagent.com/api/admin/dashboard-html', 'Advanced admin dashboard (backup)']
+        ['Main App', 'https://dental-portal-fix-1.preview.emergentagent.com', 'Primary dental practice application'],
+        ['Admin Console', 'https://dental-portal-fix-1.preview.emergentagent.com/admin', 'Full admin management interface'],
+        ['HTML Admin Dashboard', 'https://dental-portal-fix-1.preview.emergentagent.com/api/admin/dashboard-html', 'Advanced admin dashboard (backup)']
     ]
     
     url_table = Table(url_data, colWidths=[1.5*inch, 3*inch, 2.5*inch])
@@ -181,7 +181,7 @@ def create_admin_guide_pdf():
     # System Management
     story.append(Paragraph("🛠 System Management", heading_style))
     story.append(Paragraph("Backend API Endpoints", subheading_style))
-    story.append(Paragraph("Base URL: https://dental-pdf-sync.preview.emergentagent.com/api", code_style))
+    story.append(Paragraph("Base URL: https://dental-portal-fix-1.preview.emergentagent.com/api", code_style))
     story.append(Paragraph("• POST /admin/login - Admin authentication", body_style))
     story.append(Paragraph("• GET /admin/practices - Practice management", body_style))
     story.append(Paragraph("• GET /admin/procedure-requests - Procedure requests", body_style))

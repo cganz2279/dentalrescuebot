@@ -1,80 +1,64 @@
 <analysis>
-The previous AI engineer’s trajectory focused on two main phases. Initially, it resolved the PDF view vs print consistency issue by thoroughly debugging the PDF generation logic in  and content display in . This involved parsing and formatting content from the database to ensure visual fidelity between the on-screen view and generated PDF. After successful backend and frontend testing confirmed the fix, the user reported new console errors related to PDF formatting. This led to the discovery of severe CORS policy errors, indicating an environment/deployment issue due to hardcoded preview URLs in the frontend's  and possibly other files. The AI engineer is currently addressing these CORS issues by updating  and searching for other hardcoded instances, with the immediate next step being to update backend CORS configuration.
+The trajectory details an iterative process to resolve critical issues in a B2B SaaS dental application. Initially, the AI engineer addressed PDF view vs. print consistency, successfully fixing the  logic for structured content. However, the core problem shifted to a persistent environment configuration issue where  kept reverting to an incorrect backend URL, causing data loss and preventing UI updates. Multiple strategies were deployed to fix this, including making files read-only and implementing watchdog scripts. Concurrently, the user repeatedly emphasized the need for PDFs to *exactly* match uploaded documents, specifically displaying only the raw overview text without any custom formatting. The AI created several new PDF generator files, simplifying the logic each time, but faced continuous reports of no change due to caching or other factors. The latest issue is truncated IV Sedation content in the database and the PDF format still not matching the user's raw overview request.
 </analysis>
 
 <product_requirements>
-The application is a multi-tenant B2B SaaS platform for dentists managing post-operative care. Key functionalities and problems being addressed include:
-1.  **PDF Content Accuracy & Formatting**: Ensuring PDFs display structured medical instructions from  with correct formatting, matching the original source.
-2.  **Practice Customization in PDFs**: Incorporating Office Hours and Emergency Contact Number from practice settings into PDF footers.
-3.  **UI for Practice Settings**: Providing input fields for Office Hours and Emergency Contact Number in the Practice Settings page.
-4.  **Dr. Dr. Duplication Fix**: Preventing redundant Dr. prefixes in dentist names.
-5.  **New User Registration & Notifications**: Implementing email notifications for registrations and enhancing payment verification.
-6.  **Admin Panel Enhancements**: Adding a New Registrations section to the admin dashboard.
-7.  **Procedure Details Corruption**: Correctly displaying medical instructions without extraneous sections, with organized, dynamic content.
-8.  **Patient Creation**: Fixing the Add Patient form to prevent errors from empty dropdown values.
-9.  **Patient Edit Functionality**: Enabling editing and saving patient data on the Procedure Details page.
-10. **Patient Deletion**: Allowing soft-delete (inactive) and hard-delete of patients from the Patient Management list with confirmation.
-11. **Dashboard Recent Patients Display**: Displaying only real, active, searchable patients with correct status, filtering out test patients.
-12. **Patient Management List Display**: Filtering the Patient Management list to show only real patients.
-13. **Dashboard UI Cleanup**: Removing redundant Dentist Management section, retaining only a compact button.
-14. **PDF View vs. Print Consistency**: Ensuring the Post-Operative Care Guide viewed PDF matches the printed version.
+The application is a multi-tenant B2B SaaS platform for dentists managing post-operative care. Key requirements include:
+1.  **PDF Content Accuracy & Formatting**: PDFs must display structured medical instructions from  exactly as uploaded, without reformatting.
+2.  **Practice Customization in PDFs**: Incorporate Office Hours and Emergency Contact Number into PDF footers.
+3.  **UI for Practice Settings**: Input fields for Office Hours and Emergency Contact Number in Practice Settings.
+4.  **Dr. Dr. Duplication Fix**: Prevent redundant Dr. prefixes.
+5.  **New User Registration & Notifications**: Email notifications for registrations, enhanced payment verification.
+6.  **Admin Panel Enhancements**: New Registrations section in admin dashboard.
+7.  **Procedure Details Corruption**: Display medical instructions without extraneous sections, with organized, dynamic content.
+8.  **Patient Creation**: Fix Add Patient form errors from empty dropdowns.
+9.  **Patient Edit Functionality**: Enable editing and saving patient data on Procedure Details page.
+10. **Patient Deletion**: Allow soft/hard-delete of patients with confirmation.
+11. **Dashboard Recent Patients Display**: Show only real, active, searchable patients.
+12. **Patient Management List Display**: Filter list to show only real patients.
+13. **Dashboard UI Cleanup**: Remove redundant Dentist Management.
+14. **PDF View vs. Print Consistency**: Ensure Post-Operative Care Guide matches printed version.
 </product_requirements>
 
 <key_technical_concepts>
--   **React.js**: Frontend UI development and component-based architecture.
--   **FastAPI**: Python-based backend API development.
--   **MongoDB**: NoSQL database for data storage.
--   ****: JavaScript library for client-side PDF generation.
--   **Environment Variables**: Secure configuration management for URLs and keys.
--   **Supervisor**: Process manager for running services (frontend, backend).
--   **Kubernetes Ingress**: Manages API routing (e.g.,  prefix).
--   **CORS (Cross-Origin Resource Sharing)**: Security mechanism for cross-domain requests.
+-   **React.js**: Frontend development.
+-   **FastAPI**: Python backend API.
+-   **MongoDB**: NoSQL database.
+-   ****: JavaScript for client-side PDF generation.
+-   **Environment Variables**: Configuration management.
+-   **Supervisor**: Process manager.
+-   **Kubernetes Ingress**: API routing.
+-   **CORS**: Cross-Origin Resource Sharing (initial issue).
+-   **Watchdog**: Python library for file system monitoring.
 </key_technical_concepts>
 
 <code_architecture>
 
-
--   ****: Stores frontend environment variables.
-    -   **Changes**:  was initially pointing to an incorrect preview domain and was updated from  to  to match the current deployment environment.
--   ****: Handles practice-related API endpoints.
-    -   **Changes**: Modified  Pydantic model and  to enable patient deactivation/deletion.
--   ****: Frontend API client.
-    -   **Changes**:  function was added and adapted for patient deletion.
--   ** (New)**: UI component for patient deletion confirmation.
-    -   **Changes**: Created to facilitate soft/hard patient deletion.
--   ****: Displays and manages patient list.
-    -   **Changes**: Integrated patient deletion UI/logic and added frontend filtering for real patients.
--   ****: Main dashboard view.
-    -   **Changes**: Filtered Recent Patients to show only real patients and removed redundant Dentist Management UI.
--   ****: Core utility for generating PDFs.
-    -   **Changes**: Heavily modified to include  for parsing and formatting medical content into sections, headers, and bullet points, ensuring consistency with the on-screen display.
--   ****: Displays specific patient procedure views.
-    -   **Changes**: Investigated as the source of PDF view/print discrepancy.
--   ** (Created)**: A temporary script to test PDF content parsing.
-    -   **Changes**: Created to validate the  logic outside the main application flow.
+-   ****: Stores frontend environment variables, persistently reverted to an incorrect URL. Multiple scripts/measures were implemented to keep  pointing to .
+-   ****: Modified to include a  endpoint  for updating procedure overview content.
+-   ****: Originally heavily modified for content parsing. Later, this file was simplified and eventually replaced by several new, simpler generators (, , , , ) in an attempt to achieve raw overview text display.
+-   ****: The primary page for viewing and generating patient procedure PDFs. Frequently modified to import and use the latest PDF generator, and to display editable overview content.
+-   ****: Modified to add  function for saving edited procedure content.
+-   **Python scripts (e.g., , , )**: Created to directly update database content from original PDF texts and to add new procedures.
+-   **Shell scripts/Python services (e.g., , , , )**: Created to combat the  file reversion issue by setting permissions, monitoring, and auto-correcting the .
 </code_architecture>
 
 <pending_tasks>
--   **Deployment Stability**: Intermittent platform deployment failures.
--   **Preview Environment Data**: Broken database connection in preview environment.
--   **Content Verification for Dental Bridge**: Verify Dental Bridge Placement content against .
--   **Patient Delete Backend (Final Resolution)**: Implement a cleaner, dedicated DELETE endpoint if infrastructure allows.
--   **CORS Configuration Fix**: Resolve CORS errors by updating backend configuration and any remaining hardcoded URLs.
+-   Deployment Stability: Intermittent platform deployment failures.
+-   Preview Environment Data: Broken database connection in preview environment.
+-   Content Verification for Dental Bridge: Verify Dental Bridge Placement content against .
+-   Patient Delete Backend (Final Resolution): Implement a cleaner, dedicated DELETE endpoint if infrastructure allows.
+-   CORS Configuration Fix: Resolve CORS errors by updating backend configuration and any remaining hardcoded URLs.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary, the AI engineer was addressing CORS (Cross-Origin Resource Sharing) errors reported by the user. The user provided specific console errors indicating that the application was trying to access  from , and this cross-origin request was blocked due to missing  headers.
+Immediately before this summary, the AI engineer was attempting to resolve two critical, recurring issues:
+1.  **PDF Format Incorrectness**: The user consistently reported that PDFs were still not displaying only the raw overview text from the uploaded PDFs, despite numerous attempts to simplify the PDF generation logic. The AI had created multiple new PDF generator files (e.g., , , ), updating import paths across various frontend pages, but the user continued to see the old format.
+2.  **Data Inconsistency/Truncation**: Specifically, the IV Sedation procedure's content in the database was found to be severely truncated, containing only a small portion of the complete post-operative care instructions from the original uploaded PDF.
 
-The AI engineer identified this as an environment/deployment configuration issue caused by hardcoded URLs pointing to incorrect preview domains. The current work involves:
-1.  **Updating **: The  was updated from  to  to align with the current deployment.
-    
-2.  **Restarting Frontend Service**: frontend: ERROR (not running)
-frontend: started was executed to apply the new environment variable.
-3.  **Searching for Hardcoded URLs**: The AI searched for other instances of  within the codebase, indicating that more files might have incorrect hardcoded values.
-
-The previous task of fixing PDF View vs. Print Consistency was declared successfully completed and tested, but the new CORS errors are preventing the application from functioning correctly, thus blocking verification of the PDF fix in the deployed environment.
+The last action taken by the AI was to verify the IV Sedation content in the database () and then to initiate a fix by updating it with the complete content from the original PDF (, ). The backend service was about to be restarted () to load this updated content, after which the PDF generation for this specific procedure would likely be re-tested. The overarching goal remains to ensure all PDFs display *only* the raw, unformatted overview text exactly as it appears in the original uploaded PDF files.
 </current_work>
 
 <optional_next_step>
-Update the backend CORS configuration to include the correct origin to resolve the remaining CORS issues.
+Restart the backend, verify the IV Sedation content in the database, and then re-test PDF generation to confirm it displays the complete, raw overview text.
 </optional_next_step>
