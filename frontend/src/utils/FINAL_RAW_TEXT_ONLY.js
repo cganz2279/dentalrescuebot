@@ -55,7 +55,6 @@ export const generateProcedurePDF = async (procedure) => {
     const filename = `${procedure.name.replace(/[^a-zA-Z0-9]/g, '_')}_RAW_${cacheKey}.pdf`;
     pdf.save(filename);
     
-    alert(`PDF SAVED: ${filename}`);
     console.log('🚨 PDF SAVED:', filename);
     
     return true;
