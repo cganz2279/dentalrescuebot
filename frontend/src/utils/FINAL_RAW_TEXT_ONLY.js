@@ -60,7 +60,6 @@ export const generateProcedurePDF = async (procedure) => {
     return true;
     
   } catch (error) {
-    alert(`PDF ERROR: ${error.message}`);
     console.error('🚨 PDF ERROR:', error);
     return false;
   }
