@@ -43,7 +43,8 @@ const PracticeLibraryPage = () => {
         throw new Error('Failed to fetch procedures');
       }
       
-      const data = await response.json();
+      const result = await response.json();
+      const data = result.success ? result.data : result;
       setProcedures(data);
       setFilteredProcedures(data);
     } catch (error) {
