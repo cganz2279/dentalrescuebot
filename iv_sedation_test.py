@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-IV Sedation Procedure Verification Test
-Testing specific review request: IV Sedation not loaded into Oral Surgery section
+IV Sedation Content Verification Test - Review Request
+Testing GET /api/procedures/iv-sedation endpoint to show COMPLETE overview field content
+User reports: "IV Sedation is missing most of the PDF content"
 """
 
 import requests
 import json
 import sys
 from datetime import datetime
+from typing import Dict, Any, Optional
 
 # Backend URL from review request
-BACKEND_URL = "https://dentist-portal-3.emergent.host/api"
+BACKEND_URL = "https://dentist-portal-3.emergent.host"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 
