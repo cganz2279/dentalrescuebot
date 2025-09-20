@@ -100,6 +100,8 @@ const ProcedurePage = ({ procedureId, onBackToHome, onBackToSpecialty }) => {
         practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
       });
       
+      // FINAL RAW TEXT ONLY - CACHE BUSTED
+      const { generateProcedurePDF } = await import('../utils/FINAL_RAW_TEXT_ONLY');
       const success = await generateProcedurePDF(procedureForPDF);
       
       if (success) {
