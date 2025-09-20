@@ -18,7 +18,7 @@ import LoadingSpinner, { ErrorMessage } from '../components/LoadingSpinner';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { dentalApi } from '../services/api';
-import { generateProcedurePDF } from '../utils/rawOverviewOnly';
+// FINAL RAW TEXT ONLY - CACHE BUSTED - Dynamic import
 import { useToast } from '../hooks/use-toast';
 import { useAuth } from '../contexts/AuthContext';
 
