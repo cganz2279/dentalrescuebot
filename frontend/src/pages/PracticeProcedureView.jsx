@@ -187,21 +187,14 @@ const PracticeProcedureView = () => {
 
       {/* Print Header - Print Only */}
       <div className="print-only print-header max-w-4xl mx-auto px-4">
-        <div className="flex items-center justify-center mb-4">
+        <div className="flex justify-center mb-6">
           <img 
             src="https://customer-assets.emergentagent.com/job_dental-portal-fix-1/artifacts/3xodewns_ChatGPT%20Image%20Sep%2018%2C%202025%2C%2004_21_15%20PM.png" 
             alt="Dental Rescue Notes"
-            className="h-24 w-auto object-contain"
+            className="h-32 w-auto object-contain"
           />
         </div>
-        {practice?.branding?.logo && (
-          <img 
-            src={practice.branding.logo} 
-            alt={practice.name}
-            className="h-16 w-16 rounded-lg object-cover mr-4"
-          />
-        )}
-        <div>
+        <div className="text-center">
           <h1 className="print-title">{practice?.name}</h1>
           {practice?.address && (
             <p className="text-gray-600">
