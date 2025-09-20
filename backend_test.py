@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Backend Test for Procedure Listing - Review Request
-Testing GET /api/public/procedures endpoint to list all procedures
+Backend Test for Dental Application - Review Request
+Testing database content verification and API endpoints as specified:
+1. Database Content Verification - Check all 82 procedures (81 from ZIP + IV Sedation)
+2. API Endpoint Testing - Test GET /api/procedures, /api/procedures/iv-sedation, /api/procedures/alveoloplasty
+3. Specialty and Data Verification - Verify procedures are properly categorized
 """
 
 import requests
@@ -9,8 +12,8 @@ import json
 import sys
 from typing import Dict, Any, Optional, List
 
-# Backend URL from review request
-BACKEND_URL = "https://dentist-portal-3.emergent.host"
+# Backend URL from frontend .env file
+BACKEND_URL = "https://dental-portal-fix-1.preview.emergentagent.com"
 
 # Test credentials from review request
 TEST_EMAIL = "cganz2279@gmail.com"
