@@ -168,8 +168,8 @@ const PatientProcedureView = () => {
     try {
       await patientsApi.trackDownload(assignmentId);
       
-      // Generate PDF with ULTRA SIMPLE RAW TEXT ONLY - 2025-09-19
-      const { generateProcedurePDF } = await import('../utils/ultraSimplePdfGenerator_20250919');
+      // RAW OVERVIEW TEXT ONLY - NO FORMATTING
+      const { generateProcedurePDF } = await import('../utils/rawOverviewOnly');
       const { practice } = useAuth();
       
       if (!procedure) {
