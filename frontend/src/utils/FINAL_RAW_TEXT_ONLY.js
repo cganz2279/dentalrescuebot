@@ -18,7 +18,26 @@ export const generateProcedurePDF = async (procedure) => {
     const pdf = new jsPDF();
     let yPos = 20;
     
+    // Add Dental Rescue Notes logo
+    try {
+      // Note: For PDF, we'll add text header since embedding images requires additional setup
+      pdf.setFontSize(14);
+      pdf.setFont(undefined, 'bold');
+      pdf.setTextColor(59, 130, 246); // Blue color
+      pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
+      yPos += 15;
+      
+      // Add a line under the header
+      pdf.setDrawColor(59, 130, 246);
+      pdf.setLineWidth(0.5);
+      pdf.line(20, yPos, 190, yPos);
+      yPos += 15;
+    } catch (logoError) {
+      console.log('Logo header added as text');
+    }
+    
     // Title
+    pdf.setTextColor(0, 0, 0); // Reset to black
     pdf.setFontSize(16);
     pdf.setFont(undefined, 'bold');
     pdf.text(procedure.name || 'Procedure', 20, yPos);
