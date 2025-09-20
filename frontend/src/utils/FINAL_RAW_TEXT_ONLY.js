@@ -18,22 +18,29 @@ export const generateProcedurePDF = async (procedure) => {
     const pdf = new jsPDF();
     let yPos = 20;
     
-    // Add Dental Rescue Notes logo
+    // Add Dental Rescue Notes logo - Enhanced styling
     try {
-      // Note: For PDF, we'll add text header since embedding images requires additional setup
-      pdf.setFontSize(14);
+      // Large, centered title with professional styling
+      pdf.setFontSize(18);
       pdf.setFont(undefined, 'bold');
-      pdf.setTextColor(59, 130, 246); // Blue color
+      pdf.setTextColor(41, 98, 184); // Professional blue color
       pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
+      yPos += 8;
+      
+      // Subtitle
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, 'normal');
+      pdf.setTextColor(100, 100, 100); // Gray color
+      pdf.text('Post-Operative Care Instructions', 105, yPos, { align: 'center' });
       yPos += 15;
       
-      // Add a line under the header
-      pdf.setDrawColor(59, 130, 246);
-      pdf.setLineWidth(0.5);
-      pdf.line(20, yPos, 190, yPos);
-      yPos += 15;
+      // Decorative line under the header
+      pdf.setDrawColor(41, 98, 184);
+      pdf.setLineWidth(1);
+      pdf.line(50, yPos, 160, yPos);
+      yPos += 20;
     } catch (logoError) {
-      console.log('Logo header added as text');
+      console.log('Logo header added as enhanced text');
     }
     
     // Title
