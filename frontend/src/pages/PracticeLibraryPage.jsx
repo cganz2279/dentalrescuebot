@@ -260,10 +260,7 @@ const PracticeLibraryPage = () => {
               </div>
               
               <div className="space-y-4">
-                <div className="flex items-center text-sm text-gray-600">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Duration: {formatDuration(selectedProcedure.duration)}
-                </div>
+                {/* Duration removed - not needed */}
                 
                 <div>
                   <h3 className="font-semibold mb-2">Overview:</h3>
