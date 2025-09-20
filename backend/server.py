@@ -148,6 +148,66 @@ async def get_specialty(specialty_id: str):
         logging.error(f"Error fetching specialty {specialty_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@api_router.get("/specialties")
+async def get_specialties():
+    """Get all specialties with procedure counts"""
+    try:
+        # Define specialties with proper styling info
+        specialties_info = [
+            {
+                "id": "endodontics",
+                "name": "Endodontics", 
+                "description": "Root canal treatments and related procedures",
+                "icon": "Activity",
+                "color": "bg-blue-50 border-blue-200"
+            },
+            {
+                "id": "oral-surgery",
+                "name": "Oral Surgery",
+                "description": "Tooth extractions, implants, and surgical procedures", 
+                "icon": "Scissors",
+                "color": "bg-red-50 border-red-200"
+            },
+            {
+                "id": "periodontics",
+                "name": "Periodontics",
+                "description": "Gum disease treatment and gum surgery",
+                "icon": "Heart",
+                "color": "bg-green-50 border-green-200"
+            },
+            {
+                "id": "general-dentistry", 
+                "name": "General Dentistry",
+                "description": "Fillings, cleanings, and routine procedures",
+                "icon": "Shield",
+                "color": "bg-orange-50 border-orange-200"
+            },
+            {
+                "id": "orthodontics",
+                "name": "Orthodontics", 
+                "description": "Braces, aligners, and teeth straightening",
+                "icon": "Zap",
+                "color": "bg-teal-50 border-teal-200"
+            },
+            {
+                "id": "prosthodontics",
+                "name": "Prosthodontics",
+                "description": "Crowns, bridges, and denture procedures", 
+                "icon": "Cpu",
+                "color": "bg-purple-50 border-purple-200"
+            }
+        ]
+        
+        # Get procedure counts for each specialty
+        for specialty in specialties_info:
+            count = await db.procedures.count_documents({"specialty": specialty["id"]})
+            specialty["procedureCount"] = count
+        
+        return {"success": True, "data": specialties_info}
+    except Exception as e:
+        logging.error(f"Error fetching specialties: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 @api_router.get("/procedures")
 async def get_procedures(specialty: Optional[str] = Query(None)):
     try:
