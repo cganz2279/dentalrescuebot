@@ -1,12 +1,16 @@
 import jsPDF from 'jspdf';
 
-// RAW OVERVIEW TEXT ONLY - NO PROCESSING WHATSOEVER
+// RAW OVERVIEW TEXT ONLY - NO PROCESSING WHATSOEVER - FORCED UPDATE
 export const generateProcedurePDF = async (procedure) => {
-  // FORCE ALERT
-  alert('📝 RAW OVERVIEW ONLY PDF GENERATOR - NO FORMATTING AT ALL');
-  console.log('📝📝📝 RAW OVERVIEW ONLY - NO FORMATTING - TIMESTAMP:', new Date().toISOString());
-  console.log('PROCEDURE NAME:', procedure.name);
-  console.log('OVERVIEW TEXT:', procedure.overview);
+  // FORCE ALERT - CRITICAL TEST
+  alert('🚨🚨🚨 EMERGENCY PDF GENERATOR - FORCED UPDATE - ' + new Date().toISOString());
+  console.log('🚨🚨🚨 EMERGENCY PDF GENERATOR LOADED');
+  console.log('🚨🚨🚨 TIMESTAMP:', new Date().toISOString());
+  console.log('🚨🚨🚨 PROCEDURE:', procedure.name);
+  console.log('🚨🚨🚨 OVERVIEW:', procedure.overview);
+  
+  // Force another alert to make sure this code runs
+  alert('SECOND ALERT - PDF GENERATOR IS DEFINITELY RUNNING');
   
   try {
     const pdf = new jsPDF();
@@ -37,15 +41,17 @@ export const generateProcedurePDF = async (procedure) => {
       });
     }
     
-    // Save PDF
-    const filename = `${procedure.name.replace(/\s+/g, '_')}_RAW_OVERVIEW_ONLY.pdf`;
+    // Save PDF with emergency filename
+    const filename = `EMERGENCY_${procedure.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
     pdf.save(filename);
     
-    console.log('PDF saved with raw overview only:', filename);
+    alert('PDF SAVED: ' + filename);
+    console.log('🚨 EMERGENCY PDF saved:', filename);
     return true;
     
   } catch (error) {
-    console.error('PDF error:', error);
+    alert('PDF ERROR: ' + error.message);
+    console.error('🚨 PDF error:', error);
     return false;
   }
 };
