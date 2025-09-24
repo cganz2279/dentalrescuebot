@@ -404,23 +404,29 @@ const AdminDashboard = () => {
           medications: ['']
         });
       } else {
+        // Handle error responses
+        let errorMessage = 'Failed to create procedure';
+        
         try {
           const errorData = await response.json();
           console.error('API Error Response:', errorData); // Debug log
-          const errorMessage = handleApiError(errorData, 'Failed to create procedure');
+          errorMessage = handleApiError(errorData, 'Failed to create procedure');
           console.log('Processed Error Message:', errorMessage); // Debug log
-          setError(errorMessage);
         } catch (parseError) {
           console.error('Failed to parse error response:', parseError);
           const rawText = await response.text();
-          setError(`Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`);
+          errorMessage = `Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`;
         }
+        
+        // Ensure errorMessage is always a string
+        setError(typeof errorMessage === 'string' ? errorMessage : 'Failed to create procedure');
       }
-    } catch (error) {
-      console.error('Failed to create procedure:', error);
-      setError(`Network error: ${error.message || 'Failed to create procedure'}`);
+    } catch (networkError) {
+      console.error('Network error during procedure creation:', networkError);
+      setError(`Network error: ${networkError.message || 'Failed to create procedure'}`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const updateProcedure = async (procedureId, updates) => {
