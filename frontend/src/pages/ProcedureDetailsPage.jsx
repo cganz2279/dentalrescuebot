@@ -189,10 +189,16 @@ const ProcedureDetailsPage = () => {
   const saveOverview = async () => {
     try {
       setSavingOverview(true);
-      console.log('🔧 Saving overview content for procedure:', procedureId);
+      const actualProcedureId = procedureData?.actualProcedureId;
+      console.log('🔧 Saving overview content for procedure:', actualProcedureId);
+      console.log('🔧 Assignment ID was:', procedureId);
       
-      // Call API to update procedure overview using procedureId from useParams
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/public/procedures/${procedureId}/overview`, {
+      if (!actualProcedureId) {
+        throw new Error('Procedure ID not found');
+      }
+      
+      // Call API to update procedure overview using actual procedure ID
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/public/procedures/${actualProcedureId}/overview`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
