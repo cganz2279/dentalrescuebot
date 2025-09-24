@@ -138,8 +138,9 @@ test_plan:
   test_all: false
   test_priority: "high_first"
   critical_issue_found:
-    - "React error 'Objects are not valid as a React child' still present in admin panel procedure form validation"
-    - "Frontend error handling not properly implemented for validation errors"
+    - "React error 'Objects are not valid as a React child' still present in admin panel procedure form validation after latest robust error handling changes"
+    - "Frontend error handling not properly implemented for validation errors despite handleApiError function and safety checks being present"
     - "Form validation errors not displayed to users due to React rendering error"
     - "Error state being set to raw validation error object instead of processed string"
-    - "Red screen error appears when form validation fails, breaking user experience"
+    - "Red screen of death appears when form validation fails, breaking user experience"
+    - "Latest robust error handling changes have NOT resolved the critical frontend error handling issue"
