@@ -64,8 +64,19 @@ const CustomTabsContent = ({ children, value, activeTab, className }) => {
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errorState, setErrorState] = useState('');
   const [adminToken] = useState(localStorage.getItem('adminToken'));
+  
+  // Safe error setter that ensures error is always a string
+  const setError = (errorValue) => {
+    const safeError = typeof errorValue === 'string' ? errorValue : 
+                     typeof errorValue === 'object' && errorValue !== null ? JSON.stringify(errorValue) : 
+                     String(errorValue || '');
+    console.log('Setting error state to:', safeError); // Debug log
+    setErrorState(safeError);
+  };
+  
+  const error = errorState;
   const [dashboardData, setDashboardData] = useState(null);
   const [practices, setPractices] = useState([]);
   const [users, setUsers] = useState([]);
