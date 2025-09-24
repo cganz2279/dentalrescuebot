@@ -166,3 +166,8 @@ test_plan:
     - "Form submission logic is not properly wired to the createProcedure function"
     - "Raw API error response is being set directly to error state without processing through handleApiError function"
     - "Main agent needs to fix the form submission logic to ensure createProcedure function is called when Create Procedure button is clicked"
+    - "DEFINITIVE CONFIRMATION: Button click handler onClick={createProcedure} on line 1179 is not functioning correctly"
+    - "Expected browser alert 'Create Procedure function was called!' was NOT displayed"
+    - "Expected console logs '🚀 CREATE PROCEDURE FUNCTION CALLED!' and 'Starting createProcedure...' were NOT found"
+    - "The issue is NOT with error handling inside createProcedure function - the issue is that createProcedure function is never called at all"
+    - "Button click handler is completely broken and needs immediate fix by main agent"
