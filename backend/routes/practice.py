@@ -1805,8 +1805,8 @@ async def customize_procedure(
             
             action = "updated"
         else:
-            # Create new override based on global procedure
-            override_data = {
+            # Create new customization based on global procedure
+            customization_data = {
                 "practiceId": practice_id,
                 "procedureId": procedure_id,
                 "name": customization.name or global_proc["name"],
@@ -1817,10 +1817,12 @@ async def customize_procedure(
                 "recoveryTimeline": customization.recoveryTimeline or global_proc["recoveryTimeline"],
                 "medications": customization.medications or global_proc["medications"],
                 "customizedAt": datetime.utcnow(),
-                "customizedBy": user_email
+                "customizedBy": user_email,
+                "isActive": True,
+                "originalOverview": global_proc["overview"]  # Backup of original
             }
             
-            await db.practice_procedure_overrides.insert_one(override_data)
+            await db.practice_procedure_customizations.insert_one(customization_data)
             action = "created"
         
         return {
