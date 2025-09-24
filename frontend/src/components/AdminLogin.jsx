@@ -445,7 +445,7 @@ const AdminDashboard = () => {
         await loadProcedures();
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to delete procedure');
+        setError(handleApiError(errorData, 'Failed to delete procedure'));
       }
     } catch (error) {
       console.error('Failed to delete procedure:', error);
