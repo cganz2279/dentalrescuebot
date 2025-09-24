@@ -1176,7 +1176,11 @@ const AdminDashboard = () => {
                     >
                       Cancel
                     </Button>
-                    <Button onClick={createProcedure} disabled={loading}>
+                    <Button onClick={() => {
+                      console.log('🚀 INLINE BUTTON CLICKED!');
+                      alert('Inline button clicked!');
+                      createProcedure();
+                    }} disabled={loading}>
                       {loading ? <LoadingSpinner className="h-4 w-4 mr-2" /> : null}
                       Create Procedure
                     </Button>
