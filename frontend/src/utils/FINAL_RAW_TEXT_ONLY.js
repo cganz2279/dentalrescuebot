@@ -12,8 +12,9 @@ export const generateProcedurePDF = async (procedure) => {
   console.log('🚨 TIMESTAMP:', timestamp);
   console.log('🚨 CACHE KEY:', cacheKey);
   console.log('🚨 BUILD TIMESTAMP: 2025-09-20-17:30');
-  console.log('🚨 PROCEDURE NAME:', procedure.name);
-  console.log('🚨 OVERVIEW TEXT FULL:', procedure.overview);
+  console.log('🚨 FULL PROCEDURE DATA:', procedure);
+  console.log('🚨 PROCEDURE NAME:', procedure?.name || procedure?.procedureName);
+  console.log('🚨 OVERVIEW TEXT FULL:', procedure?.overview || procedure?.procedureDetails?.overview);
   
   try {
     const pdf = new jsPDF();
