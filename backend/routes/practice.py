@@ -641,7 +641,7 @@ async def get_procedure_assignment(
         
         # Get full procedure details from procedures collection
         procedure = await db.procedures.find_one(
-            {"id": assignment["procedureId"]},
+            {"name": assignment["procedureName"]},
             {"_id": 0}
         )
         

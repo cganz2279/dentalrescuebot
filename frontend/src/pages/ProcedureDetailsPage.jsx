@@ -469,7 +469,7 @@ const ProcedureDetailsPage = () => {
                 
                 // First, try to split by common section patterns in the overview
                 // Split by section headers that are followed by content
-                const sectionPattern = /\b([A-Z][a-zA-Z\s&]+):\s*/g;
+                const sectionPattern = /^([A-Z][\w\s&-]+):/gm;
                 let lastIndex = 0;
                 let match;
                 
