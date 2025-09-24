@@ -1816,7 +1816,7 @@ async def customize_procedure(
                 "warningSignsToCallDoctor": customization.warningSignsToCallDoctor or global_proc["warningSignsToCallDoctor"],
                 "recoveryTimeline": customization.recoveryTimeline or global_proc["recoveryTimeline"],
                 "medications": customization.medications or global_proc["medications"],
-                "customizedAt": datetime.utcnow(),
+                "customizedAt": datetime.now(timezone.utc),
                 "customizedBy": user_email,
                 "isActive": True,
                 "originalOverview": global_proc["overview"]  # Backup of original
