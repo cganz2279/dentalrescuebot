@@ -1754,9 +1754,24 @@ async def customize_procedure(
 ):
     """Create or update practice-specific customization of a global procedure"""
     try:
+        print(f"🔧 DEBUG: Starting customization for procedure_id: {procedure_id}")
+        print(f"🔧 DEBUG: Current user: {current_user}")
+        print(f"🔧 DEBUG: Customization data: {customization}")
+        
         practice_id = current_user["practiceId"]
         user_email = current_user["email"]
         role = current_user["role"]
+        
+        print(f"🔧 DEBUG: Extracted - practice_id: {practice_id}, role: {role}")
+        
+    except Exception as e:
+        print(f"❌ DEBUG: Error in user extraction: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"User extraction error: {str(e)}"
+        )
+    
+    try:
         
         if role != 'practice_admin':
             raise HTTPException(
