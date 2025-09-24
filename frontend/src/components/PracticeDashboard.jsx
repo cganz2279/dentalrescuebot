@@ -112,8 +112,8 @@ const PracticeDashboard = () => {
 
   const handleEditProcedure = (procedureId) => {
     console.log('🔧 handleEditProcedure called with ID:', procedureId);
-    // Navigate to edit procedure assignment page
-    navigate(`/edit-procedure/${procedureId}`);
+    // Navigate to procedure details page where they can edit content
+    navigate(`/procedure-details/${procedureId}`);
   };
 
   const handlePrintProcedure = async (procedureId) => {
