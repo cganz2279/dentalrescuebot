@@ -1772,8 +1772,8 @@ async def customize_procedure(
                 detail="Global procedure not found"
             )
         
-        # Check if override already exists
-        existing_override = await db.practice_procedure_overrides.find_one({
+        # Check if customization already exists
+        existing_customization = await db.practice_procedure_customizations.find_one({
             "practiceId": practice_id,
             "procedureId": procedure_id
         })
