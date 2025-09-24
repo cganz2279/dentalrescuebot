@@ -1798,19 +1798,19 @@ async def customize_procedure(
             update_data = {"customizedAt": datetime.now(timezone.utc), "customizedBy": user_email, "isActive": True}
             
             # Only update provided fields
-            if customization.name is not None:
+            if hasattr(customization, 'name') and customization.name is not None:
                 update_data["name"] = customization.name
-            if customization.overview is not None:
+            if hasattr(customization, 'overview') and customization.overview is not None:
                 update_data["overview"] = customization.overview
-            if customization.immediateAftercare is not None:
+            if hasattr(customization, 'immediateAftercare') and customization.immediateAftercare is not None:
                 update_data["immediateAftercare"] = customization.immediateAftercare
-            if customization.dietRestrictions is not None:
+            if hasattr(customization, 'dietRestrictions') and customization.dietRestrictions is not None:
                 update_data["dietRestrictions"] = customization.dietRestrictions
-            if customization.warningSignsToCallDoctor is not None:
+            if hasattr(customization, 'warningSignsToCallDoctor') and customization.warningSignsToCallDoctor is not None:
                 update_data["warningSignsToCallDoctor"] = customization.warningSignsToCallDoctor
-            if customization.recoveryTimeline is not None:
+            if hasattr(customization, 'recoveryTimeline') and customization.recoveryTimeline is not None:
                 update_data["recoveryTimeline"] = customization.recoveryTimeline
-            if customization.medications is not None:
+            if hasattr(customization, 'medications') and customization.medications is not None:
                 update_data["medications"] = customization.medications
             
             await db.practice_procedure_customizations.update_one(
