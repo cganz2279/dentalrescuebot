@@ -1001,7 +1001,8 @@ const AdminDashboard = () => {
 
             {/* Add Procedure Form */}
             {showAddProcedureForm && (
-              <Card>
+              <ErrorBoundary>
+                <Card>
                 <CardHeader>
                   <CardTitle>Add New Global Procedure</CardTitle>
                 </CardHeader>
