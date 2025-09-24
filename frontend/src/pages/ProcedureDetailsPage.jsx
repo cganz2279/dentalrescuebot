@@ -268,6 +268,8 @@ const ProcedureDetailsPage = () => {
       // Prepare procedure data for PDF with practice information
       const procedureForPDF = {
         ...procedureData.procedureDetails,
+        name: procedureData.procedureName, // Add the procedure name
+        procedureName: procedureData.procedureName, // Add as backup field
         practiceName: practice?.name || 'Dental Practice',
         practiceAddress: practice?.address || practice?.location || '',
         practicePhone: practice?.phone || '',
