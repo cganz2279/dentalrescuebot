@@ -120,30 +120,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin Panel Procedure Creation API Validation"
-  stuck_tasks: []
+    - "Admin Panel Procedure Creation Form React Error Fix"
+  stuck_tasks:
+    - "Admin Panel Procedure Creation Form React Error Fix"
   test_all: false
   test_priority: "high_first"
-  completed_new_features:
-    - "PDF Generation Without 500 Errors"
-    - "PDF Filename Generation with Procedure Names"
-    - "PDF Debug Logging Implementation"
-    - "Admin Panel Procedure Creation API Validation"
-  pdf_500_error_fix_testing_completed:
-    - "Amalgam Fillings procedure - PDF generated without 500 errors"
-    - "Biopsy of Oral Tissue procedure - PDF generated without 500 errors"
-    - "Zero 'Failed to update overview' errors detected"
-    - "Zero network 500 errors detected"
-    - "No unnecessary save operations triggered during print"
-    - "PDF generation success confirmed with proper filenames"
-    - "100% success rate across all tested procedures"
-    - "Clean PDF generation without any server errors"
-  admin_api_validation_testing_completed:
-    - "Admin login successful with cganz@admin.com/Dentist1# credentials"
-    - "All 6 validation scenarios returned proper 422 errors"
-    - "Missing required fields properly validated"
-    - "Empty string fields properly validated"
-    - "Error responses properly structured for frontend parsing"
-    - "Valid procedure creation successful with complete data"
-    - "JSON serialization issues fixed"
-    - "Pydantic validation properly implemented"
+  critical_issue_found:
+    - "React error 'Objects are not valid as a React child' still present in admin panel procedure form validation"
+    - "Frontend error handling not properly implemented for validation errors"
+    - "Form validation errors not displayed to users due to React rendering error"
