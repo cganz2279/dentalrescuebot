@@ -9,7 +9,7 @@ import json
 import sys
 
 # Backend URL from frontend configuration
-BACKEND_URL = "https://dental-portal-fix-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://admin-panel-debug-5.preview.emergentagent.com/api"
 
 def authenticate():
     """Authenticate and get token"""

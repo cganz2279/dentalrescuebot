@@ -13,7 +13,7 @@ import sys
 from typing import Dict, Any, Optional, List
 
 # Backend URL from frontend .env file
-BACKEND_URL = "https://dental-portal-fix-1.preview.emergentagent.com"
+BACKEND_URL = "https://admin-panel-debug-5.preview.emergentagent.com"
 
 # Test credentials from review request
 TEST_EMAIL = "cganz2279@gmail.com"
