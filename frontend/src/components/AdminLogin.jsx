@@ -431,7 +431,13 @@ const AdminDashboard = () => {
   };
 
   const createProcedure = async () => {
-    if (!adminToken) return;
+    console.log('🚀 CREATE PROCEDURE FUNCTION CALLED!');
+    alert('Create Procedure function was called!'); // Visual confirmation
+    
+    if (!adminToken) {
+      console.log('❌ No admin token found');
+      return;
+    }
     
     setLoading(true);
     setError(''); // Clear any previous errors
