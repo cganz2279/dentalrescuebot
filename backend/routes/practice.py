@@ -1850,10 +1850,13 @@ async def customize_procedure(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Customize procedure error: {e}")
+        print(f"❌ Customize procedure error: {e}")
+        print(f"❌ Error type: {type(e)}")
+        import traceback
+        print(f"❌ Traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to customize procedure"
+            detail=f"Failed to customize procedure: {str(e)}"
         )
 
 @router.delete("/procedures/{procedure_id}/customize")
