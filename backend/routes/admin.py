@@ -47,11 +47,11 @@ class PasswordResetRequest(BaseModel):
 
 # Global Procedure Management Models
 class GlobalProcedureCreate(BaseModel):
-    name: str
-    specialty: str
-    specialtyName: str
-    duration: str
-    overview: str
+    name: str = Field(..., min_length=1, description="Procedure name cannot be empty")
+    specialty: str = Field(..., min_length=1, description="Specialty cannot be empty")
+    specialtyName: str = Field(..., min_length=1, description="Specialty name cannot be empty")
+    duration: str = Field(..., min_length=1, description="Duration cannot be empty")
+    overview: str = Field(..., min_length=1, description="Overview cannot be empty")
     immediateAftercare: List[str]
     dietRestrictions: List[str]
     warningSignsToCallDoctor: List[str]
