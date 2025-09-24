@@ -144,7 +144,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "PDF Generation Without 500 Errors"
+    - "Admin Panel Procedure Creation API Validation"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -152,6 +152,7 @@ test_plan:
     - "PDF Generation Without 500 Errors"
     - "PDF Filename Generation with Procedure Names"
     - "PDF Debug Logging Implementation"
+    - "Admin Panel Procedure Creation API Validation"
   pdf_500_error_fix_testing_completed:
     - "Amalgam Fillings procedure - PDF generated without 500 errors"
     - "Biopsy of Oral Tissue procedure - PDF generated without 500 errors"
@@ -161,3 +162,12 @@ test_plan:
     - "PDF generation success confirmed with proper filenames"
     - "100% success rate across all tested procedures"
     - "Clean PDF generation without any server errors"
+  admin_api_validation_testing_completed:
+    - "Admin login successful with cganz@admin.com/Dentist1# credentials"
+    - "All 6 validation scenarios returned proper 422 errors"
+    - "Missing required fields properly validated"
+    - "Empty string fields properly validated"
+    - "Error responses properly structured for frontend parsing"
+    - "Valid procedure creation successful with complete data"
+    - "JSON serialization issues fixed"
+    - "Pydantic validation properly implemented"
