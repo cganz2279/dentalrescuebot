@@ -301,6 +301,12 @@ const ProcedureDetailsPage = () => {
         practiceOfficeHours: procedureForPDF.practiceOfficeHours,
         practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
       });
+      
+      console.log('📝 Procedure name for PDF:', {
+        originalName: procedureData.procedureName,
+        nameInPDF: procedureForPDF.name,
+        procedureNameInPDF: procedureForPDF.procedureName
+      });
 
       const success = await generateProcedurePDF(procedureForPDF);
       
