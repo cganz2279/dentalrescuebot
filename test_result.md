@@ -136,3 +136,5 @@ test_plan:
     - "React error 'Objects are not valid as a React child' still present in admin panel procedure form validation"
     - "Frontend error handling not properly implemented for validation errors"
     - "Form validation errors not displayed to users due to React rendering error"
+    - "Error state being set to raw validation error object instead of processed string"
+    - "Red screen error appears when form validation fails, breaking user experience"
