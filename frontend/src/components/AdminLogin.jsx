@@ -307,7 +307,7 @@ const AdminDashboard = () => {
         alert(`User "${userName}" has been deleted successfully.`);
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to delete user');
+        setError(handleApiError(errorData, 'Failed to delete user'));
       }
     } catch (error) {
       console.error('Failed to delete user:', error);
