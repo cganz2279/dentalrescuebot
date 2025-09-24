@@ -178,6 +178,66 @@ const ProcedureDetailsPage = () => {
     }
   };
 
+  // Overview editing functions
+  const handleEditOverview = () => {
+    console.log('🔧 Starting overview editing mode');
+    setEditedOverview(procedureData.procedure?.overview || '');
+    setIsEditingOverview(true);
+  };
+
+  const saveOverview = async () => {
+    try {
+      setSavingOverview(true);
+      console.log('🔧 Saving overview content for procedure:', procedureData.procedure?.id);
+      
+      // Call API to update procedure overview
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/public/procedures/${procedureData.procedure.id}/overview`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('dentalToken')}`
+        },
+        body: JSON.stringify({ overview: editedOverview })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update overview');
+      }
+
+      // Update local state
+      setProcedureData(prev => ({
+        ...prev,
+        procedure: {
+          ...prev.procedure,
+          overview: editedOverview
+        }
+      }));
+      
+      setIsEditingOverview(false);
+      
+      toast({
+        title: "Success!",
+        description: "Procedure overview has been updated successfully.",
+        variant: "default",
+      });
+      
+    } catch (error) {
+      console.error('Save overview error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save procedure overview. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingOverview(false);
+    }
+  };
+
+  const cancelOverviewEditing = () => {
+    setEditedOverview(procedureData.procedure?.overview || '');
+    setIsEditingOverview(false);
+  };
+
   const handlePrint = async () => {
     // Generate proper PDF with Office Hours and Emergency Contact
     try {
