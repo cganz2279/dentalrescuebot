@@ -181,17 +181,17 @@ const ProcedureDetailsPage = () => {
   // Overview editing functions
   const handleEditOverview = () => {
     console.log('🔧 Starting overview editing mode');
-    setEditedOverview(procedureData.procedure?.overview || '');
+    setEditedOverview(procedureData?.procedureDetails?.overview || '');
     setIsEditingOverview(true);
   };
 
   const saveOverview = async () => {
     try {
       setSavingOverview(true);
-      console.log('🔧 Saving overview content for procedure:', procedureData.procedure?.id);
+      console.log('🔧 Saving overview content for procedure:', procedureId);
       
-      // Call API to update procedure overview
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/public/procedures/${procedureData.procedure.id}/overview`, {
+      // Call API to update procedure overview using procedureId from useParams
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/public/procedures/${procedureId}/overview`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -207,8 +207,8 @@ const ProcedureDetailsPage = () => {
       // Update local state
       setProcedureData(prev => ({
         ...prev,
-        procedure: {
-          ...prev.procedure,
+        procedureDetails: {
+          ...prev.procedureDetails,
           overview: editedOverview
         }
       }));
@@ -234,7 +234,7 @@ const ProcedureDetailsPage = () => {
   };
 
   const cancelOverviewEditing = () => {
-    setEditedOverview(procedureData.procedure?.overview || '');
+    setEditedOverview(procedureData?.procedureDetails?.overview || '');
     setIsEditingOverview(false);
   };
 
