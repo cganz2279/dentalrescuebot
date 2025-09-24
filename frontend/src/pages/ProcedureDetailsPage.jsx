@@ -104,6 +104,7 @@ const ProcedureDetailsPage = () => {
   };
 
   const handleEdit = () => {
+    console.log('🔧 ProcedureDetailsPage Edit button clicked, setting editing mode to true');
     setIsEditing(true);
   };
 
