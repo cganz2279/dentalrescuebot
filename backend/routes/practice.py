@@ -1759,7 +1759,7 @@ async def customize_procedure(
         print(f"🔧 DEBUG: Customization data: {customization}")
         
         practice_id = current_user["practiceId"]
-        user_email = current_user["email"]
+        user_email = current_user["user"]["email"]
         role = current_user["role"]
         
         print(f"🔧 DEBUG: Extracted - practice_id: {practice_id}, role: {role}")
