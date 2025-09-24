@@ -1148,6 +1148,7 @@ const AdminDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
+              </ErrorBoundary>
             )}
 
             {/* Organized Procedures List by Specialty with Color Coding */}
