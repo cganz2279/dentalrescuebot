@@ -27,6 +27,42 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 
+// Error Boundary to catch React errors
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error: error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error Boundary caught error:', error);
+    console.error('Error Info:', errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+          <h3 className="font-bold">React Error Caught:</h3>
+          <p>Error: {this.state.error?.message || 'Unknown error'}</p>
+          <button 
+            onClick={() => this.setState({ hasError: false, error: null })}
+            className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-sm"
+          >
+            Try Again
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 // Simple custom Tabs component to avoid Radix UI issues
 const CustomTabs = ({ children, value, onValueChange, className }) => {
   return <div className={className || ''}>{children}</div>;
