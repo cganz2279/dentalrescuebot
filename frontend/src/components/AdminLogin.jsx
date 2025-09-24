@@ -375,7 +375,22 @@ const AdminDashboard = () => {
         });
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to create procedure');
+        
+        // Handle FastAPI validation errors
+        if (Array.isArray(errorData.detail)) {
+          const errorMessages = errorData.detail.map(err => {
+            if (typeof err === 'object' && err.msg) {
+              return `${err.loc ? err.loc.join(' -> ') + ': ' : ''}${err.msg}`;
+            }
+            return String(err);
+          });
+          setError(errorMessages.join(', '));
+        } else if (typeof errorData.detail === 'object') {
+          // Single error object
+          setError(errorData.detail.msg || JSON.stringify(errorData.detail));
+        } else {
+          setError(errorData.detail || 'Failed to create procedure');
+        }
       }
     } catch (error) {
       console.error('Failed to create procedure:', error);
