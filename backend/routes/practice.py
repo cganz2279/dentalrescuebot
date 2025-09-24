@@ -1780,7 +1780,7 @@ async def customize_procedure(
         
         if existing_customization:
             # Update existing customization
-            update_data = {"customizedAt": datetime.utcnow(), "customizedBy": user_email, "isActive": True}
+            update_data = {"customizedAt": datetime.now(timezone.utc), "customizedBy": user_email, "isActive": True}
             
             # Only update provided fields
             if customization.name is not None:
