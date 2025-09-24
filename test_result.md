@@ -143,9 +143,12 @@ test_plan:
   test_all: false
   test_priority: "high_first"
   critical_issue_found:
-    - "React error 'Objects are not valid as a React child' still present in admin panel procedure form validation after latest robust error handling changes"
-    - "Frontend error handling not properly implemented for validation errors despite handleApiError function and safety checks being present"
-    - "Form validation errors not displayed to users due to React rendering error"
-    - "Error state being set to raw validation error object instead of processed string"
-    - "Red screen of death appears when form validation fails, breaking user experience"
-    - "Latest robust error handling changes have NOT resolved the critical frontend error handling issue"
+    - "React error 'Objects are not valid as a React child' still present in admin panel procedure form validation after error boundary implementation"
+    - "ErrorBoundary component implemented but completely ineffective - does not catch the React error during form validation"
+    - "Error boundary only wraps form display JSX but not the async error processing logic in createProcedure function where the actual error occurs"
+    - "Frontend error handling broken - raw validation error object being set to error state instead of processed string"
+    - "Red screen of death appears when form validation fails, completely breaking user experience"
+    - "Error boundary architectural flaw - cannot catch errors in async operations or event handlers"
+    - "Root cause is in createProcedure function's error handling logic, not component rendering"
+    - "Error boundary provides no debugging information because it never activates"
+    - "Main agent needs to fix the actual error handling in createProcedure function, not rely on error boundary to catch symptoms"
