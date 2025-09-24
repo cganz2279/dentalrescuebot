@@ -193,6 +193,7 @@ const ProcedureDetailsPage = () => {
       console.log('🔧 Saving PRACTICE-SPECIFIC overview content for procedure:', actualProcedureId);
       console.log('🔧 Assignment ID was:', procedureId);
       console.log('🔧 CRITICAL: Using practice-specific endpoint, NOT global endpoint');
+      console.log('🔧 Is editing mode active?', isEditingOverview);
       
       if (!actualProcedureId) {
         throw new Error('Procedure ID not found');
