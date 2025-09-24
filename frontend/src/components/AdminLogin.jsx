@@ -98,20 +98,29 @@ const AdminDashboard = () => {
 
   // Helper function to handle API error responses
   const handleApiError = (errorData, fallbackMessage) => {
-    // Handle FastAPI validation errors
-    if (Array.isArray(errorData.detail)) {
-      const errorMessages = errorData.detail.map(err => {
-        if (typeof err === 'object' && err.msg) {
-          return `${err.loc ? err.loc.join(' -> ') + ': ' : ''}${err.msg}`;
-        }
-        return String(err);
-      });
-      return errorMessages.join(', ');
-    } else if (typeof errorData.detail === 'object') {
-      // Single error object
-      return errorData.detail.msg || JSON.stringify(errorData.detail);
-    } else {
-      return errorData.detail || fallbackMessage;
+    try {
+      // Handle FastAPI validation errors
+      if (Array.isArray(errorData.detail)) {
+        const errorMessages = errorData.detail.map(err => {
+          if (typeof err === 'object' && err.msg) {
+            return `${err.loc ? err.loc.join(' -> ') + ': ' : ''}${err.msg}`;
+          }
+          return String(err);
+        });
+        return errorMessages.join(', ');
+      } else if (typeof errorData.detail === 'object' && errorData.detail !== null) {
+        // Single error object
+        return errorData.detail.msg || JSON.stringify(errorData.detail);
+      } else if (typeof errorData.detail === 'string') {
+        return errorData.detail;
+      } else if (typeof errorData === 'string') {
+        return errorData;
+      } else {
+        return fallbackMessage;
+      }
+    } catch (e) {
+      console.error('Error parsing API error response:', e);
+      return fallbackMessage;
     }
   };
 
