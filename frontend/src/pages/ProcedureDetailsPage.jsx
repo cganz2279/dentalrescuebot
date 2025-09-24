@@ -25,6 +25,11 @@ const ProcedureDetailsPage = () => {
   const [saving, setSaving] = useState(false);
   const [doctors, setDoctors] = useState([]);
   
+  // Overview editing state
+  const [isEditingOverview, setIsEditingOverview] = useState(false);
+  const [editedOverview, setEditedOverview] = useState('');
+  const [savingOverview, setSavingOverview] = useState(false);
+  
   const [editData, setEditData] = useState({
     performedDate: '',
     followUpDate: '',
