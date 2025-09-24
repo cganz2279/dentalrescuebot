@@ -1778,9 +1778,9 @@ async def customize_procedure(
             "procedureId": procedure_id
         })
         
-        if existing_override:
-            # Update existing override
-            update_data = {"customizedAt": datetime.utcnow(), "customizedBy": user_email}
+        if existing_customization:
+            # Update existing customization
+            update_data = {"customizedAt": datetime.utcnow(), "customizedBy": user_email, "isActive": True}
             
             # Only update provided fields
             if customization.name is not None:
@@ -1798,7 +1798,7 @@ async def customize_procedure(
             if customization.medications is not None:
                 update_data["medications"] = customization.medications
             
-            await db.practice_procedure_overrides.update_one(
+            await db.practice_procedure_customizations.update_one(
                 {"practiceId": practice_id, "procedureId": procedure_id},
                 {"$set": update_data}
             )
