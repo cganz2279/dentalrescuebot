@@ -474,7 +474,7 @@ const AdminDashboard = () => {
         alert(`Successfully deployed ${procedureIds.length} procedures to ${data.deployment_result.deployed_to_practices} practices`);
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to deploy procedures');
+        setError(handleApiError(errorData, 'Failed to deploy procedures'));
       }
     } catch (error) {
       console.error('Failed to deploy procedures:', error);
