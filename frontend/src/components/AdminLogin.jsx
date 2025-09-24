@@ -252,7 +252,7 @@ const AdminDashboard = () => {
         }
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to delete practice');
+        setError(handleApiError(errorData, 'Failed to delete practice'));
       }
     } catch (error) {
       console.error('Failed to delete practice:', error);
