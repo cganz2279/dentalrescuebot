@@ -651,6 +651,42 @@ async def get_procedure_assignment(
                 detail="Procedure details not found"
             )
         
+        # Check for practice-specific customizations
+        customization = await db.practice_procedure_customizations.find_one(
+            {
+                "practiceId": practice_id,
+                "procedureId": procedure["id"],
+                "isActive": True
+            },
+            {"_id": 0}
+        )
+        
+        # Apply practice customizations if they exist
+        if customization:
+            print(f"🏥 Applying practice-specific customizations for {procedure['id']}")
+            # Override global content with practice-specific content
+            if customization.get("overview"):
+                procedure["overview"] = customization["overview"]
+            if customization.get("name"):
+                procedure["name"] = customization["name"]
+            if customization.get("immediateAftercare"):
+                procedure["immediateAftercare"] = customization["immediateAftercare"]
+            if customization.get("dietRestrictions"):
+                procedure["dietRestrictions"] = customization["dietRestrictions"]
+            if customization.get("warningSignsToCallDoctor"):
+                procedure["warningSignsToCallDoctor"] = customization["warningSignsToCallDoctor"]
+            if customization.get("recoveryTimeline"):
+                procedure["recoveryTimeline"] = customization["recoveryTimeline"]
+            if customization.get("medications"):
+                procedure["medications"] = customization["medications"]
+            
+            # Add customization metadata
+            procedure["isCustomized"] = True
+            procedure["customizedAt"] = customization.get("customizedAt")
+            procedure["customizedBy"] = customization.get("customizedBy")
+        else:
+            procedure["isCustomized"] = False
+        
         # Combine assignment with full procedure details
         result = {
             "assignment": assignment,
