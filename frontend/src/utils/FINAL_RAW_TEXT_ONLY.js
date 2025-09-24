@@ -79,7 +79,8 @@ export const generateProcedurePDF = async (procedure) => {
     pdf.text(`Generated: ${timestamp} - Cache: ${cacheKey}`, 20, 285);
     
     // Save with timestamp filename
-    const filename = `${procedure.name.replace(/[^a-zA-Z0-9]/g, '_')}_RAW_${cacheKey}.pdf`;
+    const procedureName = procedure?.name || procedure?.procedureName || 'Procedure';
+    const filename = `${procedureName.replace(/[^a-zA-Z0-9]/g, '_')}_RAW_${cacheKey}.pdf`;
     pdf.save(filename);
     
     console.log('🚨 PDF SAVED:', filename);
