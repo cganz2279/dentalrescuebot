@@ -526,6 +526,46 @@ const ProcedureDetailsPage = () => {
             <p className="text-sm text-blue-600 mt-2">Please follow these instructions carefully for optimal healing</p>
           </CardHeader>
           <CardContent className="p-6">
+            {/* Overview Editing Interface */}
+            {isEditingOverview ? (
+              <div className="space-y-4 mb-6 p-4 border-2 border-blue-200 rounded-lg bg-blue-50">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-blue-800">Edit Procedure Overview Content</h3>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={saveOverview}
+                      disabled={savingOverview}
+                      className="flex items-center gap-2"
+                    >
+                      <Save className="h-4 w-4" />
+                      {savingOverview ? 'Saving...' : 'Save'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={cancelOverviewEditing}
+                      disabled={savingOverview}
+                      className="flex items-center gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+                <textarea
+                  value={editedOverview}
+                  onChange={(e) => setEditedOverview(e.target.value)}
+                  className="w-full h-64 p-4 border border-gray-300 rounded-lg resize-vertical font-mono text-sm"
+                  placeholder="Enter post-operative care instructions..."
+                />
+                <p className="text-sm text-gray-600">
+                  This content will appear in the generated PDFs. Edit the raw text here.
+                </p>
+              </div>
+            ) : null}
+            
             <div className="space-y-6">
               {(() => {
                 // Parse content into sections - handle both line-by-line and sentence-based content
