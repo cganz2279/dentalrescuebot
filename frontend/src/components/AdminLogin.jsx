@@ -371,6 +371,8 @@ const AdminDashboard = () => {
     if (!adminToken) return;
     
     setLoading(true);
+    setError(''); // Clear any previous errors
+    
     try {
       const response = await fetch(`${API_BASE}/procedures`, {
         method: 'POST',
@@ -402,12 +404,21 @@ const AdminDashboard = () => {
           medications: ['']
         });
       } else {
-        const errorData = await response.json();
-        setError(handleApiError(errorData, 'Failed to create procedure'));
+        try {
+          const errorData = await response.json();
+          console.error('API Error Response:', errorData); // Debug log
+          const errorMessage = handleApiError(errorData, 'Failed to create procedure');
+          console.log('Processed Error Message:', errorMessage); // Debug log
+          setError(errorMessage);
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          const rawText = await response.text();
+          setError(`Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`);
+        }
       }
     } catch (error) {
       console.error('Failed to create procedure:', error);
-      setError('Failed to create procedure');
+      setError(`Network error: ${error.message || 'Failed to create procedure'}`);
     }
     setLoading(false);
   };
