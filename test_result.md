@@ -128,17 +128,20 @@ metadata:
 
 test_plan:
   current_focus:
-    - "PDF Filename Generation with Procedure Names"
+    - "PDF Generation Without 500 Errors"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   completed_new_features:
+    - "PDF Generation Without 500 Errors"
     - "PDF Filename Generation with Procedure Names"
     - "PDF Debug Logging Implementation"
-  pdf_filename_testing_completed:
-    - "Amalgam Fillings procedure - Generated: Amalgam_Fillings_RAW_[timestamp].pdf"
-    - "Biopsy of Oral Tissue procedure - Generated: Biopsy_of_Oral_Tissue_RAW_[timestamp].pdf"
-    - "Dental Crown Placement procedure - Generated: Dental_Crown_Placement_RAW_[timestamp].pdf"
+  pdf_500_error_fix_testing_completed:
+    - "Amalgam Fillings procedure - PDF generated without 500 errors"
+    - "Biopsy of Oral Tissue procedure - PDF generated without 500 errors"
+    - "Zero 'Failed to update overview' errors detected"
+    - "Zero network 500 errors detected"
+    - "No unnecessary save operations triggered during print"
+    - "PDF generation success confirmed with proper filenames"
     - "100% success rate across all tested procedures"
-    - "No generic 'Procedure_RAW_[timestamp].pdf' filenames found"
-    - "Proper filename sanitization confirmed (spaces → underscores)"
+    - "Clean PDF generation without any server errors"
