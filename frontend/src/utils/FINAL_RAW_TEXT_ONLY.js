@@ -45,20 +45,27 @@ export const generateProcedurePDF = async (procedure) => {
       console.log('Logo header added as enhanced text');
     }
     
-    // Title
+    // Title - handle different data structures
+    const procedureName = procedure?.name || procedure?.procedureName || 'Procedure';
     pdf.setTextColor(0, 0, 0); // Reset to black
     pdf.setFontSize(16);
     pdf.setFont(undefined, 'bold');
-    pdf.text(procedure.name || 'Procedure', 20, yPos);
+    pdf.text(procedureName, 20, yPos);
     yPos += 20;
     
     // ONLY THE RAW OVERVIEW TEXT - NOTHING ELSE
-    if (procedure.overview) {
+    // Handle different data structures
+    const overviewContent = procedure?.overview || 
+                           procedure?.procedureDetails?.overview || 
+                           procedure?.procedureData?.overview ||
+                           '';
+    
+    if (overviewContent) {
       pdf.setFontSize(11);
       pdf.setFont(undefined, 'normal');
       
       // Split text to fit page
-      const lines = pdf.splitTextToSize(procedure.overview, 170);
+      const lines = pdf.splitTextToSize(overviewContent, 170);
       
       lines.forEach(line => {
         if (yPos > 270) {
@@ -71,6 +78,7 @@ export const generateProcedurePDF = async (procedure) => {
     } else {
       pdf.setFontSize(11);
       pdf.text('No overview content available', 20, yPos);
+      console.log('⚠️ No overview content found in procedure data structure');
     }
     
     // Footer with timestamp to confirm this generator ran
