@@ -419,6 +419,7 @@ const AdminDashboard = () => {
     
     setLoading(true);
     setError(''); // Clear any previous errors
+    console.log('Starting createProcedure...');
     
     try {
       const response = await fetch(`${API_BASE}/procedures`, {
@@ -436,7 +437,11 @@ const AdminDashboard = () => {
         })
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (response.ok) {
+        console.log('Success - reloading procedures');
         await loadProcedures();
         setShowAddProcedureForm(false);
         setNewProcedure({
@@ -451,26 +456,34 @@ const AdminDashboard = () => {
           medications: ['']
         });
       } else {
+        console.log('Response not ok, handling error...');
+        
         // Handle error responses
         let errorMessage = 'Failed to create procedure';
         
         try {
           const errorData = await response.json();
-          console.error('API Error Response:', errorData); // Debug log
+          console.error('Raw API Error Response:', JSON.stringify(errorData, null, 2));
+          
+          // Process error through handleApiError function
           errorMessage = handleApiError(errorData, 'Failed to create procedure');
-          console.log('Processed Error Message:', errorMessage); // Debug log
+          console.log('Processed Error Message (type:', typeof errorMessage, '):', errorMessage);
+          
         } catch (parseError) {
           console.error('Failed to parse error response:', parseError);
           const rawText = await response.text();
           errorMessage = `Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`;
+          console.log('Fallback Error Message:', errorMessage);
         }
         
-        // Ensure errorMessage is always a string with additional safety
-        const safeErrorMessage = typeof errorMessage === 'string' ? errorMessage : 
-                                typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : 
-                                'Failed to create procedure';
-        console.log('Setting error to:', safeErrorMessage); // Debug log
-        setError(safeErrorMessage);
+        // Final validation that errorMessage is a string
+        if (typeof errorMessage !== 'string') {
+          console.error('ERROR: errorMessage is not a string! Type:', typeof errorMessage, 'Value:', errorMessage);
+          errorMessage = 'Invalid error response - please check console for details';
+        }
+        
+        console.log('Setting error state to:', errorMessage);
+        setError(errorMessage);
       }
     } catch (networkError) {
       console.error('Network error during procedure creation:', networkError);
