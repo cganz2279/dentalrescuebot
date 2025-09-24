@@ -60,6 +60,7 @@ const ProcedureDetailsPage = () => {
       // Transform the data to match our component structure
       const transformedData = {
         id: data.assignment.id,
+        actualProcedureId: data.assignment.procedureId || data.procedure.id, // Store the actual procedure ID
         procedureName: data.assignment.procedureName,
         patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : 'Unknown Patient',
         patientEmail: data.patient ? data.patient.email : '',
