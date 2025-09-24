@@ -112,7 +112,7 @@ const PracticeDashboard = () => {
 
   const handleEditProcedure = (procedureId) => {
     console.log('🔧 handleEditProcedure called with ID:', procedureId);
-    // Navigate to procedure details page where they can edit content
+    // Navigate to procedure details page where they can edit the actual procedure content
     navigate(`/procedure-details/${procedureId}`);
   };
 
