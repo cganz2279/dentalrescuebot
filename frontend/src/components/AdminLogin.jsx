@@ -96,6 +96,25 @@ const AdminDashboard = () => {
 
   const API_BASE = `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}/api/admin`;
 
+  // Helper function to handle API error responses
+  const handleApiError = (errorData, fallbackMessage) => {
+    // Handle FastAPI validation errors
+    if (Array.isArray(errorData.detail)) {
+      const errorMessages = errorData.detail.map(err => {
+        if (typeof err === 'object' && err.msg) {
+          return `${err.loc ? err.loc.join(' -> ') + ': ' : ''}${err.msg}`;
+        }
+        return String(err);
+      });
+      return errorMessages.join(', ');
+    } else if (typeof errorData.detail === 'object') {
+      // Single error object
+      return errorData.detail.msg || JSON.stringify(errorData.detail);
+    } else {
+      return errorData.detail || fallbackMessage;
+    }
+  };
+
   useEffect(() => {
     loadDashboardData();
   }, []);
