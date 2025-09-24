@@ -996,11 +996,27 @@ async def create_global_procedure(
         }
         await db.admin_actions.insert_one(admin_action)
         
+        # Create a clean response without datetime objects and MongoDB _id
+        clean_procedure = {
+            "id": procedure_id,
+            "name": procedure.name,
+            "specialty": procedure.specialty,
+            "specialtyName": procedure.specialtyName,
+            "duration": procedure.duration,
+            "overview": procedure.overview,
+            "immediateAftercare": procedure.immediateAftercare,
+            "dietRestrictions": procedure.dietRestrictions,
+            "warningSignsToCallDoctor": procedure.warningSignsToCallDoctor,
+            "recoveryTimeline": procedure.recoveryTimeline,
+            "medications": procedure.medications,
+            "createdBy": admin_data["adminEmail"]
+        }
+        
         return {
             "success": True,
             "message": "Procedure created successfully",
             "procedure_id": procedure_id,
-            "procedure": procedure_doc
+            "procedure": clean_procedure
         }
         
     except HTTPException:
