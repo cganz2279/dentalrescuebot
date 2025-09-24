@@ -190,18 +190,20 @@ const ProcedureDetailsPage = () => {
     try {
       setSavingOverview(true);
       const actualProcedureId = procedureData?.actualProcedureId;
-      console.log('🔧 Saving overview content for procedure:', actualProcedureId);
+      console.log('🔧 Saving PRACTICE-SPECIFIC overview content for procedure:', actualProcedureId);
       console.log('🔧 Assignment ID was:', procedureId);
+      console.log('🔧 CRITICAL: Using practice-specific endpoint, NOT global endpoint');
       
       if (!actualProcedureId) {
         throw new Error('Procedure ID not found');
       }
       
-      // Call API to update procedure overview using actual procedure ID
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/public/procedures/${actualProcedureId}/overview`, {
-        method: 'PUT',
+      // Call PRACTICE-SPECIFIC API to customize procedure (NOT global update)
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/practice/procedures/${actualProcedureId}/customize`, {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('dentalToken')}`
         },
         body: JSON.stringify({ overview: editedOverview })
       });
