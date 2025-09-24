@@ -421,7 +421,7 @@ const AdminDashboard = () => {
         setEditingProcedure(null);
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to update procedure');
+        setError(handleApiError(errorData, 'Failed to update procedure'));
       }
     } catch (error) {
       console.error('Failed to update procedure:', error);
