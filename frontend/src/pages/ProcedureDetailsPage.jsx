@@ -194,8 +194,7 @@ const ProcedureDetailsPage = () => {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/public/procedures/${procedureId}/overview`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('dentalToken')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ overview: editedOverview })
       });
