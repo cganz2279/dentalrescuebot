@@ -433,7 +433,10 @@ const PatientProcedureView = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setIsEditingOverview(true)}
+                    onClick={() => {
+                      console.log('🔧 Edit button clicked, setting editing mode to true');
+                      setIsEditingOverview(true);
+                    }}
                     className="flex items-center gap-2"
                   >
                     <Edit3 className="h-4 w-4" />
