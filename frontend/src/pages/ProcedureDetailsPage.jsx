@@ -418,11 +418,11 @@ const ProcedureDetailsPage = () => {
                 <>
                   <Button
                     variant="outline"
-                    onClick={handleEdit}
+                    onClick={handleEditOverview}
                     className="flex items-center"
                   >
                     <Edit className="h-4 w-4 mr-2" />
-                    Edit
+                    Edit Content
                   </Button>
                   <Button
                     onClick={handlePrint}
