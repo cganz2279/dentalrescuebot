@@ -1857,20 +1857,20 @@ async def remove_procedure_customization(
                 detail="Only practice admins can remove customizations"
             )
         
-        # Verify override exists
-        override = await db.practice_procedure_overrides.find_one({
+        # Verify customization exists
+        customization = await db.practice_procedure_customizations.find_one({
             "practiceId": practice_id,
             "procedureId": procedure_id
         })
         
-        if not override:
+        if not customization:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="No customization found for this procedure"
             )
         
-        # Remove the override
-        await db.practice_procedure_overrides.delete_one({
+        # Remove the customization
+        await db.practice_procedure_customizations.delete_one({
             "practiceId": practice_id,
             "procedureId": procedure_id
         })
