@@ -418,8 +418,12 @@ const AdminDashboard = () => {
           errorMessage = `Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`;
         }
         
-        // Ensure errorMessage is always a string
-        setError(typeof errorMessage === 'string' ? errorMessage : 'Failed to create procedure');
+        // Ensure errorMessage is always a string with additional safety
+        const safeErrorMessage = typeof errorMessage === 'string' ? errorMessage : 
+                                typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : 
+                                'Failed to create procedure';
+        console.log('Setting error to:', safeErrorMessage); // Debug log
+        setError(safeErrorMessage);
       }
     } catch (networkError) {
       console.error('Network error during procedure creation:', networkError);
