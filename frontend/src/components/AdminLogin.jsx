@@ -431,17 +431,10 @@ const AdminDashboard = () => {
   };
 
   const createProcedure = async () => {
-    console.log('🚀 CREATE PROCEDURE FUNCTION CALLED!');
-    alert('Create Procedure function was called!'); // Visual confirmation
-    
-    if (!adminToken) {
-      console.log('❌ No admin token found');
-      return;
-    }
+    if (!adminToken) return;
     
     setLoading(true);
     setError(''); // Clear any previous errors
-    console.log('Starting createProcedure...');
     
     try {
       const response = await fetch(`${API_BASE}/procedures`, {
@@ -459,11 +452,7 @@ const AdminDashboard = () => {
         })
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
       if (response.ok) {
-        console.log('Success - reloading procedures');
         await loadProcedures();
         setShowAddProcedureForm(false);
         setNewProcedure({
@@ -478,34 +467,16 @@ const AdminDashboard = () => {
           medications: ['']
         });
       } else {
-        console.log('Response not ok, handling error...');
-        
         // Handle error responses
-        let errorMessage = 'Failed to create procedure';
-        
         try {
           const errorData = await response.json();
-          console.error('Raw API Error Response:', JSON.stringify(errorData, null, 2));
-          
-          // Process error through handleApiError function
-          errorMessage = handleApiError(errorData, 'Failed to create procedure');
-          console.log('Processed Error Message (type:', typeof errorMessage, '):', errorMessage);
-          
+          const errorMessage = handleApiError(errorData, 'Failed to create procedure');
+          setError(errorMessage);
         } catch (parseError) {
           console.error('Failed to parse error response:', parseError);
           const rawText = await response.text();
-          errorMessage = `Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`;
-          console.log('Fallback Error Message:', errorMessage);
+          setError(`Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`);
         }
-        
-        // Final validation that errorMessage is a string
-        if (typeof errorMessage !== 'string') {
-          console.error('ERROR: errorMessage is not a string! Type:', typeof errorMessage, 'Value:', errorMessage);
-          errorMessage = 'Invalid error response - please check console for details';
-        }
-        
-        console.log('Setting error state to:', errorMessage);
-        setError(errorMessage);
       }
     } catch (networkError) {
       console.error('Network error during procedure creation:', networkError);
