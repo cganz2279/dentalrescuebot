@@ -200,8 +200,16 @@ function addFormattedContentToPDF(pdf, segments, startY) {
   for (const segment of segments) {
     if (!segment.text) continue;
     
-    // Set font style for this segment
-    pdf.setFont('helvetica', segment.bold ? 'bold' : 'normal');
+    console.log(`📝 Rendering segment: "${segment.text.substring(0, 50)}" - Bold: ${segment.bold}`);
+    
+    // Set font style for this segment - use explicit font names
+    if (segment.bold) {
+      pdf.setFont('times', 'bold');  // Use Times font which definitely supports bold
+      console.log('📝 Applied BOLD formatting');
+    } else {
+      pdf.setFont('times', 'normal');
+      console.log('📝 Applied NORMAL formatting');
+    }
     
     // Handle line wrapping manually to preserve formatting
     const words = segment.text.split(' ');
@@ -218,6 +226,7 @@ function addFormattedContentToPDF(pdf, segments, startY) {
           yPos = 20;
         }
         
+        console.log(`📝 Printing line: "${currentLine}" - Font: times, Style: ${segment.bold ? 'bold' : 'normal'}`);
         pdf.text(currentLine, leftMargin, yPos);
         yPos += lineHeight;
         currentLine = words[i];
@@ -233,6 +242,7 @@ function addFormattedContentToPDF(pdf, segments, startY) {
         yPos = 20;
       }
       
+      console.log(`📝 Printing final line: "${currentLine}" - Font: times, Style: ${segment.bold ? 'bold' : 'normal'}`);
       pdf.text(currentLine, leftMargin, yPos);
       yPos += lineHeight;
     }
