@@ -87,19 +87,11 @@ export const generateProcedurePDF = async (procedure) => {
                            '';
     
     if (overviewContent) {
-      // Process content with bold formatting for specific keywords
-      console.log('📝 Processing content for bold formatting...');
-      const contentWithBoldFormatting = processContentForBoldFormatting(overviewContent);
+      // Simple approach: render text normally and use different method for emphasis
+      console.log('📝 Using simple text rendering approach...');
       
-      console.log(`📝 Found ${contentWithBoldFormatting.length} text segments for formatting`);
-      const boldSegments = contentWithBoldFormatting.filter(s => s.bold);
-      console.log(`📝 Bold segments: ${boldSegments.length}`);
-      boldSegments.forEach((segment, index) => {
-        console.log(`📝 Bold segment ${index + 1}: "${segment.text}"`);
-      });
-      
-      // Add formatted content to PDF
-      addFormattedContentToPDF(pdf, contentWithBoldFormatting, yPos);
+      // Add formatted content to PDF with simple bold detection
+      addSimpleFormattedContentToPDF(pdf, overviewContent, yPos);
       
     } else {
       pdf.setFontSize(11);
