@@ -12,6 +12,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import uuid
 from datetime import datetime
 import re
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 def extract_text_from_pdf(pdf_path):
     """Extract text from PDF file"""
