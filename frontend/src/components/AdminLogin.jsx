@@ -105,10 +105,11 @@ const AdminDashboard = () => {
   
   // Safe error setter that ensures error is always a string
   const setError = (errorValue) => {
+    console.log('setError called with:', errorValue, 'Type:', typeof errorValue);
     const safeError = typeof errorValue === 'string' ? errorValue : 
                      typeof errorValue === 'object' && errorValue !== null ? JSON.stringify(errorValue) : 
                      String(errorValue || '');
-    console.log('Setting error state to:', safeError); // Debug log
+    console.log('Setting error state to safe error:', safeError); // Debug log
     setErrorState(safeError);
   };
   
