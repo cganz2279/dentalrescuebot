@@ -193,55 +193,64 @@ function processContentForBoldFormatting(content) {
   return segments;
 }
 
-// Function to add formatted content to PDF with proper line wrapping and enhanced formatting
-function addFormattedContentToPDF(pdf, segments, startY) {
+// Simple function to add content without complex text processing
+function addSimpleFormattedContentToPDF(pdf, content, startY) {
   let yPos = startY;
-  const lineHeight = 5.5;  // Compact line height to fit more content
+  const lineHeight = 5.5;
   const maxWidth = 170;
   const leftMargin = 20;
   
-  // Set base font settings
+  // Set consistent font
   pdf.setFont('times', 'normal');
   pdf.setFontSize(11);
   pdf.setTextColor(0, 0, 0);
   
-  for (const segment of segments) {
-    if (!segment.text || !segment.text.trim()) continue;
+  console.log('📝 Using simple text rendering - preserving original formatting');
+  
+  // Split content into lines using jsPDF's built-in function
+  const lines = pdf.splitTextToSize(content, maxWidth);
+  
+  const boldKeywords = [
+    'Purpose',
+    'First 24 Hours', 
+    'Pain & Sensitivity',
+    'Oral Hygiene',
+    'Diet',
+    'Special Precautions',
+    'Follow-Up',
+    'Follow Up'
+  ];
+  
+  for (const line of lines) {
+    // Check if we need a new page
+    if (yPos > 275) {
+      pdf.addPage();
+      yPos = 20;
+      pdf.setFont('times', 'normal');
+      pdf.setFontSize(11);
+    }
     
-    console.log(`📝 Rendering segment: "${segment.text.substring(0, 30)}..." - Bold: ${segment.bold}`);
+    // Check if this line contains any of our keywords for bold formatting
+    let shouldBeBold = false;
+    for (const keyword of boldKeywords) {
+      if (line.toLowerCase().includes(keyword.toLowerCase())) {
+        shouldBeBold = true;
+        console.log(`📝 Making line bold (contains "${keyword}"): ${line.substring(0, 30)}...`);
+        break;
+      }
+    }
     
-    // Apply formatting for this segment only
-    if (segment.bold) {
+    // Apply formatting and render line
+    if (shouldBeBold) {
       pdf.setFont('times', 'bold');
-      console.log('📝 Applied BOLD formatting');
     } else {
       pdf.setFont('times', 'normal');
     }
     
-    // Use jsPDF's built-in text splitting which preserves formatting better
-    const lines = pdf.splitTextToSize(segment.text, maxWidth);
-    
-    for (const line of lines) {
-      // Check if we need a new page
-      if (yPos > 275) {  // Increased threshold to use more of the page
-        pdf.addPage();
-        yPos = 20;
-        
-        // Reapply font settings after new page
-        if (segment.bold) {
-          pdf.setFont('times', 'bold');
-        } else {
-          pdf.setFont('times', 'normal');
-        }
-      }
-      
-      pdf.text(line.trim(), leftMargin, yPos);  // Trim to avoid extra spaces
-      yPos += lineHeight;
-    }
+    pdf.text(line, leftMargin, yPos);
+    yPos += lineHeight;
   }
   
-  // Reset to default formatting
+  // Reset font
   pdf.setFont('times', 'normal');
-  pdf.setFontSize(11);
-  pdf.setTextColor(0, 0, 0);
 }
