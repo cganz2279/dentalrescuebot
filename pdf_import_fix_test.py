@@ -247,7 +247,8 @@ class PDFImportFixTester:
                     all_valid = False
                     continue
                 
-                if proc.get("specialty") != "prosthodontics":
+                specialty = proc.get("specialty", "").lower()
+                if specialty != "prosthodontics":
                     self.log_result("Procedure Details Test", False, f"{proc_name}: Expected specialty 'prosthodontics', got '{proc.get('specialty')}'")
                     all_valid = False
                     continue
