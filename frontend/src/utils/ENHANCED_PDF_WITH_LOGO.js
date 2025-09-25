@@ -99,11 +99,8 @@ export const generateProcedurePDF = async (procedure) => {
       console.log('⚠️ No overview content found in procedure data structure');
     }
     
-    // Footer with timestamp
-    const pageCount = pdf.internal.getNumberOfPages();
-    pdf.setPage(pageCount);
-    pdf.setFontSize(8);
-    pdf.text(`Generated: ${timestamp} - Cache: ${cacheKey}`, 20, 285);
+    // Add practice information footer
+    addPracticeFooter(pdf, procedure);
     
     // Save with timestamp filename
     const filenameProcedureName = procedure?.name || procedure?.procedureName || 'Procedure';
