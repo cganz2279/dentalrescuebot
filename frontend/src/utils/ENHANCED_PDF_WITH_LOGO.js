@@ -191,66 +191,59 @@ function processContentForBoldFormatting(content) {
 // Function to add formatted content to PDF with proper line wrapping and enhanced formatting
 function addFormattedContentToPDF(pdf, segments, startY) {
   let yPos = startY;
-  const lineHeight = 6;
+  const baseLineHeight = 6;
   const maxWidth = 170;
   const leftMargin = 20;
-  
-  pdf.setFontSize(11);
   
   for (const segment of segments) {
     if (!segment.text) continue;
     
     console.log(`📝 Rendering segment: "${segment.text.substring(0, 50)}" - Bold: ${segment.bold}`);
     
-    // Enhanced formatting for bold segments
+    // Set formatting for this segment
     if (segment.bold) {
-      // Use multiple techniques to make text stand out
-      pdf.setFont('times', 'bold');           // Set bold font
-      pdf.setFontSize(12);                    // Slightly larger font
-      pdf.setTextColor(0, 0, 0);             // Ensure black color
-      console.log('📝 Applied ENHANCED BOLD formatting (times bold + size 12)');
+      pdf.setFont('times', 'bold');
+      pdf.setFontSize(12);
+      pdf.setTextColor(0, 0, 0);
+      console.log('📝 Applied ENHANCED BOLD formatting');
     } else {
-      pdf.setFont('times', 'normal');
-      pdf.setFontSize(11);                    // Regular size
-      pdf.setTextColor(40, 40, 40);          // Slightly lighter for contrast
-      console.log('📝 Applied NORMAL formatting (times normal + size 11)');
+      pdf.setFont('times', 'normal'); 
+      pdf.setFontSize(11);
+      pdf.setTextColor(40, 40, 40);
+      console.log('📝 Applied NORMAL formatting');
     }
     
-    // Handle line wrapping manually to preserve formatting
-    const words = segment.text.split(' ');
-    let currentLine = '';
+    // Use jsPDF's built-in text splitting which handles font sizes better
+    const lines = pdf.splitTextToSize(segment.text, maxWidth);
     
-    for (let i = 0; i < words.length; i++) {
-      const testLine = currentLine + (currentLine ? ' ' : '') + words[i];
-      const textWidth = pdf.getTextWidth(testLine);
-      
-      if (textWidth > maxWidth && currentLine !== '') {
-        // Current line is full, print it and start new line
-        if (yPos > 270) {
-          pdf.addPage();
-          yPos = 20;
-        }
-        
-        console.log(`📝 Printing line: "${currentLine}" - Bold: ${segment.bold}`);
-        pdf.text(currentLine, leftMargin, yPos);
-        yPos += lineHeight;
-        currentLine = words[i];
-      } else {
-        currentLine = testLine;
-      }
-    }
+    // Calculate line height based on font size
+    const lineHeight = segment.bold ? baseLineHeight + 1 : baseLineHeight;
     
-    // Print the last line if there's content
-    if (currentLine) {
+    for (const line of lines) {
+      // Check if we need a new page
       if (yPos > 270) {
         pdf.addPage();
         yPos = 20;
+        
+        // Re-apply font settings after new page
+        if (segment.bold) {
+          pdf.setFont('times', 'bold');
+          pdf.setFontSize(12);
+          pdf.setTextColor(0, 0, 0);
+        } else {
+          pdf.setFont('times', 'normal'); 
+          pdf.setFontSize(11);
+          pdf.setTextColor(40, 40, 40);
+        }
       }
       
-      console.log(`📝 Printing final line: "${currentLine}" - Bold: ${segment.bold}`);
-      pdf.text(currentLine, leftMargin, yPos);
+      console.log(`📝 Printing line: "${line}" - Bold: ${segment.bold}, yPos: ${yPos}`);
+      pdf.text(line, leftMargin, yPos);
       yPos += lineHeight;
     }
+    
+    // Add small space after each segment to prevent crowding
+    yPos += 1;
   }
   
   // Reset to default formatting
