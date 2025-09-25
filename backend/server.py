@@ -501,9 +501,8 @@ async def get_wordpress_reset_password():
         return "<h1>Error loading admin login</h1>"
 
 # Include auth, practice management, payment, webhook, admin, and patient routes directly
-app.include_router(auth_router)
 app.include_router(payments_router)
-app.include_router(webhooks_router)
+app.include_router(webhooks_router)  
 app.include_router(admin_router)
 app.include_router(patients_router)
 
