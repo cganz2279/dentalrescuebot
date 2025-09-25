@@ -27,10 +27,59 @@ const PracticeLibraryPage = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = procedures.filter(procedure =>
-      procedure.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      procedure.specialty.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const searchLower = searchQuery.toLowerCase().trim();
+    
+    if (!searchLower) {
+      setFilteredProcedures(procedures);
+      return;
+    }
+    
+    // Enhanced local search with alternatives
+    const alternatives = {
+      'zirconium': ['zirconia', 'zircon'],
+      'zircon': ['zirconia', 'zirconium'],  
+      'zirconia': ['zirconium', 'zircon'],
+      'all-on-x': ['all on x', 'all-on-4'],
+      'all on x': ['all-on-x', 'all-on-4'],
+      'allonx': ['all on x', 'all-on-x'],
+      'scaling': ['deep cleaning', 'root planing'],
+      'deep cleaning': ['scaling', 'root planing'],
+      'wisdom tooth': ['wisdom teeth', 'third molar'],
+      'wisdom teeth': ['wisdom tooth', 'third molar'],
+      'implant': ['dental implant', 'tooth implant'],
+      'extraction': ['removal', 'tooth removal'],
+      'filling': ['restoration', 'composite'],
+      'root canal': ['endodontic', 'rct'],
+      'denture': ['false teeth'],
+      'bridge': ['dental bridge'],
+      'braces': ['orthodontic', 'brackets'],
+      'aligners': ['clear aligners'],
+      'whitening': ['bleaching']
+    };
+    
+    // Get search terms including alternatives
+    const searchTerms = [searchLower];
+    if (alternatives[searchLower]) {
+      searchTerms.push(...alternatives[searchLower]);
+    }
+    
+    const filtered = procedures.filter(procedure => {
+      const name = procedure.name.toLowerCase();
+      const specialty = procedure.specialty.toLowerCase();
+      const overview = (procedure.overview || '').toLowerCase();
+      
+      // Check if any search term matches
+      return searchTerms.some(term => {
+        return name.includes(term) || 
+               specialty.includes(term) ||
+               overview.includes(term) ||
+               // Check individual words for multi-word searches
+               (term.includes(' ') && term.split(' ').every(word => 
+                 name.includes(word) || specialty.includes(word) || overview.includes(word)
+               ));
+      });
+    });
+    
     setFilteredProcedures(filtered);
   }, [searchQuery, procedures]);
 
