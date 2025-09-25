@@ -1148,7 +1148,16 @@ const AdminDashboard = () => {
                     >
                       Cancel
                     </Button>
-                    <Button onClick={createProcedure} disabled={loading}>
+                    <Button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔥 BUTTON CLICKED WITH PREVENTION!');
+                        createProcedure();
+                      }} 
+                      disabled={loading}
+                      type="button"
+                    >
                       {loading ? <LoadingSpinner className="h-4 w-4 mr-2" /> : null}
                       Create Procedure
                     </Button>
