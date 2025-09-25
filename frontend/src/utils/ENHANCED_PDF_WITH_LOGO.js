@@ -21,7 +21,7 @@ export const generateProcedurePDF = async (procedure) => {
   const timestamp = new Date().toISOString();
   const cacheKey = Date.now();
   
-  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v4');
+  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v5 (Times Bold Fix)');
   console.log('🚨 TIMESTAMP:', timestamp);
   console.log('🚨 CACHE KEY:', cacheKey);
   console.log('🚨 PROCEDURE DATA:', procedure);
