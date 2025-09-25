@@ -34,62 +34,66 @@ const PracticeLibraryPage = () => {
       return;
     }
     
-    // Enhanced local search with alternatives
+    // Alternative terms mapping (same as backend)
     const alternatives = {
       'zirconium': 'zirconia',
       'zircon': 'zirconia',
-      'zirconia': 'zirconia',
       'all-on-x': 'all on x',
-      'all on x': 'all on x',
       'allonx': 'all on x',
       'all-on-4': 'all on x',
       'all-on-6': 'all on x',
-      'scaling': 'scaling and root planing',
       'deep cleaning': 'scaling',
-      'root planing': 'scaling and root planing',
       'wisdom tooth': 'wisdom',
       'wisdom teeth': 'wisdom',
       'third molar': 'wisdom',
+      'root canal': 'root canal',
+      'rct': 'root canal',
       'implant': 'implant',
       'extraction': 'extraction',
-      'removal': 'extraction',
-      'filling': 'filling',
-      'restoration': 'filling',
-      'root canal': 'root canal',
-      'endodontic': 'root canal',
-      'rct': 'root canal',
-      'denture': 'denture',
-      'bridge': 'bridge',
-      'crown': 'crown',
-      'braces': 'braces',
-      'orthodontic': 'braces',
-      'aligners': 'aligners',
-      'whitening': 'whitening',
-      'bleaching': 'whitening'
+      'filling': 'filling'
     };
     
-    // Get search terms including alternatives
+    // Get search terms
     const searchTerms = [searchLower];
-    const alternativeSearch = alternatives[searchLower];
-    if (alternativeSearch) {
-      searchTerms.push(alternativeSearch);
+    if (alternatives[searchLower]) {
+      searchTerms.push(alternatives[searchLower]);
     }
-    
-    // Also add individual words from multi-word searches
-    const searchWords = searchLower.split(' ').filter(word => word.length >= 2);
-    searchTerms.push(...searchWords);
     
     const filtered = procedures.filter(procedure => {
       const name = procedure.name.toLowerCase();
-      const specialtyName = procedure.specialtyName?.toLowerCase() || '';
+      const specialtyName = (procedure.specialtyName || '').toLowerCase();
       const overview = (procedure.overview || '').toLowerCase();
       
-      // Check if any search term matches
-      return searchTerms.some(term => {
-        return name.includes(term) || 
-               specialtyName.includes(term) ||
-               overview.includes(term);
-      });
+      // Check each search term
+      for (const term of searchTerms) {
+        // Simple substring match
+        if (name.includes(term) || specialtyName.includes(term) || overview.includes(term)) {
+          return true;
+        }
+        
+        // For multi-word terms, check if all words are present in name
+        const words = term.split(' ');
+        if (words.length > 1) {
+          if (words.every(word => name.includes(word))) {
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    });
+    
+    // Sort by relevance (exact name matches first)
+    filtered.sort((a, b) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+      
+      // Exact matches first
+      if (aName.includes(searchLower) && !bName.includes(searchLower)) return -1;
+      if (!aName.includes(searchLower) && bName.includes(searchLower)) return 1;
+      
+      // Alphabetical
+      return aName.localeCompare(bName);
     });
     
     setFilteredProcedures(filtered);
