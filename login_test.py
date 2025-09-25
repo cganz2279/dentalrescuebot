@@ -272,7 +272,7 @@ def test_session_persistence():
         # Test token after delay
         headers = {"Authorization": f"Bearer {token}"}
         test_response = requests.get(
-            f"{BACKEND_URL}/practice/profile",
+            f"{BACKEND_URL}/practice/dashboard",
             headers=headers,
             timeout=30
         )
