@@ -21,7 +21,7 @@ export const generateProcedurePDF = async (procedure) => {
   const timestamp = new Date().toISOString();
   const cacheKey = Date.now();
   
-  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v1');
+  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v3');
   console.log('🚨 TIMESTAMP:', timestamp);
   console.log('🚨 CACHE KEY:', cacheKey);
   console.log('🚨 PROCEDURE DATA:', procedure);
@@ -57,40 +57,20 @@ export const generateProcedurePDF = async (procedure) => {
       pdf.setTextColor(41, 98, 184);
       pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
       yPos += 15;
-      
-      // Subtitle
-      pdf.setFontSize(10);
-      pdf.setFont(undefined, 'normal');
-      pdf.setTextColor(100, 100, 100);
-      pdf.text('Post-Operative Care Instructions', 105, yPos, { align: 'center' });
-      yPos += 15;
-      
-      // Decorative line under the header
-      pdf.setDrawColor(41, 98, 184);
-      pdf.setLineWidth(1);
-      pdf.line(50, yPos, 160, yPos);
-      yPos += 20;
-      
-    } catch (logoError) {
-      console.log('Logo loading failed, using text header:', logoError);
-      // Fallback to text header
-      pdf.setFontSize(18);
-      pdf.setFont(undefined, 'bold');
-      pdf.setTextColor(41, 98, 184);
-      pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
-      yPos += 8;
-      
-      pdf.setFontSize(10);
-      pdf.setFont(undefined, 'normal');
-      pdf.setTextColor(100, 100, 100);
-      pdf.text('Post-Operative Care Instructions', 105, yPos, { align: 'center' });
-      yPos += 15;
-      
-      pdf.setDrawColor(41, 98, 184);
-      pdf.setLineWidth(1);
-      pdf.line(50, yPos, 160, yPos);
-      yPos += 20;
     }
+    
+    // Subtitle
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.setTextColor(100, 100, 100);
+    pdf.text('Post-Operative Care Instructions', 105, yPos, { align: 'center' });
+    yPos += 15;
+    
+    // Decorative line under the header
+    pdf.setDrawColor(41, 98, 184);
+    pdf.setLineWidth(1);
+    pdf.line(50, yPos, 160, yPos);
+    yPos += 20;
     
     // Title - handle different data structures
     const procedureName = procedure?.name || procedure?.procedureName || 'Procedure';
