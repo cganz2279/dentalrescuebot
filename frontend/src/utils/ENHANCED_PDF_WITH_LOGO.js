@@ -180,7 +180,7 @@ function processContentForBoldFormatting(content) {
   return segments;
 }
 
-// Function to add formatted content to PDF with proper line wrapping
+// Function to add formatted content to PDF with proper line wrapping and bold formatting
 function addFormattedContentToPDF(pdf, segments, startY) {
   let yPos = startY;
   const lineHeight = 6;
@@ -192,20 +192,40 @@ function addFormattedContentToPDF(pdf, segments, startY) {
   for (const segment of segments) {
     if (!segment.text) continue;
     
-    // Set font style
-    pdf.setFont(undefined, segment.bold ? 'bold' : 'normal');
+    // Set font style for this segment
+    pdf.setFont('helvetica', segment.bold ? 'bold' : 'normal');
     
-    // Split text to fit page width
-    const lines = pdf.splitTextToSize(segment.text, maxWidth);
+    // Handle line wrapping manually to preserve formatting
+    const words = segment.text.split(' ');
+    let currentLine = '';
     
-    for (const line of lines) {
-      // Check if we need a new page
+    for (let i = 0; i < words.length; i++) {
+      const testLine = currentLine + (currentLine ? ' ' : '') + words[i];
+      const textWidth = pdf.getTextWidth(testLine);
+      
+      if (textWidth > maxWidth && currentLine !== '') {
+        // Current line is full, print it and start new line
+        if (yPos > 270) {
+          pdf.addPage();
+          yPos = 20;
+        }
+        
+        pdf.text(currentLine, leftMargin, yPos);
+        yPos += lineHeight;
+        currentLine = words[i];
+      } else {
+        currentLine = testLine;
+      }
+    }
+    
+    // Print the last line if there's content
+    if (currentLine) {
       if (yPos > 270) {
         pdf.addPage();
         yPos = 20;
       }
       
-      pdf.text(line, leftMargin, yPos);
+      pdf.text(currentLine, leftMargin, yPos);
       yPos += lineHeight;
     }
   }
