@@ -259,7 +259,7 @@ def test_session_persistence():
             print("   ❌ Initial login failed")
             return False
         
-        token = login_response.json().get('access_token')
+        token = login_response.json().get('token') or login_response.json().get('access_token')
         if not token:
             print("   ❌ No token received")
             return False
