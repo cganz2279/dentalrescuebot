@@ -57,7 +57,7 @@ const PracticeProcedureView = () => {
   const handlePrint = async () => {
     try {
       // FINAL RAW TEXT ONLY - CACHE BUSTED
-      const { generateProcedurePDF } = await import('../utils/FINAL_RAW_TEXT_ONLY');
+      const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
       
       if (!procedure) {
         console.error('No procedure data available for PDF generation');
