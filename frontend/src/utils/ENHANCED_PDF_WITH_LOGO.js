@@ -15,54 +15,33 @@ export const generateProcedurePDF = async (procedure) => {
     const pdf = new jsPDF();
     let yPos = 20;
     
-    // Add logo at the top centered
+    // Add logo at the top centered using base64
     try {
-      // Load the logo image
-      const logoUrl = 'https://customer-assets.emergentagent.com/job_dental-rescue/artifacts/rinpdh1d_Dental%20Rescue%20Bot%20with%20Tooth.png';
+      // Get the base64 logo string
+      const base64Logo = await getBase64Logo();
       
-      // Create an image element to load the logo
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      
-      // Wait for image to load
-      await new Promise((resolve, reject) => {
-        img.onload = () => {
-          try {
-            // Calculate centered position for logo
-            const imgWidth = 40; // Desired width
-            const imgHeight = 30; // Desired height
-            const xPos = (pdf.internal.pageSize.width - imgWidth) / 2; // Center horizontally
-            
-            // Add logo to PDF
-            pdf.addImage(img, 'PNG', xPos, yPos, imgWidth, imgHeight);
-            yPos += imgHeight + 10; // Move down after logo
-            
-            resolve();
-          } catch (error) {
-            console.log('Logo loading error:', error);
-            // Fall back to text header if logo fails
-            pdf.setFontSize(18);
-            pdf.setFont(undefined, 'bold');
-            pdf.setTextColor(41, 98, 184);
-            pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
-            yPos += 15;
-            resolve();
-          }
-        };
+      if (base64Logo) {
+        // Calculate centered position for logo
+        const imgWidth = 40; // Desired width
+        const imgHeight = 30; // Desired height
+        const xPos = (pdf.internal.pageSize.width - imgWidth) / 2; // Center horizontally
         
-        img.onerror = () => {
-          console.log('Logo failed to load, using text header');
-          // Fall back to text header
-          pdf.setFontSize(18);
-          pdf.setFont(undefined, 'bold');
-          pdf.setTextColor(41, 98, 184);
-          pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
-          yPos += 15;
-          resolve();
-        };
+        // Add logo to PDF using base64 data
+        pdf.addImage(`data:image/png;base64,${base64Logo}`, 'PNG', xPos, yPos, imgWidth, imgHeight);
+        yPos += imgHeight + 10; // Move down after logo
         
-        img.src = logoUrl;
-      });
+        console.log('✅ Logo successfully added from base64 data');
+      } else {
+        throw new Error('Base64 logo not available');
+      }
+    } catch (logoError) {
+      console.log('Logo loading failed, using text header:', logoError);
+      // Fall back to text header
+      pdf.setFontSize(18);
+      pdf.setFont(undefined, 'bold');
+      pdf.setTextColor(41, 98, 184);
+      pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
+      yPos += 15;
       
       // Subtitle
       pdf.setFontSize(10);
