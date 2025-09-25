@@ -360,7 +360,7 @@ test_plan:
     - "The explicit event prevention approach does NOT resolve the fundamental issue - button click handler is completely broken"
 test_plan:
   current_focus:
-    - "Dental Portal Login and Search Functionality Test"
+    - "PDF Logo Functionality Debug Test"
   stuck_tasks:
     - "Admin Panel Procedure Creation Form React Error Fix"
   test_all: false
