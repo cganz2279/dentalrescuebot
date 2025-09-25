@@ -109,8 +109,9 @@ class ComprehensivePDFTester:
             if response.status_code == 200:
                 logo_content = response.text.strip()
                 if logo_content and len(logo_content) > 1000:  # Base64 images are typically large
-                    # Validate it looks like base64
-                    if logo_content.replace('+', '').replace('/', '').replace('=', '').isalnum():
+                    # Validate it looks like base64 (remove newlines and whitespace first)
+                    clean_content = logo_content.replace('\n', '').replace('\r', '').replace(' ', '')
+                    if clean_content.replace('+', '').replace('/', '').replace('=', '').isalnum():
                         self.log_test("Base64 Logo File at /dental-rescue-logo-base64.txt", True, 
                                     f"Logo file accessible and valid, size: {len(logo_content)} characters")
                         return True
