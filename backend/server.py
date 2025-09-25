@@ -215,13 +215,16 @@ async def get_procedures(specialty: Optional[str] = Query(None)):
         if specialty:
             query["specialty"] = specialty
         
-        procedures_cursor = db.procedures.find(
+        # Get all procedures without any limits
+        all_procedures = await db.procedures.find(
             query,
             {"_id": 0}  # Return all fields except MongoDB's _id
-        )
-        procedures = await procedures_cursor.to_list(length=None)
+        ).to_list(length=1000)  # Increased limit to ensure all procedures are returned
         
-        return {"success": True, "data": procedures}
+        # Log the count for debugging
+        logging.info(f"Returning {len(all_procedures)} procedures from database")
+        
+        return {"success": True, "data": all_procedures, "count": len(all_procedures)}
     except Exception as e:
         logging.error(f"Error fetching procedures: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
