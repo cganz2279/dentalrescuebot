@@ -50,13 +50,13 @@ def test_login_endpoint_direct():
             print(f"   ✅ LOGIN SUCCESS: Status 200")
             print(f"   Response keys: {list(data.keys())}")
             
-            # Check for JWT token
-            if 'access_token' in data:
-                token = data['access_token']
+            # Check for JWT token (could be 'token' or 'access_token')
+            token = data.get('token') or data.get('access_token')
+            if token:
                 print(f"   ✅ JWT Token received: {token[:50]}...")
                 return True, token, data
             else:
-                print(f"   ❌ No access_token in response")
+                print(f"   ❌ No token in response")
                 print(f"   Response: {json.dumps(data, indent=2)}")
                 return False, None, data
         else:
