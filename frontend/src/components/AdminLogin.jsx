@@ -146,10 +146,12 @@ const AdminDashboard = () => {
 
   // Helper function to handle API error responses
   const handleApiError = (errorData, fallbackMessage) => {
+    console.log('handleApiError called with errorData:', errorData);
     try {
       // Handle FastAPI validation errors
       if (errorData && errorData.detail) {
         if (Array.isArray(errorData.detail)) {
+          console.log('Processing array of validation errors');
           const errorMessages = errorData.detail.map(err => {
             if (typeof err === 'object' && err.msg) {
               const location = err.loc ? err.loc.join(' -> ') + ': ' : '';
@@ -157,18 +159,24 @@ const AdminDashboard = () => {
             }
             return String(err);
           });
-          return errorMessages.join(', ');
+          const result = errorMessages.join(', ');
+          console.log('Array processing result:', result);
+          return result;
         } else if (typeof errorData.detail === 'string') {
+          console.log('String detail found:', errorData.detail);
           return errorData.detail;
         } else if (typeof errorData.detail === 'object' && errorData.detail.msg) {
+          console.log('Object detail with msg found:', errorData.detail.msg);
           return errorData.detail.msg;
         }
       }
       
       if (typeof errorData === 'string') {
+        console.log('String errorData found:', errorData);
         return errorData;
       }
       
+      console.log('Using fallback message:', fallbackMessage);
       return fallbackMessage;
     } catch (e) {
       console.error('Error in handleApiError:', e);
