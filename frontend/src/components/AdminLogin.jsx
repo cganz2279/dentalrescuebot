@@ -427,6 +427,12 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
+  // Create a separate handler function as recommended by troubleshoot agent
+  const handleCreateProcedure = () => {
+    console.log('🚀 HANDLE CREATE PROCEDURE CALLED - React 19 Fix');
+    createProcedure();
+  };
+
   const createProcedure = async () => {
     if (!adminToken) return;
     
