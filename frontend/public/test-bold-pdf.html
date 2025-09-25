@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Bold PDF Generation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>Test Bold PDF Generation</h1>
+    <button onclick="testBoldPDF()">Generate Test PDF with Bold Text</button>
+    <div id="console"></div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        function log(message) {
+            document.getElementById('console').innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        function testBoldPDF() {
+            log('🔄 Starting bold PDF test...');
+            
+            const pdf = new jsPDF();
+            let yPos = 20;
+
+            // Test different fonts and styles
+            log('Testing Helvetica Normal');
+            pdf.setFont('helvetica', 'normal');
+            pdf.text('Helvetica Normal: This is normal text', 20, yPos);
+            yPos += 10;
+
+            log('Testing Helvetica Bold');
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Helvetica Bold: This should be BOLD', 20, yPos);
+            yPos += 10;
+
+            log('Testing Times Normal');
+            pdf.setFont('times', 'normal');
+            pdf.text('Times Normal: This is normal text', 20, yPos);
+            yPos += 10;
+
+            log('Testing Times Bold');
+            pdf.setFont('times', 'bold');
+            pdf.text('Times Bold: This should be BOLD', 20, yPos);
+            yPos += 10;
+
+            log('Testing Courier Normal');
+            pdf.setFont('courier', 'normal');
+            pdf.text('Courier Normal: This is normal text', 20, yPos);
+            yPos += 10;
+
+            log('Testing Courier Bold');
+            pdf.setFont('courier', 'bold');
+            pdf.text('Courier Bold: This should be BOLD', 20, yPos);
+            yPos += 20;
+
+            // Test our keywords
+            const keywords = ['Purpose', 'First 24 Hours', 'Pain & Sensitivity', 'Oral Hygiene', 'Diet', 'Special Precautions', 'Follow-Up'];
+            
+            pdf.setFont('times', 'normal');
+            pdf.text('Testing Bold Keywords:', 20, yPos);
+            yPos += 15;
+
+            for (const keyword of keywords) {
+                pdf.setFont('times', 'bold');
+                pdf.text(`• ${keyword}`, 20, yPos);
+                yPos += 8;
+            }
+
+            log('✅ PDF generated with bold tests');
+            pdf.save('bold-test.pdf');
+            log('✅ PDF saved as bold-test.pdf');
+        }
+    </script>
+</body>
+</html>
