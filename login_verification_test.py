@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://dental-rescue.preview.emergentagent.com/api"
+BACKEND_URL = "https://postopcare-1.preview.emergentagent.com/api"
 
 def test_login_after_registration():
     """Test login functionality with a newly registered user"""

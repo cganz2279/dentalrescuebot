@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend configuration
-BACKEND_URL = "https://dental-rescue.preview.emergentagent.com/api"
+BACKEND_URL = "https://postopcare-1.preview.emergentagent.com/api"
 
 class LoginResponseTester:
     def __init__(self):

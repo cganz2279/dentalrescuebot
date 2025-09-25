@@ -12,7 +12,7 @@ import pymongo
 from pymongo import MongoClient
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://dental-rescue.preview.emergentagent.com/api"
+BACKEND_URL = "https://postopcare-1.preview.emergentagent.com/api"
 MONGO_URL = "mongodb://localhost:27017"
 DB_NAME = "test_database"
 
