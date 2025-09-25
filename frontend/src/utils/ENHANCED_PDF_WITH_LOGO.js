@@ -143,44 +143,57 @@ function processContentForBoldFormatting(content) {
   
   // Create an array of content segments with formatting info
   const segments = [];
-  let currentContent = content;
-  let currentIndex = 0;
+  let remainingContent = content;
   
-  while (currentIndex < currentContent.length) {
-    let nextBoldStart = currentContent.length;
-    let nextBoldKeyword = null;
+  while (remainingContent.length > 0) {
+    let foundKeyword = false;
+    let earliestIndex = remainingContent.length;
+    let matchedKeyword = null;
     
-    // Find the next bold keyword
+    // Find the earliest occurring keyword
     for (const keyword of boldKeywords) {
-      const index = currentContent.toLowerCase().indexOf(keyword.toLowerCase(), currentIndex);
-      if (index !== -1 && index < nextBoldStart) {
-        nextBoldStart = index;
-        nextBoldKeyword = keyword;
+      const regex = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      const match = remainingContent.match(regex);
+      
+      if (match && match.index < earliestIndex) {
+        earliestIndex = match.index;
+        matchedKeyword = {
+          keyword: keyword,
+          actualText: match[0],
+          index: match.index
+        };
+        foundKeyword = true;
       }
     }
     
-    if (nextBoldKeyword && nextBoldStart > currentIndex) {
-      // Add normal text before bold keyword
-      if (nextBoldStart > currentIndex) {
-        segments.push({
-          text: currentContent.substring(currentIndex, nextBoldStart),
-          bold: false
-        });
+    if (foundKeyword && matchedKeyword) {
+      // Add text before the keyword as normal
+      if (matchedKeyword.index > 0) {
+        const beforeText = remainingContent.substring(0, matchedKeyword.index);
+        if (beforeText.trim()) {
+          segments.push({
+            text: beforeText,
+            bold: false
+          });
+        }
       }
       
-      // Add bold keyword
+      // Add the keyword as bold
       segments.push({
-        text: currentContent.substring(nextBoldStart, nextBoldStart + nextBoldKeyword.length),
+        text: matchedKeyword.actualText,
         bold: true
       });
       
-      currentIndex = nextBoldStart + nextBoldKeyword.length;
+      // Continue with remaining text
+      remainingContent = remainingContent.substring(matchedKeyword.index + matchedKeyword.actualText.length);
     } else {
-      // Add remaining text as normal
-      segments.push({
-        text: currentContent.substring(currentIndex),
-        bold: false
-      });
+      // No more keywords, add remaining text as normal
+      if (remainingContent.trim()) {
+        segments.push({
+          text: remainingContent,
+          bold: false
+        });
+      }
       break;
     }
   }
