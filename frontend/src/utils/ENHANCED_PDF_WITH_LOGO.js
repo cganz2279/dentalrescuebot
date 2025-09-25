@@ -188,7 +188,7 @@ function processContentForBoldFormatting(content) {
   return segments;
 }
 
-// Function to add formatted content to PDF with proper line wrapping and bold formatting
+// Function to add formatted content to PDF with proper line wrapping and enhanced formatting
 function addFormattedContentToPDF(pdf, segments, startY) {
   let yPos = startY;
   const lineHeight = 6;
@@ -202,13 +202,18 @@ function addFormattedContentToPDF(pdf, segments, startY) {
     
     console.log(`📝 Rendering segment: "${segment.text.substring(0, 50)}" - Bold: ${segment.bold}`);
     
-    // Set font style for this segment - use explicit font names
+    // Enhanced formatting for bold segments
     if (segment.bold) {
-      pdf.setFont('times', 'bold');  // Use Times font which definitely supports bold
-      console.log('📝 Applied BOLD formatting');
+      // Use multiple techniques to make text stand out
+      pdf.setFont('times', 'bold');           // Set bold font
+      pdf.setFontSize(12);                    // Slightly larger font
+      pdf.setTextColor(0, 0, 0);             // Ensure black color
+      console.log('📝 Applied ENHANCED BOLD formatting (times bold + size 12)');
     } else {
       pdf.setFont('times', 'normal');
-      console.log('📝 Applied NORMAL formatting');
+      pdf.setFontSize(11);                    // Regular size
+      pdf.setTextColor(40, 40, 40);          // Slightly lighter for contrast
+      console.log('📝 Applied NORMAL formatting (times normal + size 11)');
     }
     
     // Handle line wrapping manually to preserve formatting
@@ -226,7 +231,7 @@ function addFormattedContentToPDF(pdf, segments, startY) {
           yPos = 20;
         }
         
-        console.log(`📝 Printing line: "${currentLine}" - Font: times, Style: ${segment.bold ? 'bold' : 'normal'}`);
+        console.log(`📝 Printing line: "${currentLine}" - Bold: ${segment.bold}`);
         pdf.text(currentLine, leftMargin, yPos);
         yPos += lineHeight;
         currentLine = words[i];
@@ -242,9 +247,14 @@ function addFormattedContentToPDF(pdf, segments, startY) {
         yPos = 20;
       }
       
-      console.log(`📝 Printing final line: "${currentLine}" - Font: times, Style: ${segment.bold ? 'bold' : 'normal'}`);
+      console.log(`📝 Printing final line: "${currentLine}" - Bold: ${segment.bold}`);
       pdf.text(currentLine, leftMargin, yPos);
       yPos += lineHeight;
     }
   }
+  
+  // Reset to default formatting
+  pdf.setFont('times', 'normal');
+  pdf.setFontSize(11);
+  pdf.setTextColor(0, 0, 0);
 }
