@@ -117,8 +117,41 @@ const PracticeDashboard = () => {
   };
 
   const handlePrintProcedure = async (procedureId) => {
-    // Navigate directly to the procedure details page where they can see and print the clean format
-    navigate(`/procedure-details/${procedureId}`);
+    try {
+      // Find the procedure in the filtered list
+      const procedure = filteredProcedures.find(p => p.id === procedureId);
+      if (!procedure) {
+        console.error('Procedure not found for PDF generation');
+        return;
+      }
+
+      // Import the enhanced PDF generator
+      const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
+      
+      // Prepare procedure data for PDF with practice information
+      const procedureForPDF = {
+        ...procedure,
+        practiceName: practice?.name || 'Your Practice',
+        practiceOfficeHours: practice?.officeHours || 'Please contact us for office hours',
+        practiceEmergencyContact: practice?.emergencyContact || 'Please contact us for emergency support'
+      };
+
+      console.log('🏥 Dashboard - Generating PDF with practice data:', {
+        practiceName: procedureForPDF.practiceName,
+        practiceOfficeHours: procedureForPDF.practiceOfficeHours,
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+      });
+
+      // Generate PDF with enhanced generator including logo
+      const success = await generateProcedurePDF(procedureForPDF);
+      
+      if (!success) {
+        console.error('PDF generation failed');
+      }
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
   };
 
   const handlePatientClick = (patientId) => {
