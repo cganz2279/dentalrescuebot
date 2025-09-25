@@ -229,109 +229,63 @@ async def get_procedures(specialty: Optional[str] = Query(None)):
 @api_router.get("/procedures/search")
 async def search_procedures(q: str = Query(..., min_length=1)):
     try:
-        # Enhanced search with better flexibility
+        # Enhanced but simplified search
         search_query = q.strip().lower()
         
-        # Handle common alternative terms and spellings
-        search_terms = [search_query]
-        
-        # Add alternative spellings and related terms
+        # Handle common alternative terms
         alternatives = {
-            'zirconium': ['zirconia', 'zircon'],
-            'zircon': ['zirconia', 'zirconium'],
-            'zirconia': ['zirconium', 'zircon'],
-            'all-on-x': ['all on x', 'all-on-4', 'all-on-6'],
-            'all on x': ['all-on-x', 'all-on-4', 'all-on-6'],
-            'allonx': ['all on x', 'all-on-x'],
-            'all-on-4': ['all on x', 'all-on-x'],
-            'all-on-6': ['all on x', 'all-on-x'],
-            'scaling': ['scaling and root planing', 'deep cleaning'],
-            'deep cleaning': ['scaling and root planing', 'scaling'],
-            'root planing': ['scaling and root planing', 'deep cleaning'],
-            'wisdom tooth': ['wisdom teeth', 'third molar'],
-            'wisdom teeth': ['wisdom tooth', 'third molar'],
-            'third molar': ['wisdom tooth', 'wisdom teeth'],
-            'crown lengthening': ['crown extension', 'gum contouring'],
-            'gum contouring': ['crown lengthening', 'gingivoplasty'],
-            'bone graft': ['bone grafting', 'ridge augmentation'],
-            'bone grafting': ['bone graft', 'ridge augmentation'],
-            'ridge augmentation': ['bone graft', 'bone grafting'],
-            'implant': ['dental implant', 'tooth implant'],
-            'dental implant': ['implant', 'tooth implant'],
-            'tooth implant': ['implant', 'dental implant'],
-            'extraction': ['tooth removal', 'tooth extraction'],
-            'tooth removal': ['extraction', 'tooth extraction'],
-            'tooth extraction': ['extraction', 'tooth removal'],
-            'filling': ['restoration', 'tooth colored filling'],
-            'restoration': ['filling', 'dental restoration'],
-            'amalgam': ['silver filling', 'metal filling'],
-            'silver filling': ['amalgam', 'metal filling'],
-            'composite': ['tooth colored', 'white filling'],
-            'tooth colored': ['composite', 'white filling'],
-            'white filling': ['composite', 'tooth colored'],
-            'root canal': ['endodontic', 'rct'],
-            'endodontic': ['root canal', 'rct'],
-            'rct': ['root canal', 'endodontic'],
-            'denture': ['false teeth', 'prosthetic'],
-            'false teeth': ['denture', 'prosthetic'],
-            'bridge': ['dental bridge', 'fixed bridge'],
-            'dental bridge': ['bridge', 'fixed bridge'],
-            'braces': ['orthodontic', 'brackets'],
-            'orthodontic': ['braces', 'brackets'],
-            'aligners': ['clear aligners', 'invisalign'],
-            'clear aligners': ['aligners', 'invisalign'],
-            'whitening': ['bleaching', 'teeth whitening'],
-            'bleaching': ['whitening', 'teeth whitening'],
-            'teeth whitening': ['whitening', 'bleaching']
+            'zirconium': 'zirconia',
+            'zircon': 'zirconia',
+            'all-on-x': 'all on x',
+            'allonx': 'all on x',
+            'all-on-4': 'all on x',
+            'all-on-6': 'all on x',
+            'scaling': 'scaling and root planing',
+            'deep cleaning': 'scaling',
+            'wisdom tooth': 'wisdom',
+            'wisdom teeth': 'wisdom',
+            'third molar': 'wisdom',
+            'implant': 'implant',
+            'extraction': 'extraction',
+            'filling': 'filling',
+            'root canal': 'root canal',
+            'crown': 'crown',
+            'bridge': 'bridge',
+            'denture': 'denture',
+            'veneer': 'veneer'
         }
         
-        # Add alternatives to search terms
-        for term in search_terms.copy():
-            if term in alternatives:
-                search_terms.extend(alternatives[term])
+        # Get the actual search term (use alternative if exists)
+        actual_search = alternatives.get(search_query, search_query)
         
-        # Remove duplicates
-        search_terms = list(set(search_terms))
-        
-        # Create regex patterns for flexible matching
-        regex_patterns = []
-        for term in search_terms:
-            # Split multi-word terms for individual word matching
-            words = term.split()
-            if len(words) > 1:
-                # Add pattern that matches all words in any order
-                word_patterns = [f"(?=.*{word})" for word in words]
-                regex_patterns.append("".join(word_patterns))
+        # Create search conditions - simple and effective
+        search_conditions = [
+            # Exact or partial name matches
+            {"name": {"$regex": actual_search, "$options": "i"}},
+            {"name": {"$regex": search_query, "$options": "i"}},  # Also search original term
             
-            # Add the original term (with word boundaries for better matching)
-            regex_patterns.append(f"\\b{term}")
+            # Specialty matches
+            {"specialtyName": {"$regex": actual_search, "$options": "i"}},
+            {"specialtyName": {"$regex": search_query, "$options": "i"}},
             
-            # Add partial matching (minimum 4 characters)
-            if len(term) >= 4:
-                regex_patterns.append(term[:4])
+            # Overview content matches
+            {"overview": {"$regex": actual_search, "$options": "i"}},
+            {"overview": {"$regex": search_query, "$options": "i"}}
+        ]
         
-        # Build MongoDB query with enhanced search
-        search_conditions = []
+        # For multi-word searches, also search individual words
+        search_words = actual_search.split()
+        original_words = search_query.split()
         
-        for pattern in regex_patterns:
-            search_conditions.extend([
-                {"name": {"$regex": pattern, "$options": "i"}},
-                {"specialtyName": {"$regex": pattern, "$options": "i"}},
-                {"overview": {"$regex": pattern, "$options": "i"}}
-            ])
+        for word in search_words + original_words:
+            if len(word) >= 3:  # Only meaningful words
+                search_conditions.extend([
+                    {"name": {"$regex": word, "$options": "i"}},
+                    {"specialtyName": {"$regex": word, "$options": "i"}},
+                    {"overview": {"$regex": word, "$options": "i"}}
+                ])
         
-        # Also search for individual words if query has multiple words
-        query_words = search_query.split()
-        if len(query_words) > 1:
-            for word in query_words:
-                if len(word) >= 3:  # Only search meaningful words
-                    search_conditions.extend([
-                        {"name": {"$regex": word, "$options": "i"}},
-                        {"specialtyName": {"$regex": word, "$options": "i"}},
-                        {"overview": {"$regex": word, "$options": "i"}}
-                    ])
-        
-        # Execute search query
+        # Execute search
         procedures_cursor = db.procedures.find(
             {"$or": search_conditions},
             {"_id": 0}
@@ -339,7 +293,7 @@ async def search_procedures(q: str = Query(..., min_length=1)):
         
         procedures = await procedures_cursor.to_list(length=None)
         
-        # Remove duplicates based on procedure ID
+        # Remove duplicates
         seen_ids = set()
         unique_procedures = []
         for proc in procedures:
@@ -347,38 +301,30 @@ async def search_procedures(q: str = Query(..., min_length=1)):
                 unique_procedures.append(proc)
                 seen_ids.add(proc.get('id'))
         
-        # Sort results by relevance (exact matches first, then partial matches)
-        def calculate_relevance_score(procedure, original_query):
+        # Simple relevance scoring
+        def get_relevance_score(procedure):
             score = 0
-            proc_name = procedure.get('name', '').lower()
+            name = procedure.get('name', '').lower()
             specialty = procedure.get('specialtyName', '').lower()
-            overview = procedure.get('overview', '').lower()
             
-            # Exact name match gets highest score
-            if original_query in proc_name:
+            # Exact matches get highest priority
+            if search_query in name or actual_search in name:
                 score += 100
             
-            # Partial name match
-            if any(word in proc_name for word in original_query.split()):
-                score += 50
-                
-            # Specialty match
-            if original_query in specialty:
-                score += 30
-                
-            # Overview match (lower priority)
-            if original_query in overview:
-                score += 10
-                
+            # Word matches
+            for word in search_query.split() + actual_search.split():
+                if word in name:
+                    score += 50
+                if word in specialty:
+                    score += 25
+            
             return score
         
-        # Sort by relevance score
-        unique_procedures.sort(
-            key=lambda p: calculate_relevance_score(p, search_query), 
-            reverse=True
-        )
+        # Sort by relevance
+        unique_procedures.sort(key=get_relevance_score, reverse=True)
         
         return {"success": True, "data": unique_procedures}
+        
     except Exception as e:
         logging.error(f"Error searching procedures: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
