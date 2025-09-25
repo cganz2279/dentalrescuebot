@@ -1155,12 +1155,7 @@ const AdminDashboard = () => {
                       Cancel
                     </Button>
                     <Button 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('🔥 BUTTON CLICKED WITH PREVENTION!');
-                        createProcedure();
-                      }} 
+                      onClick={handleCreateProcedure} 
                       disabled={loading}
                       type="button"
                     >
