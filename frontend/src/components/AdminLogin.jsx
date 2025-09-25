@@ -145,13 +145,10 @@ const AdminDashboard = () => {
 
   // Helper function to handle API error responses
   const handleApiError = (errorData, fallbackMessage) => {
-    console.log('handleApiError called with:', JSON.stringify(errorData, null, 2));
-    
     try {
       // Handle FastAPI validation errors
       if (errorData && errorData.detail) {
         if (Array.isArray(errorData.detail)) {
-          console.log('Processing array of validation errors');
           const errorMessages = errorData.detail.map(err => {
             if (typeof err === 'object' && err.msg) {
               const location = err.loc ? err.loc.join(' -> ') + ': ' : '';
@@ -159,27 +156,18 @@ const AdminDashboard = () => {
             }
             return String(err);
           });
-          const result = errorMessages.join(', ');
-          console.log('Processed array error result:', result);
-          return result;
-        } else if (typeof errorData.detail === 'object' && errorData.detail !== null) {
-          console.log('Processing single error object');
-          // Single error object
-          const result = errorData.detail.msg || JSON.stringify(errorData.detail);
-          console.log('Processed single error result:', result);
-          return result;
+          return errorMessages.join(', ');
         } else if (typeof errorData.detail === 'string') {
-          console.log('Processing string error');
           return errorData.detail;
+        } else if (typeof errorData.detail === 'object' && errorData.detail.msg) {
+          return errorData.detail.msg;
         }
       }
       
       if (typeof errorData === 'string') {
-        console.log('Processing string errorData');
         return errorData;
       }
       
-      console.log('Falling back to fallback message');
       return fallbackMessage;
     } catch (e) {
       console.error('Error in handleApiError:', e);
