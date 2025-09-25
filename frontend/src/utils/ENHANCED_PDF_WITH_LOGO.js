@@ -204,59 +204,48 @@ function processContentForBoldFormatting(content) {
 // Function to add formatted content to PDF with proper line wrapping and enhanced formatting
 function addFormattedContentToPDF(pdf, segments, startY) {
   let yPos = startY;
-  const baseLineHeight = 6;
+  const lineHeight = 5.5;  // Compact line height to fit more content
   const maxWidth = 170;
   const leftMargin = 20;
   
+  // Set base font settings
+  pdf.setFont('times', 'normal');
+  pdf.setFontSize(11);
+  pdf.setTextColor(0, 0, 0);
+  
   for (const segment of segments) {
-    if (!segment.text) continue;
+    if (!segment.text || !segment.text.trim()) continue;
     
-    console.log(`📝 Rendering segment: "${segment.text.substring(0, 50)}" - Bold: ${segment.bold}`);
+    console.log(`📝 Rendering segment: "${segment.text.substring(0, 30)}..." - Bold: ${segment.bold}`);
     
-    // Set formatting for this segment
+    // Apply formatting for this segment only
     if (segment.bold) {
       pdf.setFont('times', 'bold');
-      pdf.setFontSize(12);
-      pdf.setTextColor(0, 0, 0);
-      console.log('📝 Applied ENHANCED BOLD formatting');
+      console.log('📝 Applied BOLD formatting');
     } else {
-      pdf.setFont('times', 'normal'); 
-      pdf.setFontSize(11);
-      pdf.setTextColor(40, 40, 40);
-      console.log('📝 Applied NORMAL formatting');
+      pdf.setFont('times', 'normal');
     }
     
-    // Use jsPDF's built-in text splitting which handles font sizes better
+    // Use jsPDF's built-in text splitting which preserves formatting better
     const lines = pdf.splitTextToSize(segment.text, maxWidth);
-    
-    // Calculate line height based on font size
-    const lineHeight = segment.bold ? baseLineHeight + 1 : baseLineHeight;
     
     for (const line of lines) {
       // Check if we need a new page
-      if (yPos > 270) {
+      if (yPos > 275) {  // Increased threshold to use more of the page
         pdf.addPage();
         yPos = 20;
         
-        // Re-apply font settings after new page
+        // Reapply font settings after new page
         if (segment.bold) {
           pdf.setFont('times', 'bold');
-          pdf.setFontSize(12);
-          pdf.setTextColor(0, 0, 0);
         } else {
-          pdf.setFont('times', 'normal'); 
-          pdf.setFontSize(11);
-          pdf.setTextColor(40, 40, 40);
+          pdf.setFont('times', 'normal');
         }
       }
       
-      console.log(`📝 Printing line: "${line}" - Bold: ${segment.bold}, yPos: ${yPos}`);
-      pdf.text(line, leftMargin, yPos);
+      pdf.text(line.trim(), leftMargin, yPos);  // Trim to avoid extra spaces
       yPos += lineHeight;
     }
-    
-    // Add small space after each segment to prevent crowding
-    yPos += 1;
   }
   
   // Reset to default formatting
