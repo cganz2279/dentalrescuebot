@@ -120,7 +120,7 @@ frontend:
     implemented: false
     working: false
     file: "frontend/src/components/AdminLogin.jsx"
-    stuck_count: 9
+    stuck_count: 10
     priority: "high"
     needs_retesting: false
     status_history:
