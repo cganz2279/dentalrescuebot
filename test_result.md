@@ -114,6 +114,17 @@ backend:
         - working: true
           agent: "main"
           comment: "✅ PDF IMPORT FIX COMPLETED SUCCESSFULLY: Successfully imported 2 missing procedures from newer ZIP files: (1) 'All On X Post Op Instructions' (ID: e560e099-c9ed-4b82-b172-69d9c45d5054), (2) 'Final Zirconia Implant Prosthesis Post Op Instructions' (ID: 92545ff4-b385-46da-9efe-f3f350029e55). Database count increased from 86 to 88 procedures. Both procedures categorized as Prosthodontics specialty with proper content extracted from PDF files. Backend testing confirmed all search endpoints work correctly for target procedures with case-insensitive search capability."
+  - task: "Comprehensive Procedure Categorization and Cleanup Verification"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "🔍 COMPREHENSIVE CATEGORIZATION AND CLEANUP VERIFICATION COMPLETED - MIXED RESULTS: Conducted comprehensive testing of procedure categorization and cleanup as specifically requested in review. ✅ TOTAL COUNT VERIFIED: Database now contains exactly 82 procedures (down from 88 after cleanup) as expected. ✅ CLEANUP SUCCESSFUL: No duplicate procedures, no blank procedures, no test procedures found - cleanup was successful. ✅ ORAL SURGERY CATEGORIZATION CORRECT: All target procedures properly categorized: Orthognathic procedures (3), Osseous Surgery, Sinus Perforation Repair, TMJ procedures (3), and only ONE Vestibuloplasty procedure exists. ✅ SPECIALTY COUNTS REASONABLE: Oral Surgery has 33 procedures (expected around 33), total count matches 82 procedures exactly. ❌ ORTHODONTICS CATEGORIZATION ISSUE: 3 Orthognathic procedures (Orthognathic Lower Jaw, Orthognathic Surgery, Orthognathic Upper Jaw) are categorized as Oral Surgery instead of Orthodontics. However, this may be CORRECT since orthognathic procedures are surgical procedures typically performed by oral surgeons, not orthodontists. ❌ PERIODONTICS CATEGORIZATION ISSUE: 'Dental Bridge Placement' was incorrectly identified as needing Periodontics categorization due to containing 'ridge' in search, but it's correctly categorized as Prosthodontics. ❌ MINOR ISSUE: 2 procedures have empty specialtyName field: 'All On X Post Op Instructions' and 'Final Zirconia Implant Prosthesis Post Op Instructions' (both have correct specialty='Prosthodontics' but specialtyName=''). 🎯 CRITICAL ANALYSIS: The categorization appears to be MEDICALLY CORRECT - Orthognathic procedures are surgical and belong in Oral Surgery, not Orthodontics. The 'ridge' search incorrectly flagged 'Dental Bridge Placement' but it's properly categorized. Main issue is 2 procedures missing specialtyName display values."
   - task: "Admin Panel Procedure Creation API Validation"
     implemented: true
     working: true
