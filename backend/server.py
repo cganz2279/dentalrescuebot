@@ -229,91 +229,72 @@ async def get_procedures(specialty: Optional[str] = Query(None)):
 @api_router.get("/procedures/search")
 async def search_procedures(q: str = Query(..., min_length=1)):
     try:
-        # Simplified and reliable search
+        # Simple and reliable search
         search_query = q.strip().lower()
         
-        # Handle common alternative terms
-        search_alternatives = {
+        # Common alternative terms
+        search_mappings = {
             'zirconium': 'zirconia',
-            'zircon': 'zirconia', 
+            'zircon': 'zirconia',
             'all-on-x': 'all on x',
             'allonx': 'all on x',
             'all-on-4': 'all on x',
-            'all-on-6': 'all on x',
-            'deep cleaning': 'scaling',
-            'wisdom tooth': 'wisdom',
-            'wisdom teeth': 'wisdom',
-            'third molar': 'wisdom',
-            'root canal': 'root canal',
-            'rct': 'root canal',
-            'crown': 'crown',
-            'bridge': 'bridge',
-            'implant': 'implant',
-            'extraction': 'extraction',
-            'filling': 'filling'
+            'all-on-6': 'all on x'
         }
-        
-        # Get the search term (use alternative if available)
-        actual_search_term = search_alternatives.get(search_query, search_query)
         
         # Get all procedures from database
         all_procedures = await db.procedures.find({}, {"_id": 0}).to_list(length=None)
         
-        # Filter procedures using Python (more reliable than MongoDB regex)
+        # Simple Python-based search
         matching_procedures = []
+        
+        # Use alternative term if available
+        search_terms = [search_query]
+        if search_query in search_mappings:
+            search_terms.append(search_mappings[search_query])
+        
+        # Add individual words for multi-word searches
+        words = search_query.split()
+        if len(words) > 1:
+            search_terms.extend(words)
         
         for procedure in all_procedures:
             name = procedure.get('name', '').lower()
             specialty = procedure.get('specialtyName', '').lower()
-            overview = procedure.get('overview', '').lower()
+            overview = procedure.get('overview', '')[:500].lower()  # Limit overview search
             
-            # Check if search term or alternative matches
-            search_terms_to_check = [search_query, actual_search_term]
+            # Check if any search term matches
+            found_match = False
+            for term in search_terms:
+                if len(term) >= 2:  # Only search meaningful terms
+                    if term in name or term in specialty or term in overview:
+                        found_match = True
+                        break
             
-            # Also check individual words for multi-word searches
-            search_words = search_query.split() + actual_search_term.split()
-            search_terms_to_check.extend(search_words)
-            
-            # Remove duplicates
-            search_terms_to_check = list(set(search_terms_to_check))
-            
-            # Check for matches
-            for term in search_terms_to_check:
-                if len(term) >= 2:  # Only search terms with at least 2 characters
-                    if (term in name or term in specialty or term in overview):
-                        matching_procedures.append(procedure)
-                        break  # Found a match, no need to check other terms
+            if found_match:
+                matching_procedures.append(procedure)
         
-        # Remove duplicates based on procedure ID
-        seen_ids = set()
+        # Remove duplicates
         unique_procedures = []
+        seen_ids = set()
         for proc in matching_procedures:
             if proc.get('id') not in seen_ids:
                 unique_procedures.append(proc)
                 seen_ids.add(proc.get('id'))
         
-        # Sort by relevance (name matches first, then specialty, then overview)
-        def get_relevance_score(procedure):
-            score = 0
-            name = procedure.get('name', '').lower()
-            specialty = procedure.get('specialtyName', '').lower()
-            
-            # Exact name matches get highest priority
-            if search_query in name or actual_search_term in name:
-                score += 1000
-            
-            # Word matches in name
-            for word in (search_query.split() + actual_search_term.split()):
-                if len(word) >= 2 and word in name:
-                    score += 100
-            
-            # Specialty matches
-            if search_query in specialty or actual_search_term in specialty:
-                score += 50
-                
-            return score
+        # Sort by name match priority
+        def sort_key(proc):
+            name = proc.get('name', '').lower()
+            # Exact matches first
+            if search_query in name:
+                return 0
+            # Alternative term matches
+            if search_query in search_mappings and search_mappings[search_query] in name:
+                return 1
+            # Other matches
+            return 2
         
-        unique_procedures.sort(key=get_relevance_score, reverse=True)
+        unique_procedures.sort(key=sort_key)
         
         return {"success": True, "data": unique_procedures}
         
