@@ -229,78 +229,64 @@ async def get_procedures(specialty: Optional[str] = Query(None)):
 @api_router.get("/procedures/search")
 async def search_procedures(q: str = Query(..., min_length=1)):
     try:
-        # Simple and reliable search
         search_query = q.strip().lower()
         
-        # Common alternative terms
-        search_mappings = {
+        # Get all procedures
+        procedures = await db.procedures.find({}, {"_id": 0}).to_list(length=100)
+        
+        # Alternative terms mapping
+        alternatives = {
             'zirconium': 'zirconia',
             'zircon': 'zirconia',
             'all-on-x': 'all on x',
             'allonx': 'all on x',
-            'all-on-4': 'all on x',
-            'all-on-6': 'all on x'
+            'all-on-4': 'all on x'
         }
         
-        # Get all procedures from database
-        all_procedures = await db.procedures.find({}, {"_id": 0}).to_list(length=None)
-        
-        # Simple Python-based search
-        matching_procedures = []
-        
-        # Use alternative term if available
+        # Get search terms
         search_terms = [search_query]
-        if search_query in search_mappings:
-            search_terms.append(search_mappings[search_query])
+        if search_query in alternatives:
+            search_terms.append(alternatives[search_query])
         
-        # Add individual words for multi-word searches
-        words = search_query.split()
-        if len(words) > 1:
-            search_terms.extend(words)
+        matches = []
         
-        for procedure in all_procedures:
-            name = procedure.get('name', '').lower()
-            specialty = procedure.get('specialtyName', '').lower()
-            overview = procedure.get('overview', '')[:500].lower()  # Limit overview search
-            
-            # Check if any search term matches
-            found_match = False
-            for term in search_terms:
-                if len(term) >= 2:  # Only search meaningful terms
-                    if term in name or term in specialty or term in overview:
-                        found_match = True
-                        break
-            
-            if found_match:
-                matching_procedures.append(procedure)
-        
-        # Remove duplicates
-        unique_procedures = []
-        seen_ids = set()
-        for proc in matching_procedures:
-            if proc.get('id') not in seen_ids:
-                unique_procedures.append(proc)
-                seen_ids.add(proc.get('id'))
-        
-        # Sort by name match priority
-        def sort_key(proc):
+        # Simple search logic
+        for proc in procedures:
             name = proc.get('name', '').lower()
-            # Exact matches first
-            if search_query in name:
+            specialty = proc.get('specialtyName', '').lower()
+            
+            # Check each search term
+            for term in search_terms:
+                if term in name or term in specialty:
+                    if proc not in matches:
+                        matches.append(proc)
+                    break
+                
+                # For multi-word terms, check if all words are present
+                words = term.split()
+                if len(words) > 1:
+                    if all(word in name for word in words):
+                        if proc not in matches:
+                            matches.append(proc)
+                        break
+        
+        # Sort by relevance (exact name matches first)
+        def relevance_score(proc):
+            name = proc.get('name', '').lower()
+            if search_query == name:
                 return 0
-            # Alternative term matches
-            if search_query in search_mappings and search_mappings[search_query] in name:
+            elif search_query in name:
                 return 1
-            # Other matches
-            return 2
+            else:
+                return 2
         
-        unique_procedures.sort(key=sort_key)
+        matches.sort(key=relevance_score)
         
-        return {"success": True, "data": unique_procedures}
+        return {"success": True, "data": matches}
         
     except Exception as e:
-        logging.error(f"Error searching procedures: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        logging.error(f"Search error: {str(e)}")
+        return {"success": False, "data": []}
 
 @api_router.get("/procedures/{procedure_id}")
 async def get_procedure(procedure_id: str):
