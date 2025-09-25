@@ -150,7 +150,7 @@ const PatientManagementPage = () => {
       const data = response.data;
       
       // FINAL RAW TEXT ONLY - CACHE BUSTED
-      const { generateProcedurePDF } = await import('../utils/FINAL_RAW_TEXT_ONLY');
+      const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
       
       console.log('🏥 PDF Generation - Practice Context:', practice);
       console.log('📊 Practice officeHours:', practice?.officeHours);
