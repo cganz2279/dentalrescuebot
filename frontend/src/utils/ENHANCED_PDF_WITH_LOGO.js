@@ -190,7 +190,58 @@ function processContentForBoldFormatting(content) {
   return segments;
 }
 
-// Simple function to add content without complex text processing
+// Function to add practice information footer to all pages
+function addPracticeFooter(pdf, procedure) {
+  const pageCount = pdf.internal.getNumberOfPages();
+  
+  // Extract practice information from procedure data
+  const practiceName = procedure?.practiceName || 
+                      procedure?.practice?.name || 
+                      procedure?.practiceData?.name || 
+                      'Your Practice Name';
+                      
+  const practicePhone = procedure?.practicePhone || 
+                       procedure?.practice?.phone || 
+                       procedure?.practiceData?.phone ||
+                       procedure?.practiceEmergencyContact || 
+                       procedure?.practice?.emergencyContact ||
+                       'Contact Number Not Available';
+
+  console.log('📋 Adding practice footer:', { practiceName, practicePhone });
+  
+  // Add footer to all pages
+  for (let i = 1; i <= pageCount; i++) {
+    pdf.setPage(i);
+    
+    // Footer styling
+    pdf.setFont('times', 'normal');
+    pdf.setFontSize(10);
+    pdf.setTextColor(80, 80, 80); // Gray color
+    
+    // Add a line above footer
+    pdf.setDrawColor(200, 200, 200);
+    pdf.setLineWidth(0.5);
+    pdf.line(20, 275, 190, 275);
+    
+    // Practice name (left side)
+    pdf.text(practiceName, 20, 285);
+    
+    // Practice phone (right side)
+    const phoneText = `Phone: ${practicePhone}`;
+    const phoneTextWidth = pdf.getTextWidth(phoneText);
+    pdf.text(phoneText, 190 - phoneTextWidth, 285);
+    
+    // Page number (center)
+    if (pageCount > 1) {
+      const pageText = `Page ${i} of ${pageCount}`;
+      const pageTextWidth = pdf.getTextWidth(pageText);
+      pdf.text(pageText, (210 - pageTextWidth) / 2, 290);
+    }
+  }
+  
+  // Reset text color
+  pdf.setTextColor(0, 0, 0);
+}
 function addSimpleFormattedContentToPDF(pdf, content, startY) {
   let yPos = startY;
   const lineHeight = 5.5;
