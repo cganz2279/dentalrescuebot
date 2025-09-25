@@ -1,12 +1,15 @@
 import jsPDF from 'jspdf';
 
-// ENHANCED PDF GENERATOR WITH LOGO AND BOLD FORMATTING - v3
+// Base64 encoded logo image
+const LOGO_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAYAAAB/HSuDAAAACXBIWXMAAAsTAAALEwEAmpwYAAezH0lEQVR4nOzdd7ilyVXf+++qqvd9dzihc/fkpEmKI2mEhES6YEQQiGiwgWsMGDAyYGO4Bq5BmGCwMeliZJtsTPK1wGAMCAwKoISykNAEzWhiz3TuE/feb6iqdf+o3SP5wfbFQKtn+qyPnlF3n7jP2f08fdavVq0lqooxxhhjjDHGGGMub+5SPwBjjDHGGGOMMcZcfBYAGGOMMcYYY4wxe4AFAMYYY4wxxhhj';
+
+// ENHANCED PDF GENERATOR WITH LOGO AND BOLD FORMATTING - v4
 export const generateProcedurePDF = async (procedure) => {
   // Force timestamp to bust cache
   const timestamp = new Date().toISOString();
   const cacheKey = Date.now();
   
-  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v3');
+  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v4');
   console.log('🚨 TIMESTAMP:', timestamp);
   console.log('🚨 CACHE KEY:', cacheKey);
   console.log('🚨 PROCEDURE DATA:', procedure);
@@ -15,67 +18,18 @@ export const generateProcedurePDF = async (procedure) => {
     const pdf = new jsPDF();
     let yPos = 20;
     
-    // Add logo at the top centered
+    // Add embedded logo at the top centered
     try {
-      // Load the logo image
-      const logoUrl = 'https://customer-assets.emergentagent.com/job_dental-rescue/artifacts/rinpdh1d_Dental%20Rescue%20Bot%20with%20Tooth.png';
+      // Calculate centered position for logo
+      const imgWidth = 40; // Desired width
+      const imgHeight = 30; // Desired height
+      const xPos = (pdf.internal.pageSize.width - imgWidth) / 2; // Center horizontally
       
-      // Create an image element to load the logo
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
+      // Add logo to PDF using base64 data
+      pdf.addImage(LOGO_BASE64, 'PNG', xPos, yPos, imgWidth, imgHeight);
+      yPos += imgHeight + 10; // Move down after logo
       
-      // Wait for image to load
-      await new Promise((resolve, reject) => {
-        img.onload = () => {
-          try {
-            // Calculate centered position for logo
-            const imgWidth = 40; // Desired width
-            const imgHeight = 30; // Desired height
-            const xPos = (pdf.internal.pageSize.width - imgWidth) / 2; // Center horizontally
-            
-            // Add logo to PDF
-            pdf.addImage(img, 'PNG', xPos, yPos, imgWidth, imgHeight);
-            yPos += imgHeight + 10; // Move down after logo
-            
-            resolve();
-          } catch (error) {
-            console.log('Logo loading error:', error);
-            // Fall back to text header if logo fails
-            pdf.setFontSize(18);
-            pdf.setFont(undefined, 'bold');
-            pdf.setTextColor(41, 98, 184);
-            pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
-            yPos += 15;
-            resolve();
-          }
-        };
-        
-        img.onerror = () => {
-          console.log('Logo failed to load, using text header');
-          // Fall back to text header
-          pdf.setFontSize(18);
-          pdf.setFont(undefined, 'bold');
-          pdf.setTextColor(41, 98, 184);
-          pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
-          yPos += 15;
-          resolve();
-        };
-        
-        img.src = logoUrl;
-      });
-      
-      // Subtitle
-      pdf.setFontSize(10);
-      pdf.setFont(undefined, 'normal');
-      pdf.setTextColor(100, 100, 100);
-      pdf.text('Post-Operative Care Instructions', 105, yPos, { align: 'center' });
-      yPos += 15;
-      
-      // Decorative line under the header
-      pdf.setDrawColor(41, 98, 184);
-      pdf.setLineWidth(1);
-      pdf.line(50, yPos, 160, yPos);
-      yPos += 20;
+      console.log('✅ Logo added successfully from base64');
       
     } catch (logoError) {
       console.log('Logo loading failed, using text header:', logoError);
@@ -85,18 +39,20 @@ export const generateProcedurePDF = async (procedure) => {
       pdf.setTextColor(41, 98, 184);
       pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
       yPos += 8;
-      
-      pdf.setFontSize(10);
-      pdf.setFont(undefined, 'normal');
-      pdf.setTextColor(100, 100, 100);
-      pdf.text('Post-Operative Care Instructions', 105, yPos, { align: 'center' });
-      yPos += 15;
-      
-      pdf.setDrawColor(41, 98, 184);
-      pdf.setLineWidth(1);
-      pdf.line(50, yPos, 160, yPos);
-      yPos += 20;
     }
+    
+    // Subtitle
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.setTextColor(100, 100, 100);
+    pdf.text('Post-Operative Care Instructions', 105, yPos, { align: 'center' });
+    yPos += 15;
+    
+    // Decorative line under the header
+    pdf.setDrawColor(41, 98, 184);
+    pdf.setLineWidth(1);
+    pdf.line(50, yPos, 160, yPos);
+    yPos += 20;
     
     // Title - handle different data structures
     const procedureName = procedure?.name || procedure?.procedureName || 'Procedure';
