@@ -223,7 +223,7 @@ async def import_all_procedures():
     for proc in sample_procedures:
         print(f"   - {proc['name']} ({proc['specialtyName']})")
     
-    await client.close()
+    client.close()
 
 if __name__ == "__main__":
     asyncio.run(import_all_procedures())
