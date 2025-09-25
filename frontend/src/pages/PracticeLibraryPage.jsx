@@ -36,47 +36,59 @@ const PracticeLibraryPage = () => {
     
     // Enhanced local search with alternatives
     const alternatives = {
-      'zirconium': ['zirconia', 'zircon'],
-      'zircon': ['zirconia', 'zirconium'],  
-      'zirconia': ['zirconium', 'zircon'],
-      'all-on-x': ['all on x', 'all-on-4'],
-      'all on x': ['all-on-x', 'all-on-4'],
-      'allonx': ['all on x', 'all-on-x'],
-      'scaling': ['deep cleaning', 'root planing'],
-      'deep cleaning': ['scaling', 'root planing'],
-      'wisdom tooth': ['wisdom teeth', 'third molar'],
-      'wisdom teeth': ['wisdom tooth', 'third molar'],
-      'implant': ['dental implant', 'tooth implant'],
-      'extraction': ['removal', 'tooth removal'],
-      'filling': ['restoration', 'composite'],
-      'root canal': ['endodontic', 'rct'],
-      'denture': ['false teeth'],
-      'bridge': ['dental bridge'],
-      'braces': ['orthodontic', 'brackets'],
-      'aligners': ['clear aligners'],
-      'whitening': ['bleaching']
+      'zirconium': 'zirconia',
+      'zircon': 'zirconia',
+      'zirconia': 'zirconia',
+      'all-on-x': 'all on x',
+      'all on x': 'all on x',
+      'allonx': 'all on x',
+      'all-on-4': 'all on x',
+      'all-on-6': 'all on x',
+      'scaling': 'scaling and root planing',
+      'deep cleaning': 'scaling',
+      'root planing': 'scaling and root planing',
+      'wisdom tooth': 'wisdom',
+      'wisdom teeth': 'wisdom',
+      'third molar': 'wisdom',
+      'implant': 'implant',
+      'extraction': 'extraction',
+      'removal': 'extraction',
+      'filling': 'filling',
+      'restoration': 'filling',
+      'root canal': 'root canal',
+      'endodontic': 'root canal',
+      'rct': 'root canal',
+      'denture': 'denture',
+      'bridge': 'bridge',
+      'crown': 'crown',
+      'braces': 'braces',
+      'orthodontic': 'braces',
+      'aligners': 'aligners',
+      'whitening': 'whitening',
+      'bleaching': 'whitening'
     };
     
     // Get search terms including alternatives
     const searchTerms = [searchLower];
-    if (alternatives[searchLower]) {
-      searchTerms.push(...alternatives[searchLower]);
+    const alternativeSearch = alternatives[searchLower];
+    if (alternativeSearch) {
+      searchTerms.push(alternativeSearch);
     }
+    
+    // Also add individual words from multi-word searches
+    const searchWords = searchLower.split(' ').filter(word => word.length >= 2);
+    searchTerms.push(...searchWords);
     
     const filtered = procedures.filter(procedure => {
       const name = procedure.name.toLowerCase();
-      const specialty = procedure.specialty.toLowerCase();
+      const specialtyName = procedure.specialtyName?.toLowerCase() || '';
       const overview = (procedure.overview || '').toLowerCase();
       
       // Check if any search term matches
       return searchTerms.some(term => {
         return name.includes(term) || 
-               specialty.includes(term) ||
-               overview.includes(term) ||
-               // Check individual words for multi-word searches
-               (term.includes(' ') && term.split(' ').every(word => 
-                 name.includes(word) || specialty.includes(word) || overview.includes(word)
-               ));
+               specialtyName.includes(term) ||
+               overview.includes(term);
       });
     });
     
