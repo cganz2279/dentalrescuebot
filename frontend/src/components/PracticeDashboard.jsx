@@ -139,6 +139,7 @@ const PracticeDashboard = () => {
 
       console.log('🏥 Dashboard - Generating PDF with practice data:', {
         practiceName: procedureForPDF.practiceName,
+        practicePhone: procedureForPDF.practicePhone,
         practiceOfficeHours: procedureForPDF.practiceOfficeHours,
         practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
       });
