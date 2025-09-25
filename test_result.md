@@ -94,7 +94,7 @@ agent_communication:
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Please test the complete login and search functionality for the dental portal: (1) Navigate to https://dental-rescue.preview.emergentagent.com, (2) Login with credentials: cganz2279@gmail.com / password123, (3) Verify successful login and access to dashboard, (4) Navigate to Practice Library, (5) Verify the procedure library page loads with procedure lists, (6) Test search functionality for: 'All On X' (should find 'All On X Post Op Instructions'), 'all on x' (lowercase), 'zirconium' (should find 'Final Zirconia Implant Prosthesis Post Op Instructions'), 'zirconia', 'final' (should find procedures with 'final' in name), (7) Verify results are found and displayed correctly, (8) Check if results are categorized properly (Oral Surgery section). The goal is to identify where exactly the search is failing - whether it's login, navigation, search logic, or procedure loading."
+user_problem_statement: "Fix the PDF issue - The database was missing critical procedures like 'All On X Post Op Instructions' and 'Final Zirconia Implant Prosthesis Post Op Instructions' preventing users from generating PDFs for these procedures. The API endpoint was only returning 86 procedures instead of the expected 97."
 
 backend:
   - task: "Dr. Ganz Login Functionality Test"
