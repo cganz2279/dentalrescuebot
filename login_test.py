@@ -118,7 +118,7 @@ def test_jwt_token_validation(token: str):
         
         # Test a protected endpoint
         response = requests.get(
-            f"{BACKEND_URL}/practice/profile",
+            f"{BACKEND_URL}/practice/dashboard",
             headers=headers,
             timeout=30
         )
