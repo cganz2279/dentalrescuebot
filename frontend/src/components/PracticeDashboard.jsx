@@ -132,6 +132,7 @@ const PracticeDashboard = () => {
       const procedureForPDF = {
         ...procedure,
         practiceName: practice?.name || 'Your Practice',
+        practicePhone: practice?.phone || practice?.emergencyContact || 'Phone not available',
         practiceOfficeHours: practice?.officeHours || 'Please contact us for office hours',
         practiceEmergencyContact: practice?.emergencyContact || 'Please contact us for emergency support'
       };
