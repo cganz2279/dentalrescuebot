@@ -1,5 +1,20 @@
 import jsPDF from 'jspdf';
 
+// Function to load base64 logo from the text file
+async function getBase64Logo() {
+  try {
+    const response = await fetch('/dental-rescue-logo-base64.txt');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const base64String = await response.text();
+    return base64String.trim(); // Remove any whitespace/newlines
+  } catch (error) {
+    console.log('Failed to load base64 logo:', error);
+    return null;
+  }
+}
+
 // ENHANCED PDF GENERATOR WITH LOGO AND BOLD FORMATTING
 export const generateProcedurePDF = async (procedure) => {
   // Force timestamp to bust cache
