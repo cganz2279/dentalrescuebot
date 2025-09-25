@@ -229,98 +229,90 @@ async def get_procedures(specialty: Optional[str] = Query(None)):
 @api_router.get("/procedures/search")
 async def search_procedures(q: str = Query(..., min_length=1)):
     try:
-        # Enhanced but simplified search
+        # Simplified and reliable search
         search_query = q.strip().lower()
         
         # Handle common alternative terms
-        alternatives = {
+        search_alternatives = {
             'zirconium': 'zirconia',
-            'zircon': 'zirconia',
+            'zircon': 'zirconia', 
             'all-on-x': 'all on x',
             'allonx': 'all on x',
             'all-on-4': 'all on x',
             'all-on-6': 'all on x',
-            'scaling': 'scaling and root planing',
             'deep cleaning': 'scaling',
             'wisdom tooth': 'wisdom',
             'wisdom teeth': 'wisdom',
             'third molar': 'wisdom',
-            'implant': 'implant',
-            'extraction': 'extraction',
-            'filling': 'filling',
             'root canal': 'root canal',
+            'rct': 'root canal',
             'crown': 'crown',
             'bridge': 'bridge',
-            'denture': 'denture',
-            'veneer': 'veneer'
+            'implant': 'implant',
+            'extraction': 'extraction',
+            'filling': 'filling'
         }
         
-        # Get the actual search term (use alternative if exists)
-        actual_search = alternatives.get(search_query, search_query)
+        # Get the search term (use alternative if available)
+        actual_search_term = search_alternatives.get(search_query, search_query)
         
-        # Create search conditions - simple and effective
-        search_conditions = [
-            # Exact or partial name matches
-            {"name": {"$regex": actual_search, "$options": "i"}},
-            {"name": {"$regex": search_query, "$options": "i"}},  # Also search original term
+        # Get all procedures from database
+        all_procedures = await db.procedures.find({}, {"_id": 0}).to_list(length=None)
+        
+        # Filter procedures using Python (more reliable than MongoDB regex)
+        matching_procedures = []
+        
+        for procedure in all_procedures:
+            name = procedure.get('name', '').lower()
+            specialty = procedure.get('specialtyName', '').lower()
+            overview = procedure.get('overview', '').lower()
             
-            # Specialty matches
-            {"specialtyName": {"$regex": actual_search, "$options": "i"}},
-            {"specialtyName": {"$regex": search_query, "$options": "i"}},
+            # Check if search term or alternative matches
+            search_terms_to_check = [search_query, actual_search_term]
             
-            # Overview content matches
-            {"overview": {"$regex": actual_search, "$options": "i"}},
-            {"overview": {"$regex": search_query, "$options": "i"}}
-        ]
+            # Also check individual words for multi-word searches
+            search_words = search_query.split() + actual_search_term.split()
+            search_terms_to_check.extend(search_words)
+            
+            # Remove duplicates
+            search_terms_to_check = list(set(search_terms_to_check))
+            
+            # Check for matches
+            for term in search_terms_to_check:
+                if len(term) >= 2:  # Only search terms with at least 2 characters
+                    if (term in name or term in specialty or term in overview):
+                        matching_procedures.append(procedure)
+                        break  # Found a match, no need to check other terms
         
-        # For multi-word searches, also search individual words
-        search_words = actual_search.split()
-        original_words = search_query.split()
-        
-        for word in search_words + original_words:
-            if len(word) >= 3:  # Only meaningful words
-                search_conditions.extend([
-                    {"name": {"$regex": word, "$options": "i"}},
-                    {"specialtyName": {"$regex": word, "$options": "i"}},
-                    {"overview": {"$regex": word, "$options": "i"}}
-                ])
-        
-        # Execute search
-        procedures_cursor = db.procedures.find(
-            {"$or": search_conditions},
-            {"_id": 0}
-        )
-        
-        procedures = await procedures_cursor.to_list(length=None)
-        
-        # Remove duplicates
+        # Remove duplicates based on procedure ID
         seen_ids = set()
         unique_procedures = []
-        for proc in procedures:
+        for proc in matching_procedures:
             if proc.get('id') not in seen_ids:
                 unique_procedures.append(proc)
                 seen_ids.add(proc.get('id'))
         
-        # Simple relevance scoring
+        # Sort by relevance (name matches first, then specialty, then overview)
         def get_relevance_score(procedure):
             score = 0
             name = procedure.get('name', '').lower()
             specialty = procedure.get('specialtyName', '').lower()
             
-            # Exact matches get highest priority
-            if search_query in name or actual_search in name:
-                score += 100
+            # Exact name matches get highest priority
+            if search_query in name or actual_search_term in name:
+                score += 1000
             
-            # Word matches
-            for word in search_query.split() + actual_search.split():
-                if word in name:
-                    score += 50
-                if word in specialty:
-                    score += 25
+            # Word matches in name
+            for word in (search_query.split() + actual_search_term.split()):
+                if len(word) >= 2 and word in name:
+                    score += 100
             
+            # Specialty matches
+            if search_query in specialty or actual_search_term in specialty:
+                score += 50
+                
             return score
         
-        # Sort by relevance
         unique_procedures.sort(key=get_relevance_score, reverse=True)
         
         return {"success": True, "data": unique_procedures}
