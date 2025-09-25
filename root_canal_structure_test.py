@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend configuration
-BACKEND_URL = "https://admin-panel-debug-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-rescue.preview.emergentagent.com/api"
 
 class RootCanalStructureTester:
     def __init__(self):

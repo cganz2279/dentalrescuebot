@@ -20,7 +20,7 @@ import sys
 from typing import Dict, Any
 
 # Use the backend URL from frontend/.env
-BACKEND_URL = "https://admin-panel-debug-5.preview.emergentagent.com"
+BACKEND_URL = "https://dental-rescue.preview.emergentagent.com"
 
 def print_section(title: str):
     """Print a formatted section header"""

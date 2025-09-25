@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://admin-panel-debug-5.preview.emergentagent.com"
+BACKEND_URL = "https://dental-rescue.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_EMAIL = "cganz@admin.com"
