@@ -179,7 +179,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin Panel Procedure Creation Form React Error Fix"
+    - "Dr. Ganz Login Functionality Test"
   stuck_tasks:
     - "Admin Panel Procedure Creation Form React Error Fix"
   test_all: false
