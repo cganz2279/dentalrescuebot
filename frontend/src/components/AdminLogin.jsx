@@ -456,9 +456,13 @@ const AdminDashboard = () => {
         });
       } else {
         // Handle error responses
+        console.log('API Error - Response status:', response.status);
         try {
           const errorData = await response.json();
+          console.log('Raw error data:', errorData);
           const errorMessage = handleApiError(errorData, 'Failed to create procedure');
+          console.log('Processed error message:', errorMessage);
+          console.log('Type of processed error message:', typeof errorMessage);
           setError(errorMessage);
         } catch (parseError) {
           console.error('Failed to parse error response:', parseError);
