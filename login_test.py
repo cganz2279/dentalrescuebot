@@ -87,15 +87,15 @@ def test_authentication_service_health():
             print("   ❌ Backend API not responding properly")
             return False
         
-        # Test auth endpoint availability
-        response = requests.options(f"{BACKEND_URL}/auth/login", timeout=10)
-        print(f"   Auth endpoint OPTIONS: {response.status_code}")
+        # Test auth endpoint availability with a simple GET (should return 405 Method Not Allowed)
+        response = requests.get(f"{BACKEND_URL}/auth/login", timeout=10)
+        print(f"   Auth endpoint GET: {response.status_code}")
         
-        if response.status_code in [200, 204]:
-            print("   ✅ Auth endpoint is available")
+        if response.status_code in [405, 422]:  # 405 = Method Not Allowed, 422 = Validation Error
+            print("   ✅ Auth endpoint is available (returns expected error for GET)")
             return True
         else:
-            print("   ❌ Auth endpoint not available")
+            print("   ❌ Auth endpoint not responding as expected")
             return False
             
     except Exception as e:
