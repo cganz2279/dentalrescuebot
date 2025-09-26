@@ -994,7 +994,7 @@ const AdminDashboard = () => {
               <ErrorBoundary>
                 <Card>
                 <CardHeader>
-                  <CardTitle>Add New Global Procedure</CardTitle>
+                  <CardTitle>🚨 TESTING MODE - Add New Global Procedure</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <form onSubmit={(e) => {
