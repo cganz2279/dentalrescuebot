@@ -428,9 +428,14 @@ const AdminDashboard = () => {
   };
 
   // Create a separate handler function as recommended by troubleshoot agent
-  const handleCreateProcedure = () => {
+  const handleCreateProcedure = async () => {
     console.log('🚀 HANDLE CREATE PROCEDURE CALLED - React 19 Fix');
-    createProcedure();
+    try {
+      await createProcedure();
+    } catch (error) {
+      console.error('❌ Error in handleCreateProcedure:', error);
+      setError(`Unexpected error: ${error.message || error}`);
+    }
   };
 
   const createProcedure = async () => {
