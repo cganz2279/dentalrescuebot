@@ -100,6 +100,24 @@ const CustomTabsContent = ({ children, value, activeTab, className }) => {
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
+  // Add global fetch interceptor to debug API calls
+  React.useEffect(() => {
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const url = args[0];
+      if (typeof url === 'string' && url.includes('/api/admin/procedures')) {
+        console.log('🚨 FETCH INTERCEPTED:', url, args[1]?.method || 'GET');
+        console.trace('🚨 CALL STACK:');
+        alert(`API call intercepted: ${args[1]?.method || 'GET'} ${url}`);
+      }
+      return originalFetch.apply(window, args);
+    };
+    
+    return () => {
+      window.fetch = originalFetch;
+    };
+  }, []);
+
   const [errorState, setErrorState] = useState('');
   const [adminToken] = useState(localStorage.getItem('adminToken'));
   
