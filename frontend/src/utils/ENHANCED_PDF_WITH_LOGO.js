@@ -331,6 +331,12 @@ function addSimpleFormattedContentToPDF(pdf, content, startY) {
     'Emergency'
   ];
   
+  console.log('📝 Using simple text rendering - preserving original formatting');
+  console.log('📝 Bold keywords to search for:', boldKeywords);
+  
+  // Split content into lines using jsPDF's built-in function
+  const lines = pdf.splitTextToSize(content, maxWidth);
+  
   for (const line of lines) {
     // Check if we need a new page
     if (yPos > 275) {
