@@ -62,7 +62,7 @@ const ProcedureDetailsPage = () => {
         id: data.assignment.id,
         actualProcedureId: data.assignment.procedureId || data.procedure.id, // Store the actual procedure ID
         procedureName: data.assignment.procedureName,
-        patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : 'Unknown Patient',
+        patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : '',
         patientEmail: data.patient ? data.patient.email : '',
         dentistName: data.assignment.dentistName,
         performedDate: data.assignment.performedDate.split('T')[0], // Extract date part
