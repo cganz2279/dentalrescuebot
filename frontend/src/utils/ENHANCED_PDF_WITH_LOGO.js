@@ -121,7 +121,8 @@ export const generateProcedurePDF = async (procedure) => {
 function processContentForBoldFormatting(content) {
   const boldKeywords = [
     'Purpose',
-    'First 24 Hours', 
+    'First 24 Hours',
+    'First 24 hours', 
     'Pain & Sensitivity',
     'Oral Hygiene',
     'Diet',
