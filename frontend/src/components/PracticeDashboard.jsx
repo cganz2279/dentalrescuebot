@@ -305,11 +305,9 @@ const PracticeDashboard = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              {dashboardData?.stats?.subscriptionStatus && (
-                <Badge className={getSubscriptionStatusColor(dashboardData?.stats?.subscriptionStatus)}>
-                  {dashboardData.stats.subscriptionStatus.toUpperCase()}
-                </Badge>
-              )}
+              <Badge className={getSubscriptionStatusColor(dashboardData?.stats?.subscriptionStatus)}>
+                {dashboardData?.stats?.subscriptionStatus?.toUpperCase() || ''}
+              </Badge>
               <Button variant="outline" onClick={logout}>
                 Sign Out
               </Button>
