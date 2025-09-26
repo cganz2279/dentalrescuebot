@@ -587,11 +587,9 @@ const PracticeDashboard = () => {
                             ? procedure.dentistName 
                             : `Dr. ${procedure.dentistName}`}
                         </p>
-                        {procedure.patientName && (
-                          <p className="text-xs text-gray-500">
-                            Patient: {procedure.patientName}
-                          </p>
-                        )}
+                        <p className="text-xs text-gray-500">
+                          Patient: {procedure.patientName || ''}
+                        </p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="text-right mr-3">
