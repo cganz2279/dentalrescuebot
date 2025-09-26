@@ -1148,19 +1148,14 @@ const AdminDashboard = () => {
                     </Button>
                     <Button 
                       onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('🚀 CREATE PROCEDURE BUTTON CLICKED!');
-                        console.log('Event:', e);
-                        console.log('Current form data:', newProcedure);
-                        alert('Button clicked! Check console.');
-                        handleCreateProcedure();
+                        console.log('🔥 BUTTON CLICKED - ISOLATED TEST');
+                        alert('BUTTON CLICKED!');
                       }} 
                       disabled={loading}
                       type="button"
                     >
                       {loading ? <LoadingSpinner className="h-4 w-4 mr-2" /> : null}
-                      Create Procedure
+                      CLICK TEST
                     </Button>
                   </div>
                   </form>
