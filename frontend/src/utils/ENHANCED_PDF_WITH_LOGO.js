@@ -283,9 +283,8 @@ function addSimpleFormattedContentToPDF(pdf, content, startY) {
     // Check if this line contains any of our keywords for bold formatting
     let shouldBeBold = false;
     for (const keyword of boldKeywords) {
-      // Create a regex that matches the keyword with word boundaries and case insensitive
-      const regex = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-      if (regex.test(line)) {
+      // Use simple case-insensitive includes for more reliable matching
+      if (line.toLowerCase().includes(keyword.toLowerCase())) {
         shouldBeBold = true;
         console.log(`📝 Making line bold (contains "${keyword}"): ${line.substring(0, 40)}...`);
         break;
