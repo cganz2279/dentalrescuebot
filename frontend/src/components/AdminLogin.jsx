@@ -1042,7 +1042,16 @@ const AdminDashboard = () => {
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('🚨 FORM SUBMIT INTERCEPTED - This should not happen!');
+                    alert('Form submitted! This should be prevented.');
                     return false;
+                  }} onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('🚨 ENTER KEY INTERCEPTED');
+                      alert('Enter key pressed! This might be causing auto-submission.');
+                      return false;
+                    }
                   }}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
