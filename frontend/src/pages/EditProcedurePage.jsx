@@ -58,7 +58,7 @@ const EditProcedurePage = () => {
       setFormData({
         id: data.assignment.id,
         patientId: data.assignment.patientId,
-        patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : 'Unknown Patient',
+        patientName: data.patient ? `${data.patient.firstName} ${data.patient.lastName}` : '',
         procedureId: data.assignment.procedureId,
         procedureName: data.assignment.procedureName,
         performedDate: data.assignment.performedDate.split('T')[0], // Extract date part
