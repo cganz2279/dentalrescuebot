@@ -1188,6 +1188,7 @@ const AdminDashboard = () => {
                       Create Procedure
                     </Button>
                   </div>
+                  </form>
                 </CardContent>
               </Card>
               </ErrorBoundary>
