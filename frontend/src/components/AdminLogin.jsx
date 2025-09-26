@@ -1031,6 +1031,12 @@ const AdminDashboard = () => {
                   <CardTitle>Add New Global Procedure</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🚨 FORM SUBMIT INTERCEPTED - This should not happen!');
+                    return false;
+                  }}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">Procedure Name</label>
