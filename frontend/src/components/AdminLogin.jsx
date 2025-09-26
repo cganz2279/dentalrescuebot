@@ -463,70 +463,11 @@ const AdminDashboard = () => {
   };
 
   const createProcedure = async () => {
-    if (!adminToken) return;
+    console.log('🚀 CREATE PROCEDURE FUNCTION CALLED - DEBUGGING VERSION');
+    alert('createProcedure function called! No API call should happen.');
     
-    setLoading(true);
-    setError(''); // Clear any previous errors
-    
-    console.log('🚀 CREATE PROCEDURE FUNCTION CALLED - SUCCESS!');
-    alert('createProcedure function called successfully!');
-    
-    // Temporarily disabled to test button handler
-    setLoading(false);
+    setError('Test: This is a safe string error message');
     return;
-    
-    try {
-      const response = await fetch(`${API_BASE}/procedures`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${adminToken}`
-        },
-        body: JSON.stringify({
-          ...newProcedure,
-          immediateAftercare: newProcedure.immediateAftercare.filter(item => item.trim()),
-          dietRestrictions: newProcedure.dietRestrictions.filter(item => item.trim()),
-          warningSignsToCallDoctor: newProcedure.warningSignsToCallDoctor.filter(item => item.trim()),
-          medications: newProcedure.medications.filter(item => item.trim())
-        })
-      });
-
-      if (response.ok) {
-        await loadProcedures();
-        setShowAddProcedureForm(false);
-        setNewProcedure({
-          name: '',
-          specialty: '',
-          specialtyName: '',
-          duration: '',
-          overview: '',
-          immediateAftercare: [''],
-          dietRestrictions: [''],
-          warningSignsToCallDoctor: [''],
-          medications: ['']
-        });
-      } else {
-        // Handle error responses
-        console.log('API Error - Response status:', response.status);
-        try {
-          const errorData = await response.json();
-          console.log('Raw error data:', errorData);
-          const errorMessage = handleApiError(errorData, 'Failed to create procedure');
-          console.log('Processed error message:', errorMessage);
-          console.log('Type of processed error message:', typeof errorMessage);
-          setError(errorMessage);
-        } catch (parseError) {
-          console.error('Failed to parse error response:', parseError);
-          const rawText = await response.text();
-          setError(`Server error: ${response.status} - ${rawText || 'Failed to create procedure'}`);
-        }
-      }
-    } catch (networkError) {
-      console.error('Network error during procedure creation:', networkError);
-      setError(`Network error: ${networkError.message || 'Failed to create procedure'}`);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const updateProcedure = async (procedureId, updates) => {
