@@ -450,6 +450,13 @@ const AdminDashboard = () => {
     setLoading(true);
     setError(''); // Clear any previous errors
     
+    console.log('🚀 CREATE PROCEDURE FUNCTION CALLED - SUCCESS!');
+    alert('createProcedure function called successfully!');
+    
+    // Temporarily disabled to test button handler
+    setLoading(false);
+    return;
+    
     try {
       const response = await fetch(`${API_BASE}/procedures`, {
         method: 'POST',
