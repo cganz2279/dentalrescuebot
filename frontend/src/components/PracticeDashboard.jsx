@@ -349,7 +349,7 @@ const PracticeDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold capitalize">
-                {dashboardData?.stats?.subscriptionStatus || 'Active'}
+                {dashboardData?.stats?.subscriptionStatus || ''}
               </div>
               <p className="text-xs text-gray-600">Current plan status</p>
             </CardContent>
