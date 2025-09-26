@@ -1160,9 +1160,13 @@ const AdminDashboard = () => {
                       Cancel
                     </Button>
                     <Button 
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         console.log('🚀 CREATE PROCEDURE BUTTON CLICKED!');
+                        console.log('Event:', e);
                         console.log('Current form data:', newProcedure);
+                        alert('Button clicked! Check console.');
                         handleCreateProcedure();
                       }} 
                       disabled={loading}
