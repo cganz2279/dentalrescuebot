@@ -261,7 +261,8 @@ function addSimpleFormattedContentToPDF(pdf, content, startY) {
   
   const boldKeywords = [
     'Purpose',
-    'First 24 Hours', 
+    'First 24 Hours',
+    'First 24 hours', 
     'Pain & Sensitivity',
     'Oral Hygiene',
     'Diet',
