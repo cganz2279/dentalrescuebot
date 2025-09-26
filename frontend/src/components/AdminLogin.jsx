@@ -1155,7 +1155,11 @@ const AdminDashboard = () => {
                       Cancel
                     </Button>
                     <Button 
-                      onClick={handleCreateProcedure} 
+                      onClick={() => {
+                        console.log('🚀 CREATE PROCEDURE BUTTON CLICKED!');
+                        console.log('Current form data:', newProcedure);
+                        handleCreateProcedure();
+                      }} 
                       disabled={loading}
                       type="button"
                     >
