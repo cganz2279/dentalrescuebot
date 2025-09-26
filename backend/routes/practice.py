@@ -276,7 +276,7 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                 "stats": {
                     "patientCount": patient_count,
                     "activeProcedures": active_procedures,
-                    "subscriptionStatus": practice.get("subscription", {}).get("status", "unknown")
+                    "subscriptionStatus": practice.get("subscription", {}).get("status", "")
                 },
                 "recentPatients": recent_patients,
                 "recentProcedures": recent_procedures
