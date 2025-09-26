@@ -267,6 +267,8 @@ function addSimpleFormattedContentToPDF(pdf, content, startY) {
     'First 24 Hours',
     'First 24 hours', 
     'Pain & Sensitivity',
+    'Pain & Swelling',
+    'Bleeding',
     'Oral Hygiene',
     'Diet',
     'Special Precautions',
