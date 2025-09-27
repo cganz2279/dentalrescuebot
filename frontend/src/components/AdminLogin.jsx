@@ -463,11 +463,82 @@ const AdminDashboard = () => {
   };
 
   const createProcedure = async () => {
-    console.log('🚀 CREATE PROCEDURE FUNCTION CALLED - DEBUGGING VERSION');
-    alert('createProcedure function called! No API call should happen.');
+    if (!adminToken) return;
     
-    setError('Test: This is a safe string error message');
-    return;
+    setLoading(true);
+    setError(''); // Clear any previous errors
+    
+    try {
+      const response = await fetch(`${API_BASE}/procedures`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({
+          ...newProcedure,
+          immediateAftercare: newProcedure.immediateAftercare.filter(item => item.trim()),
+          dietRestrictions: newProcedure.dietRestrictions.filter(item => item.trim()),
+          medications: newProcedure.medications.filter(item => item.trim()),
+          warningSignsToCallDoctor: newProcedure.warningSignsToCallDoctor.filter(item => item.trim())
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Procedure created successfully:', data);
+        
+        // Reset form and close
+        setShowAddProcedureForm(false);
+        setNewProcedure({
+          name: '',
+          specialty: '',
+          overview: '',
+          immediateAftercare: [''],
+          dietRestrictions: [''],
+          medications: [''],
+          warningSignsToCallDoctor: ['']
+        });
+        
+        // Refresh procedures list
+        await loadProcedures();
+        
+      } else {
+        // Handle error responses - FIX: Convert objects to strings
+        console.log('API Error - Response status:', response.status);
+        try {
+          const errorData = await response.json();
+          console.log('Raw error data:', errorData);
+          
+          // CRITICAL FIX: Always convert error objects to strings
+          let errorMessage;
+          if (Array.isArray(errorData.detail)) {
+            // Handle FastAPI validation errors
+            const errors = errorData.detail.map(err => `${err.loc?.join('.')||'field'}: ${err.msg}`);
+            errorMessage = `Validation errors: ${errors.join(', ')}`;
+          } else if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          } else {
+            errorMessage = `Server error (${response.status}): Please check all required fields`;
+          }
+          
+          console.log('Processed error message:', errorMessage);
+          setError(errorMessage);
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          const errorMessage = `Server error (${response.status}): Failed to create procedure`;
+          setError(errorMessage);
+        }
+      }
+    } catch (networkError) {
+      console.error('Network error during procedure creation:', networkError);
+      const errorMessage = `Network error: ${networkError.message || 'Failed to create procedure'}`;
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateProcedure = async (procedureId, updates) => {
