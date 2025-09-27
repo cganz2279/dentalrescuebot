@@ -1111,6 +1111,16 @@ const AdminDashboard = () => {
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Recovery Timeline</label>
+                    <textarea
+                      className="w-full p-2 border rounded-md h-20"
+                      value={newProcedure.recoveryTimeline}
+                      onChange={(e) => setNewProcedure(prev => ({...prev, recoveryTimeline: e.target.value}))}
+                      placeholder="Expected recovery timeline and milestones..."
+                    />
+                  </div>
+
                   {/* Immediate Aftercare */}
                   <div>
                     <label className="block text-sm font-medium mb-1">Immediate Aftercare Instructions</label>
