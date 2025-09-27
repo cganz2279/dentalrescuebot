@@ -448,12 +448,6 @@ const AdminDashboard = () => {
   // Create a separate handler function as recommended by troubleshoot agent
   const handleCreateProcedure = async () => {
     console.log('🚀 HANDLE CREATE PROCEDURE CALLED - React 19 Fix');
-    alert('handleCreateProcedure function called!');
-    
-    // Temporarily disable actual creation for testing
-    console.log('Skipping actual procedure creation for testing');
-    return;
-    
     try {
       await createProcedure();
     } catch (error) {
