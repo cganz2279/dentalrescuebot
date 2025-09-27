@@ -470,7 +470,10 @@ const AdminDashboard = () => {
         setNewProcedure({
           name: '',
           specialty: '',
+          specialtyName: '',
+          duration: '',
           overview: '',
+          recoveryTimeline: '',
           immediateAftercare: [''],
           dietRestrictions: [''],
           medications: [''],
