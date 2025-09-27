@@ -1219,14 +1219,16 @@ const AdminDashboard = () => {
                     </Button>
                     <Button 
                       onClick={(e) => {
-                        console.log('🔥 BUTTON CLICKED - ISOLATED TEST');
-                        alert('BUTTON CLICKED!');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🚀 SAVE PROCEDURE BUTTON CLICKED!');
+                        handleCreateProcedure();
                       }} 
                       disabled={loading}
                       type="button"
                     >
                       {loading ? <LoadingSpinner className="h-4 w-4 mr-2" /> : null}
-                      CLICK TEST
+                      Save
                     </Button>
                   </div>
                   </form>
