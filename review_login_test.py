@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://postopcare-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-instructions.preview.emergentagent.com/api"
 
 def test_customer_login():
     """Test customer login with cganz2279@gmail.com/password123"""

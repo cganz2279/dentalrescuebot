@@ -10,7 +10,7 @@ import sys
 from typing import List, Dict, Any
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://postopcare-1.preview.emergentagent.com"
+BACKEND_URL = "https://dental-instructions.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def test_get_all_procedures():

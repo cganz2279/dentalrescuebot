@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, List
 
 # Test both production URLs
-PRODUCTION_URL_1 = "https://postopcare-1.preview.emergentagent.com/api"  # From frontend/.env
+PRODUCTION_URL_1 = "https://dental-instructions.preview.emergentagent.com/api"  # From frontend/.env
 PRODUCTION_URL_2 = "https://dentist-portal-3.emergent.host/api"  # From backend/.env
 LOCAL_URL = "http://localhost:8001/api"
 

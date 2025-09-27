@@ -117,7 +117,7 @@ async def create_sample_practices():
     print("1. dr.johnson@smiledentalclinic.com / dental123")
     print("2. dr.chen@familydentalcare.com / dental456") 
     print("3. test@test.com / test123")
-    print("\n🌐 Try logging in at: https://postopcare-1.preview.emergentagent.com")
+    print("\n🌐 Try logging in at: https://dental-instructions.preview.emergentagent.com")
     
     client.close()
 

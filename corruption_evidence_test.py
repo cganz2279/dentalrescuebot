@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # The corrupted environment (what user sees)
-CORRUPTED_URL = "https://postopcare-1.preview.emergentagent.com/api"
+CORRUPTED_URL = "https://dental-instructions.preview.emergentagent.com/api"
 # The clean environment 
 CLEAN_URL = "https://dentist-portal-3.emergent.host/api"
 

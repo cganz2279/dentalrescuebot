@@ -10,7 +10,7 @@ import sys
 from typing import Dict, List, Any
 
 # Use the production URL from frontend/.env
-BASE_URL = "https://postopcare-1.preview.emergentagent.com/api"
+BASE_URL = "https://dental-instructions.preview.emergentagent.com/api"
 
 class PDFImportFixTester:
     def __init__(self):

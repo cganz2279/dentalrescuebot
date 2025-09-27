@@ -13,7 +13,7 @@ import subprocess
 import os
 
 # Configuration
-BACKEND_URL = "https://postopcare-1.preview.emergentagent.com"
+BACKEND_URL = "https://dental-instructions.preview.emergentagent.com"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

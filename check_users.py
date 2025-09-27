@@ -6,7 +6,7 @@ Check existing users in the database
 import requests
 import json
 
-BACKEND_URL = "https://postopcare-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-instructions.preview.emergentagent.com/api"
 
 def test_admin_login_and_check_users():
     """Login as admin and check what users exist"""
