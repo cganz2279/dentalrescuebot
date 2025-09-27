@@ -132,6 +132,7 @@ const AdminDashboard = () => {
     specialtyName: '',
     duration: '',
     overview: '',
+    recoveryTimeline: '',
     immediateAftercare: [''],
     dietRestrictions: [''],
     warningSignsToCallDoctor: [''],
