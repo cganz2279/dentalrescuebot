@@ -55,7 +55,7 @@ class GlobalProcedureCreate(BaseModel):
     immediateAftercare: List[str]
     dietRestrictions: List[str]
     warningSignsToCallDoctor: List[str]
-    recoveryTimeline: List[Dict[str, str]]
+    recoveryTimeline: Optional[str] = None  # Made optional and changed to string
     medications: List[str]
 
 class GlobalProcedureUpdate(BaseModel):
