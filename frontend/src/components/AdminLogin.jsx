@@ -1065,7 +1065,9 @@ const AdminDashboard = () => {
                   }}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Procedure Name</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Procedure Name <span className="text-red-500">*</span>
+                      </label>
                       <Input 
                         value={newProcedure.name}
                         onChange={(e) => setNewProcedure(prev => ({...prev, name: e.target.value}))}
@@ -1073,7 +1075,9 @@ const AdminDashboard = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Specialty</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Specialty <span className="text-red-500">*</span>
+                      </label>
                       <select
                         className="w-full p-2 border rounded-md"
                         value={newProcedure.specialty}
@@ -1095,7 +1099,9 @@ const AdminDashboard = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Duration</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Duration <span className="text-red-500">*</span>
+                      </label>
                       <Input 
                         value={newProcedure.duration}
                         onChange={(e) => setNewProcedure(prev => ({...prev, duration: e.target.value}))}
@@ -1105,7 +1111,9 @@ const AdminDashboard = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Overview</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Overview <span className="text-red-500">*</span>
+                    </label>
                     <textarea
                       className="w-full p-2 border rounded-md h-24"
                       value={newProcedure.overview}
@@ -1120,7 +1128,7 @@ const AdminDashboard = () => {
                       className="w-full p-2 border rounded-md h-20"
                       value={newProcedure.recoveryTimeline}
                       onChange={(e) => setNewProcedure(prev => ({...prev, recoveryTimeline: e.target.value}))}
-                      placeholder="Expected recovery timeline and milestones..."
+                      placeholder="Expected recovery timeline and milestones (optional)..."
                     />
                   </div>
 
