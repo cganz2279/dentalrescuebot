@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, EmailStr, Field
 from motor.motor_asyncio import AsyncIOMotorClient
 from pathlib import Path
+from typing import Optional, List, Dict
 import os
 import bcrypt
 import jwt
