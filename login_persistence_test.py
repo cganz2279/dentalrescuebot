@@ -139,9 +139,9 @@ def test_token_validation(token: str, endpoint_type: str) -> bool:
                 timeout=30
             )
         else:  # admin
-            # Test with /api/admin/stats endpoint
+            # Test with /api/admin/dashboard endpoint
             response = requests.get(
-                f"{BACKEND_URL}/admin/stats",
+                f"{BACKEND_URL}/admin/dashboard",
                 headers={"Authorization": f"Bearer {token}"},
                 timeout=30
             )
