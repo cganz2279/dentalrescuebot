@@ -1957,19 +1957,32 @@ async def email_pdf_to_patient(
                 detail="Practice not found"
             )
         
-        # Get procedure details
+        # Try to get procedure details by ID first
         procedure = await db.procedures.find_one(
             {"id": email_request.procedureId},
             {"_id": 0}
         )
         
+        # If not found by ID, try to find by name
         if not procedure:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Procedure not found"
+            procedure = await db.procedures.find_one(
+                {"name": {"$regex": email_request.procedureName, "$options": "i"}},
+                {"_id": 0}
             )
         
-        # Generate PDF content (using the same logic as frontend PDF generation)
+        # If still not found, create a minimal procedure object
+        if not procedure:
+            procedure = {
+                "id": email_request.procedureId,
+                "name": email_request.procedureName,
+                "overview": f"Post-operative instructions for {email_request.procedureName}",
+                "immediateAftercare": ["Follow your dentist's specific instructions"],
+                "dietRestrictions": ["Follow recommended dietary guidelines"],
+                "medications": ["Take medications as prescribed"],
+                "warningSignsToCallDoctor": ["Contact office if you experience unusual symptoms"]
+            }
+        
+        # Generate PDF content
         if not PDF_GENERATOR_AVAILABLE:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
