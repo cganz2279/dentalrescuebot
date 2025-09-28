@@ -156,10 +156,15 @@ const PracticeDashboard = () => {
 
   const handleEmailPDF = async (procedureId) => {
     console.log('🔥 EMAIL BUTTON CLICKED:', procedureId);
+    console.log('🔍 Dashboard data:', dashboardData);
+    console.log('🔍 Available procedures:', dashboardData?.procedures);
+    
     try {
       const procedure = dashboardData?.procedures?.find(p => p.id === procedureId);
       if (!procedure) {
         console.error('Procedure not found for email');
+        console.log('🔍 Looking for procedureId:', procedureId);
+        console.log('🔍 Available procedure IDs:', dashboardData?.procedures?.map(p => p.id));
         return;
       }
 
