@@ -243,11 +243,16 @@ const PracticeDashboard = () => {
         return;
       }
 
+      console.log('🔍 Complete procedure object:', procedure);
+      console.log('🔍 Procedure patientId:', procedure.patientId);
+      console.log('🔍 Procedure patientName:', procedure.patientName);
+
       // Try to find patient cellphone from recentPatients data using patientId
       let patientCellphone = null;
       
       if (procedure.patientId) {
         console.log('🔍 Looking for patient cellphone using patientId:', procedure.patientId);
+        console.log('🔍 Available patients in recentPatients:', dashboardData?.recentPatients?.map(p => ({id: p.id, name: `${p.firstName} ${p.lastName}`})));
         
         const patient = dashboardData?.recentPatients?.find(p => p.id === procedure.patientId);
         console.log('🔍 Found patient:', patient);
