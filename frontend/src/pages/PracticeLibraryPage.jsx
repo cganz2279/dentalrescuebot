@@ -7,7 +7,7 @@ import { Badge } from '../components/ui/badge';
 import { useToast } from '../hooks/use-toast';
 import { 
   ArrowLeft, Search, BookOpen, Clock, AlertTriangle, 
-  FileText, Download, User, Calendar 
+  FileText, Download, User, Calendar, Mail
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
