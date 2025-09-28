@@ -44,8 +44,8 @@ class SMSFunctionalityTester:
             if response.status_code == 200:
                 data = response.json()
                 if data.get('success'):
-                    self.auth_token = data['data']['token']
-                    self.practice_id = data['data']['user']['practiceId']
+                    self.auth_token = data['token']
+                    self.practice_id = data['user']['practiceId']
                     print(f"   ✅ Authentication successful")
                     print(f"   Practice ID: {self.practice_id}")
                     return True
