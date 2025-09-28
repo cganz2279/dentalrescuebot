@@ -1157,7 +1157,6 @@ async def update_practice(
         
         # Handle password update separately
         if hasattr(update_data, 'newPassword') and update_data.newPassword:
-            import bcrypt
             hashed_password = bcrypt.hashpw(update_data.newPassword.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             
             await db.users.update_one(
