@@ -233,7 +233,72 @@ const PracticeDashboard = () => {
     }
   };
 
-  const handlePatientClick = (patientId) => {
+  const handleSMSPDF = async (procedureId) => {
+    console.log('📱 SMS BUTTON CLICKED:', procedureId);
+    
+    try {
+      const procedure = dashboardData?.recentProcedures?.find(p => p.id === procedureId);
+      if (!procedure) {
+        console.error('Procedure not found for SMS');
+        return;
+      }
+
+      // Try to find patient cellphone from recentPatients data using patientId
+      let patientCellphone = null;
+      
+      if (procedure.patientId) {
+        console.log('🔍 Looking for patient cellphone using patientId:', procedure.patientId);
+        
+        const patient = dashboardData?.recentPatients?.find(p => p.id === procedure.patientId);
+        console.log('🔍 Found patient:', patient);
+        
+        if (patient) {
+          patientCellphone = patient.cellphone || patient.phone; // Handle both field names
+          console.log('🔍 Patient cellphone found:', patientCellphone);
+        }
+      }
+
+      if (!patientCellphone) {
+        toast({
+          title: "Error",
+          description: "Patient cellphone number not available for this procedure",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Call backend API to send SMS
+      console.log('📱 Calling SMS API with:', {
+        patientCellphone: patientCellphone,
+        procedureId: procedure.id,
+        procedureName: procedure.procedureName || procedure.name
+      });
+      
+      const response = await practiceApi.smsPDF({
+        patientCellphone: patientCellphone,
+        procedureId: procedure.id,
+        procedureName: procedure.procedureName || procedure.name
+      });
+
+      console.log('📱 SMS API response:', response);
+
+      if (response.success) {
+        toast({
+          title: "SMS Sent",
+          description: `PDF link sent to ${response.patientCellphone}`,
+          variant: "default",
+        });
+      }
+      
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+      toast({
+        title: "SMS Failed",
+        description: error.response?.data?.detail || "Failed to send SMS with PDF link",
+        variant: "destructive",
+      });
+    }
+  };
     // Toggle patient selection - if same patient clicked, deselect
     if (selectedPatientId === patientId) {
       setSelectedPatientId(null);
