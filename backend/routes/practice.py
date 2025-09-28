@@ -88,6 +88,12 @@ class DentistUpdate(BaseModel):
     licenseNumber: Optional[str] = None
     specialties: Optional[List[str]] = None
 
+class EmailPDFRequest(BaseModel):
+    patientEmail: EmailStr
+    procedureId: str
+    procedureName: str
+    assignmentId: Optional[str] = None
+
 # Practice-Specific Procedure Override Models  
 class ProcedureCustomization(BaseModel):
     name: Optional[str] = None
