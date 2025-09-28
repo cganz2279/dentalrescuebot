@@ -82,7 +82,7 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
                     logo.hAlign = 'CENTER'
                     content.append(logo)
                     content.append(Spacer(1, 12))
-    except:
+    except Exception:
         # Fallback to text header if logo fails
         content.append(Paragraph("DENTAL RESCUE NOTES", title_style))
         content.append(Spacer(1, 12))
