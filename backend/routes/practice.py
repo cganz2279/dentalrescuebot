@@ -62,7 +62,7 @@ class PatientCreate(BaseModel):
     email: EmailStr
     firstName: str
     lastName: str
-    phone: Optional[str] = None
+    cellphone: str  # Made mandatory for SMS functionality
 
 class PatientUpdate(BaseModel):
     firstName: Optional[str] = None
