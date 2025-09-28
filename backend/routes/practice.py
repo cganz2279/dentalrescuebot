@@ -1000,8 +1000,8 @@ async def update_patient(
             update_data["lastName"] = patient_data.lastName
         if patient_data.email is not None:
             update_data["email"] = patient_data.email
-        if patient_data.phone is not None:
-            update_data["phone"] = patient_data.phone
+        if patient_data.cellphone is not None:
+            update_data["cellphone"] = patient_data.cellphone
         if patient_data.dateOfBirth is not None:
             update_data["dateOfBirth"] = patient_data.dateOfBirth
         if patient_data.address is not None:
