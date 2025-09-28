@@ -141,7 +141,7 @@ const AddPatientPage = () => {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
-        phone: formData.phone.trim() || null,
+        cellphone: formData.cellphone.trim(),
         primaryDentist: (formData.primaryDentist && formData.primaryDentist !== 'none') ? formData.primaryDentist : null
       });
       
