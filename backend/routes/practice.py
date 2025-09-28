@@ -2121,10 +2121,22 @@ async def sms_pdf_to_patient(
         )
         
         if not sms_result['success']:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to send SMS: {sms_result['error']}"
-            )
+            # Handle specific Twilio trial account errors more gracefully
+            error_msg = sms_result.get('error', 'Unknown error')
+            
+            # Check for Twilio trial account restrictions
+            if 'Unable to create record' in error_msg or '21211' in error_msg or 'trial account' in error_msg.lower():
+                # This is likely a trial account limitation - return a user-friendly message
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"SMS could not be sent to {phone_validation['formatted']}. This appears to be a Twilio trial account limitation. The secure PDF link has been generated: {secure_link}"
+                )
+            else:
+                # Other SMS errors
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Failed to send SMS: {error_msg}"
+                )
         
         return {
             "success": True,
