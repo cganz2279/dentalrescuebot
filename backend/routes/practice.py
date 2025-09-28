@@ -1914,11 +1914,6 @@ async def remove_procedure_customization(
             detail="Failed to remove procedure customization"
         )
 
-@router.post("/test-route")
-async def test_route():
-    """Test route to verify router is working"""
-    return {"message": "Practice router is working"}
-
 @router.post("/email-pdf")
 async def email_pdf_to_patient(
     email_request: EmailPDFRequest,
