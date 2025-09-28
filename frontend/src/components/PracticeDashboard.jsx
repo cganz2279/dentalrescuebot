@@ -300,12 +300,19 @@ const PracticeDashboard = () => {
       
     } catch (error) {
       console.error('Error sending SMS:', error);
+      console.log('🔍 Error response status:', error.response?.status);
+      console.log('🔍 Error response data:', error.response?.data);
+      console.log('🔍 Error response detail:', error.response?.data?.detail);
       
       // Check if it's a Twilio trial account limitation
       if (error.response?.status === 400 && error.response?.data?.detail?.includes('Twilio trial account limitation')) {
         const errorDetail = error.response.data.detail;
         const linkMatch = errorDetail.match(/https:\/\/[^\s]+/);
         const secureLink = linkMatch ? linkMatch[0] : null;
+        
+        console.log('🔍 Detected Twilio trial limitation');
+        console.log('🔍 Error detail:', errorDetail);
+        console.log('🔍 Secure link extracted:', secureLink);
         
         toast({
           title: "SMS Limited (Trial Account)",
