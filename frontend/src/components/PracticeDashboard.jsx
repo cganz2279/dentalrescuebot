@@ -169,6 +169,13 @@ const PracticeDashboard = () => {
       }
 
       if (!procedure.patientEmail) {
+        console.log('🔍 Procedure object:', procedure);
+        console.log('🔍 All procedure keys:', Object.keys(procedure));
+        console.log('🔍 patientEmail field:', procedure.patientEmail);
+        console.log('🔍 email field:', procedure.email);
+        console.log('🔍 patient field:', procedure.patient);
+        console.log('🔍 patientDetails field:', procedure.patientDetails);
+        
         toast({
           title: "Error",
           description: "Patient email not available for this procedure",
