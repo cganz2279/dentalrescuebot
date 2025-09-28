@@ -445,6 +445,14 @@ const PracticeLibraryPage = () => {
                 </Button>
                 <Button
                   variant="outline"
+                  onClick={() => handleSMSPDF(selectedProcedure)}
+                  className="flex-1 bg-green-50 text-green-700 hover:bg-green-100"
+                >
+                  <Phone className="h-4 w-4 mr-2" />
+                  Text PDF
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => setShowPreview(false)}
                 >
                   Close
