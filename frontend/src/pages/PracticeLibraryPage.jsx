@@ -366,6 +366,15 @@ const PracticeLibraryPage = () => {
                       <Mail className="h-4 w-4 mr-2" />
                       Email
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleSMSPDF(procedure)}
+                      className="bg-green-50 text-green-700 hover:bg-green-100"
+                    >
+                      <Phone className="h-4 w-4 mr-2" />
+                      Text
+                    </Button>
                   </div>
                 </div>
               </CardContent>
