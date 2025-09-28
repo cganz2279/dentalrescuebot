@@ -405,9 +405,7 @@ async def create_patient(
             "invitedBy": user_id,
             "invitedAt": datetime.utcnow(),
             "loginCount": 0,
-            "patientInfo": {
-                "phone": patient_data.phone
-            },
+            "cellphone": patient_data.cellphone,  # Changed from phone to cellphone
             "createdAt": datetime.utcnow(),
             "updatedAt": datetime.utcnow()
         }
