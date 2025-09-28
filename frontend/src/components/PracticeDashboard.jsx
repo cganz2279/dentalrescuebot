@@ -667,7 +667,10 @@ const PracticeDashboard = () => {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => handleEmailPDF(procedure.id)}
+                            onClick={() => {
+                              console.log('🔥 EMAIL BUTTON RENDERING FOR:', procedure.id);
+                              handleEmailPDF(procedure.id);
+                            }}
                             className="text-xs px-2 py-1 h-7"
                           >
                             Email
