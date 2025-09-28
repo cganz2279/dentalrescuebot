@@ -1964,8 +1964,6 @@ async def email_pdf_to_patient(
         )
         
         # Send email with PDF attachment
-        from ..services.email_service import email_service
-        
         success = email_service.send_pdf_email(
             patient_email=email_request.patientEmail,
             pdf_content=pdf_content,
