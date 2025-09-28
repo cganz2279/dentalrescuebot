@@ -27,6 +27,20 @@ except Exception as e:
     print(f"Email service not available: {e}")
     EMAIL_SERVICE_AVAILABLE = False
 
+try:
+    from services.sms_service import sms_service
+    SMS_SERVICE_AVAILABLE = True
+except Exception as e:
+    print(f"SMS service not available: {e}")
+    SMS_SERVICE_AVAILABLE = False
+
+try:
+    from utils.pdf_link_service import pdf_link_service
+    PDF_LINK_SERVICE_AVAILABLE = True
+except Exception as e:
+    print(f"PDF link service not available: {e}")
+    PDF_LINK_SERVICE_AVAILABLE = False
+
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
