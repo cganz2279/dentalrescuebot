@@ -111,6 +111,12 @@ class EmailPDFRequest(BaseModel):
     procedureName: str
     assignmentId: Optional[str] = None
 
+class SMSPDFRequest(BaseModel):
+    patientCellphone: str
+    procedureId: str
+    procedureName: str
+    assignmentId: Optional[str] = None
+
 # Practice-Specific Procedure Override Models  
 class ProcedureCustomization(BaseModel):
     name: Optional[str] = None
