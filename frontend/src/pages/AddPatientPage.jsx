@@ -280,19 +280,23 @@ const AddPatientPage = () => {
               </div>
 
               <div>
-                <Label htmlFor="phone">Phone Number (Optional)</Label>
+                <Label htmlFor="cellphone">Cellphone Number *</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    id="phone"
+                    id="cellphone"
                     type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="Enter phone number"
+                    value={formData.cellphone}
+                    onChange={(e) => handleInputChange('cellphone', e.target.value)}
+                    placeholder="Enter cellphone number"
                     disabled={loading}
-                    className="pl-10"
+                    className={`pl-10 ${errors.cellphone ? 'border-red-500' : ''}`}
+                    required
                   />
                 </div>
+                {errors.cellphone && (
+                  <p className="text-sm text-red-500 mt-1">{errors.cellphone}</p>
+                )}
               </div>
 
               <div>
