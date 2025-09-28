@@ -533,10 +533,7 @@ const PracticeDashboard = () => {
               </div>
               
               {/* Filter Info */}
-              <div className="flex items-center justify-between mt-3">
-                <div className="text-sm text-gray-600">
-                  Showing real patients only (Gmail addresses)
-                </div>
+              <div className="flex items-center justify-end mt-3">
                 <div className="text-xs text-gray-500">
                   {filteredRealPatients.length} patients shown
                 </div>
