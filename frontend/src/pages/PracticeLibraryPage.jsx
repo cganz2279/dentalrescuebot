@@ -175,6 +175,44 @@ const PracticeLibraryPage = () => {
     }
   };
 
+  const handleEmailPDF = async (procedure) => {
+    try {
+      // For library page, we need to ask for patient email since it's not associated with a specific patient
+      const patientEmail = prompt('Please enter patient email address:');
+      if (!patientEmail || !patientEmail.includes('@')) {
+        toast({
+          title: "Error",
+          description: "Please enter a valid email address",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Call backend API to send email
+      const response = await practiceApi.emailPDF({
+        patientEmail: patientEmail,
+        procedureId: procedure.id,
+        procedureName: procedure.name
+      });
+
+      if (response.success) {
+        toast({
+          title: "Email Sent",
+          description: `PDF instructions sent to ${patientEmail}`,
+          variant: "default",
+        });
+      }
+      
+    } catch (error) {
+      console.error('Error sending PDF email:', error);
+      toast({
+        title: "Email Failed",
+        description: error.response?.data?.detail || "Failed to send PDF email",
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatDuration = (duration) => {
     if (!duration) return 'Variable';
     return duration;
