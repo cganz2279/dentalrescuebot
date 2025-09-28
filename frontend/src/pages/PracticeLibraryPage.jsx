@@ -250,6 +250,8 @@ const PracticeLibraryPage = () => {
       });
     }
   };
+
+  const formatDuration = (duration) => {
     if (!duration) return 'Variable';
     return duration;
   };
