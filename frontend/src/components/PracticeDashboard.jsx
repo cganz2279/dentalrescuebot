@@ -202,7 +202,7 @@ const PracticeDashboard = () => {
 
       // Call backend API to send email
       const response = await practiceApi.emailPDF({
-        patientEmail: procedure.patientEmail,
+        patientEmail: patientEmail,
         procedureId: procedure.id,
         procedureName: procedure.procedureName || procedure.name
       });
@@ -210,7 +210,7 @@ const PracticeDashboard = () => {
       if (response.success) {
         toast({
           title: "Email Sent",
-          description: `PDF instructions sent to ${procedure.patientEmail}`,
+          description: `PDF instructions sent to ${patientEmail}`,
           variant: "default",
         });
       }
