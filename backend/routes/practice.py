@@ -1859,7 +1859,6 @@ async def customize_procedure(
     except Exception as e:
         print(f"❌ Customize procedure error: {e}")
         print(f"❌ Error type: {type(e)}")
-        import traceback
         print(f"❌ Traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
