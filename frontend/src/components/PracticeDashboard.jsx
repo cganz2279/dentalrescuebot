@@ -294,7 +294,7 @@ const PracticeDashboard = () => {
       console.error('Error sending SMS:', error);
       
       // Check if it's a Twilio trial account limitation
-      if (error.response?.status === 400 && error.response?.data?.detail?.includes('trial account limitation')) {
+      if (error.response?.status === 400 && error.response?.data?.detail?.includes('Twilio trial account limitation')) {
         const errorDetail = error.response.data.detail;
         const linkMatch = errorDetail.match(/https:\/\/[^\s]+/);
         const secureLink = linkMatch ? linkMatch[0] : null;
