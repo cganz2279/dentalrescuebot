@@ -292,11 +292,28 @@ const PracticeDashboard = () => {
       
     } catch (error) {
       console.error('Error sending SMS:', error);
-      toast({
-        title: "SMS Failed",
-        description: error.response?.data?.detail || "Failed to send SMS with PDF link",
-        variant: "destructive",
-      });
+      
+      // Check if it's a Twilio trial account limitation
+      if (error.response?.status === 400 && error.response?.data?.detail?.includes('trial account limitation')) {
+        const errorDetail = error.response.data.detail;
+        const linkMatch = errorDetail.match(/https:\/\/[^\s]+/);
+        const secureLink = linkMatch ? linkMatch[0] : null;
+        
+        toast({
+          title: "SMS Limited (Trial Account)",
+          description: secureLink ? 
+            `SMS cannot be sent due to trial account restrictions. However, you can share this link directly: ${secureLink}` :
+            errorDetail,
+          variant: "default",
+          duration: 10000, // Show longer for link copying
+        });
+      } else {
+        toast({
+          title: "SMS Failed",
+          description: error.response?.data?.detail || "Failed to send SMS with PDF link",
+          variant: "destructive",
+        });
+      }
     }
   };
 
