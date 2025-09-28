@@ -118,7 +118,7 @@ const PracticeDashboard = () => {
 
   const handlePrintProcedure = async (procedureId) => {
     try {
-      const procedure = dashboardData?.procedures?.find(p => p.id === procedureId);
+      const procedure = dashboardData?.recentProcedures?.find(p => p.id === procedureId);
       if (!procedure) {
         console.error('Procedure not found for PDF generation');
         return;
