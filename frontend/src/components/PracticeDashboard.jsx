@@ -168,7 +168,23 @@ const PracticeDashboard = () => {
         return;
       }
 
-      if (!procedure.patientEmail) {
+      // Try to find patient email from recentPatients data using patientId
+      let patientEmail = procedure.patientEmail;
+      
+      if (!patientEmail && procedure.patientId) {
+        console.log('🔍 Looking for patient email using patientId:', procedure.patientId);
+        console.log('🔍 Available recentPatients:', dashboardData?.recentPatients);
+        
+        const patient = dashboardData?.recentPatients?.find(p => p.id === procedure.patientId);
+        console.log('🔍 Found patient:', patient);
+        
+        if (patient) {
+          patientEmail = patient.email;
+          console.log('🔍 Patient email found:', patientEmail);
+        }
+      }
+
+      if (!patientEmail) {
         console.log('🔍 Procedure object:', procedure);
         console.log('🔍 All procedure keys:', Object.keys(procedure));
         console.log('🔍 patientEmail field:', procedure.patientEmail);
