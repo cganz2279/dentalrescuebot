@@ -89,10 +89,10 @@ const EditPatientPage = () => {
       setSaving(true);
       
       // Validate required fields
-      if (!patientData.firstName || !patientData.lastName || !patientData.email) {
+      if (!patientData.firstName || !patientData.lastName || !patientData.email || !patientData.cellphone) {
         toast({
           title: "Validation Error",
-          description: "First name, last name, and email are required.",
+          description: "First name, last name, email, and cellphone number are required.",
           variant: "destructive",
         });
         return;
