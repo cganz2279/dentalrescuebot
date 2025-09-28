@@ -233,6 +233,11 @@ export const practiceApi = {
   removeProcedureCustomization: async (procedureId) => {
     const response = await practiceAxios.delete(`/api/practice/procedures/${procedureId}/customize`);
     return response.data;
+  },
+
+  emailPDF: async (emailData) => {
+    const response = await practiceAxios.post('/api/practice/email-pdf', emailData);
+    return response.data;
   }
 };
 
