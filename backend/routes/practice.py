@@ -1957,8 +1957,6 @@ async def email_pdf_to_patient(
             )
         
         # Generate PDF content (using the same logic as frontend PDF generation)
-        from ..utils.pdf_generator import generate_pdf_content
-        
         pdf_content = generate_pdf_content(
             procedure_name=email_request.procedureName,
             procedure_data=procedure,
