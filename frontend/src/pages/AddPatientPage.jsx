@@ -24,7 +24,7 @@ const AddPatientPage = () => {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
+    cellphone: '',
     primaryDentist: user?.firstName ? `Dr. ${user.firstName} ${user.lastName}` : ''
   });
   
