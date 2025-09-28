@@ -119,6 +119,10 @@ const AddPatientPage = () => {
       newErrors.email = 'Please enter a valid email';
     }
     
+    if (!formData.cellphone.trim()) {
+      newErrors.cellphone = 'Cellphone number is required';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
