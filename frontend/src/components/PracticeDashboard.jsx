@@ -201,11 +201,19 @@ const PracticeDashboard = () => {
       }
 
       // Call backend API to send email
+      console.log('📧 Calling email API with:', {
+        patientEmail: patientEmail,
+        procedureId: procedure.id,
+        procedureName: procedure.procedureName || procedure.name
+      });
+      
       const response = await practiceApi.emailPDF({
         patientEmail: patientEmail,
         procedureId: procedure.id,
         procedureName: procedure.procedureName || procedure.name
       });
+
+      console.log('📧 Email API response:', response);
 
       if (response.success) {
         toast({
