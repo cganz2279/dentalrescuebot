@@ -255,6 +255,9 @@ const PracticeDashboard = () => {
         if (patient) {
           patientCellphone = patient.cellphone || patient.phone; // Handle both field names
           console.log('🔍 Patient cellphone found:', patientCellphone);
+          console.log('🔍 Complete patient object:', patient);
+          console.log('🔍 Patient cellphone field specifically:', patient.cellphone);
+          console.log('🔍 Patient phone field specifically:', patient.phone);
         }
       }
 
