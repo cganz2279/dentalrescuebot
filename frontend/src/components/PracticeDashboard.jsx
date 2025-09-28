@@ -118,8 +118,7 @@ const PracticeDashboard = () => {
 
   const handlePrintProcedure = async (procedureId) => {
     try {
-      // Find the procedure in the filtered list
-      const procedure = filteredProcedures.find(p => p.id === procedureId);
+      const procedure = dashboardData?.procedures?.find(p => p.id === procedureId);
       if (!procedure) {
         console.error('Procedure not found for PDF generation');
         return;
@@ -127,14 +126,14 @@ const PracticeDashboard = () => {
 
       // Import the enhanced PDF generator
       const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
-      
+
       // Prepare procedure data for PDF with practice information
       const procedureForPDF = {
         ...procedure,
-        practiceName: practice?.name || 'Your Practice',
-        practicePhone: practice?.phone || practice?.emergencyContact || 'Phone not available',
-        practiceOfficeHours: practice?.officeHours || 'Please contact us for office hours',
-        practiceEmergencyContact: practice?.emergencyContact || 'Please contact us for emergency support'
+        practiceName: practice?.name || 'Dental Practice',
+        practicePhone: practice?.phone || practice?.emergencyContact || 'Contact Number Not Available',
+        practiceOfficeHours: practice?.officeHours || 'Contact office for hours',
+        practiceEmergencyContact: practice?.emergencyContact || practice?.phone || 'Contact Number Not Available'
       };
 
       console.log('🏥 Dashboard - Generating PDF with practice data:', {
@@ -146,13 +145,54 @@ const PracticeDashboard = () => {
 
       // Generate PDF with enhanced generator including logo
       const success = await generateProcedurePDF(procedureForPDF);
-      
       if (!success) {
         console.error('PDF generation failed');
       }
-
+      
     } catch (error) {
       console.error('Error generating PDF:', error);
+    }
+  };
+
+  const handleEmailPDF = async (procedureId) => {
+    try {
+      const procedure = dashboardData?.procedures?.find(p => p.id === procedureId);
+      if (!procedure) {
+        console.error('Procedure not found for email');
+        return;
+      }
+
+      if (!procedure.patientEmail) {
+        toast({
+          title: "Error",
+          description: "Patient email not available for this procedure",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Call backend API to send email
+      const response = await practiceApi.emailPDF({
+        patientEmail: procedure.patientEmail,
+        procedureId: procedure.id,
+        procedureName: procedure.procedureName || procedure.name
+      });
+
+      if (response.success) {
+        toast({
+          title: "Email Sent",
+          description: `PDF instructions sent to ${procedure.patientEmail}`,
+          variant: "default",
+        });
+      }
+      
+    } catch (error) {
+      console.error('Error sending PDF email:', error);
+      toast({
+        title: "Email Failed",
+        description: error.response?.data?.detail || "Failed to send PDF email",
+        variant: "destructive",
+      });
     }
   };
 
