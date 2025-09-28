@@ -11,8 +11,21 @@ from dotenv import load_dotenv
 from pathlib import Path
 import bcrypt
 import traceback
-from ..utils.pdf_generator import generate_pdf_content
-from ..services.email_service import email_service
+
+# Import utility and service modules
+try:
+    from utils.pdf_generator import generate_pdf_content
+    PDF_GENERATOR_AVAILABLE = True
+except Exception as e:
+    print(f"PDF generator not available: {e}")
+    PDF_GENERATOR_AVAILABLE = False
+
+try:
+    from services.email_service import email_service
+    EMAIL_SERVICE_AVAILABLE = True
+except Exception as e:
+    print(f"Email service not available: {e}")
+    EMAIL_SERVICE_AVAILABLE = False
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
