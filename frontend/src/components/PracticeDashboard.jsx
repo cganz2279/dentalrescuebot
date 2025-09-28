@@ -155,6 +155,7 @@ const PracticeDashboard = () => {
   };
 
   const handleEmailPDF = async (procedureId) => {
+    console.log('🔥 EMAIL BUTTON CLICKED:', procedureId);
     try {
       const procedure = dashboardData?.procedures?.find(p => p.id === procedureId);
       if (!procedure) {
