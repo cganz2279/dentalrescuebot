@@ -18,7 +18,7 @@ ROOT_DIR = Path(__file__).parent / "backend"
 load_dotenv(ROOT_DIR / '.env')
 
 # Configuration
-BACKEND_URL = "https://dental-instructions.preview.emergentagent.com/api"
+BACKEND_URL = "https://oncallbot.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

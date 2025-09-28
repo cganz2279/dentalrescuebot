@@ -9,7 +9,7 @@ import json
 from typing import List, Dict, Any
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dental-instructions.preview.emergentagent.com/api"
+BACKEND_URL = "https://oncallbot.preview.emergentagent.com/api"
 
 def test_total_procedure_count():
     """Test 1: Verify total count is exactly 82 procedures (down from 88 after cleanup)"""

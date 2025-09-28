@@ -16,7 +16,7 @@ ENVIRONMENTS = [
     },
     {
         "name": "Frontend .env URL", 
-        "url": "https://dental-instructions.preview.emergentagent.com/api"
+        "url": "https://oncallbot.preview.emergentagent.com/api"
     }
 ]
 

@@ -16,7 +16,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import sys
 
 # Configuration
-FRONTEND_URL = "https://dental-instructions.preview.emergentagent.com"
+FRONTEND_URL = "https://oncallbot.preview.emergentagent.com"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

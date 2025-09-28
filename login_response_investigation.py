@@ -20,7 +20,7 @@ import sys
 from typing import Dict, Any
 
 # Use the backend URL from frontend/.env
-BACKEND_URL = "https://dental-instructions.preview.emergentagent.com"
+BACKEND_URL = "https://oncallbot.preview.emergentagent.com"
 
 def print_section(title: str):
     """Print a formatted section header"""

@@ -9,7 +9,7 @@ import json
 import sys
 
 # Backend URL from frontend configuration
-BACKEND_URL = "https://dental-instructions.preview.emergentagent.com/api"
+BACKEND_URL = "https://oncallbot.preview.emergentagent.com/api"
 
 def authenticate():
     """Authenticate and get token"""

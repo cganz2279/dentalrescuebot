@@ -8,7 +8,7 @@ import requests
 import json
 import sys
 
-BACKEND_URL = "https://dental-instructions.preview.emergentagent.com/api"
+BACKEND_URL = "https://oncallbot.preview.emergentagent.com/api"
 
 class PasswordResetTester:
     def __init__(self, base_url: str):
