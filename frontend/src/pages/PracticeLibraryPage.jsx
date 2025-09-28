@@ -10,6 +10,7 @@ import {
   FileText, Download, User, Calendar 
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { practiceApi } from '../services/authApi';
 
 const PracticeLibraryPage = () => {
   const navigate = useNavigate();
