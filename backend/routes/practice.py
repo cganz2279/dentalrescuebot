@@ -1913,3 +1913,84 @@ async def remove_procedure_customization(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to remove procedure customization"
         )
+
+@router.post("/email-pdf")
+async def email_pdf_to_patient(
+    email_request: EmailPDFRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Email PDF of procedure instructions to patient"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Get practice information for email template
+        practice = await db.practices.find_one(
+            {"id": practice_id},
+            {"_id": 0, "name": 1, "phone": 1, "emergencyContact": 1, "officeHours": 1}
+        )
+        
+        if not practice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Practice not found"
+            )
+        
+        # Get procedure details
+        procedure = await db.procedures.find_one(
+            {"id": email_request.procedureId},
+            {"_id": 0}
+        )
+        
+        if not procedure:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure not found"
+            )
+        
+        # Generate PDF content (using the same logic as frontend PDF generation)
+        from ..utils.pdf_generator import generate_pdf_content
+        
+        pdf_content = generate_pdf_content(
+            procedure_name=email_request.procedureName,
+            procedure_data=procedure,
+            practice_info=practice
+        )
+        
+        # Send email with PDF attachment
+        from ..services.email_service import email_service
+        
+        success = email_service.send_pdf_email(
+            patient_email=email_request.patientEmail,
+            pdf_content=pdf_content,
+            procedure_name=email_request.procedureName,
+            practice_info=practice
+        )
+        
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to send email"
+            )
+        
+        return {
+            "success": True,
+            "message": f"PDF instructions for {email_request.procedureName} sent successfully to {email_request.patientEmail}",
+            "patientEmail": email_request.patientEmail,
+            "procedureName": email_request.procedureName
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Email PDF error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to send PDF email"
+        )
