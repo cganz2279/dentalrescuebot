@@ -238,6 +238,11 @@ export const practiceApi = {
   emailPDF: async (emailData) => {
     const response = await practiceAxios.post('/api/practice/email-pdf', emailData);
     return response.data;
+  },
+
+  smsPDF: async (smsData) => {
+    const response = await practiceAxios.post('/api/practice/sms-pdf', smsData);
+    return response.data;
   }
 };
 
