@@ -663,6 +663,14 @@ const PracticeDashboard = () => {
                           >
                             Print
                           </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleEmailPDF(procedure.id)}
+                            className="text-xs px-2 py-1 h-7"
+                          >
+                            Email
+                          </Button>
                         </div>
                       </div>
                     </div>
