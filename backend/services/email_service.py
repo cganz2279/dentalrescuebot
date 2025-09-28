@@ -1,6 +1,11 @@
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Attachment
+from sendgrid.helpers.mail.file_content import FileContent
+from sendgrid.helpers.mail.file_name import FileName
+from sendgrid.helpers.mail.file_type import FileType
+from sendgrid.helpers.mail.disposition import Disposition
 import os
+import base64
 from typing import Optional
 from datetime import datetime
 
