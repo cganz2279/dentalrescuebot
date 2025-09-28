@@ -2143,3 +2143,87 @@ async def sms_pdf_to_patient(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to send SMS with PDF link"
         )
+
+@router.get("/secure-pdf/{token}")
+async def access_secure_pdf(token: str):
+    """Access PDF via secure token"""
+    try:
+        if not PDF_LINK_SERVICE_AVAILABLE:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="PDF link service not available"
+            )
+        
+        # Validate secure token
+        validation_result = pdf_link_service.validate_secure_link(token)
+        if not validation_result['valid']:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=validation_result['error']
+            )
+        
+        token_data = validation_result['data']
+        
+        # Get procedure details
+        procedure = await db.procedures.find_one(
+            {"name": {"$regex": token_data['procedure_name'], "$options": "i"}},
+            {"_id": 0}
+        )
+        
+        if not procedure:
+            # Create a minimal procedure object if not found
+            procedure = {
+                "id": str(uuid.uuid4()),
+                "name": token_data['procedure_name'],
+                "overview": f"Post-operative instructions for {token_data['procedure_name']}",
+                "immediateAftercare": ["Follow your dentist's specific instructions"],
+                "dietRestrictions": ["Follow recommended dietary guidelines"],
+                "medications": ["Take medications as prescribed"],
+                "warningSignsToCallDoctor": ["Contact office if you experience unusual symptoms"]
+            }
+        
+        # Get practice information
+        practice = await db.practices.find_one(
+            {"id": token_data['practice_id']},
+            {"_id": 0, "name": 1, "phone": 1, "emergencyContact": 1, "officeHours": 1}
+        )
+        
+        if not practice:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Practice not found"
+            )
+        
+        # Generate PDF content
+        if not PDF_GENERATOR_AVAILABLE:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="PDF generator service not available"
+            )
+        
+        pdf_content = generate_pdf_content(
+            procedure_name=token_data['procedure_name'],
+            procedure_data=procedure,
+            practice_info=practice
+        )
+        
+        # Return PDF as response
+        from fastapi.responses import Response
+        
+        return Response(
+            content=pdf_content,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=\"{token_data['procedure_name']}_instructions.pdf\"",
+                "Content-Type": "application/pdf"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Secure PDF access error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to access secure PDF"
+        )
