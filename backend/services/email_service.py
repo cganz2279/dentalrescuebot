@@ -180,5 +180,113 @@ class EmailService:
                 </div>
             """
 
+    def send_pdf_email(self, patient_email: str, pdf_content: bytes, procedure_name: str, practice_info: dict) -> bool:
+        """
+        Send PDF email to patient with practice information
+        
+        Args:
+            patient_email: Patient's email address
+            pdf_content: PDF content as bytes
+            procedure_name: Name of the procedure (e.g., "Amalgam Fillings")
+            practice_info: Dictionary containing practice information
+        """
+        try:
+            # Create email subject
+            subject = f"Post Treatment PDF {procedure_name}"
+            
+            # Create email content
+            html_content = self._create_pdf_email_html(procedure_name, practice_info)
+            
+            # Create message
+            message = Mail(
+                from_email=(self.sender_email, practice_info.get('name', 'Dental Practice')),
+                to_emails=patient_email,
+                subject=subject,
+                html_content=html_content
+            )
+            
+            # Create PDF attachment
+            encoded_file = base64.b64encode(pdf_content).decode()
+            
+            attached_file = Attachment(
+                FileContent(encoded_file),
+                FileName(f"{procedure_name}.pdf"),
+                FileType("application/pdf"),
+                Disposition("attachment")
+            )
+            message.attachment = attached_file
+            
+            response = self.sg.send(message)
+            print(f"Email sent successfully to {patient_email}. Status code: {response.status_code}")
+            return response.status_code == 202
+            
+        except Exception as e:
+            print(f"Failed to send PDF email to {patient_email}: {str(e)}")
+            return False
+    
+    def _create_pdf_email_html(self, procedure_name: str, practice_info: dict) -> str:
+        """Create HTML content for PDF email"""
+        
+        practice_name = practice_info.get('name', 'Dental Practice')
+        office_phone = practice_info.get('phone', practice_info.get('emergencyContact', 'Contact office'))
+        office_hours = practice_info.get('officeHours', 'Please contact office for hours')
+        
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }}
+                .header {{ background-color: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
+                .content {{ padding: 30px; background-color: #f8f9fa; }}
+                .practice-info {{ background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb; }}
+                .info-item {{ margin: 10px 0; }}
+                .label {{ font-weight: bold; color: #2563eb; }}
+                .footer {{ background-color: #e9ecef; padding: 15px; text-align: center; border-radius: 0 0 8px 8px; color: #6c757d; }}
+                .attachment-note {{ background-color: #d1ecf1; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #bee5eb; }}
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Post-Operative Instructions</h1>
+                <p>{procedure_name}</p>
+            </div>
+            
+            <div class="content">
+                <p>Dear Patient,</p>
+                
+                <p>Please find attached your post-operative instructions for <strong>{procedure_name}</strong>. These instructions will help ensure proper healing and the best possible outcome from your treatment.</p>
+                
+                <div class="attachment-note">
+                    <strong>📎 Attachment:</strong> {procedure_name}.pdf
+                </div>
+                
+                <p>Please review these instructions carefully and follow them as directed. If you have any questions or concerns during your recovery, please don't hesitate to contact our office.</p>
+                
+                <div class="practice-info">
+                    <h3>{practice_name}</h3>
+                    <div class="info-item">
+                        <span class="label">📞 Phone:</span> {office_phone}
+                    </div>
+                    <div class="info-item">
+                        <span class="label">🕒 Office Hours:</span> {office_hours}
+                    </div>
+                </div>
+                
+                <p>Thank you for choosing {practice_name} for your dental care.</p>
+                
+                <p>Best regards,<br>
+                <strong>{practice_name}</strong></p>
+            </div>
+            
+            <div class="footer">
+                <p>This is an automated message from {practice_name}. Please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return html_content
+
 # Create a global instance
 email_service = EmailService()
