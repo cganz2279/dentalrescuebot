@@ -1970,6 +1970,12 @@ async def email_pdf_to_patient(
             )
         
         # Generate PDF content (using the same logic as frontend PDF generation)
+        if not PDF_GENERATOR_AVAILABLE:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="PDF generator service not available"
+            )
+        
         pdf_content = generate_pdf_content(
             procedure_name=email_request.procedureName,
             procedure_data=procedure,
@@ -1977,6 +1983,12 @@ async def email_pdf_to_patient(
         )
         
         # Send email with PDF attachment
+        if not EMAIL_SERVICE_AVAILABLE:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Email service not available"
+            )
+        
         success = email_service.send_pdf_email(
             patient_email=email_request.patientEmail,
             pdf_content=pdf_content,
