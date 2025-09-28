@@ -322,6 +322,14 @@ const PracticeLibraryPage = () => {
                       <Download className="h-4 w-4 mr-2" />
                       PDF
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEmailPDF(procedure)}
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email
+                    </Button>
                   </div>
                 </div>
               </CardContent>
