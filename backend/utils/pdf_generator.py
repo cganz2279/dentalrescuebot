@@ -88,7 +88,7 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
         content.append(Spacer(1, 12))
     
     # Procedure title
-    content.append(Paragraph(f"Post-Operative Instructions", header_style))
+    content.append(Paragraph("Post-Operative Instructions", header_style))
     content.append(Paragraph(procedure_name, title_style))
     content.append(Spacer(1, 20))
     
