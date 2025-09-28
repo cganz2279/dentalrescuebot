@@ -299,6 +299,8 @@ const PracticeDashboard = () => {
       });
     }
   };
+
+  const handlePatientClick = (patientId) => {
     // Toggle patient selection - if same patient clicked, deselect
     if (selectedPatientId === patientId) {
       setSelectedPatientId(null);
