@@ -41,49 +41,61 @@ const PracticeDashboard = () => {
     loadDashboard();
   }, []);
 
-  const handleExportData = async () => {
+  const [showDatePickerModal, setShowDatePickerModal] = useState(false);
+  const [exportDateRange, setExportDateRange] = useState({
+    startDate: '',
+    endDate: ''
+  });
+
+  const handleExportData = () => {
+    setShowDatePickerModal(true);
+  };
+
+  const handleExportWithDateRange = async () => {
     try {
-      const response = await practiceApi.getExportData();
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (exportDateRange.startDate) {
+        params.append('start_date', exportDateRange.startDate);
+      }
+      if (exportDateRange.endDate) {
+        params.append('end_date', exportDateRange.endDate);
+      }
+      params.append('activity_types', 'print,email,sms'); // All activity types
+      
+      const response = await practiceApi.getExportActivities(params.toString());
       const exportData = response.data;
       
-      // Create CSV content
-      let csvContent = "Patient Name,Email,Procedure,Performed Date,Dentist,Status,Notes\n";
+      // Create CSV content with required fields
+      let csvContent = "Patient Name,Patient Email,Procedure Name,Doctor Name,Activity Type,Date Performed\n";
       
-      exportData.patients.forEach(patient => {
-        if (patient.assignedProcedures && patient.assignedProcedures.length > 0) {
-          patient.assignedProcedures.forEach(proc => {
-            const row = [
-              `"${patient.firstName} ${patient.lastName}"`,
-              `"${patient.email}"`,
-              `"${proc.procedureName}"`,
-              `"${new Date(proc.performedDate).toLocaleDateString()}"`,
-              `"${proc.dentistName}"`,
-              `"${proc.status}"`,
-              `"${proc.practiceNotes || ''}"`
-            ].join(',');
-            csvContent += row + "\n";
-          });
-        } else {
-          // Patient with no procedures
-          const row = [
-            `"${patient.firstName} ${patient.lastName}"`,
-            `"${patient.email}"`,
-            `"No procedures assigned"`,
-            `""`,
-            `""`,
-            `""`,
-            `""`
-          ].join(',');
-          csvContent += row + "\n";
-        }
+      exportData.activities.forEach(activity => {
+        const row = [
+          `"${activity.patientName}"`,
+          `"${activity.patientEmail}"`,
+          `"${activity.procedureName}"`,
+          `"${activity.dentistName}"`,
+          `"${activity.activityType.toUpperCase()}"`,
+          `"${new Date(activity.performedAt).toLocaleDateString()} ${new Date(activity.performedAt).toLocaleTimeString()}"`
+        ].join(',');
+        csvContent += row + "\n";
       });
+      
+      if (exportData.activities.length === 0) {
+        csvContent += "No activities found for the selected date range\n";
+      }
       
       // Create and download file
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `practice_data_${new Date().toISOString().split('T')[0]}.csv`);
+      
+      // Create filename with date range
+      const startStr = exportDateRange.startDate ? new Date(exportDateRange.startDate).toISOString().split('T')[0] : 'all';
+      const endStr = exportDateRange.endDate ? new Date(exportDateRange.endDate).toISOString().split('T')[0] : 'recent';
+      link.setAttribute('download', `patient_activities_${startStr}_to_${endStr}.csv`);
+      
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -91,15 +103,17 @@ const PracticeDashboard = () => {
       
       toast({
         title: "Export Complete",
-        description: "Practice data has been exported to CSV file.",
+        description: `Exported ${exportData.activities.length} patient activities to CSV file.`,
         variant: "default",
       });
+      
+      setShowDatePickerModal(false);
       
     } catch (error) {
       console.error('Export error:', error);
       toast({
         title: "Export Failed",
-        description: "Failed to export data. Please try again.",
+        description: error.response?.data?.detail || "Failed to export activity data. Please try again.",
         variant: "destructive",
       });
     }
