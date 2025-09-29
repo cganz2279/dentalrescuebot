@@ -11,352 +11,462 @@ BASE_URL = "https://oncallbot.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 
-def test_total_procedure_count():
-    """Test 1: Verify total count is exactly 82 procedures (down from 88 after cleanup)"""
-    print("🔍 TEST 1: Verifying total procedure count is exactly 82...")
-    
-    try:
-        response = requests.get(f"{BACKEND_URL}/procedures", timeout=30)
-        print(f"   Status Code: {response.status_code}")
+class CSVExportActivityLoggingTester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.auth_token = None
+        self.practice_id = None
+        self.user_id = None
+        self.test_activities = []
+        
+    def authenticate(self):
+        """Authenticate with test credentials"""
+        print("🔐 Authenticating with test credentials...")
+        
+        auth_data = {
+            "email": TEST_EMAIL,
+            "password": TEST_PASSWORD
+        }
+        
+        response = self.session.post(f"{BASE_URL}/auth/login", json=auth_data)
         
         if response.status_code == 200:
             data = response.json()
-            procedures = data.get('data', [])
-            total_count = len(procedures)
-            
-            print(f"   ✅ Total procedures found: {total_count}")
-            
-            if total_count == 82:
-                print("   ✅ PASS: Total count is exactly 82 procedures as expected")
-                return True, procedures
-            else:
-                print(f"   ❌ FAIL: Expected 82 procedures, but found {total_count}")
-                return False, procedures
-        else:
-            print(f"   ❌ FAIL: API request failed with status {response.status_code}")
-            return False, []
-            
-    except Exception as e:
-        print(f"   ❌ ERROR: {str(e)}")
-        return False, []
-
-def test_orthodontics_categorization(procedures: List[Dict]):
-    """Test 2: Verify procedures with 'orthodontics' or 'ortho' are properly categorized"""
-    print("\n🔍 TEST 2: Testing Orthodontics categorization...")
-    
-    orthodontic_procedures = []
-    surgical_orthodontics = []
-    
-    for proc in procedures:
-        name = proc.get('name', '').lower()
-        specialty = proc.get('specialty', '')
-        specialty_name = proc.get('specialtyName', '')
-        
-        if 'orthodontic' in name or 'ortho' in name:
-            if 'surgical orthodontics' in name:
-                surgical_orthodontics.append({
-                    'name': proc.get('name'),
-                    'specialty': specialty,
-                    'specialtyName': specialty_name
-                })
-            else:
-                orthodontic_procedures.append({
-                    'name': proc.get('name'),
-                    'specialty': specialty,
-                    'specialtyName': specialty_name
-                })
-    
-    print(f"   Found {len(orthodontic_procedures)} orthodontic procedures:")
-    orthodontics_pass = True
-    
-    for proc in orthodontic_procedures:
-        expected_specialty = 'orthodontics'
-        if proc['specialty'] == expected_specialty:
-            print(f"   ✅ '{proc['name']}' -> {proc['specialtyName']} (correct)")
-        else:
-            print(f"   ❌ '{proc['name']}' -> {proc['specialtyName']} (should be Orthodontics)")
-            orthodontics_pass = False
-    
-    print(f"   Found {len(surgical_orthodontics)} surgical orthodontics procedures:")
-    for proc in surgical_orthodontics:
-        print(f"   ℹ️  '{proc['name']}' -> {proc['specialtyName']} (should remain as is - surgical)")
-    
-    if orthodontics_pass:
-        print("   ✅ PASS: Orthodontics categorization is correct")
-    else:
-        print("   ❌ FAIL: Some orthodontic procedures are miscategorized")
-    
-    return orthodontics_pass
-
-def test_oral_surgery_categorization(procedures: List[Dict]):
-    """Test 3: Verify specific procedures are under Oral Surgery"""
-    print("\n🔍 TEST 3: Testing Oral Surgery categorization...")
-    
-    target_keywords = [
-        'orthognathic',
-        'osseous surgery',
-        'sinus perforation repair',
-        'tmj',
-        'vestibuloplasty'
-    ]
-    
-    oral_surgery_procedures = []
-    vestibuloplasty_count = 0
-    
-    for proc in procedures:
-        name = proc.get('name', '').lower()
-        specialty = proc.get('specialty', '')
-        specialty_name = proc.get('specialtyName', '')
-        
-        for keyword in target_keywords:
-            if keyword in name:
-                oral_surgery_procedures.append({
-                    'name': proc.get('name'),
-                    'specialty': specialty,
-                    'specialtyName': specialty_name,
-                    'keyword': keyword
+            if data.get("success"):
+                self.auth_token = data["data"]["token"]
+                self.practice_id = data["data"]["user"]["practiceId"]
+                self.user_id = data["data"]["user"]["id"]
+                
+                # Set authorization header for future requests
+                self.session.headers.update({
+                    "Authorization": f"Bearer {self.auth_token}"
                 })
                 
-                if keyword == 'vestibuloplasty':
-                    vestibuloplasty_count += 1
-                break
-    
-    print(f"   Found {len(oral_surgery_procedures)} target oral surgery procedures:")
-    oral_surgery_pass = True
-    
-    for proc in oral_surgery_procedures:
-        expected_specialty = 'oral-surgery'
-        if proc['specialty'] == expected_specialty:
-            print(f"   ✅ '{proc['name']}' -> {proc['specialtyName']} (correct)")
+                print(f"✅ Authentication successful")
+                print(f"   Practice ID: {self.practice_id}")
+                print(f"   User ID: {self.user_id}")
+                return True
+            else:
+                print(f"❌ Authentication failed: {data.get('error', 'Unknown error')}")
+                return False
         else:
-            print(f"   ❌ '{proc['name']}' -> {proc['specialtyName']} (should be Oral Surgery)")
-            oral_surgery_pass = False
+            print(f"❌ Authentication failed with status {response.status_code}")
+            print(f"   Response: {response.text}")
+            return False
     
-    # Check Vestibuloplasty duplicates
-    print(f"   Vestibuloplasty count: {vestibuloplasty_count}")
-    if vestibuloplasty_count == 1:
-        print("   ✅ PASS: Only ONE Vestibuloplasty procedure exists (duplicates removed)")
-    else:
-        print(f"   ❌ FAIL: Found {vestibuloplasty_count} Vestibuloplasty procedures (should be 1)")
-        oral_surgery_pass = False
-    
-    if oral_surgery_pass:
-        print("   ✅ PASS: Oral Surgery categorization is correct")
-    else:
-        print("   ❌ FAIL: Some oral surgery procedures are miscategorized")
-    
-    return oral_surgery_pass
-
-def test_periodontics_categorization(procedures: List[Dict]):
-    """Test 4: Verify Ridge and Socket Preservation procedures are under Periodontics"""
-    print("\n🔍 TEST 4: Testing Periodontics categorization...")
-    
-    target_keywords = ['ridge', 'socket preservation']
-    periodontics_procedures = []
-    
-    for proc in procedures:
-        name = proc.get('name', '').lower()
-        specialty = proc.get('specialty', '')
-        specialty_name = proc.get('specialtyName', '')
+    def test_log_activity_endpoint(self):
+        """Test the /api/practice/log-activity endpoint"""
+        print("\n📝 Testing Activity Logging Endpoint...")
         
-        for keyword in target_keywords:
-            if keyword in name:
-                periodontics_procedures.append({
-                    'name': proc.get('name'),
-                    'specialty': specialty,
-                    'specialtyName': specialty_name,
-                    'keyword': keyword
-                })
-                break
+        # Test data for different activity types
+        test_activities = [
+            {
+                "patientId": str(uuid.uuid4()),
+                "patientName": "John Smith",
+                "patientEmail": "john.smith@gmail.com",
+                "procedureId": str(uuid.uuid4()),
+                "procedureName": "Root Canal Therapy",
+                "dentistName": "Dr. Cary Ganz",
+                "activityType": "print"
+            },
+            {
+                "patientId": str(uuid.uuid4()),
+                "patientName": "Jane Doe",
+                "patientEmail": "jane.doe@gmail.com",
+                "procedureId": str(uuid.uuid4()),
+                "procedureName": "Dental Crown Placement",
+                "dentistName": "Dr. Cary Ganz",
+                "activityType": "email"
+            },
+            {
+                "patientId": str(uuid.uuid4()),
+                "patientName": "Bob Johnson",
+                "patientEmail": "bob.johnson@gmail.com",
+                "procedureId": str(uuid.uuid4()),
+                "procedureName": "Tooth Extraction",
+                "dentistName": "Dr. Cary Ganz",
+                "activityType": "sms"
+            }
+        ]
+        
+        success_count = 0
+        
+        for i, activity_data in enumerate(test_activities):
+            print(f"\n   Testing activity {i+1}: {activity_data['activityType']} - {activity_data['procedureName']}")
+            
+            response = self.session.post(f"{BASE_URL}/practice/log-activity", json=activity_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    activity_id = data.get("activityId")
+                    print(f"   ✅ Activity logged successfully - ID: {activity_id}")
+                    
+                    # Store for later testing
+                    activity_data["activityId"] = activity_id
+                    self.test_activities.append(activity_data)
+                    success_count += 1
+                else:
+                    print(f"   ❌ Activity logging failed: {data.get('error', 'Unknown error')}")
+            else:
+                print(f"   ❌ Activity logging failed with status {response.status_code}")
+                print(f"      Response: {response.text}")
+        
+        print(f"\n📊 Activity Logging Results: {success_count}/{len(test_activities)} successful")
+        return success_count == len(test_activities)
     
-    print(f"   Found {len(periodontics_procedures)} target periodontics procedures:")
-    periodontics_pass = True
+    def test_log_activity_validation(self):
+        """Test activity logging endpoint with missing required fields"""
+        print("\n🔍 Testing Activity Logging Validation...")
+        
+        # Test missing required fields
+        invalid_activities = [
+            {
+                "patientName": "Test Patient",
+                "patientEmail": "test@gmail.com",
+                # Missing patientId, procedureId, procedureName, dentistName, activityType
+            },
+            {
+                "patientId": str(uuid.uuid4()),
+                "patientEmail": "test@gmail.com",
+                "procedureId": str(uuid.uuid4()),
+                "procedureName": "Test Procedure",
+                "dentistName": "Dr. Test",
+                # Missing patientName and activityType
+            }
+        ]
+        
+        validation_passed = True
+        
+        for i, invalid_data in enumerate(invalid_activities):
+            print(f"   Testing invalid activity {i+1}...")
+            
+            response = self.session.post(f"{BASE_URL}/practice/log-activity", json=invalid_data)
+            
+            # Should return error for missing fields
+            if response.status_code in [400, 422]:
+                print(f"   ✅ Validation correctly rejected invalid data (status: {response.status_code})")
+            else:
+                print(f"   ❌ Validation failed - should have rejected invalid data (status: {response.status_code})")
+                validation_passed = False
+        
+        return validation_passed
     
-    for proc in periodontics_procedures:
-        expected_specialty = 'periodontics'
-        if proc['specialty'] == expected_specialty:
-            print(f"   ✅ '{proc['name']}' -> {proc['specialtyName']} (correct)")
+    def test_export_activities_endpoint(self):
+        """Test the /api/practice/export-activities endpoint"""
+        print("\n📤 Testing Export Activities Endpoint...")
+        
+        # Test 1: Export without date parameters (should default to last 30 days)
+        print("   Testing export without date parameters...")
+        response = self.session.get(f"{BASE_URL}/practice/export-activities")
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("success"):
+                activities = data["data"]["activities"]
+                date_range = data["data"]["dateRange"]
+                total = data["data"]["total"]
+                
+                print(f"   ✅ Export successful - Found {total} activities")
+                print(f"      Date range: {date_range['start']} to {date_range['end']}")
+                
+                # Verify activities have required CSV fields
+                if activities:
+                    sample_activity = activities[0]
+                    required_fields = ["patientName", "patientEmail", "procedureName", "dentistName", "activityType", "performedAt"]
+                    missing_fields = [field for field in required_fields if field not in sample_activity]
+                    
+                    if not missing_fields:
+                        print("   ✅ Activities contain all required CSV fields")
+                    else:
+                        print(f"   ❌ Activities missing required fields: {missing_fields}")
+                        return False
+                else:
+                    print("   ⚠️  No activities found in default date range")
+            else:
+                print(f"   ❌ Export failed: {data.get('error', 'Unknown error')}")
+                return False
         else:
-            print(f"   ❌ '{proc['name']}' -> {proc['specialtyName']} (should be Periodontics)")
-            periodontics_pass = False
-    
-    if periodontics_pass:
-        print("   ✅ PASS: Periodontics categorization is correct")
-    else:
-        print("   ❌ FAIL: Some periodontics procedures are miscategorized")
-    
-    return periodontics_pass
-
-def test_cleanup_verification(procedures: List[Dict]):
-    """Test 5: Verify cleanup - no duplicates, no blank procedures, no test procedures"""
-    print("\n🔍 TEST 5: Testing cleanup verification...")
-    
-    # Check for blank procedures
-    blank_procedures = []
-    test_procedures = []
-    duplicate_names = {}
-    
-    for proc in procedures:
-        name = proc.get('name', '').strip()
+            print(f"   ❌ Export failed with status {response.status_code}")
+            print(f"      Response: {response.text}")
+            return False
         
-        # Check for blank names
-        if not name:
-            blank_procedures.append(proc)
+        # Test 2: Export with specific date range
+        print("\n   Testing export with specific date range...")
         
-        # Check for test procedures
-        if 'test' in name.lower():
-            test_procedures.append(proc)
+        # Use last 7 days
+        end_date = datetime.now(timezone.utc)
+        start_date = end_date - timedelta(days=7)
         
-        # Check for duplicates
-        if name in duplicate_names:
-            duplicate_names[name] += 1
+        params = {
+            "start_date": start_date.isoformat(),
+            "end_date": end_date.isoformat()
+        }
+        
+        response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("success"):
+                activities = data["data"]["activities"]
+                total = data["data"]["total"]
+                print(f"   ✅ Date range export successful - Found {total} activities")
+            else:
+                print(f"   ❌ Date range export failed: {data.get('error', 'Unknown error')}")
+                return False
         else:
-            duplicate_names[name] = 1
-    
-    # Find actual duplicates
-    duplicates = {name: count for name, count in duplicate_names.items() if count > 1}
-    
-    cleanup_pass = True
-    
-    print(f"   Blank procedures found: {len(blank_procedures)}")
-    if len(blank_procedures) == 0:
-        print("   ✅ PASS: No blank procedures found")
-    else:
-        print("   ❌ FAIL: Found blank procedures")
-        cleanup_pass = False
-        for proc in blank_procedures:
-            print(f"      - Blank procedure: {proc}")
-    
-    print(f"   Test procedures found: {len(test_procedures)}")
-    if len(test_procedures) == 0:
-        print("   ✅ PASS: No test procedures found")
-    else:
-        print("   ❌ FAIL: Found test procedures")
-        cleanup_pass = False
-        for proc in test_procedures:
-            print(f"      - Test procedure: {proc['name']}")
-    
-    print(f"   Duplicate procedures found: {len(duplicates)}")
-    if len(duplicates) == 0:
-        print("   ✅ PASS: No duplicate procedures found")
-    else:
-        print("   ❌ FAIL: Found duplicate procedures")
-        cleanup_pass = False
-        for name, count in duplicates.items():
-            print(f"      - '{name}' appears {count} times")
-    
-    if cleanup_pass:
-        print("   ✅ PASS: Cleanup verification successful")
-    else:
-        print("   ❌ FAIL: Cleanup issues found")
-    
-    return cleanup_pass
-
-def test_specialty_counts(procedures: List[Dict]):
-    """Test 6: Verify specialty distribution makes sense"""
-    print("\n🔍 TEST 6: Testing specialty counts...")
-    
-    specialty_counts = {}
-    
-    for proc in procedures:
-        specialty_name = proc.get('specialtyName', 'Unknown')
-        if specialty_name in specialty_counts:
-            specialty_counts[specialty_name] += 1
+            print(f"   ❌ Date range export failed with status {response.status_code}")
+            return False
+        
+        # Test 3: Export with activity types filter
+        print("\n   Testing export with activity types filter...")
+        
+        params = {
+            "activity_types": "print,email"
+        }
+        
+        response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("success"):
+                activities = data["data"]["activities"]
+                total = data["data"]["total"]
+                activity_types = data["data"]["activityTypes"]
+                
+                print(f"   ✅ Activity types filter export successful - Found {total} activities")
+                print(f"      Filtered types: {activity_types}")
+                
+                # Verify only requested activity types are returned
+                if activities:
+                    returned_types = set([activity["activityType"] for activity in activities])
+                    expected_types = set(["print", "email"])
+                    
+                    if returned_types.issubset(expected_types):
+                        print("   ✅ Activity types filter working correctly")
+                    else:
+                        print(f"   ❌ Unexpected activity types returned: {returned_types - expected_types}")
+                        return False
+            else:
+                print(f"   ❌ Activity types filter export failed: {data.get('error', 'Unknown error')}")
+                return False
         else:
-            specialty_counts[specialty_name] = 1
-    
-    print("   Specialty distribution:")
-    total_counted = 0
-    oral_surgery_count = 0
-    
-    for specialty, count in sorted(specialty_counts.items()):
-        print(f"   - {specialty}: {count} procedures")
-        total_counted += count
-        if specialty == 'Oral Surgery':
-            oral_surgery_count = count
-    
-    print(f"   Total counted: {total_counted}")
-    
-    counts_pass = True
-    
-    # Check if Oral Surgery has around 33 procedures
-    if oral_surgery_count >= 30 and oral_surgery_count <= 35:
-        print(f"   ✅ PASS: Oral Surgery has {oral_surgery_count} procedures (expected around 33)")
-    else:
-        print(f"   ❌ FAIL: Oral Surgery has {oral_surgery_count} procedures (expected around 33)")
-        counts_pass = False
-    
-    # Check total is exactly 82
-    if total_counted == 82:
-        print("   ✅ PASS: Total specialty count matches 82 procedures")
-    else:
-        print(f"   ❌ FAIL: Total specialty count is {total_counted} (expected 82)")
-        counts_pass = False
-    
-    if counts_pass:
-        print("   ✅ PASS: Specialty counts are reasonable")
-    else:
-        print("   ❌ FAIL: Specialty count issues found")
-    
-    return counts_pass
-
-def run_comprehensive_categorization_test():
-    """Run all comprehensive categorization and cleanup tests"""
-    print("🚀 COMPREHENSIVE PROCEDURE CATEGORIZATION AND CLEANUP VERIFICATION")
-    print("=" * 80)
-    
-    # Test 1: Total count
-    count_pass, procedures = test_total_procedure_count()
-    
-    if not procedures:
-        print("\n❌ CRITICAL FAILURE: Could not retrieve procedures. Stopping tests.")
-        return False
-    
-    # Test 2: Orthodontics categorization
-    orthodontics_pass = test_orthodontics_categorization(procedures)
-    
-    # Test 3: Oral Surgery categorization
-    oral_surgery_pass = test_oral_surgery_categorization(procedures)
-    
-    # Test 4: Periodontics categorization
-    periodontics_pass = test_periodontics_categorization(procedures)
-    
-    # Test 5: Cleanup verification
-    cleanup_pass = test_cleanup_verification(procedures)
-    
-    # Test 6: Specialty counts
-    counts_pass = test_specialty_counts(procedures)
-    
-    # Final summary
-    print("\n" + "=" * 80)
-    print("📊 FINAL TEST RESULTS:")
-    print("=" * 80)
-    
-    all_tests = [
-        ("Total Count (82 procedures)", count_pass),
-        ("Orthodontics Categorization", orthodontics_pass),
-        ("Oral Surgery Categorization", oral_surgery_pass),
-        ("Periodontics Categorization", periodontics_pass),
-        ("Cleanup Verification", cleanup_pass),
-        ("Specialty Counts", counts_pass)
-    ]
-    
-    passed_tests = 0
-    for test_name, passed in all_tests:
-        status = "✅ PASS" if passed else "❌ FAIL"
-        print(f"   {status}: {test_name}")
-        if passed:
-            passed_tests += 1
-    
-    print(f"\n📈 OVERALL RESULT: {passed_tests}/{len(all_tests)} tests passed")
-    
-    if passed_tests == len(all_tests):
-        print("🎉 ALL TESTS PASSED: Comprehensive categorization and cleanup successful!")
+            print(f"   ❌ Activity types filter export failed with status {response.status_code}")
+            return False
+        
         return True
+    
+    def test_export_activities_validation(self):
+        """Test export activities endpoint with invalid parameters"""
+        print("\n🔍 Testing Export Activities Validation...")
+        
+        # Test invalid date formats
+        invalid_params = [
+            {"start_date": "invalid-date"},
+            {"end_date": "2024-13-45"},  # Invalid date
+            {"start_date": "2024-01-01", "end_date": "2023-12-31"}  # End before start
+        ]
+        
+        validation_passed = True
+        
+        for i, params in enumerate(invalid_params):
+            print(f"   Testing invalid parameters {i+1}: {params}")
+            
+            response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
+            
+            if response.status_code == 400:
+                print(f"   ✅ Validation correctly rejected invalid parameters")
+            else:
+                print(f"   ❌ Validation failed - should have rejected invalid parameters (status: {response.status_code})")
+                validation_passed = False
+        
+        return validation_passed
+    
+    def test_data_integration(self):
+        """Test data integration between logging and export"""
+        print("\n🔗 Testing Data Integration...")
+        
+        # Log a test activity with current timestamp
+        test_activity = {
+            "patientId": str(uuid.uuid4()),
+            "patientName": "Integration Test Patient",
+            "patientEmail": "integration.test@gmail.com",
+            "procedureId": str(uuid.uuid4()),
+            "procedureName": "Integration Test Procedure",
+            "dentistName": "Dr. Integration Test",
+            "activityType": "print"
+        }
+        
+        print("   Logging test activity...")
+        response = self.session.post(f"{BASE_URL}/practice/log-activity", json=test_activity)
+        
+        if response.status_code != 200 or not response.json().get("success"):
+            print("   ❌ Failed to log test activity")
+            return False
+        
+        activity_id = response.json().get("activityId")
+        print(f"   ✅ Test activity logged - ID: {activity_id}")
+        
+        # Wait a moment for database consistency
+        import time
+        time.sleep(1)
+        
+        # Export activities and verify the test activity is included
+        print("   Exporting activities to verify integration...")
+        
+        # Use a date range that includes the current time
+        end_date = datetime.now(timezone.utc) + timedelta(minutes=1)
+        start_date = end_date - timedelta(hours=1)
+        
+        params = {
+            "start_date": start_date.isoformat(),
+            "end_date": end_date.isoformat()
+        }
+        
+        response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("success"):
+                activities = data["data"]["activities"]
+                
+                # Look for our test activity
+                found_activity = None
+                for activity in activities:
+                    if activity.get("patientName") == "Integration Test Patient":
+                        found_activity = activity
+                        break
+                
+                if found_activity:
+                    print("   ✅ Test activity found in export")
+                    
+                    # Verify all required fields are present
+                    required_fields = ["patientName", "patientEmail", "procedureName", "dentistName", "activityType", "performedAt"]
+                    missing_fields = [field for field in required_fields if field not in found_activity]
+                    
+                    if not missing_fields:
+                        print("   ✅ All required CSV fields present")
+                        
+                        # Verify field values match
+                        if (found_activity["patientName"] == test_activity["patientName"] and
+                            found_activity["patientEmail"] == test_activity["patientEmail"] and
+                            found_activity["procedureName"] == test_activity["procedureName"] and
+                            found_activity["dentistName"] == test_activity["dentistName"] and
+                            found_activity["activityType"] == test_activity["activityType"]):
+                            print("   ✅ Field values match logged activity")
+                            return True
+                        else:
+                            print("   ❌ Field values don't match logged activity")
+                            return False
+                    else:
+                        print(f"   ❌ Missing required fields: {missing_fields}")
+                        return False
+                else:
+                    print("   ❌ Test activity not found in export")
+                    return False
+            else:
+                print(f"   ❌ Export failed: {data.get('error', 'Unknown error')}")
+                return False
+        else:
+            print(f"   ❌ Export failed with status {response.status_code}")
+            return False
+    
+    def test_authentication_required(self):
+        """Test that endpoints require authentication"""
+        print("\n🔒 Testing Authentication Requirements...")
+        
+        # Create a session without authentication
+        unauth_session = requests.Session()
+        
+        # Test log-activity endpoint
+        print("   Testing log-activity endpoint without auth...")
+        response = unauth_session.post(f"{BASE_URL}/practice/log-activity", json={})
+        
+        if response.status_code == 401:
+            print("   ✅ log-activity correctly requires authentication")
+        else:
+            print(f"   ❌ log-activity should require authentication (status: {response.status_code})")
+            return False
+        
+        # Test export-activities endpoint
+        print("   Testing export-activities endpoint without auth...")
+        response = unauth_session.get(f"{BASE_URL}/practice/export-activities")
+        
+        if response.status_code == 401:
+            print("   ✅ export-activities correctly requires authentication")
+            return True
+        else:
+            print(f"   ❌ export-activities should require authentication (status: {response.status_code})")
+            return False
+    
+    def run_all_tests(self):
+        """Run all CSV Export with Activity Logging tests"""
+        print("🚀 Starting CSV Export with Activity Logging Tests")
+        print("=" * 60)
+        
+        # Authenticate first
+        if not self.authenticate():
+            print("❌ Authentication failed - cannot proceed with tests")
+            return False
+        
+        # Run all tests
+        tests = [
+            ("Authentication Requirements", self.test_authentication_required),
+            ("Activity Logging Endpoint", self.test_log_activity_endpoint),
+            ("Activity Logging Validation", self.test_log_activity_validation),
+            ("Export Activities Endpoint", self.test_export_activities_endpoint),
+            ("Export Activities Validation", self.test_export_activities_validation),
+            ("Data Integration", self.test_data_integration)
+        ]
+        
+        results = []
+        
+        for test_name, test_func in tests:
+            try:
+                result = test_func()
+                results.append((test_name, result))
+                
+                if result:
+                    print(f"✅ {test_name}: PASSED")
+                else:
+                    print(f"❌ {test_name}: FAILED")
+                    
+            except Exception as e:
+                print(f"❌ {test_name}: ERROR - {str(e)}")
+                results.append((test_name, False))
+        
+        # Summary
+        print("\n" + "=" * 60)
+        print("📊 TEST SUMMARY")
+        print("=" * 60)
+        
+        passed = sum(1 for _, result in results if result)
+        total = len(results)
+        
+        for test_name, result in results:
+            status = "✅ PASSED" if result else "❌ FAILED"
+            print(f"{test_name}: {status}")
+        
+        print(f"\nOverall: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All CSV Export with Activity Logging tests PASSED!")
+            return True
+        else:
+            print("⚠️  Some tests FAILED - see details above")
+            return False
+
+def main():
+    """Main function to run the tests"""
+    tester = CSVExportActivityLoggingTester()
+    success = tester.run_all_tests()
+    
+    if success:
+        print("\n✅ CSV Export with Activity Logging functionality is working correctly!")
+        sys.exit(0)
     else:
-        print("⚠️  SOME TESTS FAILED: Issues found in categorization or cleanup")
-        return False
+        print("\n❌ CSV Export with Activity Logging functionality has issues!")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    success = run_comprehensive_categorization_test()
-    exit(0 if success else 1)
+    main()
