@@ -263,13 +263,13 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
             "status": "active"
         })
         
-        # Get only real patients (Gmail addresses only) - no test patients
-        print("DEBUG: Looking for Gmail patients only")
+        # Get all patients for this practice (showing both test and real patients)
+        print("DEBUG: Looking for all patients")
         recent_patients = await db.users.find(
             {
                 "practiceId": practice_id,
                 "role": "patient",
-                "email": {"$regex": "@gmail\\.com$"}  # Only Gmail addresses (real patients)
+                "isActive": True
             },
             {
                 "_id": 0,
