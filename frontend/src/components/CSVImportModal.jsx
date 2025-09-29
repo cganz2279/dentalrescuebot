@@ -187,6 +187,7 @@ Robert,Johnson,robert.j@email.com,555-456-7890,`;
   const handleClose = () => {
     setSelectedFile(null);
     setImportResults(null);
+    setShowTemplate(false);
     onClose();
   };
 
