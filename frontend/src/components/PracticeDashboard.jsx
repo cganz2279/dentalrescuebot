@@ -138,6 +138,10 @@ const PracticeDashboard = () => {
         return;
       }
 
+      // Find patient data for logging purposes
+      const patient = procedure.patientId ? 
+        dashboardData?.recentPatients?.find(p => p.id === procedure.patientId) : null;
+
       // Import the enhanced PDF generator
       const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
 
@@ -159,12 +163,45 @@ const PracticeDashboard = () => {
 
       // Generate PDF with enhanced generator including logo
       const success = await generateProcedurePDF(procedureForPDF);
-      if (!success) {
+      if (success) {
+        // Log the print activity
+        try {
+          await practiceApi.logActivity({
+            patientId: procedure.patientId,
+            patientName: patient ? `${patient.firstName} ${patient.lastName}` : procedure.patientName || 'Unknown Patient',
+            patientEmail: patient?.email || 'Unknown Email',
+            procedureId: procedure.id,
+            procedureName: procedure.procedureName || procedure.name,
+            dentistName: patient?.primaryDentist || procedure.dentistName || 'Unknown Doctor',
+            activityType: 'print',
+            additionalData: { pdfGenerated: true }
+          });
+        } catch (logError) {
+          console.error('Failed to log print activity:', logError);
+          // Don't fail the main operation if logging fails
+        }
+
+        toast({
+          title: "PDF Generated",
+          description: `PDF for ${procedure.procedureName} has been generated and will download shortly.`,
+          variant: "default",
+        });
+      } else {
         console.error('PDF generation failed');
+        toast({
+          title: "PDF Generation Failed",
+          description: "There was an error generating the PDF. Please try again.",
+          variant: "destructive",
+        });
       }
       
     } catch (error) {
       console.error('Error generating PDF:', error);
+      toast({
+        title: "PDF Generation Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
