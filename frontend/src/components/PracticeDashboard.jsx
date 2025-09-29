@@ -48,9 +48,25 @@ const PracticeDashboard = () => {
     startDate: '',
     endDate: ''
   });
+  const [showCSVImportModal, setShowCSVImportModal] = useState(false);
 
   const handleExportData = () => {
     setShowDatePickerModal(true);
+  };
+
+  const handleImportPatients = () => {
+    setShowCSVImportModal(true);
+  };
+
+  const handleImportSuccess = (results) => {
+    // Reload dashboard to show new patients
+    loadDashboard();
+    
+    toast({
+      title: "Import Successful",
+      description: `${results.summary.successfulImports} patients have been imported and will appear in Recent Patients.`,
+      variant: "default",
+    });
   };
 
   const handleExportWithDateRange = async () => {
