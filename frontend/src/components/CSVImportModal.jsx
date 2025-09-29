@@ -26,29 +26,71 @@ const CSVImportModal = ({ isOpen, onClose, onSuccess }) => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const blob = await practiceApi.downloadPatientCSVTemplate();
+      console.log('🔍 Starting CSV template download...');
       
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'patient_import_template.csv';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const blob = await practiceApi.downloadPatientCSVTemplate();
+      console.log('🔍 Template blob received:', blob);
+      
+      // Enhanced download with multiple methods for better browser compatibility
+      const filename = 'patient_import_template.csv';
+      
+      try {
+        // Method 1: Modern browsers with download attribute
+        const url = window.URL.createObjectURL(blob);
+        console.log('🔍 Created blob URL:', url);
+        
+        // Create temporary link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        console.log('🔍 Triggering template download...');
+        link.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          console.log('🔍 Template download link cleaned up');
+        }, 100);
+        
+      } catch (downloadError) {
+        console.error('🔍 Template download method 1 failed:', downloadError);
+        
+        // Method 2: Fallback using data URL
+        try {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const dataUrl = e.target.result;
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            link.click();
+            console.log('🔍 Template fallback download method used');
+          };
+          reader.readAsDataURL(blob);
+        } catch (fallbackError) {
+          console.error('🔍 Template fallback download method failed:', fallbackError);
+          throw new Error('Both download methods failed');
+        }
+      }
       
       toast({
         title: "Template Downloaded",
-        description: "CSV template has been downloaded to your Downloads folder.",
+        description: `CSV template has been downloaded: ${filename}`,
         variant: "default",
       });
       
     } catch (error) {
-      console.error('Template download error:', error);
+      console.error('🔍 Template download error:', error);
+      console.error('🔍 Template error stack:', error.stack);
+      
       toast({
         title: "Download Failed",
-        description: "Failed to download template. Please try again.",
+        description: error.message || "Failed to download template. Please try again.",
         variant: "destructive",
       });
     }
