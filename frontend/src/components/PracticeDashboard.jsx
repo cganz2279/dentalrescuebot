@@ -53,6 +53,8 @@ const PracticeDashboard = () => {
 
   const handleExportWithDateRange = async () => {
     try {
+      console.log('🔍 Starting CSV export with date range:', exportDateRange);
+      
       // Build query parameters
       const params = new URLSearchParams();
       if (exportDateRange.startDate) {
@@ -63,7 +65,10 @@ const PracticeDashboard = () => {
       }
       params.append('activity_types', 'print,email,sms'); // All activity types
       
+      console.log('🔍 API query params:', params.toString());
+      
       const response = await practiceApi.getExportActivities(params.toString());
+      console.log('🔍 Export API response:', response);
       const exportData = response.data;
       
       // Create CSV content with required fields
@@ -71,11 +76,11 @@ const PracticeDashboard = () => {
       
       exportData.activities.forEach(activity => {
         const row = [
-          `"${activity.patientName}"`,
-          `"${activity.patientEmail}"`,
-          `"${activity.procedureName}"`,
-          `"${activity.dentistName}"`,
-          `"${activity.activityType.toUpperCase()}"`,
+          `"${activity.patientName || 'Unknown Patient'}"`,
+          `"${activity.patientEmail || 'Unknown Email'}"`,
+          `"${activity.procedureName || 'Unknown Procedure'}"`,
+          `"${activity.dentistName || 'Unknown Doctor'}"`,
+          `"${activity.activityType?.toUpperCase() || 'UNKNOWN'}"`,
           `"${new Date(activity.performedAt).toLocaleDateString()} ${new Date(activity.performedAt).toLocaleTimeString()}"`
         ].join(',');
         csvContent += row + "\n";
@@ -85,35 +90,71 @@ const PracticeDashboard = () => {
         csvContent += "No activities found for the selected date range\n";
       }
       
-      // Create and download file
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
+      console.log('🔍 Generated CSV content (first 200 chars):', csvContent.substring(0, 200));
       
       // Create filename with date range
       const startStr = exportDateRange.startDate ? new Date(exportDateRange.startDate).toISOString().split('T')[0] : 'all';
       const endStr = exportDateRange.endDate ? new Date(exportDateRange.endDate).toISOString().split('T')[0] : 'recent';
-      link.setAttribute('download', `patient_activities_${startStr}_to_${endStr}.csv`);
+      const filename = `patient_activities_${startStr}_to_${endStr}.csv`;
       
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      console.log('🔍 Generated filename:', filename);
+      
+      // Create and download file using multiple methods for better browser compatibility
+      try {
+        // Method 1: Modern browsers with download attribute
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create temporary link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        console.log('🔍 Triggering download...');
+        link.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          console.log('🔍 Download link cleaned up');
+        }, 100);
+        
+      } catch (downloadError) {
+        console.error('🔍 Download method 1 failed:', downloadError);
+        
+        // Method 2: Fallback using data URL
+        try {
+          const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+          const link = document.createElement('a');
+          link.href = dataUrl;
+          link.download = filename;
+          link.click();
+          console.log('🔍 Fallback download method used');
+        } catch (fallbackError) {
+          console.error('🔍 Fallback download method failed:', fallbackError);
+          throw new Error('Both download methods failed');
+        }
+      }
       
       toast({
         title: "Export Complete",
-        description: `Exported ${exportData.activities.length} patient activities to CSV file.`,
+        description: `Exported ${exportData.activities.length} patient activities to CSV file: ${filename}`,
         variant: "default",
       });
       
       setShowDatePickerModal(false);
       
     } catch (error) {
-      console.error('Export error:', error);
+      console.error('🔍 Full export error:', error);
+      console.error('🔍 Error stack:', error.stack);
+      
       toast({
         title: "Export Failed",
-        description: error.response?.data?.detail || "Failed to export activity data. Please try again.",
+        description: error.response?.data?.detail || error.message || "Failed to export activity data. Please try again.",
         variant: "destructive",
       });
     }
