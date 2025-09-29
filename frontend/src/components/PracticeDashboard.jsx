@@ -506,6 +506,60 @@ const PracticeDashboard = () => {
         </div>
       </div>
 
+      {/* Date Picker Modal for Export */}
+      {showDatePickerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Export Patient Activities</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Select a date range to export patient activities (Print, Email, SMS). Leave fields empty to export all recent data.
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date (Optional)
+                </label>
+                <input
+                  type="date"
+                  value={exportDateRange.startDate}
+                  onChange={(e) => setExportDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date (Optional)
+                </label>
+                <input
+                  type="date"
+                  value={exportDateRange.endDate}
+                  onChange={(e) => setExportDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <Button
+                onClick={handleExportWithDateRange}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Export CSV
+              </Button>
+              <Button
+                onClick={() => setShowDatePickerModal(false)}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats Cards */}
