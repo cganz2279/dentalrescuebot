@@ -256,15 +256,39 @@ export const practiceApi = {
   },
 
   importPatientsCSV: async (file) => {
+    console.log('🔍 API: Starting CSV import...');
+    console.log('🔍 API: File object:', file);
+    
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await practiceAxios.post('/api/practice/import-patients-csv', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    return response.data;
+    console.log('🔍 API: FormData created');
+    console.log('🔍 API: FormData entries:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`  ${key}:`, value);
+    }
+    
+    try {
+      console.log('🔍 API: Making request to /api/practice/import-patients-csv');
+      
+      const response = await practiceAxios.post('/api/practice/import-patients-csv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      console.log('🔍 API: Response received:', response);
+      console.log('🔍 API: Response status:', response.status);
+      console.log('🔍 API: Response data:', response.data);
+      
+      return response.data;
+    } catch (error) {
+      console.error('🔍 API: Request failed:', error);
+      console.error('🔍 API: Error response:', error.response);
+      console.error('🔍 API: Error status:', error.response?.status);
+      console.error('🔍 API: Error data:', error.response?.data);
+      throw error;
+    }
   },
 
   downloadPatientCSVTemplate: async () => {
