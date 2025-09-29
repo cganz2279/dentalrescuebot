@@ -185,11 +185,13 @@ const PracticeDashboard = () => {
       // Try to find patient email from recentPatients data using patientId
       let patientEmail = procedure.patientEmail;
       
+      // Find patient data for logging purposes
+      const patient = procedure.patientId ? 
+        dashboardData?.recentPatients?.find(p => p.id === procedure.patientId) : null;
+      
       if (!patientEmail && procedure.patientId) {
         console.log('🔍 Looking for patient email using patientId:', procedure.patientId);
         console.log('🔍 Available recentPatients:', dashboardData?.recentPatients);
-        
-        const patient = dashboardData?.recentPatients?.find(p => p.id === procedure.patientId);
         console.log('🔍 Found patient:', patient);
         
         if (patient) {
