@@ -253,6 +253,25 @@ export const practiceApi = {
   logActivity: async (activityData) => {
     const response = await practiceAxios.post('/api/practice/log-activity', activityData);
     return response.data;
+  },
+
+  importPatientsCSV: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await practiceAxios.post('/api/practice/import-patients-csv', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  },
+
+  downloadPatientCSVTemplate: async () => {
+    const response = await practiceAxios.get('/api/practice/patient-csv-template', {
+      responseType: 'blob'
+    });
+    return response.data;
   }
 };
 
