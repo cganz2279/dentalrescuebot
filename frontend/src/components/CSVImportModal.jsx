@@ -176,12 +176,19 @@ Robert,Johnson,robert.j@email.com,555-456-7890,`;
       const requiredHeaders = ['firstName', 'lastName', 'email', 'cellphone'];
       const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
       
-      console.log('🔍 CSV headers found:', headers);
-      console.log('🔍 Required headers:', requiredHeaders);
-      console.log('🔍 Missing headers:', missingHeaders);
+      console.log('🔍 Raw first line:', JSON.stringify(lines[0]));
+      console.log('🔍 CSV headers found:', JSON.stringify(headers));
+      console.log('🔍 Required headers:', JSON.stringify(requiredHeaders));
+      console.log('🔍 Missing headers:', JSON.stringify(missingHeaders));
+      console.log('🔍 Headers comparison:');
+      requiredHeaders.forEach(req => {
+        const found = headers.find(h => h.toLowerCase() === req.toLowerCase());
+        console.log(`  ${req}: ${found ? 'FOUND' : 'MISSING'} (looking for: "${req}", found: ${JSON.stringify(found)})`);
+      });
       
       if (missingHeaders.length > 0) {
-        throw new Error(`Missing required headers: ${missingHeaders.join(', ')}`);
+        const detailedError = `Missing required headers: ${missingHeaders.join(', ')}\n\nFound headers: ${headers.join(', ')}\n\nExpected: firstName, lastName, email, cellphone, primaryDentist (optional)\n\nPlease ensure your CSV file has these exact header names in the first row.`;
+        throw new Error(detailedError);
       }
       
       console.log('🔍 CSV validation passed, calling API...');
