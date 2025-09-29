@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""
-Comprehensive Procedure Categorization and Cleanup Verification Test
-Testing the comprehensive categorization and cleanup that should result in exactly 82 procedures
-"""
 
 import requests
 import json
-from typing import List, Dict, Any
+import sys
+from datetime import datetime, timedelta, timezone
+import uuid
 
-# Backend URL from frontend .env
-BACKEND_URL = "https://oncallbot.preview.emergentagent.com/api"
+# Configuration
+BASE_URL = "https://oncallbot.preview.emergentagent.com/api"
+TEST_EMAIL = "cganz2279@gmail.com"
+TEST_PASSWORD = "password123"
 
 def test_total_procedure_count():
     """Test 1: Verify total count is exactly 82 procedures (down from 88 after cleanup)"""
