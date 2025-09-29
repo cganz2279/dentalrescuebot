@@ -230,6 +230,23 @@ const PracticeDashboard = () => {
       console.log('📧 Email API response:', response);
 
       if (response.success) {
+        // Log the email activity
+        try {
+          await practiceApi.logActivity({
+            patientId: procedure.patientId,
+            patientName: `${patient.firstName} ${patient.lastName}`,
+            patientEmail: patientEmail,
+            procedureId: procedure.id,
+            procedureName: procedure.procedureName || procedure.name,
+            dentistName: patient.primaryDentist || 'Unknown Doctor',
+            activityType: 'email',
+            additionalData: { emailAddress: patientEmail }
+          });
+        } catch (logError) {
+          console.error('Failed to log email activity:', logError);
+          // Don't fail the main operation if logging fails
+        }
+
         toast({
           title: "Email Sent",
           description: `PDF instructions sent to ${patientEmail}`,
