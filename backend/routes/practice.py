@@ -1068,6 +1068,13 @@ async def import_patients_csv(
         content = await file.read()
         csv_content = content.decode('utf-8')
         
+        # Remove BOM (Byte Order Mark) if present
+        if csv_content.startswith('\ufeff'):
+            csv_content = csv_content[1:]
+            print("🔍 Backend: Removed BOM character from CSV")
+        
+        print(f"🔍 Backend: CSV content after BOM removal (first 100 chars): {repr(csv_content[:100])}")
+        
         # Parse CSV
         import csv
         from io import StringIO
