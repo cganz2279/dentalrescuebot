@@ -236,11 +236,11 @@ const PracticeDashboard = () => {
         try {
           await practiceApi.logActivity({
             patientId: procedure.patientId,
-            patientName: `${patient.firstName} ${patient.lastName}`,
+            patientName: patient ? `${patient.firstName} ${patient.lastName}` : procedure.patientName || 'Unknown Patient',
             patientEmail: patientEmail,
             procedureId: procedure.id,
             procedureName: procedure.procedureName || procedure.name,
-            dentistName: patient.primaryDentist || 'Unknown Doctor',
+            dentistName: patient?.primaryDentist || procedure.dentistName || 'Unknown Doctor',
             activityType: 'email',
             additionalData: { emailAddress: patientEmail }
           });
