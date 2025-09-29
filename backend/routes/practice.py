@@ -1250,6 +1250,9 @@ async def get_patient_csv_template(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to generate template"
         )
+
+@router.put("/patients/{patient_id}")
+async def update_patient(
     patient_id: str,
     patient_data: PatientUpdate,
     current_user: dict = Depends(get_current_user)
