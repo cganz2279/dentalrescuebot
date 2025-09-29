@@ -35,12 +35,12 @@ class CSVPatientImportTester:
         if response.status_code == 200:
             data = response.json()
             if data.get("success"):
-                self.auth_token = data["data"]["token"]
-                self.practice_id = data["data"]["user"]["practiceId"]
+                self.auth_token = data["token"]
+                self.practice_id = data["user"]["practiceId"]
                 self.session.headers.update({
                     "Authorization": f"Bearer {self.auth_token}"
                 })
-                print(f"✅ Authentication successful for practice: {data['data']['practice']['name']}")
+                print(f"✅ Authentication successful for practice: {data['practice']['name']}")
                 return True
             else:
                 print(f"❌ Authentication failed: {data.get('error', 'Unknown error')}")
