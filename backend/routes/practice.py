@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import bcrypt
 import traceback
+import re
 
 # Import utility and service modules
 try:
