@@ -903,8 +903,57 @@ async def get_export_data(current_user: dict = Depends(get_current_user)):
             detail="Failed to get export data"
         )
 
-@router.get("/export-activities")
-async def get_export_activities(
+@router.post("/log-activity")
+async def log_patient_activity(
+    activity_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Log patient activity (print, email, SMS)"""
+    try:
+        practice_id = current_user["practiceId"]
+        user_id = current_user["userId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Create activity log
+        activity_id = str(uuid.uuid4())
+        
+        activity_doc = {
+            "id": activity_id,
+            "practiceId": practice_id,
+            "patientId": activity_data.get("patientId"),
+            "patientName": activity_data.get("patientName"),
+            "patientEmail": activity_data.get("patientEmail"),
+            "procedureId": activity_data.get("procedureId"),
+            "procedureName": activity_data.get("procedureName"),
+            "dentistName": activity_data.get("dentistName"),
+            "activityType": activity_data.get("activityType"),  # 'print', 'email', 'sms'
+            "performedBy": user_id,
+            "performedAt": datetime.now(timezone.utc),
+            "additionalData": activity_data.get("additionalData", {})
+        }
+        
+        await db.activity_logs.insert_one(activity_doc)
+        
+        return {
+            "success": True,
+            "activityId": activity_id,
+            "message": "Activity logged successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Log activity error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to log activity"
+        )
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     activity_types: Optional[str] = None,  # comma-separated list
