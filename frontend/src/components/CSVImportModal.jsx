@@ -143,10 +143,51 @@ Robert,Johnson,robert.j@email.com,555-456-7890,`;
       return;
     }
 
+    console.log('🔍 Starting CSV import...');
+    console.log('🔍 Selected file:', selectedFile);
+    console.log('🔍 File name:', selectedFile.name);
+    console.log('🔍 File size:', selectedFile.size);
+    console.log('🔍 File type:', selectedFile.type);
+
     setImporting(true);
     
     try {
+      // Read file content for debugging
+      const fileText = await selectedFile.text();
+      console.log('🔍 File content:', fileText);
+      console.log('🔍 File content length:', fileText.length);
+      
+      // Check if file is empty
+      if (!fileText || fileText.trim().length === 0) {
+        throw new Error('CSV file is empty');
+      }
+      
+      // Check if file has proper CSV structure
+      const lines = fileText.split('\n').filter(line => line.trim());
+      console.log('🔍 CSV lines:', lines.length);
+      console.log('🔍 First line (header):', lines[0]);
+      
+      if (lines.length < 2) {
+        throw new Error('CSV file must contain at least a header row and one data row');
+      }
+      
+      // Validate required headers
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      const requiredHeaders = ['firstName', 'lastName', 'email', 'cellphone'];
+      const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+      
+      console.log('🔍 CSV headers found:', headers);
+      console.log('🔍 Required headers:', requiredHeaders);
+      console.log('🔍 Missing headers:', missingHeaders);
+      
+      if (missingHeaders.length > 0) {
+        throw new Error(`Missing required headers: ${missingHeaders.join(', ')}`);
+      }
+      
+      console.log('🔍 CSV validation passed, calling API...');
+      
       const results = await practiceApi.importPatientsCSV(selectedFile);
+      console.log('🔍 API response:', results);
       
       setImportResults(results);
       
@@ -173,10 +214,23 @@ Robert,Johnson,robert.j@email.com,555-456-7890,`;
       }
       
     } catch (error) {
-      console.error('CSV import error:', error);
+      console.error('🔍 CSV import full error:', error);
+      console.error('🔍 Error response:', error.response);
+      console.error('🔍 Error response data:', error.response?.data);
+      console.error('🔍 Error response status:', error.response?.status);
+      console.error('🔍 Error stack:', error.stack);
+      
+      let errorMessage = "Failed to import CSV file. Please check the format and try again.";
+      
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Import Failed",
-        description: error.response?.data?.detail || "Failed to import CSV file. Please check the format and try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
