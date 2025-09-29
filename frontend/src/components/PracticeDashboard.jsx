@@ -692,6 +692,13 @@ const PracticeDashboard = () => {
         </div>
       )}
 
+      {/* CSV Import Modal */}
+      <CSVImportModal
+        isOpen={showCSVImportModal}
+        onClose={() => setShowCSVImportModal(false)}
+        onSuccess={handleImportSuccess}
+      />
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats Cards */}
