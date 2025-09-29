@@ -789,6 +789,14 @@ const PracticeDashboard = () => {
             <span className="text-xs opacity-90">Search & View Records</span>
           </Button>
           <Button 
+            onClick={handleImportPatients}
+            className="bg-green-600 hover:bg-green-700 text-white h-20 flex flex-col"
+          >
+            <Upload className="h-6 w-6 mb-2" />
+            <span className="font-medium">Import Patients</span>
+            <span className="text-xs opacity-90">Upload CSV File</span>
+          </Button>
+          <Button 
             onClick={handleExportData}
             variant="outline" 
             className="h-20 flex flex-col"
