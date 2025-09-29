@@ -1039,8 +1039,216 @@ async def get_export_activities(
             detail="Failed to get export activities"
         )
 
-@router.put("/patients/{patient_id}")
-async def update_patient(
+@router.post("/import-patients-csv")
+async def import_patients_csv(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Import patients from CSV file"""
+    try:
+        practice_id = current_user["practiceId"]
+        user_id = current_user["userId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Validate file type
+        if not file.filename.lower().endswith('.csv'):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File must be a CSV file"
+            )
+        
+        # Read CSV content
+        content = await file.read()
+        csv_content = content.decode('utf-8')
+        
+        # Parse CSV
+        import csv
+        from io import StringIO
+        
+        csv_reader = csv.DictReader(StringIO(csv_content))
+        
+        # Expected headers
+        required_headers = ['firstName', 'lastName', 'email', 'cellphone']
+        optional_headers = ['primaryDentist']
+        all_expected_headers = required_headers + optional_headers
+        
+        # Validate headers
+        csv_headers = csv_reader.fieldnames
+        if not csv_headers:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CSV file appears to be empty or has no headers"
+            )
+        
+        # Check for required headers
+        missing_headers = [h for h in required_headers if h not in csv_headers]
+        if missing_headers:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Missing required headers: {', '.join(missing_headers)}. Expected headers: {', '.join(all_expected_headers)}"
+            )
+        
+        # Process rows
+        successful_imports = []
+        failed_imports = []
+        duplicate_emails = []
+        row_number = 1
+        
+        for row in csv_reader:
+            row_number += 1
+            
+            try:
+                # Clean and validate data
+                first_name = row.get('firstName', '').strip()
+                last_name = row.get('lastName', '').strip()
+                email = row.get('email', '').strip().lower()
+                cellphone = row.get('cellphone', '').strip()
+                primary_dentist = row.get('primaryDentist', '').strip()
+                
+                # Validate required fields
+                errors = []
+                if not first_name:
+                    errors.append("firstName is required")
+                if not last_name:
+                    errors.append("lastName is required")
+                if not email:
+                    errors.append("email is required")
+                elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
+                    errors.append("email format is invalid")
+                if not cellphone:
+                    errors.append("cellphone is required")
+                
+                if errors:
+                    failed_imports.append({
+                        'row': row_number,
+                        'data': row,
+                        'errors': errors
+                    })
+                    continue
+                
+                # Check for duplicate email in this practice
+                existing_patient = await db.users.find_one({
+                    "email": email,
+                    "practiceId": practice_id,
+                    "role": "patient"
+                })
+                
+                if existing_patient:
+                    duplicate_emails.append({
+                        'row': row_number,
+                        'email': email,
+                        'name': f"{first_name} {last_name}"
+                    })
+                    continue
+                
+                # Create patient
+                patient_id = str(uuid.uuid4())
+                patient_doc = {
+                    "id": patient_id,
+                    "email": email,
+                    "password": "$2b$12$" + str(uuid.uuid4()).replace("-", ""),  # Temporary password
+                    "firstName": first_name,
+                    "lastName": last_name,
+                    "role": "patient",
+                    "practiceId": practice_id,
+                    "isActive": True,
+                    "isEmailVerified": False,
+                    "invitedBy": user_id,
+                    "invitedAt": datetime.utcnow(),
+                    "loginCount": 0,
+                    "cellphone": cellphone,
+                    "primaryDentist": primary_dentist if primary_dentist else None,
+                    "importedAt": datetime.utcnow(),
+                    "importedBy": user_id,
+                    "createdAt": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                }
+                
+                await db.users.insert_one(patient_doc)
+                
+                successful_imports.append({
+                    'row': row_number,
+                    'patientId': patient_id,
+                    'name': f"{first_name} {last_name}",
+                    'email': email
+                })
+                
+            except Exception as e:
+                failed_imports.append({
+                    'row': row_number,
+                    'data': row,
+                    'errors': [f"Processing error: {str(e)}"]
+                })
+        
+        return {
+            "success": True,
+            "summary": {
+                "totalRows": row_number - 1,
+                "successfulImports": len(successful_imports),
+                "failedImports": len(failed_imports),
+                "duplicateEmails": len(duplicate_emails)
+            },
+            "details": {
+                "successful": successful_imports,
+                "failed": failed_imports,
+                "duplicates": duplicate_emails
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"CSV import error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to import CSV: {str(e)}"
+        )
+
+@router.get("/patient-csv-template")
+async def get_patient_csv_template(
+    current_user: dict = Depends(get_current_user)
+):
+    """Download CSV template for patient import"""
+    try:
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Create CSV template content
+        template_content = "firstName,lastName,email,cellphone,primaryDentist\n"
+        template_content += "John,Doe,john.doe@email.com,555-123-4567,Dr. Smith\n"
+        template_content += "Jane,Smith,jane.smith@email.com,555-987-6543,Dr. Johnson\n"
+        template_content += "Robert,Johnson,robert.j@email.com,555-456-7890,\n"
+        
+        # Return as downloadable file
+        from fastapi.responses import Response
+        
+        return Response(
+            content=template_content,
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": "attachment; filename=patient_import_template.csv"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Template download error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate template"
+        )
     patient_id: str,
     patient_data: PatientUpdate,
     current_user: dict = Depends(get_current_user)
