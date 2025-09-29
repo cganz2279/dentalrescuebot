@@ -18,12 +18,14 @@ import {
   X,
   UserPlus,
   Eye,
-  User
+  User,
+  Upload
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
 import LoadingSpinner, { LoadingCard, ErrorMessage } from './LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
+import CSVImportModal from './CSVImportModal';
 
 const PracticeDashboard = () => {
   const navigate = useNavigate();
