@@ -243,6 +243,16 @@ export const practiceApi = {
   smsPDF: async (smsData) => {
     const response = await practiceAxios.post('/api/practice/sms-pdf', smsData);
     return response.data;
+  },
+
+  getExportActivities: async (queryParams = '') => {
+    const response = await practiceAxios.get(`/api/practice/export-activities?${queryParams}`);
+    return response.data;
+  },
+
+  logActivity: async (activityData) => {
+    const response = await practiceAxios.post('/api/practice/log-activity', activityData);
+    return response.data;
   }
 };
 
