@@ -982,6 +982,13 @@ async def get_export_activities(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get export activities"
         )
+
+@router.put("/patients/{patient_id}")
+async def update_patient(
+    patient_id: str,
+    patient_data: PatientUpdate,
+    current_user: dict = Depends(get_current_user)
+):
     """Update patient information or handle delete operations"""
     try:
         practice_id = current_user["practiceId"]
