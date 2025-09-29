@@ -324,6 +324,23 @@ const PracticeDashboard = () => {
       console.log('📱 SMS API response:', response);
 
       if (response.success) {
+        // Log the SMS activity
+        try {
+          await practiceApi.logActivity({
+            patientId: procedure.patientId,
+            patientName: patient ? `${patient.firstName} ${patient.lastName}` : procedure.patientName || 'Unknown Patient',
+            patientEmail: patient?.email || 'Unknown Email',
+            procedureId: procedure.id,
+            procedureName: procedure.procedureName || procedure.name,
+            dentistName: patient?.primaryDentist || procedure.dentistName || 'Unknown Doctor',
+            activityType: 'sms',
+            additionalData: { cellphone: patientCellphone }
+          });
+        } catch (logError) {
+          console.error('Failed to log SMS activity:', logError);
+          // Don't fail the main operation if logging fails
+        }
+
         toast({
           title: "SMS Sent",
           description: `PDF link sent to ${response.patientCellphone}`,
