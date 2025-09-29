@@ -244,13 +244,61 @@ Robert,Johnson,robert.j@email.com,555-456-7890,`;
                   <Button
                     onClick={handleDownloadTemplate}
                     variant="outline"
-                    className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                    className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100 mr-3"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download CSV Template
                   </Button>
+                  <Button
+                    onClick={() => setShowTemplate(!showTemplate)}
+                    variant="outline"
+                    className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    {showTemplate ? 'Hide' : 'View'} Template
+                  </Button>
                 </CardContent>
               </Card>
+
+              {/* Template Content Display */}
+              {showTemplate && (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-lg">
+                      <FileText className="h-5 w-5 mr-2 text-blue-600" />
+                      CSV Template Content
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <p className="text-sm text-gray-600">
+                        Copy this content and save it as a .csv file, then modify with your patient data:
+                      </p>
+                      <div className="bg-gray-50 border rounded-md p-3">
+                        <pre className="text-sm font-mono whitespace-pre-wrap">{templateContent}</pre>
+                      </div>
+                      <Button
+                        onClick={handleCopyTemplate}
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                      >
+                        Copy to Clipboard
+                      </Button>
+                      <div className="text-xs text-gray-500">
+                        <p><strong>Instructions:</strong></p>
+                        <ol className="list-decimal pl-4 mt-1 space-y-1">
+                          <li>Copy the content above</li>
+                          <li>Open a text editor (Notepad, TextEdit, etc.)</li>
+                          <li>Paste the content</li>
+                          <li>Save as "patients.csv" (make sure extension is .csv)</li>
+                          <li>Edit with your actual patient data</li>
+                          <li>Upload the file using the form below</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Upload File */}
               <Card className="mb-6">
