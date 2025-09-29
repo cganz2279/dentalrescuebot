@@ -954,6 +954,9 @@ async def log_patient_activity(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to log activity"
         )
+
+@router.get("/export-activities")
+async def get_export_activities(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     activity_types: Optional[str] = None,  # comma-separated list
@@ -968,12 +971,6 @@ async def log_patient_activity(
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Access denied"
-            )
-        
-        if not ACTIVITY_LOGGER_AVAILABLE:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Activity logging service not available"
             )
         
         # Parse dates
@@ -1001,14 +998,24 @@ async def log_patient_activity(
         activity_type_list = None
         if activity_types:
             activity_type_list = [t.strip() for t in activity_types.split(',')]
-            
-        # Get activities from logger
-        activities = await activity_logger.get_activities_by_date_range(
-            practice_id=practice_id,
-            start_date=start_dt,
-            end_date=end_dt,
-            activity_types=activity_type_list
-        )
+        
+        # Build query
+        query = {
+            "practiceId": practice_id,
+            "performedAt": {
+                "$gte": start_dt,
+                "$lte": end_dt
+            }
+        }
+        
+        if activity_type_list:
+            query["activityType"] = {"$in": activity_type_list}
+        
+        # Get activities directly from database
+        activities = await db.activity_logs.find(
+            query,
+            {"_id": 0}
+        ).sort("performedAt", -1).to_list(length=None)
         
         return {
             "success": True,
