@@ -23,77 +23,98 @@ const CSVImportModal = ({ isOpen, onClose, onSuccess }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
   const [importResults, setImportResults] = useState(null);
+  const [showTemplate, setShowTemplate] = useState(false);
+
+  const templateContent = `firstName,lastName,email,cellphone,primaryDentist
+John,Doe,john.doe@email.com,555-123-4567,Dr. Smith
+Jane,Smith,jane.smith@email.com,555-987-6543,Dr. Johnson
+Robert,Johnson,robert.j@email.com,555-456-7890,`;
 
   const handleDownloadTemplate = async () => {
     try {
       console.log('🔍 Starting CSV template download...');
       
-      const blob = await practiceApi.downloadPatientCSVTemplate();
-      console.log('🔍 Template blob received:', blob);
-      
-      // Enhanced download with multiple methods for better browser compatibility
-      const filename = 'patient_import_template.csv';
-      
+      // Method 1: Try API download
       try {
-        // Method 1: Modern browsers with download attribute
-        const url = window.URL.createObjectURL(blob);
-        console.log('🔍 Created blob URL:', url);
+        const blob = await practiceApi.downloadPatientCSVTemplate();
+        console.log('🔍 Template blob received:', blob);
         
-        // Create temporary link element
+        const filename = 'patient_import_template.csv';
+        const url = window.URL.createObjectURL(blob);
+        
         const link = document.createElement('a');
         link.href = url;
         link.download = filename;
         link.style.display = 'none';
         
-        // Append to body, click, and remove
         document.body.appendChild(link);
-        console.log('🔍 Triggering template download...');
         link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
         
-        // Clean up
-        setTimeout(() => {
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-          console.log('🔍 Template download link cleaned up');
-        }, 100);
+        console.log('🔍 Template download completed via API');
         
-      } catch (downloadError) {
-        console.error('🔍 Template download method 1 failed:', downloadError);
+        toast({
+          title: "Template Downloaded",
+          description: `CSV template downloaded: ${filename}`,
+          variant: "default",
+        });
+        return;
         
-        // Method 2: Fallback using data URL
-        try {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const dataUrl = e.target.result;
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = filename;
-            link.click();
-            console.log('🔍 Template fallback download method used');
-          };
-          reader.readAsDataURL(blob);
-        } catch (fallbackError) {
-          console.error('🔍 Template fallback download method failed:', fallbackError);
-          throw new Error('Both download methods failed');
-        }
+      } catch (apiError) {
+        console.warn('🔍 API download failed, using fallback method:', apiError);
+        
+        // Method 2: Create CSV content directly
+        const csvBlob = new Blob([templateContent], { type: 'text/csv;charset=utf-8' });
+        const url = window.URL.createObjectURL(csvBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'patient_import_template.csv';
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        console.log('🔍 Template download completed via fallback method');
+        
+        toast({
+          title: "Template Downloaded",
+          description: "CSV template downloaded using fallback method",
+          variant: "default",
+        });
       }
       
+    } catch (error) {
+      console.error('🔍 All template download methods failed:', error);
+      
+      // Show template content in modal as last resort
+      setShowTemplate(true);
+      
       toast({
-        title: "Template Downloaded",
-        description: `CSV template has been downloaded: ${filename}`,
+        title: "Download Issue - Template Displayed",
+        description: "Having trouble downloading? The template is shown below - you can copy and paste it.",
         variant: "default",
       });
-      
-    } catch (error) {
-      console.error('🔍 Template download error:', error);
-      console.error('🔍 Template error stack:', error.stack);
-      
+    }
+  };
+
+  const handleCopyTemplate = () => {
+    navigator.clipboard.writeText(templateContent).then(() => {
       toast({
-        title: "Download Failed",
-        description: error.message || "Failed to download template. Please try again.",
+        title: "Template Copied",
+        description: "CSV template content has been copied to clipboard. Paste it into a new .csv file.",
+        variant: "default",
+      });
+    }).catch(() => {
+      toast({
+        title: "Copy Failed",
+        description: "Please manually copy the template content shown below.",
         variant: "destructive",
       });
-    }
+    });
   };
 
   const handleFileSelect = (event) => {
