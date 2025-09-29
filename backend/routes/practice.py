@@ -41,6 +41,13 @@ except Exception as e:
     print(f"PDF link service not available: {e}")
     PDF_LINK_SERVICE_AVAILABLE = False
 
+try:
+    from services.activity_logger import activity_logger
+    ACTIVITY_LOGGER_AVAILABLE = True
+except Exception as e:
+    print(f"Activity logger not available: {e}")
+    ACTIVITY_LOGGER_AVAILABLE = False
+
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
