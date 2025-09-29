@@ -1081,6 +1081,10 @@ async def import_patients_csv(
         
         # Validate headers
         csv_headers = csv_reader.fieldnames
+        print(f"🔍 Backend: CSV headers detected: {csv_headers}")
+        print(f"🔍 Backend: Required headers: {required_headers}")
+        print(f"🔍 Backend: CSV content preview: {csv_content[:200]}")
+        
         if not csv_headers:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -1089,6 +1093,8 @@ async def import_patients_csv(
         
         # Check for required headers
         missing_headers = [h for h in required_headers if h not in csv_headers]
+        print(f"🔍 Backend: Missing headers: {missing_headers}")
+        
         if missing_headers:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
