@@ -33,9 +33,9 @@ class CSVExportActivityLoggingTester:
         if response.status_code == 200:
             data = response.json()
             if data.get("success"):
-                self.auth_token = data["data"]["token"]
-                self.practice_id = data["data"]["user"]["practiceId"]
-                self.user_id = data["data"]["user"]["id"]
+                self.auth_token = data["token"]
+                self.practice_id = data["user"]["practiceId"]
+                self.user_id = data["user"]["id"]
                 
                 # Set authorization header for future requests
                 self.session.headers.update({
