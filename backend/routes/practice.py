@@ -903,12 +903,85 @@ async def get_export_data(current_user: dict = Depends(get_current_user)):
             detail="Failed to get export data"
         )
 
-@router.put("/patients/{patient_id}")
-async def update_patient(
-    patient_id: str,
-    patient_data: PatientUpdate,
+@router.get("/export-activities")
+async def get_export_activities(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    activity_types: Optional[str] = None,  # comma-separated list
     current_user: dict = Depends(get_current_user)
 ):
+    """Get activity data for CSV export with date range filtering"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        if not ACTIVITY_LOGGER_AVAILABLE:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Activity logging service not available"
+            )
+        
+        # Parse dates
+        try:
+            if start_date:
+                start_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+            else:
+                # Default to 30 days ago
+                start_dt = datetime.now(timezone.utc) - timedelta(days=30)
+                
+            if end_date:
+                end_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+                # Set to end of day
+                end_dt = end_dt.replace(hour=23, minute=59, second=59)
+            else:
+                # Default to now
+                end_dt = datetime.now(timezone.utc)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid date format. Use ISO format (YYYY-MM-DD): {str(e)}"
+            )
+        
+        # Parse activity types
+        activity_type_list = None
+        if activity_types:
+            activity_type_list = [t.strip() for t in activity_types.split(',')]
+            
+        # Get activities from logger
+        activities = await activity_logger.get_activities_by_date_range(
+            practice_id=practice_id,
+            start_date=start_dt,
+            end_date=end_dt,
+            activity_types=activity_type_list
+        )
+        
+        return {
+            "success": True,
+            "data": {
+                "activities": activities,
+                "dateRange": {
+                    "start": start_dt.isoformat(),
+                    "end": end_dt.isoformat()
+                },
+                "total": len(activities),
+                "activityTypes": activity_type_list or ["print", "email", "sms"]
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Export activities error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get export activities"
+        )
     """Update patient information or handle delete operations"""
     try:
         practice_id = current_user["practiceId"]
