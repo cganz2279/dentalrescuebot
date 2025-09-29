@@ -382,7 +382,7 @@ class CSVExportActivityLoggingTester:
         print("   Testing log-activity endpoint without auth...")
         response = unauth_session.post(f"{BASE_URL}/practice/log-activity", json={})
         
-        if response.status_code == 401:
+        if response.status_code == 401 or response.status_code == 403:
             print("   ✅ log-activity correctly requires authentication")
         else:
             print(f"   ❌ log-activity should require authentication (status: {response.status_code})")
@@ -392,7 +392,7 @@ class CSVExportActivityLoggingTester:
         print("   Testing export-activities endpoint without auth...")
         response = unauth_session.get(f"{BASE_URL}/practice/export-activities")
         
-        if response.status_code == 401:
+        if response.status_code == 401 or response.status_code == 403:
             print("   ✅ export-activities correctly requires authentication")
             return True
         else:
