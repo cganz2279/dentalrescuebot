@@ -285,7 +285,7 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
             }
         ).sort("lastName", 1).to_list(length=None)  # Sort by last name
         
-        print(f"DEBUG: Found {len(recent_patients)} Gmail patients")
+        print(f"DEBUG: Found {len(recent_patients)} patients")
         for patient in recent_patients:
             print(f"DEBUG: Patient {patient['firstName']} {patient['lastName']} ({patient['email']})")
         
