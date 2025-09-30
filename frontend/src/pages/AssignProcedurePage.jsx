@@ -422,34 +422,98 @@ const AssignProcedurePage = () => {
                   )}
                 </div>
                 
+                {/* Dynamic Procedure Selection */}
                 <div>
-                  <Label htmlFor="procedureId">Procedure *</Label>
-                  <Select
-                    value={formData.procedureId}
-                    onValueChange={(value) => handleInputChange('procedureId', value)}
-                  >
-                    <SelectTrigger className={errors.procedureId ? 'border-red-500' : ''}>
-                      <SelectValue placeholder="Select a procedure" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {procedures.map((procedure) => (
-                        <SelectItem key={procedure.id} value={procedure.id}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium">{procedure.name}</span>
-                            <span className="text-xs text-gray-500">{procedure.specialty}</span>
+                  <Label htmlFor="procedureId">
+                    {isMultiProcedureMode ? 'Procedures *' : 'Procedure *'}
+                  </Label>
+                  
+                  {isMultiProcedureMode ? (
+                    // Multi-procedure selection with checkboxes
+                    <div className="space-y-2">
+                      {/* Multi-select controls */}
+                      <div className="flex items-center justify-between text-xs">
+                        <button
+                          type="button"
+                          onClick={handleSelectAllProcedures}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          Select All
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleDeselectAllProcedures}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Deselect All
+                        </button>
+                      </div>
+                      
+                      {/* Checkbox list */}
+                      <div className={`border rounded-md max-h-60 overflow-y-auto ${errors.procedures ? 'border-red-500' : 'border-gray-300'}`}>
+                        {procedures.length > 0 ? (
+                          procedures.map((procedure) => (
+                            <div
+                              key={procedure.id}
+                              className="flex items-center p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                            >
+                              <input
+                                type="checkbox"
+                                id={`procedure-${procedure.id}`}
+                                checked={selectedProcedures.has(procedure.id)}
+                                onChange={() => handleProcedureToggle(procedure.id, procedure.name)}
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                              <label
+                                htmlFor={`procedure-${procedure.id}`}
+                                className="ml-3 flex flex-col cursor-pointer flex-1"
+                              >
+                                <span className="font-medium text-sm">{procedure.name}</span>
+                                <span className="text-xs text-gray-500">{procedure.specialty}</span>
+                              </label>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-3 text-center text-gray-500">
+                            No procedures available
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // Single procedure selection (existing functionality)
+                    <Select
+                      value={formData.procedureId}
+                      onValueChange={(value) => handleInputChange('procedureId', value)}
+                    >
+                      <SelectTrigger className={errors.procedureId ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Select a procedure" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {procedures.map((procedure) => (
+                          <SelectItem key={procedure.id} value={procedure.id}>
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">{procedure.name}</span>
+                              <span className="text-xs text-gray-500">{procedure.specialty}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                        <SelectItem value="request-new" className="border-t border-gray-200">
+                          <div className="flex items-center text-blue-600">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Request New Procedure...
                           </div>
                         </SelectItem>
-                      ))}
-                      <SelectItem value="request-new" className="border-t border-gray-200">
-                        <div className="flex items-center text-blue-600">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Request New Procedure...
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                      </SelectContent>
+                    </Select>
+                  )}
+                  
+                  {/* Error messages */}
                   {errors.procedureId && (
                     <p className="text-sm text-red-500 mt-1">{errors.procedureId}</p>
+                  )}
+                  {errors.procedures && (
+                    <p className="text-sm text-red-500 mt-1">{errors.procedures}</p>
                   )}
                 </div>
               </div>
