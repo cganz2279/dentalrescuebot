@@ -65,24 +65,58 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
     # Build content
     content = []
     
-    # Try to add logo from base64 file
+    # Try to add practice logo
     try:
-        logo_path = "/app/frontend/public/dental-rescue-logo-base64.txt"
-        if os.path.exists(logo_path):
-            with open(logo_path, 'r') as f:
-                logo_base64 = f.read().strip()
-                if logo_base64.startswith('data:image'):
+        # First try to use practice's custom logo from branding
+        logo_added = False
+        
+        if practice_info and practice_info.get('branding', {}).get('logo'):
+            try:
+                logo_data_url = practice_info['branding']['logo']
+                if logo_data_url and logo_data_url.startswith('data:image'):
                     # Remove the data:image/png;base64, prefix
-                    logo_data = logo_base64.split(',')[1]
+                    logo_data = logo_data_url.split(',')[1]
                     logo_bytes = base64.b64decode(logo_data)
                     logo_buffer = BytesIO(logo_bytes)
                     
-                    # Add logo
+                    # Add custom practice logo
                     logo = Image(logo_buffer, width=2*inch, height=1*inch)
                     logo.hAlign = 'CENTER'
                     content.append(logo)
                     content.append(Spacer(1, 12))
-    except Exception:
+                    logo_added = True
+                    print("✅ Using custom practice logo in PDF")
+            except Exception as e:
+                print(f"⚠️ Failed to use custom practice logo: {e}")
+        
+        # Fallback to default logo file if custom logo failed
+        if not logo_added:
+            logo_path = "/app/frontend/public/dental-rescue-logo-base64.txt"
+            if os.path.exists(logo_path):
+                with open(logo_path, 'r') as f:
+                    logo_base64 = f.read().strip()
+                    if logo_base64.startswith('data:image'):
+                        # Remove the data:image/png;base64, prefix
+                        logo_data = logo_base64.split(',')[1]
+                        logo_bytes = base64.b64decode(logo_data)
+                        logo_buffer = BytesIO(logo_bytes)
+                        
+                        # Add default logo
+                        logo = Image(logo_buffer, width=2*inch, height=1*inch)
+                        logo.hAlign = 'CENTER'
+                        content.append(logo)
+                        content.append(Spacer(1, 12))
+                        logo_added = True
+                        print("✅ Using default logo in PDF")
+        
+        # Final fallback to text header if no logo worked
+        if not logo_added:
+            content.append(Paragraph("DENTAL RESCUE NOTES", title_style))
+            content.append(Spacer(1, 12))
+            print("ℹ️ Using text header in PDF (no logo available)")
+            
+    except Exception as e:
+        print(f"❌ Logo handling error: {e}")
         # Fallback to text header if logo fails
         content.append(Paragraph("DENTAL RESCUE NOTES", title_style))
         content.append(Spacer(1, 12))
