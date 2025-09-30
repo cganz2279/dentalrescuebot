@@ -188,8 +188,15 @@ const AssignProcedurePage = () => {
       newErrors.patientId = 'Please select a patient';
     }
     
-    if (!formData.procedureId) {
-      newErrors.procedureId = 'Please select a procedure';
+    // Validate procedures based on mode
+    if (isMultiProcedureMode) {
+      if (selectedProcedures.size === 0) {
+        newErrors.procedures = 'Please select at least one procedure';
+      }
+    } else {
+      if (!formData.procedureId) {
+        newErrors.procedureId = 'Please select a procedure';
+      }
     }
     
     if (!formData.performedDate) {
