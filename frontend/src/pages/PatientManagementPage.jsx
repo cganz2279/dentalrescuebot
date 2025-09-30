@@ -237,7 +237,7 @@ const PatientManagementPage = () => {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Patient Management</h1>
               <p className="text-gray-600">
-                Manage real patients and their procedure assignments (Gmail addresses only)
+                Manage patients and their procedure assignments
               </p>
             </div>
           </div>
