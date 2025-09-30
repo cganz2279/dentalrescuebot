@@ -36,9 +36,15 @@ class PDFLogoDebugTester:
             
             if response.status_code == 200:
                 data = response.json()
+                print(f"Auth response data: {data}")
                 if data.get("success"):
-                    self.auth_token = data["data"]["token"]
-                    self.practice_id = data["data"]["user"]["practiceId"]
+                    # Handle different response structures
+                    if "data" in data:
+                        self.auth_token = data["data"]["token"]
+                        self.practice_id = data["data"]["user"]["practiceId"]
+                    else:
+                        self.auth_token = data.get("token")
+                        self.practice_id = data.get("user", {}).get("practiceId")
                     
                     # Set authorization header for future requests
                     self.session.headers.update({
