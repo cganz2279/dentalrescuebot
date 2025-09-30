@@ -2675,7 +2675,7 @@ async def access_secure_pdf(token: str):
         # Get practice information
         practice = await db.practices.find_one(
             {"id": token_data['practice_id']},
-            {"_id": 0, "name": 1, "phone": 1, "emergencyContact": 1, "officeHours": 1}
+            {"_id": 0, "name": 1, "phone": 1, "emergencyContact": 1, "officeHours": 1, "branding": 1}
         )
         
         if not practice:
