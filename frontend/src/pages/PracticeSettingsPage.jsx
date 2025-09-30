@@ -32,7 +32,7 @@ import { useToast } from '../hooks/use-toast';
 
 const PracticeSettingsPage = () => {
   const navigate = useNavigate();
-  const { user, practice, logout } = useAuth();
+  const { user, practice, logout, refreshPractice } = useAuth();
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
