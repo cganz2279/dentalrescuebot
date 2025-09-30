@@ -77,6 +77,14 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
                     # Remove the data:image/png;base64, prefix
                     logo_data = logo_data_url.split(',')[1]
                     logo_bytes = base64.b64decode(logo_data)
+                    
+                    # Validate image data size
+                    print(f"🔍 Custom logo data size: {len(logo_bytes)} bytes")
+                    
+                    if len(logo_bytes) < 100:
+                        print("⚠️ Custom logo data too small, likely corrupted placeholder")
+                        raise Exception("Custom logo data corrupted (too small)")
+                    
                     logo_buffer = BytesIO(logo_bytes)
                     
                     # Add custom practice logo
@@ -86,13 +94,21 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
                     content.append(Spacer(1, 12))
                     logo_added = True
                     print("✅ Using custom practice logo in PDF")
+                else:
+                    print("⚠️ Practice logo not in data:image format")
             except Exception as e:
                 print(f"⚠️ Failed to use custom practice logo: {e}")
+                # Clear any potential partial content
+                if 'logo' in locals():
+                    del logo
+        else:
+            print("ℹ️ No custom practice logo found in practice_info")
         
         # Fallback to default logo file if custom logo failed
         if not logo_added:
             logo_path = "/app/frontend/public/dental-rescue-logo-base64.txt"
             if os.path.exists(logo_path):
+                print("⚠️ Using default logo fallback")
                 with open(logo_path, 'r') as f:
                     logo_base64 = f.read().strip()
                     if logo_base64.startswith('data:image'):
@@ -108,6 +124,8 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
                         content.append(Spacer(1, 12))
                         logo_added = True
                         print("✅ Using default logo in PDF")
+            else:
+                print("⚠️ Default logo file not found")
         
         # Final fallback to text header if no logo worked
         if not logo_added:
