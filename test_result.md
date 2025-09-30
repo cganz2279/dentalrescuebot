@@ -555,7 +555,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Dr. Ganz Login Functionality Test"
+    - "Multi-Procedure Selection Feature Testing"
   stuck_tasks:
     - "Admin Panel Procedure Creation Form React Error Fix"
   test_all: false
