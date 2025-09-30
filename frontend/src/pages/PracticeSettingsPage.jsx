@@ -298,6 +298,9 @@ const PracticeSettingsPage = () => {
       const response = await practiceApi.updatePractice(updateData);
       
       if (response.success) {
+        // Refresh practice data to ensure the UI reflects the changes
+        await refreshPractice();
+        
         toast({
           title: "Settings Updated",
           description: "Your practice settings have been saved successfully",
