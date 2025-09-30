@@ -219,7 +219,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Logo functionality comprehensive UI testing completed successfully"
+    - "PDF logo and practice name integration fixes verification completed successfully"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
