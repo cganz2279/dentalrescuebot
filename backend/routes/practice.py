@@ -553,6 +553,102 @@ async def assign_procedure_to_patient(
             detail="Failed to assign procedure"
         )
 
+@router.post("/assign-multiple-procedures")
+async def assign_multiple_procedures_to_patient(
+    assignment: MultiProcedureAssignment,
+    current_user: dict = Depends(get_current_user)
+):
+    """Assign multiple procedures to a patient"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Verify patient belongs to this practice
+        patient = await db.users.find_one({
+            "id": assignment.patientId,
+            "practiceId": practice_id,
+            "role": "patient"
+        })
+        
+        if not patient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+        
+        # Verify all procedures exist
+        procedure_ids = [proc.procedureId for proc in assignment.procedures]
+        procedures_cursor = db.procedures.find({"id": {"$in": procedure_ids}})
+        procedures = await procedures_cursor.to_list(length=None)
+        
+        if len(procedures) != len(procedure_ids):
+            missing_ids = set(procedure_ids) - {proc["id"] for proc in procedures}
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Procedures not found: {', '.join(missing_ids)}"
+            )
+        
+        # Create procedure assignments for each selected procedure
+        assignment_ids = []
+        created_assignments = []
+        
+        for proc_item in assignment.procedures:
+            assignment_id = str(uuid.uuid4())
+            assignment_ids.append(assignment_id)
+            
+            assignment_doc = {
+                "id": assignment_id,
+                "patientId": assignment.patientId,
+                "practiceId": practice_id,
+                "procedureId": proc_item.procedureId,
+                "procedureName": proc_item.procedureName,
+                "performedDate": datetime.fromisoformat(assignment.performedDate.replace('Z', '+00:00')),
+                "dentistName": assignment.dentistName,
+                "practiceNotes": assignment.practiceNotes,
+                "customInstructions": assignment.customInstructions or [],
+                "followUpDate": datetime.fromisoformat(assignment.followUpDate.replace('Z', '+00:00')) if assignment.followUpDate else None,
+                "status": "active",
+                "pdfDownloadCount": 0,
+                "viewCount": 0,
+                "createdAt": datetime.utcnow(),
+                "updatedAt": datetime.utcnow(),
+                "isMultiProcedureAssignment": True,  # Mark as part of multi-procedure assignment
+                "batchId": str(uuid.uuid4()) if len(assignment.procedures) > 1 else None  # Group related assignments
+            }
+            
+            await db.patientprocedures.insert_one(assignment_doc)
+            created_assignments.append({
+                "assignmentId": assignment_id,
+                "procedureId": proc_item.procedureId,
+                "procedureName": proc_item.procedureName
+            })
+        
+        return {
+            "success": True,
+            "message": f"Successfully assigned {len(assignment.procedures)} procedures",
+            "data": {
+                "assignmentIds": assignment_ids,
+                "patientName": f"{patient['firstName']} {patient['lastName']}",
+                "procedureCount": len(assignment.procedures),
+                "procedures": created_assignments
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Assign multiple procedures error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to assign multiple procedures"
+        )
+
 @router.post("/request-procedure")
 async def request_new_procedure(
     request_data: dict,
