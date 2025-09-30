@@ -192,7 +192,7 @@ frontend:
 
   - task: "Practice Settings Logo Upload"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/pages/PracticeSettingsPage.jsx"
     stuck_count: 0
     priority: "high"
@@ -201,6 +201,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ LOGO UPLOAD FUNCTIONALITY VERIFIED: (1) ✅ BRANDING SECTION: Complete 'Practice Branding' section found with 'Practice Logo' subsection, (2) ✅ UPLOAD INTERFACE: 'Change Logo' button and hidden file input (type='file', accept='image/*') properly implemented, (3) ✅ CURRENT LOGO DISPLAY: Existing custom logo displayed in settings (base64 format), (4) ✅ SAVE FUNCTIONALITY: 'Save Branding' button available for persisting logo changes, (5) ✅ FILE VALIDATION: 2MB file size limit and image format validation in place, (6) ✅ USER FEEDBACK: Toast notifications for upload success/failure implemented. Logo upload and save functionality is working correctly."
+        - working: false
+          agent: "testing"
+          comment: "❌ LOGO UPLOAD SHOWS CORRUPTED DATA: (1) ✅ UPLOAD FUNCTIONALITY WORKING: Practice settings page accessible, branding section found, 'Change Logo' button and file input functional, (2) ❌ CURRENT LOGO CORRUPTED: Logo display area shows same purple box as dashboard, confirming corrupted logo data across application, (3) ✅ INFRASTRUCTURE INTACT: Upload interface, save functionality, and file validation all working correctly, (4) ❌ DATA CORRUPTION CONFIRMED: Current logo in settings matches corrupted 1x1 pixel placeholder from API (118 characters), (5) 🔧 SOLUTION NEEDED: Logo upload functionality works but current logo data needs to be replaced with valid image data. User needs to upload new logo to replace corrupted placeholder."
 
   - task: "PDF Generation with Logo"
     implemented: true
