@@ -111,6 +111,19 @@ class ProcedureAssignment(BaseModel):
     customInstructions: Optional[List[str]] = None
     followUpDate: Optional[str] = None
 
+class ProcedureItem(BaseModel):
+    procedureId: str
+    procedureName: str
+
+class MultiProcedureAssignment(BaseModel):
+    patientId: str
+    procedures: List[ProcedureItem]  # List of procedures to assign
+    performedDate: str  # ISO date string
+    dentistName: str
+    practiceNotes: Optional[str] = None
+    customInstructions: Optional[List[str]] = None
+    followUpDate: Optional[str] = None
+
 class DentistCreate(BaseModel):
     firstName: str
     lastName: str
