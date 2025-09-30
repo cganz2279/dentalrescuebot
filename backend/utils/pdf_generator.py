@@ -111,15 +111,30 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
         
         # Final fallback to text header if no logo worked
         if not logo_added:
-            content.append(Paragraph("DENTAL RESCUE NOTES", title_style))
+            # Use practice name if available, otherwise fallback to generic title
+            practice_title = practice_info.get('name', 'DENTAL RESCUE NOTES') if practice_info else 'DENTAL RESCUE NOTES'
+            content.append(Paragraph(practice_title, title_style))
             content.append(Spacer(1, 12))
-            print("ℹ️ Using text header in PDF (no logo available)")
+            print(f"ℹ️ Using text header in PDF: {practice_title}")
             
     except Exception as e:
         print(f"❌ Logo handling error: {e}")
         # Fallback to text header if logo fails
-        content.append(Paragraph("DENTAL RESCUE NOTES", title_style))
+        practice_title = practice_info.get('name', 'DENTAL RESCUE NOTES') if practice_info else 'DENTAL RESCUE NOTES'
+        content.append(Paragraph(practice_title, title_style))
         content.append(Spacer(1, 12))
+    
+    # Add practice name below logo/header if we have logo but want to show practice name too
+    if logo_added and practice_info and practice_info.get('name'):
+        practice_name_style = ParagraphStyle(
+            'PracticeName',
+            parent=styles['Normal'],
+            fontSize=12,
+            textColor=HexColor('#2563eb'),
+            alignment=TA_CENTER,
+            spaceAfter=16
+        )
+        content.append(Paragraph(practice_info['name'], practice_name_style))
     
     # Procedure title
     content.append(Paragraph("Post-Operative Instructions", header_style))
