@@ -136,6 +136,51 @@ const AssignProcedurePage = () => {
     }
   };
 
+  // Multi-procedure selection functions
+  const handleProcedureToggle = (procedureId, procedureName) => {
+    const newSelected = new Set(selectedProcedures);
+    if (newSelected.has(procedureId)) {
+      newSelected.delete(procedureId);
+    } else {
+      newSelected.add(procedureId);
+    }
+    setSelectedProcedures(newSelected);
+    
+    // Clear procedure errors when user selects procedures
+    if (errors.procedureId || errors.procedures) {
+      setErrors(prev => ({
+        ...prev,
+        procedureId: null,
+        procedures: null
+      }));
+    }
+  };
+
+  const handleSelectAllProcedures = () => {
+    const allProcedureIds = new Set(procedures.map(p => p.id));
+    setSelectedProcedures(allProcedureIds);
+  };
+
+  const handleDeselectAllProcedures = () => {
+    setSelectedProcedures(new Set());
+  };
+
+  const toggleProcedureMode = () => {
+    setIsMultiProcedureMode(!isMultiProcedureMode);
+    // Clear selections when switching modes
+    setSelectedProcedures(new Set());
+    setFormData(prev => ({
+      ...prev,
+      procedureId: ''
+    }));
+    // Clear any procedure-related errors
+    setErrors(prev => ({
+      ...prev,
+      procedureId: null,
+      procedures: null
+    }));
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
