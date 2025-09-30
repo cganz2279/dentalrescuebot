@@ -6,7 +6,7 @@ Detailed Procedure Content Verification
 import requests
 import json
 
-BASE_URL = "https://oncallbot.preview.emergentagent.com/api"
+BASE_URL = "https://patient-portal-45.preview.emergentagent.com/api"
 
 def get_procedure_details(procedure_id: str, procedure_name: str):
     """Get detailed information about a specific procedure"""

@@ -9,7 +9,7 @@ import json
 from typing import List, Dict, Any
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://oncallbot.preview.emergentagent.com/api"
+BACKEND_URL = "https://patient-portal-45.preview.emergentagent.com/api"
 
 # Test credentials
 TEST_EMAIL = "cganz2279@gmail.com"

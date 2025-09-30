@@ -11,8 +11,8 @@ from datetime import datetime
 import time
 
 # Configuration
-FRONTEND_URL = "https://oncallbot.preview.emergentagent.com"
-BACKEND_URL = "https://oncallbot.preview.emergentagent.com"
+FRONTEND_URL = "https://patient-portal-45.preview.emergentagent.com"
+BACKEND_URL = "https://patient-portal-45.preview.emergentagent.com"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

@@ -76,7 +76,7 @@ async def create_dr_ganz_account():
     print("\n📝 Your Login Credentials:")
     print("Email: cganz2279@gmail.com")
     print("Password: password123")
-    print("\n🌐 Login at: https://oncallbot.preview.emergentagent.com")
+    print("\n🌐 Login at: https://patient-portal-45.preview.emergentagent.com")
     
     client.close()
 
