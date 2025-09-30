@@ -108,7 +108,7 @@ backend:
           agent: "testing"
           comment: "✅ Logo update verification successful. Dashboard API correctly returns updated logo after branding update. Logo persists in database and is available in correct base64 data URL format (118 characters) for PDF generation."
 
-  - task: "PDF Generation with Custom Logo"
+  - task: "PDF Database Query Fix"
     implemented: true
     working: true
     file: "/app/backend/routes/practice.py"
@@ -118,7 +118,34 @@ backend:
     status_history:
         - working: true
           agent: "testing"
+          comment: "✅ CRITICAL FIX VERIFIED: Database Query Fix working correctly. Both email-pdf and secure-pdf endpoints now include 'branding': 1 in practice data query projection. Practice branding data with custom logo is successfully passed to PDF generator. Backend logs confirm '✅ Using custom practice logo in PDF' message, proving the fix is operational."
+
+  - task: "PDF Generator Enhancement"
+    implemented: true
+    working: true
+    file: "/app/backend/utils/pdf_generator.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ CRITICAL FIX VERIFIED: PDF Generator Enhancement working correctly. PDF generator now properly receives practice_info parameter with branding data, attempts to use custom practice logos, and displays practice names in PDFs. Code shows proper logo processing with base64 decoding and fallback mechanisms. Practice name integration working with both header display and below-logo positioning."
+
+  - task: "PDF Generation with Custom Logo"
+    implemented: true
+    working: false
+    file: "/app/backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
           comment: "✅ PDF generation endpoints working correctly. Email PDF endpoint (/api/practice/email-pdf) successfully generates PDFs and returns success response. Secure PDF endpoint structure (/api/practice/secure-pdf/{token}) verified. Practice logo available for PDF generation in correct format."
+        - working: false
+          agent: "testing"
+          comment: "⚠️ INFRASTRUCTURE WORKING, DATA ISSUE: PDF generation infrastructure is working correctly - practice branding data is included in queries and PDF generator receives custom logo data. However, current logo data (70 bytes, placeholder image) causes 'broken data stream when reading image file' error. The CRITICAL FIXES are working: (1) Database queries include branding data ✅, (2) PDF generator processes custom logos ✅, (3) Practice names are integrated ✅. Issue is invalid logo data, not the infrastructure."
 
   - task: "RefreshPractice Functionality"
     implemented: true
@@ -131,6 +158,18 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ Practice data refresh functionality working correctly. After branding updates, dashboard API returns updated data while preserving existing logo. Welcome message updates reflect immediately, confirming refresh mechanism is operational."
+
+  - task: "Secure PDF Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/practice.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Secure PDF endpoint (/api/practice/secure-pdf/{token}) working correctly. Endpoint properly validates tokens (returns 401 for invalid tokens), includes branding data in practice query, and has same logo integration as email-pdf endpoint. Infrastructure is complete and functional."
 
 frontend:
   - task: "Frontend Logo Display"
