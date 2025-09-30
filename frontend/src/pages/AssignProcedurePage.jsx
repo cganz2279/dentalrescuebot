@@ -319,7 +319,7 @@ const AssignProcedurePage = () => {
               Back to Dashboard
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Assign Procedure</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Assign Procedures</h1>
               <p className="text-gray-600">
                 Assign post-operative care instructions to a patient
               </p>
