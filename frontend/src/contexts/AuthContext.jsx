@@ -155,6 +155,26 @@ export const AuthProvider = ({ children }) => {
     return user?.role === 'patient';
   };
 
+  const refreshPractice = async () => {
+    try {
+      console.log('🔄 Refreshing practice data...');
+      const practiceApi = (await import('../services/authApi')).practiceApi;
+      const dashboardData = await practiceApi.getDashboard();
+      
+      if (dashboardData.success && dashboardData.data?.practice) {
+        console.log('✅ Practice data refreshed:', dashboardData.data.practice);
+        setPractice(dashboardData.data.practice);
+        return dashboardData.data.practice;
+      } else {
+        console.warn('⚠️ Failed to refresh practice data');
+        return practice;
+      }
+    } catch (error) {
+      console.error('❌ Error refreshing practice data:', error);
+      return practice;
+    }
+  };
+
   const value = {
     user,
     practice,
@@ -166,7 +186,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     isPracticeAdmin,
     isPracticeStaff,
-    isPatient
+    isPatient,
+    refreshPractice
   };
 
   return (
