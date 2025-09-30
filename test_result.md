@@ -207,7 +207,7 @@ frontend:
 
   - task: "PDF Generation with Logo"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/components/PracticeDashboard.jsx"
     stuck_count: 0
     priority: "high"
@@ -216,6 +216,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ PDF GENERATION WITH LOGO VERIFIED: (1) ✅ PDF GENERATION BUTTONS: Found 11 Print buttons and 10 Email buttons across procedures for PDF generation, (2) ✅ LOGO DATA AVAILABLE: Custom logo data (base64) properly loaded and available for PDF generation, (3) ✅ ENHANCED PDF GENERATOR: Code imports enhanced PDF generator with logo support (/utils/ENHANCED_PDF_WITH_LOGO), (4) ✅ PRACTICE DATA INTEGRATION: PDF generation includes complete practice data (name, logo, contact info) for proper branding, (5) ✅ EMAIL PDF FUNCTIONALITY: Email PDF endpoints working with logo data included, (6) ✅ ACTIVITY LOGGING: PDF generation activities properly logged with patient and procedure information. PDF generation with custom logo functionality is working correctly."
+        - working: false
+          agent: "testing"
+          comment: "❌ PDF GENERATION AFFECTED BY CORRUPTED LOGO: (1) ✅ PDF INFRASTRUCTURE WORKING: Found 21 PDF generation buttons across procedure library, PDF generation endpoints functional, enhanced PDF generator with logo support integrated, (2) ❌ CORRUPTED LOGO IN PDFs: PDFs will display same corrupted 1x1 pixel placeholder logo as dashboard since they use same practice branding data, (3) ✅ PDF GENERATION FUNCTIONAL: PDF generation buttons, email functionality, and activity logging all working correctly, (4) ❌ USER REPORT CONFIRMED: 'Printing still shows old logo instead of new custom logo' is accurate - PDFs show corrupted placeholder instead of actual custom logo, (5) 🔧 SOLUTION: PDF logo issue will be resolved once practice branding logo data is updated with valid image data through logo upload functionality."
 
 metadata:
   created_by: "testing_agent"
