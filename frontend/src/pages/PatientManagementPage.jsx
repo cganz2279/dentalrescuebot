@@ -304,7 +304,7 @@ const PatientManagementPage = () => {
                                 variant="outline" 
                                 className="text-xs bg-blue-50 text-blue-600 border-blue-200"
                               >
-                                Real Patient
+                                Patient
                               </Badge>
                               <Badge 
                                 variant={patient.status === 'Active' ? 'default' : 'secondary'}
