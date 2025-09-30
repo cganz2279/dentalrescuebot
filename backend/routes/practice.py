@@ -283,7 +283,7 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                 "isActive": 1,
                 "deactivatedAt": 1
             }
-        ).sort("lastName", 1).to_list(length=None)  # Sort by last name
+        ).sort([("lastName", 1), ("firstName", 1)]).to_list(length=None)  # Sort by last name, then first name
         
         print(f"DEBUG: Found {len(recent_patients)} patients")
         for patient in recent_patients:
