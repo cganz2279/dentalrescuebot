@@ -659,26 +659,6 @@ const AssignProcedurePage = () => {
             </form>
           </CardContent>
         </Card>
-
-        {/* Info Card */}
-        <Card className="mt-6 border-green-200 bg-green-50">
-          <CardContent className="pt-6">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <FileText className="h-5 w-5 text-green-600" />
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-green-900">About Procedure Assignment</h3>
-                <div className="mt-1 text-sm text-green-800">
-                  <p>• Patients will be able to access their assigned post-op instructions</p>
-                  <p>• PDFs will be branded with your practice colors and logo</p>
-                  <p>• Patients can download instructions for offline reference</p>
-                  <p>• Follow-up reminders can be set for patient care</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
