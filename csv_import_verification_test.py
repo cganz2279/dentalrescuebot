@@ -85,7 +85,7 @@ class CSVImportVerificationTester:
         """Verify John Doe exists in the users collection with proper fields"""
         print("\n📋 Verifying John Doe in users collection...")
         
-        if not self.db:
+        if self.db is None:
             print("❌ Database connection not available")
             return False
         
@@ -191,7 +191,7 @@ class CSVImportVerificationTester:
         """Debug the patient query to understand why John Doe might not appear"""
         print("\n🔍 Debugging Patient Query...")
         
-        if not self.db:
+        if self.db is None:
             print("❌ Database connection not available")
             return False
         
