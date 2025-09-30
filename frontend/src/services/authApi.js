@@ -145,6 +145,11 @@ export const practiceApi = {
     return response.data;
   },
 
+  assignMultipleProcedures: async (assignmentData) => {
+    const response = await practiceAxios.post('/api/practice/assign-multiple-procedures', assignmentData);
+    return response.data;
+  },
+
   updateBranding: async (brandingData) => {
     const response = await practiceAxios.put('/api/practice/branding', brandingData);
     return response.data;
