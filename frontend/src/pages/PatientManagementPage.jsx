@@ -269,7 +269,7 @@ const PatientManagementPage = () => {
                 
                 {/* Filter Info */}
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
-                  <span>Showing real patients only (Gmail addresses)</span>
+                  <span>Showing all patients</span>
                   <Badge variant="outline" className="text-xs">
                     {filteredPatients.length} patients
                   </Badge>
