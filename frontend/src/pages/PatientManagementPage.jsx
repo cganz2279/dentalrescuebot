@@ -34,18 +34,16 @@ const PatientManagementPage = () => {
       setLoading(true);
       const response = await practiceApi.getPatients();
       
-      // Filter for only Gmail patients (real patients) - exclude all test patients
-      const realPatients = response.data?.filter(patient => 
-        patient.email.toLowerCase().includes('@gmail.com')
-      ) || [];
+      // Get all patients (removed Gmail restriction)
+      const allPatients = response.data || [];
       
       // Add status information for display
-      const realPatientsWithStatus = realPatients.map(patient => ({
+      const allPatientsWithStatus = allPatients.map(patient => ({
         ...patient,
         status: patient.isActive !== false ? 'Active' : 'Inactive'
       }));
       
-      setPatients(realPatientsWithStatus);
+      setPatients(allPatientsWithStatus);
       
     } catch (error) {
       console.error('Load patients error:', error);
