@@ -28,6 +28,10 @@ const AssignProcedurePage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
+  // Multi-procedure selection state
+  const [isMultiProcedureMode, setIsMultiProcedureMode] = useState(false);
+  const [selectedProcedures, setSelectedProcedures] = useState(new Set());
+  
   const [formData, setFormData] = useState({
     patientId: preSelectedPatientId || '',
     procedureId: '',
