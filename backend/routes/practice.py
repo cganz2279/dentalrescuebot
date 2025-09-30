@@ -368,7 +368,7 @@ async def get_practice_patients(current_user: dict = Depends(get_current_user)):
                 "_id": 0,
                 "password": 0
             }
-        ).sort("lastName", 1).to_list(length=None)
+        ).sort([("lastName", 1), ("firstName", 1)]).to_list(length=None)
         
         # Get procedure count for each patient
         for patient in patients:
