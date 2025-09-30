@@ -546,18 +546,16 @@ const PracticeDashboard = () => {
       
       setDashboardData(dashboardResponse.data);
       
-      // Filter for only Gmail patients (real patients)
-      const gmailPatients = patientsResponse.data.filter(patient => 
-        patient.email.toLowerCase().includes('@gmail.com')
-      );
+      // Get all patients (removed Gmail restriction)
+      const allPatients = patientsResponse.data;
       
-      // Add status to Gmail patients
-      const gmailPatientsWithStatus = gmailPatients.map(patient => ({
+      // Add status to all patients
+      const allPatientsWithStatus = allPatients.map(patient => ({
         ...patient,
         status: patient.isActive !== false ? 'Active' : 'Inactive'
       }));
       
-      setRealPatients(gmailPatientsWithStatus);
+      setRealPatients(allPatientsWithStatus);
       
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to load dashboard');
