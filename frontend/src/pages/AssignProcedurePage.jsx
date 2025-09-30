@@ -221,32 +221,62 @@ const AssignProcedurePage = () => {
     setSubmitting(true);
     
     try {
-      // Find selected patient and procedure for names
       const selectedPatient = patients.find(p => p.id === formData.patientId);
-      const selectedProcedure = procedures.find(p => p.id === formData.procedureId);
-      
       const customInstructions = formData.customInstructions
         ? formData.customInstructions.split('\n').filter(line => line.trim())
         : [];
       
-      const assignmentData = {
-        patientId: formData.patientId,
-        procedureId: formData.procedureId,
-        procedureName: selectedProcedure.name,
-        performedDate: new Date(formData.performedDate).toISOString(),
-        dentistName: formData.dentistName.trim(),
-        practiceNotes: formData.practiceNotes.trim() || null,
-        customInstructions: customInstructions.length > 0 ? customInstructions : null,
-        followUpDate: formData.followUpDate ? new Date(formData.followUpDate).toISOString() : null
-      };
-      
-      await practiceApi.assignProcedure(assignmentData);
-      
-      toast({
-        title: "Success!",
-        description: `${selectedProcedure.name} has been assigned to ${selectedPatient.firstName} ${selectedPatient.lastName}.`,
-        variant: "default",
-      });
+      if (isMultiProcedureMode) {
+        // Multi-procedure assignment
+        const selectedProcedureList = Array.from(selectedProcedures).map(procId => {
+          const procedure = procedures.find(p => p.id === procId);
+          return {
+            procedureId: procId,
+            procedureName: procedure.name
+          };
+        });
+        
+        const multiAssignmentData = {
+          patientId: formData.patientId,
+          procedures: selectedProcedureList,
+          performedDate: new Date(formData.performedDate).toISOString(),
+          dentistName: formData.dentistName.trim(),
+          practiceNotes: formData.practiceNotes.trim() || null,
+          customInstructions: customInstructions.length > 0 ? customInstructions : null,
+          followUpDate: formData.followUpDate ? new Date(formData.followUpDate).toISOString() : null
+        };
+        
+        await practiceApi.assignMultipleProcedures(multiAssignmentData);
+        
+        toast({
+          title: "Success!",
+          description: `${selectedProcedureList.length} procedures have been assigned to ${selectedPatient.firstName} ${selectedPatient.lastName}.`,
+          variant: "default",
+        });
+        
+      } else {
+        // Single procedure assignment (existing functionality)
+        const selectedProcedure = procedures.find(p => p.id === formData.procedureId);
+        
+        const assignmentData = {
+          patientId: formData.patientId,
+          procedureId: formData.procedureId,
+          procedureName: selectedProcedure.name,
+          performedDate: new Date(formData.performedDate).toISOString(),
+          dentistName: formData.dentistName.trim(),
+          practiceNotes: formData.practiceNotes.trim() || null,
+          customInstructions: customInstructions.length > 0 ? customInstructions : null,
+          followUpDate: formData.followUpDate ? new Date(formData.followUpDate).toISOString() : null
+        };
+        
+        await practiceApi.assignProcedure(assignmentData);
+        
+        toast({
+          title: "Success!",
+          description: `${selectedProcedure.name} has been assigned to ${selectedPatient.firstName} ${selectedPatient.lastName}.`,
+          variant: "default",
+        });
+      }
       
       // Navigate back to dashboard after short delay
       setTimeout(() => {
