@@ -607,14 +607,27 @@ const PracticeDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png"
-                alt="DentalRescueBot Logo"
-                className="h-12 w-auto"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
+              {/* Practice Logo - use custom logo if available */}
+              {(practice?.branding?.logo || practice?.logo) ? (
+                <img 
+                  src={practice.branding?.logo || practice.logo}
+                  alt={`${practice.name || 'Practice'} Logo`}
+                  className="h-12 w-auto object-contain"
+                  onError={(e) => {
+                    console.error('Custom logo failed to load, falling back to default');
+                    e.target.src = "https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png";
+                  }}
+                />
+              ) : (
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png"
+                  alt="DentalRescueBot Logo"
+                  className="h-12 w-auto"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   {dashboardData?.practice?.name || 'Practice Dashboard'}
