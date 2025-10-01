@@ -1861,7 +1861,7 @@ const AdminDashboard = () => {
 };
 
 const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({ email: 'cganz@admin.com', password: 'Dentist1#' });
+  const [credentials, setCredentials] = useState({ email: 'cganz@admin.com', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
