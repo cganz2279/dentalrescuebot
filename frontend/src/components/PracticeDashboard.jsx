@@ -189,6 +189,112 @@ const PracticeDashboard = () => {
     navigate(`/procedure-details/${procedureId}`);
   };
 
+  // Helper function to create printable HTML content
+  const createPrintableHTML = (procedure, patient, practice, procedureContent) => {
+    const patientName = patient ? `${patient.firstName} ${patient.lastName}` : procedure.patientName || 'Unknown Patient';
+    const practiceName = practice?.name || 'Dental Practice';
+    const practicePhone = practice?.phone || practice?.emergencyContact || 'Contact Number Not Available';
+    const practiceOfficeHours = practice?.officeHours || 'Contact office for hours';
+    const practiceEmergencyContact = practice?.emergencyContact || practice?.phone || 'Contact Number Not Available';
+    
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Post-Operative Instructions - ${procedure.procedureName}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            color: #333;
+          }
+          .header {
+            text-align: center;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+          }
+          .practice-logo {
+            max-height: 80px;
+            margin-bottom: 10px;
+          }
+          .practice-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 10px 0;
+          }
+          .practice-info {
+            font-size: 14px;
+            color: #666;
+          }
+          .patient-info {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+          }
+          .procedure-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 20px;
+          }
+          .content {
+            margin-bottom: 30px;
+          }
+          .emergency-contact {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+          }
+          .emergency-title {
+            font-weight: bold;
+            color: #dc2626;
+            margin-bottom: 10px;
+          }
+          @media print {
+            body { margin: 20px; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          ${practice?.branding?.logo ? `<img src="${practice.branding.logo}" alt="${practiceName} Logo" class="practice-logo">` : ''}
+          <div class="practice-name">${practiceName}</div>
+          <div class="practice-info">
+            Phone: ${practicePhone}<br>
+            Office Hours: ${practiceOfficeHours}
+          </div>
+        </div>
+        
+        <div class="patient-info">
+          <strong>Patient:</strong> ${patientName}<br>
+          <strong>Procedure:</strong> ${procedure.procedureName}<br>
+          <strong>Doctor:</strong> ${patient?.primaryDentist || procedure.dentistName || 'Unknown Doctor'}<br>
+          <strong>Date:</strong> ${new Date(procedure.performedDate).toLocaleDateString()}
+        </div>
+        
+        <div class="procedure-title">Post-Operative Instructions: ${procedure.procedureName}</div>
+        
+        <div class="content">
+          ${procedureContent || 'Please follow the standard post-operative care instructions provided by your dentist.'}
+        </div>
+        
+        <div class="emergency-contact">
+          <div class="emergency-title">Emergency Contact Information</div>
+          <strong>Emergency Phone:</strong> ${practiceEmergencyContact}<br>
+          <strong>Office Hours:</strong> ${practiceOfficeHours}
+        </div>
+      </body>
+      </html>
+    `;
+  };
+
   const handlePrintProcedure = async (procedureId) => {
     try {
       const procedure = dashboardData?.recentProcedures?.find(p => p.id === procedureId);
