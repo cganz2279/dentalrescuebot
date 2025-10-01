@@ -50,7 +50,7 @@ class CreatePracticeRequest(BaseModel):
     address: Optional[str] = None
     tempPassword: str = Field(..., min_length=8, description="Temporary password is required (min 8 chars)")
     subscriptionType: str = Field(default="trial", description="trial, active, or inactive")
-    trialDays: int = Field(default=15, description="Trial period in days")
+    trialDays: int = Field(default=30, description="Trial period in days")
 
 class PasswordResetRequest(BaseModel):
     user_id: str
