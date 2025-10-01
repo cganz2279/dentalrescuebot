@@ -8,6 +8,11 @@ import os
 import base64
 from typing import Optional
 from datetime import datetime
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables
+load_dotenv(Path(__file__).parent.parent / '.env')
 
 class EmailService:
     def __init__(self):
