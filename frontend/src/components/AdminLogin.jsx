@@ -860,6 +860,139 @@ const AdminDashboard = () => {
               </div>
             </div>
 
+            {/* Add Practice Form */}
+            {showAddPracticeForm && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Add New Dental Practice</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Practice Name <span className="text-red-500">*</span>
+                      </label>
+                      <Input 
+                        value={newPractice.practiceName}
+                        onChange={(e) => setNewPractice(prev => ({...prev, practiceName: e.target.value}))}
+                        placeholder="e.g., Smith Family Dental"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Admin Email <span className="text-red-500">*</span>
+                      </label>
+                      <Input 
+                        type="email"
+                        value={newPractice.adminEmail}
+                        onChange={(e) => setNewPractice(prev => ({...prev, adminEmail: e.target.value}))}
+                        placeholder="admin@example.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Admin First Name <span className="text-red-500">*</span>
+                      </label>
+                      <Input 
+                        value={newPractice.adminFirstName}
+                        onChange={(e) => setNewPractice(prev => ({...prev, adminFirstName: e.target.value}))}
+                        placeholder="John"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Admin Last Name <span className="text-red-500">*</span>
+                      </label>
+                      <Input 
+                        value={newPractice.adminLastName}
+                        onChange={(e) => setNewPractice(prev => ({...prev, adminLastName: e.target.value}))}
+                        placeholder="Smith"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Phone (Optional)
+                      </label>
+                      <Input 
+                        value={newPractice.phone}
+                        onChange={(e) => setNewPractice(prev => ({...prev, phone: e.target.value}))}
+                        placeholder="(555) 123-4567"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Temporary Password <span className="text-red-500">*</span>
+                      </label>
+                      <Input 
+                        type="password"
+                        value={newPractice.tempPassword}
+                        onChange={(e) => setNewPractice(prev => ({...prev, tempPassword: e.target.value}))}
+                        placeholder="Minimum 8 characters"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Address (Optional)
+                    </label>
+                    <Input 
+                      value={newPractice.address}
+                      onChange={(e) => setNewPractice(prev => ({...prev, address: e.target.value}))}
+                      placeholder="123 Main St, City, State 12345"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Subscription Type
+                      </label>
+                      <select
+                        className="w-full p-2 border rounded-md"
+                        value={newPractice.subscriptionType}
+                        onChange={(e) => setNewPractice(prev => ({...prev, subscriptionType: e.target.value}))}
+                      >
+                        <option value="trial">Trial</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                    {newPractice.subscriptionType === 'trial' && (
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Trial Days
+                        </label>
+                        <Input 
+                          type="number"
+                          value={newPractice.trialDays}
+                          onChange={(e) => setNewPractice(prev => ({...prev, trialDays: parseInt(e.target.value) || 15}))}
+                          min="1"
+                          max="365"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowAddPracticeForm(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={createPractice} 
+                      disabled={loading}
+                    >
+                      {loading ? <LoadingSpinner className="h-4 w-4 mr-2" /> : null}
+                      Create Practice
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <div className="flex items-center space-x-2">
