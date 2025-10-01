@@ -501,8 +501,7 @@ async def send_welcome_email(
 ):
     """Send welcome email to a practice with login credentials"""
     try:
-        from services.email_service import EmailService
-        email_service = EmailService()
+        from ..services.email_service import email_service
         
         # Validate required fields
         if not request.get('practiceData') or not request.get('adminCredentials'):
