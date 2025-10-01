@@ -351,9 +351,12 @@ const AdminDashboard = () => {
         };
         
         // Show success message with option to send email
+        console.log('🔍 About to show email confirmation dialog');
         const sendEmail = confirm(`Practice "${newPractice.practiceName}" created successfully!\n\n📧 Send welcome email to customer now?\n\nThis will send login credentials to: ${newPractice.adminEmail}`);
+        console.log('🔍 Email dialog result:', sendEmail);
         
         if (sendEmail) {
+          console.log('🔍 User chose to send email, making API call...');
           try {
             const emailResponse = await fetch(`${API_BASE}/send-welcome-email`, {
               method: 'POST',
