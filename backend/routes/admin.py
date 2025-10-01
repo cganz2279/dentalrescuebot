@@ -42,6 +42,17 @@ class PracticeManagementRequest(BaseModel):
     action: str  # 'activate', 'deactivate', 'cancel_subscription', 'extend_trial'
     reason: Optional[str] = None
 
+class CreatePracticeRequest(BaseModel):
+    practiceName: str = Field(..., min_length=1, description="Practice name is required")
+    adminEmail: EmailStr = Field(..., description="Admin email is required")
+    adminFirstName: str = Field(..., min_length=1, description="Admin first name is required")
+    adminLastName: str = Field(..., min_length=1, description="Admin last name is required")
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    tempPassword: str = Field(..., min_length=8, description="Temporary password is required (min 8 chars)")
+    subscriptionType: str = Field(default="trial", description="trial, active, or inactive")
+    trialDays: int = Field(default=15, description="Trial period in days")
+
 class PasswordResetRequest(BaseModel):
     user_id: str
     new_password: str
