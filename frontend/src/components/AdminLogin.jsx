@@ -339,7 +339,50 @@ const AdminDashboard = () => {
       const data = await response.json();
       
       if (data.success) {
-        alert(`Practice "${newPractice.practiceName}" created successfully!\n\n📧 Send these login credentials to the customer:\n\nEmail: ${newPractice.adminEmail}\nTemporary Password: ${newPractice.tempPassword}\n\n⚠️ Customer should change this password on first login.`);
+        const practiceData = {
+          practiceName: newPractice.practiceName
+        };
+        
+        const adminCredentials = {
+          adminEmail: newPractice.adminEmail,
+          adminFirstName: newPractice.adminFirstName,
+          adminLastName: newPractice.adminLastName,
+          tempPassword: newPractice.tempPassword
+        };
+        
+        // Show success message with option to send email
+        const sendEmail = confirm(`Practice "${newPractice.practiceName}" created successfully!\n\n📧 Send welcome email to customer now?\n\nThis will send login credentials to: ${newPractice.adminEmail}`);
+        
+        if (sendEmail) {
+          try {
+            const emailResponse = await fetch(`${BACKEND_URL}/api/admin/send-welcome-email`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                practiceData: practiceData,
+                adminCredentials: adminCredentials,
+                appUrl: 'https://patient-portal-45.preview.emergentagent.com'
+              })
+            });
+            
+            const emailData = await emailResponse.json();
+            
+            if (emailData.success) {
+              alert(`✅ Welcome email sent successfully to ${newPractice.adminEmail}!\n\nThe customer has been notified with their login credentials.`);
+            } else {
+              alert(`⚠️ Practice created but email failed to send.\n\nPlease manually send these credentials:\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}`);
+            }
+          } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            alert(`⚠️ Practice created but email failed to send.\n\nPlease manually send these credentials:\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}`);
+          }
+        } else {
+          // Show credentials for manual sharing
+          alert(`Practice created! Manual credentials:\n\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}\n\n⚠️ Remember to send these to the customer.`);
+        }
         
         // Reset form
         setNewPractice({
