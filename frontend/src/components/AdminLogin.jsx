@@ -442,6 +442,50 @@ const AdminDashboard = ({ adminToken }) => {
     }
   };
 
+  const resendWelcomeEmail = async (practice) => {
+    try {
+      const confirm = window.confirm(
+        `📧 Resend welcome email to "${practice.name}"?\n\nThis will send login credentials to: ${practice.email}\n\nNote: Check spam folder if email is not received.`
+      );
+      
+      if (!confirm) return;
+      
+      setLoading(true);
+      
+      const response = await fetch(`${API_BASE}/send-welcome-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${adminToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          practiceData: {
+            practiceName: practice.name
+          },
+          adminCredentials: {
+            adminEmail: practice.email,
+            adminFirstName: practice.adminFirstName || 'Admin',
+            adminLastName: practice.adminLastName || 'User',
+            tempPassword: practice.tempPassword || 'Please contact support for password'
+          },
+          appUrl: 'https://patient-portal-45.preview.emergentagent.com'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        alert(`✅ Welcome email resent successfully to ${practice.email}!\n\nPlease check inbox and spam folder.`);
+      } else {
+        alert(`❌ Failed to resend email: ${data.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Resend email error:', error);
+      alert('❌ Network error while resending email');
+    } finally {
+      setLoading(false);
+    }
+  };
   const deletePractice = async (practiceId, practiceName) => {
     if (!adminToken) return;
     
