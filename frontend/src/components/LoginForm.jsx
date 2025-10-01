@@ -61,6 +61,238 @@ const LoginForm = ({ onSwitchToRegister }) => {
     });
   };
 
+  const ForgotPasswordModal = () => {
+    const [forgotEmail, setForgotEmail] = useState('');
+    const [recoveryMethod, setRecoveryMethod] = useState('email');
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [forgotMessage, setForgotMessage] = useState('');
+
+    const handleForgotPassword = async (e) => {
+      e.preventDefault();
+      setForgotLoading(true);
+      setForgotMessage('');
+
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dental-admin-3.preview.emergentagent.com'}/api/auth/forgot-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: forgotEmail,
+            recovery_method: recoveryMethod
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setForgotMessage(data.message);
+          toast({
+            title: "Password Reset Sent",
+            description: data.message,
+            variant: "default",
+          });
+        } else {
+          setForgotMessage(data.detail || 'Password reset request failed');
+        }
+      } catch (error) {
+        setForgotMessage('Network error. Please try again.');
+      } finally {
+        setForgotLoading(false);
+      }
+    };
+
+    if (!showForgotPassword) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg max-w-md w-full p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Reset Password</h2>
+            <button
+              onClick={() => {
+                setShowForgotPassword(false);
+                setForgotEmail('');
+                setForgotMessage('');
+              }}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              ×
+            </button>
+          </div>
+
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <Input
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="Enter your email address"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Recovery Method
+              </label>
+              <select
+                value={recoveryMethod}
+                onChange={(e) => setRecoveryMethod(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="email">Email Only</option>
+                <option value="sms">SMS Only</option>
+                <option value="both">Both Email and SMS</option>
+              </select>
+            </div>
+
+            {forgotMessage && (
+              <div className="p-3 rounded-md bg-blue-50 border border-blue-200">
+                <p className="text-blue-800 text-sm">{forgotMessage}</p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={forgotLoading}
+            >
+              {forgotLoading ? 'Sending...' : 'Send Reset Instructions'}
+            </Button>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
+  const ForgotUsernameModal = () => {
+    const [practiceName, setPracticeName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [adminPassword, setAdminPassword] = useState('');
+    const [usernameLoading, setUsernameLoading] = useState(false);
+    const [usernameMessage, setUsernameMessage] = useState('');
+
+    const handleForgotUsername = async (e) => {
+      e.preventDefault();
+      setUsernameLoading(true);
+      setUsernameMessage('');
+
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dental-admin-3.preview.emergentagent.com'}/api/auth/forgot-username`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            practice_name: practiceName,
+            phone: phone,
+            adminPassword: adminPassword
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUsernameMessage(data.message);
+          toast({
+            title: "Username Recovery",
+            description: data.message,
+            variant: "default",
+          });
+        } else {
+          setUsernameMessage(data.detail || 'Username recovery failed');
+        }
+      } catch (error) {
+        setUsernameMessage('Network error. Please try again.');
+      } finally {
+        setUsernameLoading(false);
+      }
+    };
+
+    if (!showForgotUsername) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg max-w-md w-full p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Recover Username</h2>
+            <button
+              onClick={() => {
+                setShowForgotUsername(false);
+                setPracticeName('');
+                setPhone('');
+                setAdminPassword('');
+                setUsernameMessage('');
+              }}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              ×
+            </button>
+          </div>
+
+          <form onSubmit={handleForgotUsername} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Practice Name
+              </label>
+              <Input
+                type="text"
+                value={practiceName}
+                onChange={(e) => setPracticeName(e.target.value)}
+                placeholder="Enter your practice name"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number (optional)
+              </label>
+              <Input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Enter practice phone number"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Admin Password
+              </label>
+              <Input
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="Enter admin password for verification"
+                required
+              />
+            </div>
+
+            {usernameMessage && (
+              <div className="p-3 rounded-md bg-blue-50 border border-blue-200">
+                <p className="text-blue-800 text-sm">{usernameMessage}</p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={usernameLoading}
+            >
+              {usernameLoading ? 'Recovering...' : 'Recover Username'}
+            </Button>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
