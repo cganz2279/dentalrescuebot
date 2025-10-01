@@ -10,9 +10,8 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 import uuid
-from typing import Optional, List, Dict, Any
+from typing import Any
 from dotenv import load_dotenv
-from pathlib import Path
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
