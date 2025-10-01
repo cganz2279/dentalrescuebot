@@ -241,7 +241,7 @@ async def register_practice(request: PracticeRegisterRequest):
             "subscription": {
                 "plan": "basic",
                 "status": "trial_pending_payment",  # Requires payment method setup
-                "trialEndsAt": datetime.utcnow() + timedelta(days=15),
+                "trialEndsAt": datetime.utcnow() + timedelta(days=30),
                 "requiresPayment": True,
                 "monthlyAmount": 49.0,
                 "paymentMethodRequired": True,
