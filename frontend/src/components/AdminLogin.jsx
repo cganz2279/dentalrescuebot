@@ -274,6 +274,106 @@ const AdminDashboard = () => {
   };
 
   const managePractice = async (practiceId, action, reason = '') => {
+    if (!confirm(`Are you sure you want to ${action} this practice?`)) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await fetch(`${BACKEND_URL}/api/admin/manage-practice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          practice_id: practiceId,
+          action: action,
+          reason: reason
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`Practice ${action} completed successfully`);
+        loadPractices(); // Refresh the list
+      } else {
+        alert(`Failed to ${action} practice: ${data.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error(`${action} practice error:`, error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createPractice = async () => {
+    try {
+      // Validate required fields
+      if (!newPractice.practiceName.trim()) {
+        alert('Practice name is required');
+        return;
+      }
+      if (!newPractice.adminEmail.trim()) {
+        alert('Admin email is required');
+        return;
+      }
+      if (!newPractice.adminFirstName.trim()) {
+        alert('Admin first name is required');
+        return;
+      }
+      if (!newPractice.adminLastName.trim()) {
+        alert('Admin last name is required');
+        return;
+      }
+      if (!newPractice.tempPassword || newPractice.tempPassword.length < 8) {
+        alert('Temporary password must be at least 8 characters long');
+        return;
+      }
+
+      setLoading(true);
+      const response = await fetch(`${BACKEND_URL}/api/admin/create-practice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newPractice)
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`Practice "${newPractice.practiceName}" created successfully!\n\nAdmin login:\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}`);
+        
+        // Reset form
+        setNewPractice({
+          practiceName: '',
+          adminEmail: '',
+          adminFirstName: '',
+          adminLastName: '',
+          phone: '',
+          address: '',
+          tempPassword: '',
+          subscriptionType: 'trial',
+          trialDays: 15
+        });
+        setShowAddPracticeForm(false);
+        loadPractices(); // Refresh the practices list
+      } else {
+        alert(`Failed to create practice: ${data.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Create practice error:', error);
+      alert(`Error creating practice: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const managePractice = async (practiceId, action, reason = '') => {
     try {
       const response = await fetch(`${API_BASE}/manage-practice`, {
         method: 'POST',
