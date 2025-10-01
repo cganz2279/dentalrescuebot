@@ -134,7 +134,20 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
       try {
         // Get the backend URL from environment
         const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-        const response = await fetch(`${backendUrl}/api/practice/procedures`);
+        
+        // Get token from localStorage for authentication
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch(`${backendUrl}/api/practice/procedures`, {
+          method: 'GET',
+          headers: headers
+        });
         
         if (response.ok) {
           const data = await response.json();
@@ -143,9 +156,13 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
             const fullProcedure = data.data.find(p => p.id === procedure.procedureId);
             if (fullProcedure) {
               overviewContent = fullProcedure.overview || fullProcedure.content || '';
-              console.log('✅ Found procedure content from API');
+              console.log('✅ Found procedure content from API:', overviewContent.substring(0, 100));
+            } else {
+              console.log('⚠️ Procedure not found in API response');
             }
           }
+        } else {
+          console.log('⚠️ API request failed:', response.status, response.statusText);
         }
       } catch (apiError) {
         console.log('⚠️ Failed to fetch procedure content from API:', apiError);
