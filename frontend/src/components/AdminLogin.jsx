@@ -126,6 +126,18 @@ const AdminDashboard = () => {
   const [specialties, setSpecialties] = useState([]);
   const [editingProcedure, setEditingProcedure] = useState(null);
   const [showAddProcedureForm, setShowAddProcedureForm] = useState(false);
+  const [showAddPracticeForm, setShowAddPracticeForm] = useState(false);
+  const [newPractice, setNewPractice] = useState({
+    practiceName: '',
+    adminEmail: '',
+    adminFirstName: '',
+    adminLastName: '',
+    phone: '',
+    address: '',
+    tempPassword: '',
+    subscriptionType: 'trial',
+    trialDays: 15
+  });
   const [newProcedure, setNewProcedure] = useState({
     name: '',
     specialty: '',
