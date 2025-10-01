@@ -494,6 +494,32 @@ async def create_practice(
             detail="Failed to create practice"
         )
 
+@router.get("/test-email-service")
+async def test_email_service(admin_data = Depends(verify_admin_token)):
+    """Test endpoint to verify email service works"""
+    try:
+        import os
+        from dotenv import load_dotenv
+        from pathlib import Path
+        
+        # Load env explicitly
+        load_dotenv(Path(__file__).parent.parent / '.env')
+        
+        from services.email_service import EmailService
+        email_service = EmailService()
+        
+        return {
+            "success": True,
+            "message": "Email service initialized successfully",
+            "sendgrid_configured": bool(os.environ.get('SENDGRID_API_KEY')),
+            "sender_email": os.environ.get('SENDER_EMAIL')
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
 @router.post("/send-welcome-email")
 async def send_welcome_email(
     request: dict,
@@ -501,12 +527,15 @@ async def send_welcome_email(
 ):
     """Send welcome email to a practice with login credentials"""
     try:
-        print("🔍 Attempting to import email_service...")
-        import sys
+        # Load environment explicitly
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-        from services.email_service import email_service
-        print("✅ Email service imported successfully")
+        from dotenv import load_dotenv
+        from pathlib import Path
+        
+        load_dotenv(Path(__file__).parent.parent / '.env')
+        
+        from services.email_service import EmailService
+        email_service = EmailService()
         
         # Validate required fields
         if not request.get('practiceData') or not request.get('adminCredentials'):
