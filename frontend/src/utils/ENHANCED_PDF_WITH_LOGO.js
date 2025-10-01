@@ -1,61 +1,89 @@
 import jsPDF from 'jspdf';
 
-// Function to load base64 logo from the text file
-async function getBase64Logo() {
-  try {
-    const response = await fetch('/dental-rescue-logo-base64.txt');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const base64String = await response.text();
-    return base64String.trim(); // Remove any whitespace/newlines
-  } catch (error) {
-    console.log('Failed to load base64 logo:', error);
-    return null;
-  }
-}
-
 // ENHANCED PDF GENERATOR WITH LOGO AND BOLD FORMATTING
-export const generateProcedurePDF = async (procedure) => {
+export const generateProcedurePDF = async (procedure, practiceData) => {
   // Force timestamp to bust cache
   const timestamp = new Date().toISOString();
   const cacheKey = Date.now();
   
-  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v14 (Comprehensive Keywords)');
+  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v15 (CUSTOM PRACTICE LOGO)');
   console.log('🚨 TIMESTAMP:', timestamp);
   console.log('🚨 CACHE KEY:', cacheKey);
   console.log('🚨 PROCEDURE DATA:', procedure);
+  console.log('🚨 PRACTICE DATA:', practiceData);
   
   try {
     const pdf = new jsPDF();
     let yPos = 20;
     
-    // Add logo at the top centered using base64
+    // Add logo at the top centered using practice custom logo
     try {
-      // Get the base64 logo string
-      const base64Logo = await getBase64Logo();
+      // Try to use practice custom logo first
+      let logoAdded = false;
       
-      if (base64Logo) {
-        // Calculate centered position for logo
-        const imgWidth = 40; // Desired width
-        const imgHeight = 30; // Desired height
-        const xPos = (pdf.internal.pageSize.width - imgWidth) / 2; // Center horizontally
-        
-        // Add logo to PDF using base64 data
-        pdf.addImage(`data:image/png;base64,${base64Logo}`, 'PNG', xPos, yPos, imgWidth, imgHeight);
-        yPos += imgHeight + 10; // Move down after logo
-        
-        console.log('✅ Logo successfully added from base64 data');
-      } else {
-        throw new Error('Base64 logo not available');
+      if (practiceData?.branding?.logo) {
+        try {
+          console.log('✅ Using custom practice logo from branding data');
+          const logoData = practiceData.branding.logo;
+          
+          // Calculate centered position for logo
+          const imgWidth = 40;
+          const imgHeight = 30;
+          const xPos = (pdf.internal.pageSize.width - imgWidth) / 2;
+          
+          // Add custom practice logo
+          pdf.addImage(logoData, 'PNG', xPos, yPos, imgWidth, imgHeight);
+          yPos += imgHeight + 10;
+          logoAdded = true;
+          
+          console.log('✅ Custom practice logo successfully added to PDF');
+        } catch (customLogoError) {
+          console.log('⚠️ Failed to use custom practice logo:', customLogoError);
+        }
       }
+      
+      // Fallback to default logo if custom logo failed
+      if (!logoAdded) {
+        try {
+          console.log('⚠️ Falling back to default logo');
+          const response = await fetch('/dental-rescue-logo-base64.txt');
+          if (response.ok) {
+            const base64Logo = await response.text();
+            if (base64Logo) {
+              const imgWidth = 40;
+              const imgHeight = 30;
+              const xPos = (pdf.internal.pageSize.width - imgWidth) / 2;
+              
+              pdf.addImage(`data:image/png;base64,${base64Logo}`, 'PNG', xPos, yPos, imgWidth, imgHeight);
+              yPos += imgHeight + 10;
+              logoAdded = true;
+              console.log('✅ Default logo successfully added to PDF');
+            }
+          }
+        } catch (defaultLogoError) {
+          console.log('⚠️ Failed to load default logo:', defaultLogoError);
+        }
+      }
+      
+      // Final fallback to text header if no logo worked
+      if (!logoAdded) {
+        console.log('ℹ️ Using text header as final fallback');
+        pdf.setFontSize(18);
+        pdf.setFont(undefined, 'bold');
+        pdf.setTextColor(41, 98, 184);
+        const practiceTitle = practiceData?.practiceName || 'DENTAL RESCUE NOTES';
+        pdf.text(practiceTitle, 105, yPos, { align: 'center' });
+        yPos += 15;
+      }
+      
     } catch (logoError) {
-      console.log('Logo loading failed, using text header:', logoError);
-      // Fall back to text header
+      console.log('❌ Logo handling failed, using text header:', logoError);
+      // Fall back to text header with practice name
       pdf.setFontSize(18);
       pdf.setFont(undefined, 'bold');
       pdf.setTextColor(41, 98, 184);
-      pdf.text('DENTAL RESCUE NOTES', 105, yPos, { align: 'center' });
+      const practiceTitle = practiceData?.practiceName || 'DENTAL RESCUE NOTES';
+      pdf.text(practiceTitle, 105, yPos, { align: 'center' });
       yPos += 15;
     }
     
