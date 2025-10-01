@@ -9,6 +9,7 @@ import {
   DollarSign, 
   AlertTriangle, 
   Eye, 
+  EyeOff,
   UserX, 
   CheckCircle, 
   XCircle,
