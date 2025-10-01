@@ -412,6 +412,10 @@ const LoginForm = ({ onSwitchToRegister }) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Password Recovery Modals */}
+      <ForgotPasswordModal />
+      <ForgotUsernameModal />
     </div>
   );
 };
