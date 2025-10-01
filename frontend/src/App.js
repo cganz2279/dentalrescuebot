@@ -123,10 +123,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Admin Route - Outside AuthProvider */}
-          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/*" element={<AdminLogin />} />
           
           {/* All other routes within AuthProvider */}
-          <Route path="/*" element={
+          <Route path="*" element={
             <AuthProvider>
               <Routes>
                 <Route path="/register" element={<RegistrationPage />} />
@@ -153,7 +153,7 @@ function App() {
                 
                 <Route path="/dashboard" element={<AppContent />} />
                 <Route path="/practice" element={<AppContent />} />
-                <Route path="/*" element={<AppContent />} />
+                <Route path="*" element={<AppContent />} />
               </Routes>
             </AuthProvider>
           } />
