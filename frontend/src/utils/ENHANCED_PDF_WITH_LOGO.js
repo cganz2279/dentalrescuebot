@@ -115,35 +115,21 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
     
     // If no content found in procedure object, try to fetch it from the API
     if (!overviewContent && procedure?.procedureId) {
-      console.log('🔍 No content in procedure object, fetching from API...');
       try {
         // Use the existing authApi service to maintain consistent authentication
         const { practiceApi } = await import('../services/authApi');
-        
-        console.log('🔍 Attempting to fetch practice procedures using authApi...');
         const response = await practiceApi.getPracticeProcedures();
         
-        console.log('🔍 API Response:', response);
-        
         if (response.success && response.procedures) {
-          console.log('✅ API call successful - procedures found');
-          console.log('🔍 Total procedures available:', response.procedures.length);
-          console.log('🔍 Looking for procedure ID:', procedure.procedureId);
-          console.log('🔍 Available procedure IDs:', response.procedures.map(p => p.id));
-          
           // Find the procedure by ID
           const fullProcedure = response.procedures.find(p => p.id === procedure.procedureId);
           if (fullProcedure) {
             overviewContent = fullProcedure.overview || fullProcedure.content || fullProcedure.description || '';
-            console.log('✅ Found procedure content from API via authApi:', overviewContent ? overviewContent.substring(0, 100) + '...' : 'No content in procedure');
-            console.log('🔍 Full procedure keys:', Object.keys(fullProcedure));
           } else {
-            console.log('⚠️ Procedure not found by ID, trying alternative search by name...');
+            // Try alternative search by name
             const byName = response.procedures.find(p => p.name === procedure.procedureName);
             if (byName) {
-              console.log('✅ Found procedure by name:', byName.name);
               overviewContent = byName.overview || byName.content || byName.description || '';
-              console.log('🔍 Content found by name:', overviewContent ? overviewContent.substring(0, 100) + '...' : 'No content');
             }
           }
         } else {
