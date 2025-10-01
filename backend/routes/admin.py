@@ -503,7 +503,17 @@ async def send_welcome_email(
 ):
     """Send welcome email to a practice with login credentials"""
     try:
-        from ..services.email_service import email_service
+        # Direct import approach
+        import sys
+        import os
+        
+        # Add the backend directory to Python path
+        backend_dir = os.path.dirname(os.path.dirname(__file__))
+        if backend_dir not in sys.path:
+            sys.path.insert(0, backend_dir)
+        
+        # Import email service
+        from services.email_service import email_service
         
         # Validate required fields
         if not request.get('practiceData') or not request.get('adminCredentials'):
