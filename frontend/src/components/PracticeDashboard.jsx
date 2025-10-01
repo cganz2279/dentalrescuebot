@@ -213,15 +213,25 @@ const PracticeDashboard = () => {
         practiceEmergencyContact: practice?.emergencyContact || practice?.phone || 'Contact Number Not Available'
       };
 
+      // Prepare practice data with branding for PDF
+      const practiceDataForPDF = {
+        practiceName: practice?.name || 'Dental Practice',
+        practicePhone: practice?.phone,
+        practiceOfficeHours: practice?.officeHours,
+        practiceEmergencyContact: practice?.emergencyContact,
+        branding: practice?.branding // Include the custom logo
+      };
+
       console.log('🏥 Dashboard - Generating PDF with practice data:', {
         practiceName: procedureForPDF.practiceName,
         practicePhone: procedureForPDF.practicePhone,
         practiceOfficeHours: procedureForPDF.practiceOfficeHours,
-        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact,
+        hasCustomLogo: !!practice?.branding?.logo
       });
 
-      // Generate PDF with enhanced generator including logo
-      const success = await generateProcedurePDF(procedureForPDF);
+      // Generate PDF with enhanced generator including logo and practice data
+      const success = await generateProcedurePDF(procedureForPDF, practiceDataForPDF);
       if (success) {
         // Log the print activity
         try {
