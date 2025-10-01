@@ -501,7 +501,7 @@ async def test_email_debug(admin_data = Depends(verify_admin_token)):
         import os
         print(f"Environment check - SENDGRID_API_KEY exists: {bool(os.environ.get('SENDGRID_API_KEY'))}")
         
-        from services.email_service import email_service
+        from ..services.email_service import email_service
         print("Email service imported successfully")
         
         # Try to send a test email
@@ -537,7 +537,7 @@ async def send_welcome_email(
 ):
     """Send welcome email to a practice with login credentials"""
     try:
-        from services.email_service import email_service
+        from ..services.email_service import email_service
         
         # Validate required fields
         if not request.get('practiceData') or not request.get('adminCredentials'):
