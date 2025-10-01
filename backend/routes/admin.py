@@ -501,16 +501,7 @@ async def send_welcome_email(
 ):
     """Send welcome email to a practice with login credentials"""
     try:
-        # Import and initialize email service with explicit env loading
-        import os
-        from dotenv import load_dotenv
-        from pathlib import Path
-        
-        # Load environment variables
-        load_dotenv(Path(__file__).parent.parent / '.env')
-        
-        from services.email_service import EmailService
-        email_service = EmailService()
+        from services.email_service import email_service
         
         # Validate required fields
         if not request.get('practiceData') or not request.get('adminCredentials'):
