@@ -403,7 +403,6 @@ function addSimpleFormattedContentToPDF(pdf, content, startY) {
       // Use simple case-insensitive includes for more reliable matching
       if (line.toLowerCase().includes(keyword.toLowerCase())) {
         shouldBeBold = true;
-        console.log(`📝 Making line bold (contains "${keyword}"): ${line.substring(0, 40)}...`);
         break;
       }
     }
