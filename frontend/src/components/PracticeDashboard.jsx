@@ -307,6 +307,30 @@ const PracticeDashboard = () => {
       const patient = procedure.patientId ? 
         dashboardData?.recentPatients?.find(p => p.id === procedure.patientId) : null;
 
+      // Ensure we have the latest practice data with branding
+      let currentPractice = practice;
+      if (!practice?.branding?.logo) {
+        try {
+          console.log('🔄 Refreshing practice branding data for printing...');
+          const token = localStorage.getItem('dentalToken');
+          const response = await fetch(`${API_BASE}/dashboard`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          if (response.ok) {
+            const dashboardResponse = await response.json();
+            if (dashboardResponse.success && dashboardResponse.data?.practice?.branding?.logo) {
+              currentPractice = dashboardResponse.data.practice;
+              console.log('✅ Updated practice branding for printing');
+            }
+          }
+        } catch (brandingError) {
+          console.log('⚠️ Could not fetch updated branding data:', brandingError);
+        }
+      }
+
       // Get the full procedure content from API
       let procedureContent = '';
       try {
@@ -322,8 +346,8 @@ const PracticeDashboard = () => {
         console.error('Failed to fetch procedure content:', apiError);
       }
 
-      // Create a printable HTML version
-      const printContent = createPrintableHTML(procedure, patient, practice, procedureContent);
+      // Create a printable HTML version with current practice data
+      const printContent = createPrintableHTML(procedure, patient, currentPractice, procedureContent);
       
       // Create a new window for printing
       const printWindow = window.open('', '_blank');
