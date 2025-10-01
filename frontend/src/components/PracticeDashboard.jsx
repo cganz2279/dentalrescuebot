@@ -313,7 +313,7 @@ const PracticeDashboard = () => {
         try {
           console.log('🔄 Refreshing practice branding data for printing...');
           const token = localStorage.getItem('dentalToken');
-          const response = await fetch(`${API_BASE}/dashboard`, {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/dashboard`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
