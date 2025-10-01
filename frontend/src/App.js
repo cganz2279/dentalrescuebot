@@ -106,17 +106,9 @@ const AppContent = () => {
     }
   }
 
-  // Not authenticated - show login/register forms
-  return (
-    <>
-      {authMode === 'login' && (
-        <LoginForm onSwitchToRegister={() => setAuthMode('register')} />
-      )}
-      {authMode === 'register' && (
-        <PracticeRegistrationForm onSwitchToLogin={() => setAuthMode('login')} />
-      )}
-    </>
-  );
+  // Not authenticated - redirect to practice login
+  window.location.href = '/practice';
+  return null;
 };
 
 function App() {
