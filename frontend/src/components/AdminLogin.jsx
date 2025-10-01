@@ -1912,13 +1912,34 @@ const AdminLogin = () => {
             </div>
             
             <div>
-              <Input
-                type="password"
-                placeholder="Admin Password"
-                value={credentials.password}
-                onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                required
-              />
+              <label className="block text-sm font-medium mb-2">Admin Password</label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Admin Password"
+                  value={credentials.password}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <div className="mt-2 text-xs text-gray-600">
+                <p className="font-medium">Password requirements:</p>
+                <ul className="list-disc list-inside mt-1 space-y-1">
+                  <li>At least 8 characters</li>
+                  <li>Must include uppercase letter</li>
+                  <li>Must include lowercase letter</li>
+                  <li>Must include number</li>
+                  <li>Must include special character (!@#$%^&*)</li>
+                </ul>
+              </div>
             </div>
             
             <Button 
