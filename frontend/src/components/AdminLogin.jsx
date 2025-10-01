@@ -100,10 +100,10 @@ const CustomTabsContent = ({ children, value, activeTab, className }) => {
   return <div className={className || ''}>{children}</div>;
 };
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ adminToken }) => {
   const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState('');
-  const [adminToken] = useState(localStorage.getItem('adminToken'));
+  // adminToken is now passed as a prop
   
   // Safe error setter that ensures error is always a string
   const setError = (errorValue) => {
