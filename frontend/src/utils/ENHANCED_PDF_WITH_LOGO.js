@@ -138,16 +138,27 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
         console.log('🔍 Attempting to fetch practice procedures using authApi...');
         const response = await practiceApi.getPracticeProcedures();
         
+        console.log('🔍 API Response:', response);
+        
         if (response.success && response.data) {
+          console.log('🔍 Total procedures available:', response.data.length);
+          console.log('🔍 Looking for procedure ID:', procedure.procedureId);
+          console.log('🔍 Available procedure IDs:', response.data.map(p => p.id));
+          
           // Find the procedure by ID
           const fullProcedure = response.data.find(p => p.id === procedure.procedureId);
           if (fullProcedure) {
             overviewContent = fullProcedure.overview || fullProcedure.content || fullProcedure.description || '';
-            console.log('✅ Found procedure content from API via authApi:', overviewContent.substring(0, 100));
+            console.log('✅ Found procedure content from API via authApi:', overviewContent ? overviewContent.substring(0, 100) + '...' : 'No content in procedure');
+            console.log('🔍 Full procedure keys:', Object.keys(fullProcedure));
           } else {
-            console.log('⚠️ Procedure not found in API response, available procedures:', response.data.length);
-            console.log('🔍 Looking for procedure ID:', procedure.procedureId);
-            console.log('🔍 Available procedure IDs:', response.data.map(p => p.id).slice(0, 10));
+            console.log('⚠️ Procedure not found in API response');
+            console.log('🔍 Trying alternative search by name...');
+            const byName = response.data.find(p => p.name === procedure.procedureName);
+            if (byName) {
+              console.log('✅ Found procedure by name:', byName.name);
+              overviewContent = byName.overview || byName.content || byName.description || '';
+            }
           }
         } else {
           console.log('⚠️ API response not successful:', response);
