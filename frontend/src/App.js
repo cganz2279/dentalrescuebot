@@ -122,39 +122,116 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* Admin Route - Outside AuthProvider */}
+          {/* Admin Route - Outside AuthProvider - Must be first to avoid catch-all interference */}
+          <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/*" element={<AdminLogin />} />
           
           {/* All other routes within AuthProvider */}
+          <Route path="/register" element={
+            <AuthProvider>
+              <RegistrationPage />
+            </AuthProvider>
+          } />
+          <Route path="/practice-settings" element={
+            <AuthProvider>
+              <PracticeSettingsPage />
+            </AuthProvider>
+          } />
+          <Route path="/dentist-management" element={
+            <AuthProvider>
+              <DentistManagementPage />
+            </AuthProvider>
+          } />
+          <Route path="/add-patient" element={
+            <AuthProvider>
+              <AddPatientPage />
+            </AuthProvider>
+          } />
+          <Route path="/assign-procedure" element={
+            <AuthProvider>
+              <AssignProcedurePage />
+            </AuthProvider>
+          } />
+          <Route path="/request-procedure" element={
+            <AuthProvider>
+              <RequestProcedurePage />
+            </AuthProvider>
+          } />
+          <Route path="/patient-management" element={
+            <AuthProvider>
+              <PatientManagementPage />
+            </AuthProvider>
+          } />
+          <Route path="/edit-patient" element={
+            <AuthProvider>
+              <EditPatientPage />
+            </AuthProvider>
+          } />
+          <Route path="/procedure-details/:procedureId" element={
+            <AuthProvider>
+              <ProcedureDetailsPage />
+            </AuthProvider>
+          } />
+          <Route path="/procedure-view/:procedureId" element={
+            <AuthProvider>
+              <ProcedureViewPage />
+            </AuthProvider>
+          } />
+          <Route path="/practice-procedure/:procedureId" element={
+            <AuthProvider>
+              <PracticeProcedureView />
+            </AuthProvider>
+          } />
+          <Route path="/edit-procedure/:procedureId" element={
+            <AuthProvider>
+              <EditProcedurePage />
+            </AuthProvider>
+          } />
+          <Route path="/procedure-library" element={
+            <AuthProvider>
+              <PracticeLibraryPage />
+            </AuthProvider>
+          } />
+          
+          {/* Practice Notes Route - Main Login */}
+          <Route path="/practice-notes" element={
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          } />
+          
+          {/* Patient Routes */}
+          <Route path="/patient/login" element={
+            <AuthProvider>
+              <PatientLoginPage />
+            </AuthProvider>
+          } />
+          <Route path="/patient/dashboard" element={
+            <AuthProvider>
+              <PatientDashboard />
+            </AuthProvider>
+          } />
+          <Route path="/patient/procedure/:assignmentId" element={
+            <AuthProvider>
+              <PatientProcedureView />
+            </AuthProvider>
+          } />
+          
+          <Route path="/dashboard" element={
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          } />
+          <Route path="/practice" element={
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          } />
+          
+          {/* Catch-all route - Must be last */}
           <Route path="*" element={
             <AuthProvider>
-              <Routes>
-                <Route path="/register" element={<RegistrationPage />} />
-                <Route path="/practice-settings" element={<PracticeSettingsPage />} />
-                <Route path="/dentist-management" element={<DentistManagementPage />} />
-                <Route path="/add-patient" element={<AddPatientPage />} />
-                <Route path="/assign-procedure" element={<AssignProcedurePage />} />
-                <Route path="/request-procedure" element={<RequestProcedurePage />} />
-                <Route path="/patient-management" element={<PatientManagementPage />} />
-                <Route path="/edit-patient" element={<EditPatientPage />} />
-                <Route path="/procedure-details/:procedureId" element={<ProcedureDetailsPage />} />
-                <Route path="/procedure-view/:procedureId" element={<ProcedureViewPage />} />
-                <Route path="/practice-procedure/:procedureId" element={<PracticeProcedureView />} />
-                <Route path="/edit-procedure/:procedureId" element={<EditProcedurePage />} />
-                <Route path="/procedure-library" element={<PracticeLibraryPage />} />
-                
-                {/* Practice Notes Route - Main Login */}
-                <Route path="/practice-notes" element={<AppContent />} />
-                
-                {/* Patient Routes */}
-                <Route path="/patient/login" element={<PatientLoginPage />} />
-                <Route path="/patient/dashboard" element={<PatientDashboard />} />
-                <Route path="/patient/procedure/:assignmentId" element={<PatientProcedureView />} />
-                
-                <Route path="/dashboard" element={<AppContent />} />
-                <Route path="/practice" element={<AppContent />} />
-                <Route path="*" element={<AppContent />} />
-              </Routes>
+              <AppContent />
             </AuthProvider>
           } />
         </Routes>
