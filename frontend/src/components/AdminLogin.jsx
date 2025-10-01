@@ -388,6 +388,7 @@ const AdminDashboard = () => {
             alert(`⚠️ Practice created but email failed to send.\n\nPlease manually send these credentials:\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}`);
           }
         } else {
+          console.log('🔍 User chose NOT to send email');
           // Show credentials for manual sharing
           alert(`Practice created! Manual credentials:\n\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}\n\n⚠️ Remember to send these to the customer.`);
         }
