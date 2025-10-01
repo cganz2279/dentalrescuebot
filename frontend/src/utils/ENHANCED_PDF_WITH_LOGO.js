@@ -132,37 +132,23 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
     if (!overviewContent && procedure?.procedureId) {
       console.log('🔍 No content in procedure object, fetching from API...');
       try {
-        // Get the backend URL from environment
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+        // Use the existing authApi service to maintain consistent authentication
+        const { practiceApi } = await import('../services/authApi');
         
-        // Get token from localStorage for authentication
-        const token = localStorage.getItem('token');
-        const headers = {
-          'Content-Type': 'application/json'
-        };
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
+        console.log('🔍 Attempting to fetch procedures using authApi...');
+        const response = await practiceApi.getProcedures();
         
-        const response = await fetch(`${backendUrl}/api/practice/procedures`, {
-          method: 'GET',
-          headers: headers
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.data) {
-            // Find the procedure by ID
-            const fullProcedure = data.data.find(p => p.id === procedure.procedureId);
-            if (fullProcedure) {
-              overviewContent = fullProcedure.overview || fullProcedure.content || '';
-              console.log('✅ Found procedure content from API:', overviewContent.substring(0, 100));
-            } else {
-              console.log('⚠️ Procedure not found in API response');
-            }
+        if (response.success && response.data) {
+          // Find the procedure by ID
+          const fullProcedure = response.data.find(p => p.id === procedure.procedureId);
+          if (fullProcedure) {
+            overviewContent = fullProcedure.overview || fullProcedure.content || fullProcedure.description || '';
+            console.log('✅ Found procedure content from API via authApi:', overviewContent.substring(0, 100));
+          } else {
+            console.log('⚠️ Procedure not found in API response, available procedures:', response.data.length);
           }
         } else {
-          console.log('⚠️ API request failed:', response.status, response.statusText);
+          console.log('⚠️ API response not successful:', response);
         }
       } catch (apiError) {
         console.log('⚠️ Failed to fetch procedure content from API:', apiError);
