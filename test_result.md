@@ -57,7 +57,7 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 
-user_problem_statement: "Test the logo functionality fix in practice settings: Just fixed the logo issue where changing the logo in practice settings wasn't reflecting on the dashboard or in PDFs. Need to test: 1) Authentication with cganz2279@gmail.com/password123, 2) GET /api/practice/dashboard to check current practice branding data, 3) PUT /api/practice/update-practice endpoint with branding data (logo update), 4) Verify dashboard API returns new logo after update, 5) Test PDF generation endpoints to verify they use updated logo."
+user_problem_statement: "Debug the missing email functionality in admin panel: User reports there's no email button in the admin panel after creating a practice. The welcome email functionality should trigger automatically via a prompt after successful practice creation. Authentication: cganz@admin.com / Dentist1#. Investigation Required: 1) Admin Panel Access, 2) Practice Creation Flow, 3) JavaScript Console Debug, 4) Expected vs Actual Behavior, 5) Alternative Solutions."
 
 backend:
   - task: "Practice Authentication API"
