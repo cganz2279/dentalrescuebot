@@ -126,6 +126,9 @@ function App() {
           {/* Admin Route - Must be EXACT path, not wildcard */}
           <Route path="/admin" element={<AdminLogin />} />
           
+          {/* Password Reset Route */}
+          <Route path="/reset-password" element={<PasswordReset />} />
+          
           {/* All other specific routes within AuthProvider */}
           <Route path="/register" element={
             <AuthProvider>
