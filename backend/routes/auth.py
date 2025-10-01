@@ -80,6 +80,10 @@ class ResetPasswordRequest(BaseModel):
     reset_token: str
     new_password: str
 
+class ResetTemporaryPasswordRequest(BaseModel):
+    email: EmailStr
+    temporaryPassword: str
+    newPassword: str
 class ForgotUsernameRequest(BaseModel):
     practice_name: str
     phone: Optional[str] = None
