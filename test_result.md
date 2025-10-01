@@ -274,6 +274,18 @@ frontend:
           agent: "testing"
           comment: "❌ PDF GENERATION AFFECTED BY CORRUPTED LOGO: (1) ✅ PDF INFRASTRUCTURE WORKING: Found 21 PDF generation buttons across procedure library, PDF generation endpoints functional, enhanced PDF generator with logo support integrated, (2) ❌ CORRUPTED LOGO IN PDFs: PDFs will display same corrupted 1x1 pixel placeholder logo as dashboard since they use same practice branding data, (3) ✅ PDF GENERATION FUNCTIONAL: PDF generation buttons, email functionality, and activity logging all working correctly, (4) ❌ USER REPORT CONFIRMED: 'Printing still shows old logo instead of new custom logo' is accurate - PDFs show corrupted placeholder instead of actual custom logo, (5) 🔧 SOLUTION: PDF logo issue will be resolved once practice branding logo data is updated with valid image data through logo upload functionality."
 
+  - task: "Practice Login Functionality"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/PracticeLogin.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL LOGIN FAILURE - CORS ERROR AND BACKEND URL MISMATCH: User reports inability to login at https://app.dentalaftercarenotes.com with credentials cganz2279@gmail.com/password123. ❌ ROOT CAUSE: Frontend production build uses wrong backend URL 'https://dentist-portal-3.emergent.host' instead of 'https://app.dentalaftercarenotes.com', causing CORS policy violations. Browser blocks all API requests with 'Access to XMLHttpRequest blocked by CORS policy' error. ❌ CACHING ISSUE: Despite rebuilding frontend with correct environment variables, production server serves cached HTML/JS files with old backend URL. ✅ BACKEND CONFIRMED WORKING: Authentication APIs functional per previous tests. ✅ FRONTEND CODE CORRECT: New build contains correct configuration. 🔧 URGENT: CDN/caching layer must be cleared to serve updated frontend build. This prevents ALL users from logging in."
+
 metadata:
   created_by: "testing_agent"
   version: "2.0"
