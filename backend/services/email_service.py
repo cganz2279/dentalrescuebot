@@ -430,5 +430,122 @@ class EmailService:
             print(f"❌ Error sending welcome email: {e}")
             return False
 
+    def send_password_reset_email(self, to_email: str, user_name: str, reset_link: str, reset_token: str):
+        """
+        Send password reset email with reset link
+        """
+        try:
+            # Create HTML content for password reset
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Password Reset Request</title>
+            </head>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #2563eb; margin: 0;">Password Reset Request</h1>
+                        <p style="color: #666; margin-top: 10px;">Secure access to your dental practice account</p>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h2 style="color: #333; margin-top: 0;">Hello {user_name or 'there'},</h2>
+                        
+                        <p style="color: #555; margin-bottom: 15px;">
+                            We received a request to reset the password for your dental practice account associated with this email address.
+                        </p>
+                        
+                        <p style="color: #555; margin-bottom: 20px;">
+                            If you made this request, click the button below to reset your password:
+                        </p>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="{reset_link}" 
+                               style="background-color: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                Reset My Password
+                            </a>
+                        </div>
+                        
+                        <p style="color: #555; font-size: 14px; margin-bottom: 15px;">
+                            <strong>Important:</strong> This link will expire in 1 hour for security reasons.
+                        </p>
+                        
+                        <p style="color: #555; font-size: 14px; margin-bottom: 15px;">
+                            If the button doesn't work, copy and paste this link into your browser:
+                        </p>
+                        
+                        <div style="background-color: #e5e7eb; padding: 10px; border-radius: 5px; word-break: break-all; font-size: 12px;">
+                            {reset_link}
+                        </div>
+                    </div>
+
+                    <!-- Security Notice -->
+                    <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 20px;">
+                        <h3 style="color: #dc2626; margin: 0 0 10px 0; font-size: 16px;">Security Notice</h3>
+                        <ul style="color: #7f1d1d; margin: 0; padding-left: 20px;">
+                            <li>If you didn't request this password reset, please ignore this email</li>
+                            <li>Your password will remain unchanged</li>
+                            <li>Never share your password or reset links with anyone</li>
+                        </ul>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #666; font-size: 12px;">
+                        <p style="margin: 5px 0;">This email was sent by your Dental Practice Management System</p>
+                        <p style="margin: 5px 0;">For support, contact your system administrator</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+
+            # Create plain text version
+            text_content = f"""
+            Password Reset Request
+
+            Hello {user_name or 'there'},
+
+            We received a request to reset the password for your dental practice account.
+
+            To reset your password, please visit the following link (expires in 1 hour):
+            {reset_link}
+
+            If you didn't request this password reset, please ignore this email.
+
+            Security Notice:
+            - Never share your password or reset links with anyone
+            - If you didn't request this reset, your password remains unchanged
+
+            For support, contact your system administrator.
+            """
+
+            # Create the email message
+            message = Mail(
+                from_email=self.sender_email,
+                to_emails=to_email,
+                subject="Password Reset Request - Dental Practice Account",
+                html_content=html_content,
+                plain_text_content=text_content
+            )
+
+            # Send the email
+            response = self.sg.send(message)
+            
+            if response.status_code in [200, 201, 202]:
+                print(f"✅ Password reset email sent successfully to {to_email}")
+                return True
+            else:
+                print(f"❌ Failed to send password reset email. Status code: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Error sending password reset email: {e}")
+            return False
+
 # Create a global instance
 email_service = EmailService()
