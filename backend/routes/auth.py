@@ -74,6 +74,7 @@ class PracticeRegisterRequest(BaseModel):
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
+    recovery_method: Optional[str] = "email"  # "email", "sms", or "both"
 
 class ResetPasswordRequest(BaseModel):
     reset_token: str
