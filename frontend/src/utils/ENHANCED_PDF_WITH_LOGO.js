@@ -385,9 +385,6 @@ function addSimpleFormattedContentToPDF(pdf, content, startY) {
     'Emergency'
   ];
   
-  console.log('📝 Using simple text rendering - preserving original formatting');
-  console.log('📝 Bold keywords to search for:', boldKeywords);
-  
   // Split content into lines using jsPDF's built-in function
   const lines = pdf.splitTextToSize(content, maxWidth);
   
