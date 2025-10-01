@@ -108,11 +108,21 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
     pdf.text(procedureName, 20, yPos);
     yPos += 20;
     
-    // Get the overview content
+    // Debug: Log the procedure object structure to understand what data is available
+    console.log('🔍 Procedure object keys:', Object.keys(procedure || {}));
+    console.log('🔍 Full procedure data for debugging:', JSON.stringify(procedure, null, 2));
+    
+    // Get the overview content - check multiple possible paths
     const overviewContent = procedure?.overview || 
                            procedure?.procedureDetails?.overview || 
                            procedure?.procedureData?.overview ||
+                           procedure?.content ||
+                           procedure?.instructions ||
+                           procedure?.description ||
                            '';
+    
+    console.log('🔍 Overview content found:', !!overviewContent);
+    console.log('🔍 Overview content preview:', overviewContent ? overviewContent.substring(0, 100) : 'No content');
     
     if (overviewContent) {
       // Simple approach: render text normally and use different method for emphasis
@@ -122,9 +132,12 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
       addSimpleFormattedContentToPDF(pdf, overviewContent, yPos);
       
     } else {
+      // If no overview content, add some basic text
       pdf.setFontSize(11);
-      pdf.text('No overview content available', 20, yPos);
-      console.log('⚠️ No overview content found in procedure data structure');
+      pdf.text('Post-operative care instructions will be available here.', 20, yPos);
+      yPos += 15;
+      pdf.text('Please follow up with your dental practice for specific instructions.', 20, yPos);
+      console.log('⚠️ No overview content found - added placeholder text');
     }
     
     // Add practice information footer
