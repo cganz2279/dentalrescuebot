@@ -358,6 +358,8 @@ const AdminDashboard = () => {
         if (sendEmail) {
           console.log('🔍 User chose to send email, making API call...');
           try {
+            console.log('🔍 Making email API call to:', `${API_BASE}/send-welcome-email`);
+            console.log('🔍 Email payload:', { practiceData, adminCredentials, appUrl: 'https://patient-portal-45.preview.emergentagent.com' });
             const emailResponse = await fetch(`${API_BASE}/send-welcome-email`, {
               method: 'POST',
               headers: {
@@ -371,7 +373,9 @@ const AdminDashboard = () => {
               })
             });
             
+            console.log('🔍 Email API response status:', emailResponse.status);
             const emailData = await emailResponse.json();
+            console.log('🔍 Email API response data:', emailData);
             
             if (emailData.success) {
               alert(`✅ Welcome email sent successfully to ${newPractice.adminEmail}!\n\nThe customer has been notified with their login credentials.`);
