@@ -848,10 +848,16 @@ const AdminDashboard = () => {
           <CustomTabsContent value="practices" activeTab={activeTab} className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Practice Management</h2>
-              <Button onClick={loadPractices}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
+              <div className="flex space-x-2">
+                <Button onClick={loadPractices}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+                <Button onClick={() => setShowAddPracticeForm(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Practice
+                </Button>
+              </div>
             </div>
 
             <Card>
