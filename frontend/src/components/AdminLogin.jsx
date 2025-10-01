@@ -273,42 +273,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const managePractice = async (practiceId, action, reason = '') => {
-    if (!confirm(`Are you sure you want to ${action} this practice?`)) {
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/admin/manage-practice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          practice_id: practiceId,
-          action: action,
-          reason: reason
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        alert(`Practice ${action} completed successfully`);
-        loadPractices(); // Refresh the list
-      } else {
-        alert(`Failed to ${action} practice: ${data.detail || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error(`${action} practice error:`, error);
-      alert(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const createPractice = async () => {
     try {
       // Validate required fields
