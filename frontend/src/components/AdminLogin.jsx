@@ -1217,6 +1217,14 @@ const AdminDashboard = ({ adminToken }) => {
                         </Button>
                         <Button 
                           size="sm" 
+                          variant="outline"
+                          onClick={() => resendWelcomeEmail(practice)}
+                          title="Resend welcome email with login credentials"
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
                           variant="destructive"
                           onClick={() => deletePractice(practice.id, practice.name)}
                         >
