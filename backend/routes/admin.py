@@ -939,42 +939,6 @@ async def get_registration_attempts(
             detail="Failed to get registration attempts"
         )
 
-@router.get("/registration-attempts")
-async def get_registration_attempts(
-    admin_data = Depends(verify_admin_token),
-    page: int = Query(1, ge=1),
-    limit: int = Query(50, ge=1, le=100)
-):
-    """Get all registration attempts for admin review"""
-    try:
-        # Get total count
-        total = await db.registration_attempts.count_documents({})
-        
-        # Get registration attempts with pagination
-        skip = (page - 1) * limit
-        attempts = await db.registration_attempts.find(
-            {},
-            {"_id": 0}
-        ).sort("attempted_at", -1).skip(skip).limit(limit).to_list(limit)
-        
-        return {
-            "success": True,
-            "data": attempts,
-            "pagination": {
-                "total": total,
-                "page": page,
-                "limit": limit,
-                "total_pages": (total + limit - 1) // limit
-            }
-        }
-        
-    except Exception as e:
-        print(f"Get registration attempts error: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get registration attempts"
-        )
-
 @router.get("/procedure-requests")
 async def get_procedure_requests(admin_data = Depends(verify_admin_token)):
     """Get all procedure requests for admin review"""
