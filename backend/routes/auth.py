@@ -879,6 +879,86 @@ async def reset_password(request: ResetPasswordRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Password reset failed"
         )
+@router.post("/reset-temporary-password")
+async def reset_temporary_password(request: ResetTemporaryPasswordRequest):
+    """Reset temporary password for first-time login"""
+    try:
+        email = request.email.lower()
+        temporary_password = request.temporaryPassword
+        new_password = request.newPassword
+        
+        # Validate password strength
+        if not validate_password(new_password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password must be at least 6 characters with letters and numbers"
+            )
+        
+        # Find user by email
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Verify the temporary password
+        if not bcrypt.checkpw(temporary_password.encode('utf-8'), user['password'].encode('utf-8')):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid temporary password"
+            )
+        
+        # Hash the new password
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        # Update user password and mark as no longer temporary
+        await db.users.update_one(
+            {"email": email},
+            {
+                "$set": {
+                    "password": hashed_password,
+                    "isTemporaryPassword": False,
+                    "lastPasswordReset": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Create JWT token for immediate login
+        token_payload = {
+            "user_id": user['id'],
+            "email": user['email'],
+            "practice_id": user['practiceId'],
+            "exp": datetime.utcnow() + timedelta(days=30)
+        }
+        
+        jwt_secret = os.getenv('JWT_SECRET', 'your-secret-key')
+        token = jwt.encode(token_payload, jwt_secret, algorithm='HS256')
+        
+        return {
+            "success": True,
+            "message": "Password updated successfully",
+            "token": token,
+            "user": {
+                "id": user['id'],
+                "email": user['email'],
+                "firstName": user['firstName'],
+                "lastName": user['lastName'],
+                "role": user['role'],
+                "practiceId": user['practiceId']
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Temporary password reset error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password reset failed"
+        )
+
 
 @router.post("/forgot-username")
 async def forgot_username(request: ForgotUsernameRequest):
