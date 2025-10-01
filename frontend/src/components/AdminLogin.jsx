@@ -1085,7 +1085,7 @@ const AdminDashboard = ({ adminToken }) => {
                         <Input 
                           type="number"
                           value={newPractice.trialDays}
-                          onChange={(e) => setNewPractice(prev => ({...prev, trialDays: parseInt(e.target.value) || 15}))}
+                          onChange={(e) => setNewPractice(prev => ({...prev, trialDays: parseInt(e.target.value) || 30}))}
                           min="1"
                           max="365"
                         />
