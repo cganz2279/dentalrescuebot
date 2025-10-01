@@ -327,7 +327,7 @@ const AdminDashboard = () => {
       }
 
       setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/admin/create-practice`, {
+      const response = await fetch(`${API_BASE}/create-practice`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
