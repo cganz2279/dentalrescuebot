@@ -494,6 +494,64 @@ async def create_practice(
             detail="Failed to create practice"
         )
 
+@router.post("/send-welcome-email")
+async def send_welcome_email(
+    request: dict,
+    admin_data = Depends(verify_admin_token)
+):
+    """Send welcome email to a practice with login credentials"""
+    try:
+        from ..services.email_service import email_service
+        
+        # Validate required fields
+        if not request.get('practiceData') or not request.get('adminCredentials'):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Practice data and admin credentials are required"
+            )
+        
+        practice_data = request['practiceData']
+        admin_credentials = request['adminCredentials']
+        app_url = request.get('appUrl', 'https://patient-portal-45.preview.emergentagent.com')
+        
+        # Send welcome email
+        success = email_service.send_welcome_email(
+            practice_data=practice_data,
+            admin_credentials=admin_credentials,
+            app_url=app_url
+        )
+        
+        if success:
+            # Log admin action
+            admin_action = {
+                "id": str(uuid.uuid4()),
+                "admin_email": admin_data["adminEmail"],
+                "action": "send_welcome_email",
+                "practice_name": practice_data.get('practiceName'),
+                "recipient_email": admin_credentials.get('adminEmail'),
+                "timestamp": datetime.utcnow()
+            }
+            await db.admin_actions.insert_one(admin_action)
+            
+            return {
+                "success": True,
+                "message": f"Welcome email sent successfully to {admin_credentials.get('adminEmail')}"
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to send welcome email"
+            )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Send welcome email error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to send welcome email"
+        )
+
 @router.post("/reset-password")
 async def reset_user_password(
     request: PasswordResetRequest,
