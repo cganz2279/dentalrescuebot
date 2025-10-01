@@ -290,7 +290,7 @@ class EmailService:
 
     def send_welcome_email(self, practice_data: dict, admin_credentials: dict, app_url: str = "https://patient-portal-45.preview.emergentagent.com"):
         """
-        Send welcome email to new practice with login credentials
+        Send welcome email to new practice with login credentials using professional template
         
         Args:
             practice_data: Dictionary containing practice information (name, etc.)
@@ -304,94 +304,110 @@ class EmailService:
             admin_name = f"{admin_credentials.get('adminFirstName', '')} {admin_credentials.get('adminLastName', '')}".strip()
             
             # Create email subject
-            subject = f"🎉 Welcome to Your Dental Practice Management System - {practice_name}"
+            subject = f"Welcome to Dental Aftercare Notes – Your Account Is Ready"
             
-            # Create welcome email HTML content
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Welcome to Your Practice Management System</title>
-                <style>
-                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }}
-                    .header {{ background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
-                    .header h1 {{ margin: 0; font-size: 28px; }}
-                    .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
-                    .credentials-box {{ background: #ffffff; border: 2px solid #e5e7eb; border-radius: 8px; padding: 25px; margin: 20px 0; }}
-                    .credential-item {{ margin: 15px 0; padding: 10px; background: #f1f5f9; border-radius: 5px; }}
-                    .credential-label {{ font-weight: bold; color: #1e40af; }}
-                    .password-warning {{ background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 15px; border-radius: 5px; margin: 15px 0; }}
-                    .login-button {{ display: inline-block; background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }}
-                    .footer {{ text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }}
-                    .features {{ background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }}
-                    .feature-list {{ list-style: none; padding: 0; }}
-                    .feature-list li {{ margin: 10px 0; padding: 5px 0; }}
-                    .feature-list li:before {{ content: "✅ "; color: #10b981; font-weight: bold; }}
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>🦷 Welcome to Your Practice Management System!</h1>
-                    <p>Your digital dental practice solution is ready to use</p>
-                </div>
-                
-                <div class="content">
-                    <h2>Hi {admin_name}!</h2>
-                    <p>Congratulations! Your dental practice management system has been successfully set up for <strong>{practice_name}</strong>.</p>
-                    
-                    <div class="credentials-box">
-                        <h3>🔐 Your Login Credentials</h3>
-                        <div class="credential-item">
-                            <span class="credential-label">Login URL:</span><br>
-                            <a href="{app_url}" style="color: #2563eb; text-decoration: none;">{app_url}</a>
-                        </div>
-                        <div class="credential-item">
-                            <span class="credential-label">Username (Email):</span><br>
-                            <code style="background: #e5e7eb; padding: 5px 8px; border-radius: 3px;">{admin_email}</code>
-                        </div>
-                        <div class="credential-item">
-                            <span class="credential-label">Temporary Password:</span><br>
-                            <code style="background: #e5e7eb; padding: 5px 8px; border-radius: 3px;">{temp_password}</code>
-                        </div>
-                    </div>
-                    
-                    <div class="password-warning">
-                        <strong>⚠️ Important Security Notice:</strong><br>
-                        This is a temporary password. Please log in and change your password immediately after your first login for security purposes.
-                    </div>
-                    
-                    <div style="text-align: center;">
-                        <a href="{app_url}" class="login-button">🚀 Access Your Dashboard</a>
-                    </div>
-                    
-                    <div class="features">
-                        <h3>🎯 What You Can Do Now:</h3>
-                        <ul class="feature-list">
-                            <li>Manage patient records and appointments</li>
-                            <li>Send post-operative care instructions via email/SMS</li>
-                            <li>Create and customize procedure templates</li>
-                            <li>Track patient communication and follow-ups</li>
-                            <li>Generate and print professional PDF instructions</li>
-                            <li>Manage practice settings and branding</li>
-                        </ul>
-                    </div>
-                    
-                    <p><strong>Need Help?</strong><br>
-                    If you have any questions or need assistance getting started, please don't hesitate to reach out to our support team.</p>
-                    
-                    <p>Welcome aboard!<br>
-                    <strong>The Practice Management Team</strong></p>
-                </div>
-                
-                <div class="footer">
-                    <p>This email was sent to {admin_email} for {practice_name}</p>
-                    <p>© 2024 Dental Practice Management System. All rights reserved.</p>
-                </div>
-            </body>
-            </html>
-            """
+            # Professional HTML template with dynamic field replacement
+            html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Dental Aftercare Notes</title>
+  <style>
+    @media (max-width: 600px){{
+      .container{{ width:100% !important; }}
+      .p-24{{ padding:16px !important; }}
+      .h1{{ font-size:22px !important; line-height:28px !important; }}
+      .btn a{{ display:block !important; }}
+    }}
+    @media (prefers-color-scheme: dark){{
+      body, .card{{ background:#0b0b0f !important; color:#EDEDED !important; }}
+      .btn a{{ color:#ffffff !important; }}
+      .muted{{ color:#B5B5B5 !important; }}
+    }}
+  </style>
+</head>
+<body style="margin:0; padding:0; background:#f2f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:#0b1220;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f2f4f7;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <table role="presentation" width="600" class="container" cellspacing="0" cellpadding="0" style="width:600px; max-width:600px; background:#ffffff; border-radius:12px; overflow:hidden;">
+          <tr>
+            <td align="left" style="padding:20px 24px; background:#0b5fff;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="left">
+                    <img src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png" width="160" height="40" alt="The Oncall Bot LLC" style="display:block; height:auto; border:0; max-width:100%; filter: brightness(0) invert(1);" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="p-24" style="padding:24px;">
+              <h1 class="h1" style="margin:0 0 12px; font-size:24px; line-height:30px; font-weight:700; color:#0b1220;">Welcome to Dental Aftercare Notes – Your Account Is Ready</h1>
+              <p style="margin:0 0 16px;">Dear {admin_name},</p>
+              <p style="margin:0 0 16px;">
+                Welcome to <strong>Dental Aftercare Notes</strong>, a service from <em>The Oncall Bot LLC</em>! We're excited to help you simplify how you provide clear, dentist-approved post-treatment instructions to your patients.
+              </p>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:16px 0 12px; background:#f7f9fc; border:1px solid #e6eaf1; border-radius:8px; width:100%;">
+                <tr>
+                  <td style="padding:14px 16px;">
+                    <p style="margin:0 0 6px; font-weight:600;">Your Login Details</p>
+                    <p style="margin:0;"><strong>Username (Email):</strong> {admin_email}</p>
+                    <p style="margin:6px 0 0;"><strong>Temporary Password:</strong> {temp_password}</p>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 16px;"><strong>Security note:</strong> You'll be prompted to change this password at your first sign-in.</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" class="btn" style="margin:20px 0 8px;">
+                <tr>
+                  <td align="left" style="border-radius:10px; background:#0b5fff;">
+                    <a href="{app_url}" target="_blank"
+                       style="display:inline-block; padding:12px 18px; font-weight:700; text-decoration:none; color:#ffffff; border-radius:10px;">
+                      Access Your Account
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:10px 0 18px; font-size:14px; color:#475266;">
+                If the button doesn't work, paste this link into your browser: <br>
+                <span style="word-break:break-all; color:#0b5fff;">{app_url}</span>
+              </p>
+              <h2 style="margin:24px 0 10px; font-size:18px;">Quick Start</h2>
+              <ol style="margin:0 0 18px; padding-left:20px;">
+                <li style="margin:6px 0;">Go to the secure link above.</li>
+                <li style="margin:6px 0;">Sign in with your email and temporary password.</li>
+                <li style="margin:6px 0;">Create your new password when prompted.</li>
+                <li style="margin:6px 0;">Start using Dental Aftercare Notes immediately.</li>
+              </ol>
+              <p style="margin:0 0 16px;">
+                <strong>Helpful tip:</strong> Before you begin, take a few minutes to watch/listen to our quick tutorials.
+                They'll walk you through the key features so you can get the most out of your account from the start.
+              </p>
+              <p style="margin:0 0 16px;">
+                If you need assistance, we're here to help at
+                <a href="mailto:support@theoncallbot.com" style="color:#0b5fff; text-decoration:none;">support@theoncallbot.com</a>.
+              </p>
+              <p style="margin:0 0 6px;">Warm regards,</p>
+              <p style="margin:0;"><strong>The Oncall Bot LLC Team</strong></p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 24px; background:#ffffff; border-top:1px solid #eef1f6;">
+              <p class="muted" style="margin:0; font-size:12px; color:#6b7280;">
+                You're receiving this transactional email because an account was created for you on Dental Aftercare Notes.
+              </p>
+            </td>
+          </tr>
+        </table>
+        <div style="height:24px; line-height:24px;">&nbsp;</div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
             
             # Send email
             message = Mail(
