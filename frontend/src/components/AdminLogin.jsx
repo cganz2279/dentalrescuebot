@@ -51,6 +51,7 @@ class ErrorBoundary extends React.Component {
           <h3 className="font-bold">React Error Caught:</h3>
           <p>Error: {this.state.error?.message || 'Unknown error'}</p>
           <button 
+            type="button"
             onClick={() => this.setState({ hasError: false, error: null })}
             className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-sm"
           >
