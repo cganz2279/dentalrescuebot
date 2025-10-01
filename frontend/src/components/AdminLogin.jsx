@@ -331,7 +331,7 @@ const AdminDashboard = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${adminToken}`
         },
         body: JSON.stringify(newPractice)
       });
