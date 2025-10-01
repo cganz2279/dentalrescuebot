@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 import uuid
 
 # Configuration
-BASE_URL = "https://dental-admin-3.preview.emergentagent.com/api"
+BASE_URL = "https://dental-portal-debug.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

@@ -417,7 +417,7 @@ async def get_practice_notes_login():
             content = practice_login_path.read_text()
             # Update API URLs to use current environment
             content = content.replace(
-                'https://dental-admin-3.preview.emergentagent.com',
+                'https://dental-portal-debug.preview.emergentagent.com',
                 os.environ.get('FRONTEND_URL', 'https://dentist-portal-3.emergent.host')
             )
             return content
@@ -475,10 +475,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://patient-portal-45.preview.emergentagent.com",
+        "https://dental-portal-debug.preview.emergentagent.com",
         "https://patient-portal-45.preview.static.emergentagent.com",
         "http://localhost:3000",
-        "https://dental-admin-3.preview.emergentagent.com"
+        "https://dental-portal-debug.preview.emergentagent.com"
     ],
     allow_methods=["*"],
     allow_headers=["*"],

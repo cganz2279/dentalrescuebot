@@ -12,7 +12,7 @@ import os
 from urllib.parse import urljoin
 
 # Configuration
-BACKEND_URL = "https://dental-admin-3.preview.emergentagent.com"
+BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # Test credentials

@@ -17,7 +17,7 @@ class ComprehensiveDentistTester:
         }
         self.environments = {
             "Local Backend": "http://localhost:8001/api",
-            "Production Backend 1": "https://dental-admin-3.preview.emergentagent.com/api",
+            "Production Backend 1": "https://dental-portal-debug.preview.emergentagent.com/api",
             "Production Backend 2": "https://dentist-portal-3.emergent.host/api"
         }
         self.results = {}

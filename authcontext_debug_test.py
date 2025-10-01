@@ -19,7 +19,7 @@ import sys
 from datetime import datetime
 
 # Use the backend URL from frontend .env
-BACKEND_URL = "https://dental-admin-3.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com/api"
 
 def print_section(title):
     """Print a formatted section header"""

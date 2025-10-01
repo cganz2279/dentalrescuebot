@@ -7,7 +7,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BASE_URL = "https://dental-admin-3.preview.emergentagent.com/api"
+BASE_URL = "https://dental-portal-debug.preview.emergentagent.com/api"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
 
@@ -93,7 +93,7 @@ class AdminPracticeCreationTester:
                         "adminLastName": test_practice["adminLastName"],
                         "tempPassword": test_practice["tempPassword"]
                     },
-                    "appUrl": "https://dental-admin-3.preview.emergentagent.com"
+                    "appUrl": "https://dental-portal-debug.preview.emergentagent.com"
                 }
                 
                 return True

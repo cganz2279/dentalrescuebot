@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
 
 # Configuration
-BACKEND_URL = "https://dental-admin-3.preview.emergentagent.com"
+BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com"
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 DB_NAME = os.environ.get('DB_NAME', 'dentist_management')
 

@@ -526,14 +526,14 @@ async def send_welcome_email(
         
         practice_data = request['practiceData']
         admin_credentials = request['adminCredentials']
-        app_url = request.get('appUrl', 'https://dental-admin-3.preview.emergentagent.com')
+        app_url = request.get('appUrl', 'https://dental-portal-debug.preview.emergentagent.com')
         
         # Send welcome email directly using SendGrid
         admin_email = admin_credentials.get('adminEmail')
         admin_name = f"{admin_credentials.get('adminFirstName', '')} {admin_credentials.get('adminLastName', '')}".strip()
         practice_name = practice_data.get('practiceName')
         temp_password = admin_credentials.get('tempPassword')
-        login_url = app_url or "https://patient-portal-45.preview.emergentagent.com"
+        login_url = app_url or "https://dental-portal-debug.preview.emergentagent.com"
         
         # Create welcome email HTML content
         html_content = f"""

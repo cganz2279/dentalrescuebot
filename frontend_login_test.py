@@ -11,8 +11,8 @@ from datetime import datetime
 import time
 
 # Configuration
-FRONTEND_URL = "https://dental-admin-3.preview.emergentagent.com"
-BACKEND_URL = "https://dental-admin-3.preview.emergentagent.com"
+FRONTEND_URL = "https://dental-portal-debug.preview.emergentagent.com"
+BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

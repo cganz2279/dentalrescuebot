@@ -11,7 +11,7 @@ import sys
 from typing import Dict, Any, List
 
 # Backend URL from environment (using working URL from test_result.md)
-BACKEND_URL = "https://dental-admin-3.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com/api"
 
 class PDFBackendTester:
     def __init__(self):

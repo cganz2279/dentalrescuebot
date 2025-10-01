@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 CORRECT_URL = "https://dentist-portal-3.emergent.host"
-WRONG_URL = "https://dental-admin-3.preview.emergentagent.com"
+WRONG_URL = "https://dental-portal-debug.preview.emergentagent.com"
 ENV_FILE = "/app/frontend/.env"
 BACKUP_FILE = "/app/frontend/.env.backup"
 

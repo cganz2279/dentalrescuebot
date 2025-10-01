@@ -73,7 +73,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
       setForgotMessage('');
 
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dental-admin-3.preview.emergentagent.com'}/api/auth/forgot-password`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dental-portal-debug.preview.emergentagent.com'}/api/auth/forgot-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
       setUsernameMessage('');
 
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dental-admin-3.preview.emergentagent.com'}/api/auth/forgot-username`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dental-portal-debug.preview.emergentagent.com'}/api/auth/forgot-username`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
