@@ -24,7 +24,8 @@ import {
   Trash2,
   Plus,
   BookOpen,
-  Stethoscope
+  Stethoscope,
+  Mail
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 
