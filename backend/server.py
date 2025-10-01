@@ -481,7 +481,7 @@ app.add_middleware(
         "https://dental-portal-debug.preview.emergentagent.com",
         "https://patient-portal-45.preview.static.emergentagent.com",
         "http://localhost:3000",
-        "https://dental-portal-debug.preview.emergentagent.com"
+        "https://app.dentalaftercarenotes.com"
     ],
     allow_methods=["*"],
     allow_headers=["*"],
