@@ -102,16 +102,7 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
     pdf.text(procedureName, 20, yPos);
     yPos += 20;
     
-    // Debug: Log the procedure object structure to understand what data is available
-    console.log('🔍 FULL PROCEDURE OBJECT:', procedure);
-    console.log('🔍 Procedure object keys:', procedure ? Object.keys(procedure) : 'procedure is null/undefined');
-    
-    if (procedure) {
-      console.log('🔍 Procedure ID:', procedure.id);
-      console.log('🔍 Procedure Name:', procedure.procedureName);
-      console.log('🔍 Procedure ID (field):', procedure.procedureId);
-      console.log('🔍 Available fields:', JSON.stringify(Object.keys(procedure)));
-    }
+    // Get procedure content from available data sources
     
     // Get the overview content - first try from the procedure object, then fetch from API if needed
     let overviewContent = procedure?.overview || 
