@@ -150,7 +150,6 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
       pdf.text('Post-operative care instructions will be available here.', 20, yPos);
       yPos += 15;
       pdf.text('Please follow up with your dental practice for specific instructions.', 20, yPos);
-      console.log('⚠️ No overview content found - added placeholder text');
     }
     
     // Add practice information footer
