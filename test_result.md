@@ -254,10 +254,8 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Admin Dashboard Routing and Functionality"
-  stuck_tasks:
-    - "Admin Dashboard Routing and Functionality"
+  current_focus: []
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
