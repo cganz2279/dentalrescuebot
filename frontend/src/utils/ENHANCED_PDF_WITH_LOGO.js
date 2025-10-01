@@ -109,8 +109,15 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
     yPos += 20;
     
     // Debug: Log the procedure object structure to understand what data is available
-    console.log('🔍 Procedure object keys:', Object.keys(procedure || {}));
-    console.log('🔍 Full procedure data for debugging:', JSON.stringify(procedure, null, 2));
+    console.log('🔍 FULL PROCEDURE OBJECT:', procedure);
+    console.log('🔍 Procedure object keys:', procedure ? Object.keys(procedure) : 'procedure is null/undefined');
+    
+    if (procedure) {
+      console.log('🔍 Procedure ID:', procedure.id);
+      console.log('🔍 Procedure Name:', procedure.procedureName);
+      console.log('🔍 Procedure ID (field):', procedure.procedureId);
+      console.log('🔍 Available fields:', JSON.stringify(Object.keys(procedure)));
+    }
     
     // Get the overview content - check multiple possible paths
     const overviewContent = procedure?.overview || 
