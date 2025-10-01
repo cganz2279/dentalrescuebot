@@ -503,17 +503,19 @@ async def send_welcome_email(
 ):
     """Send welcome email to a practice with login credentials"""
     try:
-        # Direct import approach
-        import sys
+        # Direct email sending implementation
+        from sendgrid import SendGridAPIClient
+        from sendgrid.helpers.mail import Mail
         import os
         
-        # Add the backend directory to Python path
-        backend_dir = os.path.dirname(os.path.dirname(__file__))
-        if backend_dir not in sys.path:
-            sys.path.insert(0, backend_dir)
+        # Get SendGrid configuration
+        sendgrid_api_key = os.environ.get('SENDGRID_API_KEY')
+        sender_email = os.environ.get('SENDER_EMAIL', 'admin@theoncallbot.com')
         
-        # Import email service
-        from services.email_service import email_service
+        if not sendgrid_api_key:
+            raise Exception("SendGrid API key not configured")
+        
+        sg = SendGridAPIClient(api_key=sendgrid_api_key)
         
         # Validate required fields
         if not request.get('practiceData') or not request.get('adminCredentials'):
