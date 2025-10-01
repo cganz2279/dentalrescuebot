@@ -695,9 +695,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 @router.post("/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest):
-    """Initiate password reset process"""
+    """Initiate password reset process with email and SMS options"""
     try:
         email = request.email.lower()
+        recovery_method = request.recovery_method or "email"
         
         # Find user by email
         user = await db.users.find_one({"email": email})
@@ -706,7 +707,7 @@ async def forgot_password(request: ForgotPasswordRequest):
         if not user:
             return {
                 "success": True,
-                "message": "If an account with this email exists, password reset instructions have been sent."
+                "message": f"If an account with this email exists, password reset instructions have been sent via {recovery_method}."
             }
         
         # Generate reset token
@@ -721,21 +722,79 @@ async def forgot_password(request: ForgotPasswordRequest):
             "reset_token": reset_token,
             "expires_at": reset_expires,
             "used": False,
+            "recovery_method": recovery_method,
             "created_at": datetime.utcnow()
         })
         
-        # In a real application, you would send an email here
-        # For now, we'll return the token for testing purposes
-        # TODO: Implement email sending service
+        # Get frontend URL and reset link
+        frontend_url = os.getenv('FRONTEND_URL', 'https://patient-portal-45.preview.emergentagent.com')
+        reset_link = f"{frontend_url}/reset-password?token={reset_token}"
         
-        # Get frontend URL from environment variable
-        frontend_url = os.getenv('FRONTEND_URL', 'https://dentist-portal-3.emergent.host')
+        sent_methods = []
+        
+        # Send email if requested
+        if recovery_method in ["email", "both"] and EMAIL_ENABLED:
+            try:
+                if hasattr(email_service, 'send_password_reset_email'):
+                    email_sent = email_service.send_password_reset_email(
+                        to_email=email,
+                        user_name=f"{user.get('firstName', '')} {user.get('lastName', '')}".strip(),
+                        reset_link=reset_link,
+                        reset_token=reset_token
+                    )
+                    if email_sent:
+                        sent_methods.append("email")
+                else:
+                    print("Password reset email method not available")
+            except Exception as e:
+                print(f"Email sending failed: {e}")
+        
+        # Send SMS if requested and user has phone number
+        if recovery_method in ["sms", "both"]:
+            try:
+                # Get user's phone number from practice or user profile
+                practice = await db.practices.find_one({"id": user.get("practiceId")})
+                phone_number = user.get("phone") or (practice and practice.get("phone"))
+                
+                if phone_number:
+                    from twilio.rest import Client
+                    
+                    twilio_sid = os.getenv('TWILIO_ACCOUNT_SID')
+                    twilio_token = os.getenv('TWILIO_AUTH_TOKEN')
+                    twilio_phone = os.getenv('TWILIO_PHONE_NUMBER')
+                    
+                    if twilio_sid and twilio_token and twilio_phone:
+                        client = Client(twilio_sid, twilio_token)
+                        
+                        sms_message = f"Password reset for your dental practice account. Click here to reset: {reset_link} (expires in 1 hour)"
+                        
+                        message = client.messages.create(
+                            body=sms_message,
+                            from_=twilio_phone,
+                            to=phone_number
+                        )
+                        
+                        if message.sid:
+                            sent_methods.append("SMS")
+                    else:
+                        print("Twilio configuration missing")
+                else:
+                    print(f"No phone number found for user {email}")
+                    
+            except Exception as e:
+                print(f"SMS sending failed: {e}")
+        
+        # Determine response message
+        if sent_methods:
+            methods_str = " and ".join(sent_methods)
+            message = f"Password reset instructions have been sent via {methods_str}."
+        else:
+            message = f"If an account with this email exists, password reset instructions have been sent via {recovery_method}."
         
         return {
             "success": True,
-            "message": "If an account with this email exists, password reset instructions have been sent.",
-            "reset_token": reset_token,  # Remove this in production
-            "reset_link": f"{frontend_url}/practice-notes/reset-password?token={reset_token}"  # Remove in production
+            "message": message,
+            "sent_methods": sent_methods
         }
         
     except Exception as e:
