@@ -299,7 +299,7 @@ const PracticeDashboard = () => {
     try {
       const procedure = dashboardData?.recentProcedures?.find(p => p.id === procedureId);
       if (!procedure) {
-        console.error('Procedure not found for PDF generation');
+        console.error('Procedure not found for printing');
         return;
       }
 
@@ -307,74 +307,59 @@ const PracticeDashboard = () => {
       const patient = procedure.patientId ? 
         dashboardData?.recentPatients?.find(p => p.id === procedure.patientId) : null;
 
-      // Import the enhanced PDF generator
-      const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
-
-      // Prepare procedure data for PDF with practice information
-      const procedureForPDF = {
-        ...procedure,
-        practiceName: practice?.name || 'Dental Practice',
-        practicePhone: practice?.phone || practice?.emergencyContact || 'Contact Number Not Available',
-        practiceOfficeHours: practice?.officeHours || 'Contact office for hours',
-        practiceEmergencyContact: practice?.emergencyContact || practice?.phone || 'Contact Number Not Available'
-      };
-
-      // Prepare practice data with branding for PDF
-      const practiceDataForPDF = {
-        practiceName: practice?.name || 'Dental Practice',
-        practicePhone: practice?.phone,
-        practiceOfficeHours: practice?.officeHours,
-        practiceEmergencyContact: practice?.emergencyContact,
-        branding: practice?.branding // Include the custom logo
-      };
-
-      console.log('🏥 Dashboard - Generating PDF with practice data:', {
-        practiceName: procedureForPDF.practiceName,
-        practicePhone: procedureForPDF.practicePhone,
-        practiceOfficeHours: procedureForPDF.practiceOfficeHours,
-        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact,
-        hasCustomLogo: !!practice?.branding?.logo
-      });
-
-      // Generate PDF with enhanced generator including logo and practice data
-      const success = await generateProcedurePDF(procedureForPDF, practiceDataForPDF);
-      if (success) {
-        // Log the print activity
-        try {
-          await practiceApi.logActivity({
-            patientId: procedure.patientId,
-            patientName: patient ? `${patient.firstName} ${patient.lastName}` : procedure.patientName || 'Unknown Patient',
-            patientEmail: patient?.email || 'Unknown Email',
-            procedureId: procedure.id,
-            procedureName: procedure.procedureName || procedure.name,
-            dentistName: patient?.primaryDentist || procedure.dentistName || 'Unknown Doctor',
-            activityType: 'print',
-            additionalData: { pdfGenerated: true }
-          });
-        } catch (logError) {
-          console.error('Failed to log print activity:', logError);
-          // Don't fail the main operation if logging fails
+      // Get the full procedure content from API
+      let procedureContent = '';
+      try {
+        const response = await practiceApi.getPracticeProcedures();
+        if (response.success && response.procedures) {
+          const fullProcedure = response.procedures.find(p => p.id === procedure.procedureId) ||
+                               response.procedures.find(p => p.name === procedure.procedureName);
+          if (fullProcedure) {
+            procedureContent = fullProcedure.overview || fullProcedure.content || '';
+          }
         }
-
-        toast({
-          title: "PDF Generated",
-          description: `PDF for ${procedure.procedureName} has been generated and will download shortly.`,
-          variant: "default",
-        });
-      } else {
-        console.error('PDF generation failed');
-        toast({
-          title: "PDF Generation Failed",
-          description: "There was an error generating the PDF. Please try again.",
-          variant: "destructive",
-        });
+      } catch (apiError) {
+        console.error('Failed to fetch procedure content:', apiError);
       }
+
+      // Create a printable HTML version
+      const printContent = createPrintableHTML(procedure, patient, practice, procedureContent);
       
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      
+      // Wait for content to load, then print
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.onafterprint = () => {
+          printWindow.close();
+        };
+      };
+
+      // Log the print activity
+      try {
+        await practiceApi.logActivity({
+          patientId: procedure.patientId,
+          patientName: patient ? `${patient.firstName} ${patient.lastName}` : procedure.patientName || 'Unknown Patient',
+          patientEmail: patient?.email || 'Unknown Email',
+          procedureId: procedure.id,
+          procedureName: procedure.procedureName || procedure.name,
+          dentistName: patient?.primaryDentist || procedure.dentistName || 'Unknown Doctor',
+          activityType: 'print',
+          additionalData: { directPrint: true }
+        });
+      } catch (logError) {
+        console.error('Failed to log print activity:', logError);
+        // Don't fail the main operation if logging fails
+      }
+
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('Print procedure error:', error);
       toast({
-        title: "PDF Generation Error",
-        description: "An unexpected error occurred. Please try again.",
+        title: "Print Failed",
+        description: "Unable to print the procedure instructions. Please try again.",
         variant: "destructive",
       });
     }
