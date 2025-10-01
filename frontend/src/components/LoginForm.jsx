@@ -16,6 +16,8 @@ const LoginForm = ({ onSwitchToRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showForgotUsername, setShowForgotUsername] = useState(false);
 
   const { login } = useAuth();
   const { toast } = useToast();
