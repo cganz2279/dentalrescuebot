@@ -25,6 +25,7 @@ import PracticeRegistrationForm from "./components/PracticeRegistrationForm";
 import PracticeDashboard from "./components/PracticeDashboard";
 import PatientDashboard from "./components/PatientDashboard";
 import AdminLogin from "./components/AdminLogin";
+import PasswordReset from "./components/PasswordReset";
 import { Toaster } from "./components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
 
