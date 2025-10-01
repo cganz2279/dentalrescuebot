@@ -140,13 +140,7 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
       }
     }
     
-    console.log('🔍 Overview content found:', !!overviewContent);
-    console.log('🔍 Overview content preview:', overviewContent ? overviewContent.substring(0, 100) : 'No content');
-    
     if (overviewContent) {
-      // Simple approach: render text normally and use different method for emphasis
-      console.log('📝 Using simple text rendering approach...');
-      
       // Add formatted content to PDF with simple bold detection
       addSimpleFormattedContentToPDF(pdf, overviewContent, yPos);
       
