@@ -494,6 +494,42 @@ async def create_practice(
             detail="Failed to create practice"
         )
 
+@router.get("/test-email-debug")
+async def test_email_debug(admin_data = Depends(verify_admin_token)):
+    """Debug email service setup"""
+    try:
+        import os
+        print(f"Environment check - SENDGRID_API_KEY exists: {bool(os.environ.get('SENDGRID_API_KEY'))}")
+        
+        from services.email_service import email_service
+        print("Email service imported successfully")
+        
+        # Try to send a test email
+        result = email_service.send_welcome_email(
+            practice_data={"practiceName": "Debug Test"},
+            admin_credentials={
+                "adminEmail": "debug@example.com",
+                "adminFirstName": "Debug",
+                "adminLastName": "Test", 
+                "tempPassword": "Debug123!"
+            }
+        )
+        
+        return {
+            "success": True,
+            "email_sent": result,
+            "sendgrid_configured": bool(os.environ.get('SENDGRID_API_KEY'))
+        }
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+
 @router.post("/send-welcome-email")
 async def send_welcome_email(
     request: dict,
