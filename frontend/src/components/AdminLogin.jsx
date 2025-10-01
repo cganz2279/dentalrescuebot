@@ -127,6 +127,8 @@ const AdminDashboard = () => {
   const [editingProcedure, setEditingProcedure] = useState(null);
   const [showAddProcedureForm, setShowAddProcedureForm] = useState(false);
   const [showAddPracticeForm, setShowAddPracticeForm] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showTempPassword, setShowTempPassword] = useState(false);
   const [newPractice, setNewPractice] = useState({
     practiceName: '',
     adminEmail: '',
