@@ -119,14 +119,38 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
       console.log('🔍 Available fields:', JSON.stringify(Object.keys(procedure)));
     }
     
-    // Get the overview content - check multiple possible paths
-    const overviewContent = procedure?.overview || 
-                           procedure?.procedureDetails?.overview || 
-                           procedure?.procedureData?.overview ||
-                           procedure?.content ||
-                           procedure?.instructions ||
-                           procedure?.description ||
-                           '';
+    // Get the overview content - first try from the procedure object, then fetch from API if needed
+    let overviewContent = procedure?.overview || 
+                          procedure?.procedureDetails?.overview || 
+                          procedure?.procedureData?.overview ||
+                          procedure?.content ||
+                          procedure?.instructions ||
+                          procedure?.description ||
+                          '';
+    
+    // If no content found in procedure object, try to fetch it from the API
+    if (!overviewContent && procedure?.procedureId) {
+      console.log('🔍 No content in procedure object, fetching from API...');
+      try {
+        // Get the backend URL from environment
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+        const response = await fetch(`${backendUrl}/api/practice/procedures`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            // Find the procedure by ID
+            const fullProcedure = data.data.find(p => p.id === procedure.procedureId);
+            if (fullProcedure) {
+              overviewContent = fullProcedure.overview || fullProcedure.content || '';
+              console.log('✅ Found procedure content from API');
+            }
+          }
+        }
+      } catch (apiError) {
+        console.log('⚠️ Failed to fetch procedure content from API:', apiError);
+      }
+    }
     
     console.log('🔍 Overview content found:', !!overviewContent);
     console.log('🔍 Overview content preview:', overviewContent ? overviewContent.substring(0, 100) : 'No content');
