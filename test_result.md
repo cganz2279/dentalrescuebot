@@ -252,8 +252,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin dashboard routing and functionality testing completed successfully"
-  stuck_tasks: []
+    - "Admin Dashboard Routing and Functionality"
+  stuck_tasks:
+    - "Admin Dashboard Routing and Functionality"
   test_all: false
   test_priority: "high_first"
 
