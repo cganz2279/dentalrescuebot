@@ -338,7 +338,7 @@ const AdminDashboard = () => {
       const data = await response.json();
       
       if (data.success) {
-        alert(`Practice "${newPractice.practiceName}" created successfully!\n\nAdmin login:\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}`);
+        alert(`Practice "${newPractice.practiceName}" created successfully!\n\n📧 Send these login credentials to the customer:\n\nEmail: ${newPractice.adminEmail}\nTemporary Password: ${newPractice.tempPassword}\n\n⚠️ Customer should change this password on first login.`);
         
         // Reset form
         setNewPractice({
