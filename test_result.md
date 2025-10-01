@@ -177,6 +177,21 @@ backend:
           agent: "testing"
           comment: "✅ Secure PDF endpoint (/api/practice/secure-pdf/{token}) working correctly. Endpoint properly validates tokens (returns 401 for invalid tokens), includes branding data in practice query, and has same logo integration as email-pdf endpoint. Infrastructure is complete and functional."
 
+  - task: "Admin Dashboard Routing and Functionality"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL ADMIN DASHBOARD ROUTING ISSUE: The /admin route was showing regular practice login form instead of AdminLogin component due to React Router configuration issue. Catch-all route path='/*' was intercepting the /admin route, preventing AdminLogin component from loading. User could not access Add Practice button or Refresh button functionality."
+        - working: true
+          agent: "testing"
+          comment: "✅ ADMIN DASHBOARD ROUTING ISSUE COMPLETELY RESOLVED: (1) ✅ ROUTING FIX: Restructured App.js routes to place /admin route before catch-all route, ensuring AdminLogin component loads correctly, (2) ✅ ADMIN LOGIN: Successfully authenticates with cganz@admin.com/Dentist1# credentials, (3) ✅ DASHBOARD ACCESS: Complete admin dashboard loads with red header 'Admin Dashboard - System Administration & Management', (4) ✅ PRACTICES TAB: Loads correctly showing 'Practice Management' with existing practices, (5) ✅ ADD PRACTICE BUTTON: Visible and functional, opens complete form with all required fields (Practice Name, Admin Email, Admin First Name, Admin Last Name, Phone, Temporary Password, Address, Subscription Type, Trial Days), (6) ✅ REFRESH BUTTON: Visible and functional in Practices tab, (7) ✅ FORM FUNCTIONALITY: All form fields accept input, Cancel button works, Create Practice button available. User's reported issues 'No Add Practice button visible' and 'Refresh button doesn't work' are completely resolved."
+
 frontend:
   - task: "Frontend Logo Display"
     implemented: true
