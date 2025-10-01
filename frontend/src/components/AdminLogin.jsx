@@ -881,7 +881,11 @@ const AdminDashboard = () => {
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>
-                <Button onClick={() => setShowAddPracticeForm(true)}>
+                <Button onClick={() => {
+                  const newPassword = generateSecurePassword();
+                  setNewPractice(prev => ({...prev, tempPassword: newPassword}));
+                  setShowAddPracticeForm(true);
+                }}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Practice
                 </Button>
