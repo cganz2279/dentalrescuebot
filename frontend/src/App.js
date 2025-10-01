@@ -122,11 +122,10 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* Admin Route - Outside AuthProvider - Must be first to avoid catch-all interference */}
+          {/* Admin Route - Must be EXACT path, not wildcard */}
           <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/*" element={<AdminLogin />} />
           
-          {/* All other routes within AuthProvider */}
+          {/* All other specific routes within AuthProvider */}
           <Route path="/register" element={
             <AuthProvider>
               <RegistrationPage />
@@ -227,8 +226,13 @@ function App() {
               <AppContent />
             </AuthProvider>
           } />
+          <Route path="/" element={
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          } />
           
-          {/* Catch-all route - Must be last */}
+          {/* Catch-all route - MUST BE LAST */}
           <Route path="*" element={
             <AuthProvider>
               <AppContent />
