@@ -528,12 +528,96 @@ async def send_welcome_email(
         admin_credentials = request['adminCredentials']
         app_url = request.get('appUrl', 'https://dental-admin-3.preview.emergentagent.com')
         
-        # Send welcome email
-        success = email_service.send_welcome_email(
-            practice_data=practice_data,
-            admin_credentials=admin_credentials,
-            app_url=app_url
+        # Send welcome email directly using SendGrid
+        admin_email = admin_credentials.get('adminEmail')
+        admin_name = f"{admin_credentials.get('adminFirstName', '')} {admin_credentials.get('adminLastName', '')}".strip()
+        practice_name = practice_data.get('practiceName')
+        temp_password = admin_credentials.get('tempPassword')
+        login_url = app_url or "https://patient-portal-45.preview.emergentagent.com"
+        
+        # Create welcome email HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Welcome to Your Dental Practice Management System</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #2563eb; margin: 0;">Welcome to Your Dental Practice Portal!</h1>
+                    <p style="color: #666; margin-top: 10px;">Your practice management system is ready</p>
+                </div>
+                
+                <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h2 style="color: #333; margin-top: 0;">Hello {admin_name},</h2>
+                    <p style="color: #555; margin-bottom: 15px;">
+                        Congratulations! Your dental practice "<strong>{practice_name}</strong>" has been successfully set up in our management system.
+                    </p>
+                    
+                    <h3 style="color: #2563eb; margin-bottom: 10px;">Your Login Credentials:</h3>
+                    <div style="background-color: #e5e7eb; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                        <p style="margin: 5px 0;"><strong>Email:</strong> {admin_email}</p>
+                        <p style="margin: 5px 0;"><strong>Temporary Password:</strong> {temp_password}</p>
+                        <p style="margin: 5px 0;"><strong>Login URL:</strong> <a href="{login_url}" style="color: #2563eb;">{login_url}</a></p>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="{login_url}" style="background-color: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                            Access Your Practice Portal
+                        </a>
+                    </div>
+                    
+                    <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 20px;">
+                        <h4 style="color: #dc2626; margin: 0 0 10px 0;">Important Security Notice:</h4>
+                        <ul style="color: #7f1d1d; margin: 0; padding-left: 20px;">
+                            <li>Please change your password after your first login</li>
+                            <li>Never share your login credentials with anyone</li>
+                            <li>Keep your account information secure</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #666; font-size: 12px;">
+                    <p style="margin: 5px 0;">This email was sent by your Dental Practice Management System</p>
+                    <p style="margin: 5px 0;">For support, contact your system administrator</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Create plain text version
+        text_content = f"""
+        Welcome to Your Dental Practice Management System!
+        
+        Hello {admin_name},
+        
+        Congratulations! Your dental practice "{practice_name}" has been successfully set up.
+        
+        Your Login Credentials:
+        Email: {admin_email}
+        Temporary Password: {temp_password}
+        Login URL: {login_url}
+        
+        Important: Please change your password after your first login.
+        
+        For support, contact your system administrator.
+        """
+        
+        # Create and send email
+        message = Mail(
+            from_email=sender_email,
+            to_emails=admin_email,
+            subject=f"Welcome to {practice_name} - Your Practice Portal is Ready!",
+            html_content=html_content,
+            plain_text_content=text_content
         )
+        
+        # Send email
+        response = sg.send(message)
+        success = response.status_code in [200, 201, 202]
         
         if success:
             # Log admin action
