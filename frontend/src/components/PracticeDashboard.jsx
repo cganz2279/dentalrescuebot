@@ -309,6 +309,8 @@ const PracticeDashboard = () => {
 
       // Ensure we have the latest practice data with branding
       let currentPractice = practice;
+      console.log('🔍 Current practice logo:', practice?.branding?.logo);
+      
       if (!practice?.branding?.logo) {
         try {
           console.log('🔄 Refreshing practice branding data for printing...');
@@ -323,12 +325,16 @@ const PracticeDashboard = () => {
             const dashboardResponse = await response.json();
             if (dashboardResponse.success && dashboardResponse.data?.practice?.branding?.logo) {
               currentPractice = dashboardResponse.data.practice;
-              console.log('✅ Updated practice branding for printing');
+              console.log('✅ Updated practice branding for printing:', currentPractice.branding.logo);
+            } else {
+              console.log('⚠️ No branding data found in dashboard response');
             }
           }
         } catch (brandingError) {
           console.log('⚠️ Could not fetch updated branding data:', brandingError);
         }
+      } else {
+        console.log('✅ Using existing practice logo for printing');
       }
 
       // Get the full procedure content from API
