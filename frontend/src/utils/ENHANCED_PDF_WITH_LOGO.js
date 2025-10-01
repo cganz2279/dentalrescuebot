@@ -6,11 +6,7 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
   const timestamp = new Date().toISOString();
   const cacheKey = Date.now();
   
-  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v15 (CUSTOM PRACTICE LOGO)');
-  console.log('🚨 TIMESTAMP:', timestamp);
-  console.log('🚨 CACHE KEY:', cacheKey);
-  console.log('🚨 PROCEDURE DATA:', procedure);
-  console.log('🚨 PRACTICE DATA:', practiceData);
+  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v16 (PRODUCTION)');
   
   try {
     const pdf = new jsPDF();
@@ -23,7 +19,6 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
       
       if (practiceData?.branding?.logo) {
         try {
-          console.log('✅ Using custom practice logo from branding data');
           const logoData = practiceData.branding.logo;
           
           // Calculate centered position for logo
@@ -36,9 +31,8 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
           yPos += imgHeight + 10;
           logoAdded = true;
           
-          console.log('✅ Custom practice logo successfully added to PDF');
         } catch (customLogoError) {
-          console.log('⚠️ Failed to use custom practice logo:', customLogoError);
+          console.log('⚠️ Custom logo failed, using fallback');
         }
       }
       
