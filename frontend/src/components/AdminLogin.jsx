@@ -1996,7 +1996,7 @@ const AdminLogin = () => {
 
   // If logged in, show admin dashboard
   if (adminToken) {
-    return <AdminDashboard />;
+    return <AdminDashboard adminToken={adminToken} />;
   }
 
   // Show login form
