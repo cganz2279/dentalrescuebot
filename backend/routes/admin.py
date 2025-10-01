@@ -372,6 +372,129 @@ async def manage_practice(
             detail="Failed to manage practice"
         )
 
+@router.post("/create-practice")
+async def create_practice(
+    request: CreatePracticeRequest,
+    admin_data = Depends(verify_admin_token)
+):
+    """Create a new dental practice with admin user"""
+    try:
+        # Check if email already exists
+        existing_user = await db.users.find_one({"email": request.adminEmail})
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A user with this email already exists"
+            )
+        
+        # Check if practice name already exists
+        existing_practice = await db.practices.find_one({"name": request.practiceName})
+        if existing_practice:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A practice with this name already exists"
+            )
+        
+        # Generate unique IDs
+        practice_id = str(uuid.uuid4())
+        admin_user_id = str(uuid.uuid4())
+        
+        # Hash password
+        hashed_password = hash_password(request.tempPassword)
+        
+        # Set trial/subscription details
+        created_at = datetime.utcnow()
+        subscription_data = {
+            "plan": request.subscriptionType,
+            "status": request.subscriptionType,
+            "createdAt": created_at,
+            "updatedAt": created_at
+        }
+        
+        if request.subscriptionType == "trial":
+            subscription_data["trialStartedAt"] = created_at
+            subscription_data["trialEndsAt"] = created_at + timedelta(days=request.trialDays)
+        
+        # Create practice document
+        practice_doc = {
+            "id": practice_id,
+            "name": request.practiceName,
+            "email": request.adminEmail,
+            "phone": request.phone or "",
+            "address": request.address or "",
+            "isActive": request.subscriptionType in ["trial", "active"],
+            "subscription": subscription_data,
+            "branding": {
+                "logo": None,
+                "colors": {
+                    "primary": "#2563eb",
+                    "secondary": "#64748b"
+                }
+            },
+            "createdAt": created_at,
+            "updatedAt": created_at,
+            "createdBy": admin_data["adminEmail"]
+        }
+        
+        # Create admin user document
+        admin_user_doc = {
+            "id": admin_user_id,
+            "email": request.adminEmail,
+            "password": hashed_password,
+            "firstName": request.adminFirstName,
+            "lastName": request.adminLastName,
+            "role": "practice_admin",
+            "practiceId": practice_id,
+            "specialties": [],
+            "isActive": True,
+            "createdAt": created_at,
+            "updatedAt": created_at,
+            "createdBy": admin_data["adminEmail"]
+        }
+        
+        # Insert both documents
+        await db.practices.insert_one(practice_doc)
+        await db.users.insert_one(admin_user_doc)
+        
+        # Log admin action
+        admin_action = {
+            "id": str(uuid.uuid4()),
+            "admin_email": admin_data["adminEmail"],
+            "action": "create_practice",
+            "practice_id": practice_id,
+            "practice_name": request.practiceName,
+            "admin_user_id": admin_user_id,
+            "admin_user_email": request.adminEmail,
+            "subscription_type": request.subscriptionType,
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_actions.insert_one(admin_action)
+        
+        return {
+            "success": True,
+            "message": f"Practice '{request.practiceName}' created successfully",
+            "practice": {
+                "id": practice_id,
+                "name": request.practiceName,
+                "email": request.adminEmail,
+                "subscription_type": request.subscriptionType,
+                "admin_user": {
+                    "id": admin_user_id,
+                    "name": f"{request.adminFirstName} {request.adminLastName}",
+                    "email": request.adminEmail
+                }
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Create practice error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create practice"
+        )
+
 @router.post("/reset-password")
 async def reset_user_password(
     request: PasswordResetRequest,
