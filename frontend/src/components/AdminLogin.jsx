@@ -383,7 +383,8 @@ const AdminDashboard = () => {
               alert(`⚠️ Practice created but email failed to send.\n\nPlease manually send these credentials:\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}`);
             }
           } catch (emailError) {
-            console.error('Email sending failed:', emailError);
+            console.error('🔍 Email sending failed:', emailError);
+            console.error('🔍 Email error details:', emailError.message, emailError.stack);
             alert(`⚠️ Practice created but email failed to send.\n\nPlease manually send these credentials:\nEmail: ${newPractice.adminEmail}\nPassword: ${newPractice.tempPassword}`);
           }
         } else {
