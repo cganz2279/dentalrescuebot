@@ -537,10 +537,6 @@ async def send_welcome_email(
 ):
     """Send welcome email to a practice with login credentials"""
     try:
-        # Import email service
-        import sys
-        import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
         from services.email_service import email_service
         
         # Validate required fields
