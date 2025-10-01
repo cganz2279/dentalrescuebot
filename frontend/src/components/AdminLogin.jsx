@@ -355,7 +355,7 @@ const AdminDashboard = () => {
         
         if (sendEmail) {
           try {
-            const emailResponse = await fetch(`${BACKEND_URL}/api/admin/send-welcome-email`, {
+            const emailResponse = await fetch(`${API_BASE}/send-welcome-email`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
