@@ -359,7 +359,7 @@ const AdminDashboard = () => {
           console.log('🔍 User chose to send email, making API call...');
           try {
             console.log('🔍 Making email API call to:', `${API_BASE}/send-welcome-email`);
-            console.log('🔍 Email payload:', { practiceData, adminCredentials, appUrl: 'https://patient-portal-45.preview.emergentagent.com' });
+            console.log('🔍 Email payload:', { practiceData, adminCredentials, appUrl: 'https://dental-admin-3.preview.emergentagent.com' });
             const emailResponse = await fetch(`${API_BASE}/send-welcome-email`, {
               method: 'POST',
               headers: {
@@ -369,7 +369,7 @@ const AdminDashboard = () => {
               body: JSON.stringify({
                 practiceData: practiceData,
                 adminCredentials: adminCredentials,
-                appUrl: 'https://patient-portal-45.preview.emergentagent.com'
+                appUrl: 'https://dental-admin-3.preview.emergentagent.com'
               })
             });
             

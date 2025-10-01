@@ -16,7 +16,7 @@ ENVIRONMENTS = [
     },
     {
         "name": "Frontend .env URL", 
-        "url": "https://patient-portal-45.preview.emergentagent.com/api"
+        "url": "https://dental-admin-3.preview.emergentagent.com/api"
     }
 ]
 

@@ -14,7 +14,7 @@ ROOT_DIR = Path(__file__).parent / 'backend'
 load_dotenv(ROOT_DIR / '.env')
 
 # Configuration
-BASE_URL = "https://patient-portal-45.preview.emergentagent.com/api"
+BASE_URL = "https://dental-admin-3.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

@@ -288,7 +288,7 @@ class EmailService:
         
         return html_content
 
-    def send_welcome_email(self, practice_data: dict, admin_credentials: dict, app_url: str = "https://patient-portal-45.preview.emergentagent.com"):
+    def send_welcome_email(self, practice_data: dict, admin_credentials: dict, app_url: str = "https://dental-admin-3.preview.emergentagent.com"):
         """
         Send welcome email to new practice with login credentials using professional template
         

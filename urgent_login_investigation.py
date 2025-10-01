@@ -13,7 +13,7 @@ from pymongo import MongoClient
 import os
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://patient-portal-45.preview.emergentagent.com/api"
+BACKEND_URL = "https://dental-admin-3.preview.emergentagent.com/api"
 
 class UrgentLoginInvestigator:
     def __init__(self, base_url: str):

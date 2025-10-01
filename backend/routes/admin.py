@@ -512,7 +512,7 @@ async def send_welcome_email(
         
         practice_data = request['practiceData']
         admin_credentials = request['adminCredentials']
-        app_url = request.get('appUrl', 'https://patient-portal-45.preview.emergentagent.com')
+        app_url = request.get('appUrl', 'https://dental-admin-3.preview.emergentagent.com')
         
         # Send welcome email
         success = email_service.send_welcome_email(
