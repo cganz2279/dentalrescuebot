@@ -249,7 +249,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "PDF logo and practice name integration fixes verification completed successfully"
+    - "Admin dashboard routing and functionality testing completed successfully"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
