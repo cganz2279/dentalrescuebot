@@ -474,8 +474,12 @@ app.include_router(public_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    # allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_origins=["*"],
+    allow_origins=[
+        "https://patient-portal-45.preview.emergentagent.com",
+        "https://patient-portal-45.preview.static.emergentagent.com",
+        "http://localhost:3000",
+        "https://dental-admin-3.preview.emergentagent.com"
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
