@@ -140,7 +140,7 @@ const AdminDashboard = ({ adminToken }) => {
     address: '',
     tempPassword: '',
     subscriptionType: 'trial',
-    trialDays: 15
+    trialDays: 30
   });
   const [newProcedure, setNewProcedure] = useState({
     name: '',
@@ -404,7 +404,7 @@ const AdminDashboard = ({ adminToken }) => {
           address: '',
           tempPassword: '',
           subscriptionType: 'trial',
-          trialDays: 15
+          trialDays: 30
         });
         setShowAddPracticeForm(false);
         loadPractices(); // Refresh the practices list
