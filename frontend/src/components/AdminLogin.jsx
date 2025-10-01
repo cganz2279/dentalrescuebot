@@ -1864,6 +1864,7 @@ const AdminLogin = () => {
   const [credentials, setCredentials] = useState({ email: 'cganz@admin.com', password: 'Dentist1#' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken'));
 
   const API_BASE = `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}/api/admin`;
