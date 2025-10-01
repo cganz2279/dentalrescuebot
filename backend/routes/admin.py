@@ -549,9 +549,11 @@ async def send_welcome_email(
         raise
     except Exception as e:
         print(f"Send welcome email error: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to send welcome email"
+            detail=f"Failed to send welcome email: {str(e)}"
         )
 
 @router.post("/reset-password")
