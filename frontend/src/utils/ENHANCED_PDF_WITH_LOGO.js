@@ -135,8 +135,8 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
         // Use the existing authApi service to maintain consistent authentication
         const { practiceApi } = await import('../services/authApi');
         
-        console.log('🔍 Attempting to fetch procedures using authApi...');
-        const response = await practiceApi.getProcedures();
+        console.log('🔍 Attempting to fetch practice procedures using authApi...');
+        const response = await practiceApi.getPracticeProcedures();
         
         if (response.success && response.data) {
           // Find the procedure by ID
@@ -146,6 +146,8 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
             console.log('✅ Found procedure content from API via authApi:', overviewContent.substring(0, 100));
           } else {
             console.log('⚠️ Procedure not found in API response, available procedures:', response.data.length);
+            console.log('🔍 Looking for procedure ID:', procedure.procedureId);
+            console.log('🔍 Available procedure IDs:', response.data.map(p => p.id).slice(0, 10));
           }
         } else {
           console.log('⚠️ API response not successful:', response);
