@@ -288,5 +288,131 @@ class EmailService:
         
         return html_content
 
+    def send_welcome_email(self, practice_data: dict, admin_credentials: dict, app_url: str = "https://patient-portal-45.preview.emergentagent.com"):
+        """
+        Send welcome email to new practice with login credentials
+        
+        Args:
+            practice_data: Dictionary containing practice information (name, etc.)
+            admin_credentials: Dictionary containing admin email and password
+            app_url: The application URL for login
+        """
+        try:
+            practice_name = practice_data.get('practiceName', 'Your Practice')
+            admin_email = admin_credentials.get('adminEmail')
+            temp_password = admin_credentials.get('tempPassword')
+            admin_name = f"{admin_credentials.get('adminFirstName', '')} {admin_credentials.get('adminLastName', '')}".strip()
+            
+            # Create email subject
+            subject = f"🎉 Welcome to Your Dental Practice Management System - {practice_name}"
+            
+            # Create welcome email HTML content
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Welcome to Your Practice Management System</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .header h1 {{ margin: 0; font-size: 28px; }}
+                    .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .credentials-box {{ background: #ffffff; border: 2px solid #e5e7eb; border-radius: 8px; padding: 25px; margin: 20px 0; }}
+                    .credential-item {{ margin: 15px 0; padding: 10px; background: #f1f5f9; border-radius: 5px; }}
+                    .credential-label {{ font-weight: bold; color: #1e40af; }}
+                    .password-warning {{ background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 15px; border-radius: 5px; margin: 15px 0; }}
+                    .login-button {{ display: inline-block; background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }}
+                    .footer {{ text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }}
+                    .features {{ background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }}
+                    .feature-list {{ list-style: none; padding: 0; }}
+                    .feature-list li {{ margin: 10px 0; padding: 5px 0; }}
+                    .feature-list li:before {{ content: "✅ "; color: #10b981; font-weight: bold; }}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>🦷 Welcome to Your Practice Management System!</h1>
+                    <p>Your digital dental practice solution is ready to use</p>
+                </div>
+                
+                <div class="content">
+                    <h2>Hi {admin_name}!</h2>
+                    <p>Congratulations! Your dental practice management system has been successfully set up for <strong>{practice_name}</strong>.</p>
+                    
+                    <div class="credentials-box">
+                        <h3>🔐 Your Login Credentials</h3>
+                        <div class="credential-item">
+                            <span class="credential-label">Login URL:</span><br>
+                            <a href="{app_url}" style="color: #2563eb; text-decoration: none;">{app_url}</a>
+                        </div>
+                        <div class="credential-item">
+                            <span class="credential-label">Username (Email):</span><br>
+                            <code style="background: #e5e7eb; padding: 5px 8px; border-radius: 3px;">{admin_email}</code>
+                        </div>
+                        <div class="credential-item">
+                            <span class="credential-label">Temporary Password:</span><br>
+                            <code style="background: #e5e7eb; padding: 5px 8px; border-radius: 3px;">{temp_password}</code>
+                        </div>
+                    </div>
+                    
+                    <div class="password-warning">
+                        <strong>⚠️ Important Security Notice:</strong><br>
+                        This is a temporary password. Please log in and change your password immediately after your first login for security purposes.
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <a href="{app_url}" class="login-button">🚀 Access Your Dashboard</a>
+                    </div>
+                    
+                    <div class="features">
+                        <h3>🎯 What You Can Do Now:</h3>
+                        <ul class="feature-list">
+                            <li>Manage patient records and appointments</li>
+                            <li>Send post-operative care instructions via email/SMS</li>
+                            <li>Create and customize procedure templates</li>
+                            <li>Track patient communication and follow-ups</li>
+                            <li>Generate and print professional PDF instructions</li>
+                            <li>Manage practice settings and branding</li>
+                        </ul>
+                    </div>
+                    
+                    <p><strong>Need Help?</strong><br>
+                    If you have any questions or need assistance getting started, please don't hesitate to reach out to our support team.</p>
+                    
+                    <p>Welcome aboard!<br>
+                    <strong>The Practice Management Team</strong></p>
+                </div>
+                
+                <div class="footer">
+                    <p>This email was sent to {admin_email} for {practice_name}</p>
+                    <p>© 2024 Dental Practice Management System. All rights reserved.</p>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Send email
+            message = Mail(
+                from_email=self.sender_email,
+                to_emails=admin_email,
+                subject=subject,
+                html_content=html_content
+            )
+            
+            response = self.sg.send(message)
+            
+            if response.status_code in [200, 202]:
+                print(f"✅ Welcome email sent successfully to {admin_email}")
+                return True
+            else:
+                print(f"❌ Failed to send welcome email. Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Error sending welcome email: {e}")
+            return False
+
 # Create a global instance
 email_service = EmailService()
