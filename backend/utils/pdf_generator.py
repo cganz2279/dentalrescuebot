@@ -217,7 +217,8 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
                     content.append(Spacer(1, 3))  # Small space between paragraphs
         
         # If no content was added (shouldn't happen), add the raw text
-        if len(content) <= header_added_count:
+        content_before = len([item for item in content if hasattr(item, 'text')])
+        if content_before == 0:
             content.append(Paragraph("<b>Post-Operative Care Instructions</b>", bold_style))
             content.append(Spacer(1, 4))
             content.append(Paragraph(overview_text, normal_style))
