@@ -78,10 +78,11 @@ const PracticeProcedureView = () => {
       console.log('🏥 PracticeProcedureView - Generating PDF with practice data:', {
         practiceName: procedureForPDF.practiceName,
         practiceOfficeHours: procedureForPDF.practiceOfficeHours,
-        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact,
+        practiceData: practice
       });
 
-      const success = await generateProcedurePDF(procedureForPDF);
+      const success = await generateProcedurePDF(procedureForPDF, practice);
       
       if (success) {
         toast({
