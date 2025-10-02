@@ -165,113 +165,12 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
     print(f"🔍 DEBUG: Procedure data fields: {list(procedure_data.keys())}")
     print(f"🔍 DEBUG: Overview content preview: {str(procedure_data.get('overview', ''))[:200]}...")
     
-    # Parse the overview content and format with proper sections
+    # For now, just use the raw overview content until we fix the data retrieval
     if procedure_data.get('overview'):
-        overview_text = procedure_data['overview']
-        
-        # Parse sections from the overview text
-        sections = []
-        
-        # Define section patterns to look for
-        section_patterns = [
-            ('Purpose', ['purpose', 'overview', 'about this procedure']),
-            ('First 24-48 Hours', ['first 24', 'first 48', 'immediate', 'immediately after']),
-            ('Pain and Sensitivity', ['pain', 'sensitivity', 'discomfort', 'medication']),
-            ('Oral Hygiene', ['oral hygiene', 'cleaning', 'brushing', 'flossing']),
-            ('Diet', ['diet', 'eating', 'food', 'drink', 'nutrition']),
-            ('Special Precautions', ['precautions', 'warning', 'avoid', 'do not', "don't"]),
-            ('Followup', ['follow up', 'followup', 'next visit', 'appointment'])
-        ]
-        
-        # Split content by common section delimiters
-        lines = overview_text.replace('\n\n', '\n').split('\n')
-        current_section = None
-        current_content = []
-        
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-                
-            # Check if this line is a section header
-            found_section = False
-            line_lower = line.lower()
-            
-            for section_name, keywords in section_patterns:
-                for keyword in keywords:
-                    if keyword in line_lower and len(line) < 100:  # Section headers are usually short
-                        # Save previous section if exists
-                        if current_section and current_content:
-                            sections.append((current_section, ' '.join(current_content)))
-                        
-                        # Start new section
-                        current_section = section_name
-                        current_content = []
-                        found_section = True
-                        break
-                if found_section:
-                    break
-            
-            # If not a section header, add to current content
-            if not found_section:
-                if not current_section:
-                    current_section = 'Purpose'  # Default first section
-                current_content.append(line)
-        
-        # Add the last section
-        if current_section and current_content:
-            sections.append((current_section, ' '.join(current_content)))
-        
-        # If no sections were found, treat the whole thing as Purpose
-        if not sections:
-            sections = [('Purpose', overview_text)]
-        
-        # Render each section
-        for section_name, section_content in sections:
-            content.append(Paragraph(f"<b>{section_name}</b>", bold_style))
-            content.append(Spacer(1, 4))
-            
-            # Split content into sentences and format as paragraphs
-            sentences = section_content.split('. ')
-            for sentence in sentences:
-                sentence = sentence.strip()
-                if sentence and len(sentence) > 3:
-                    # Add period back if not present
-                    if not sentence.endswith('.') and not sentence.endswith('!') and not sentence.endswith('?'):
-                        sentence += '.'
-                    content.append(Paragraph(f"• {sentence}", normal_style))
-            
-            content.append(Spacer(1, 16))
-    
-    # Also check for structured data in case it exists
-    structured_fields = [
-        ('immediateAftercare', 'First 24-48 Hours'),
-        ('medications', 'Pain and Sensitivity'), 
-        ('oralHygiene', 'Oral Hygiene'),
-        ('dietRestrictions', 'Diet'),
-        ('warningSignsToCallDoctor', 'Special Precautions'),
-        ('recoveryTimeline', 'Followup')
-    ]
-    
-    for field_name, section_label in structured_fields:
-        if procedure_data.get(field_name):
-            content.append(Paragraph(f"<b>{section_label}</b>", bold_style))
-            content.append(Spacer(1, 4))
-            
-            field_data = procedure_data[field_name]
-            if isinstance(field_data, list):
-                for item in field_data:
-                    if isinstance(item, dict):
-                        # Handle timeline objects
-                        period = item.get('period', '')
-                        description = item.get('description', '')
-                        content.append(Paragraph(f"• {period}: {description}", normal_style))
-                    else:
-                        content.append(Paragraph(f"• {item}", normal_style))
-            else:
-                content.append(Paragraph(f"• {field_data}", normal_style))
-            
-            content.append(Spacer(1, 16))
+        content.append(Paragraph("<b>Post-Operative Care Instructions</b>", bold_style))
+        content.append(Spacer(1, 8))
+        content.append(Paragraph(procedure_data['overview'], normal_style))
+        content.append(Spacer(1, 16))
     
     # Practice information footer
     content.append(Spacer(1, 30))
