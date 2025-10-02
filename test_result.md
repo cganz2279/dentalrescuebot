@@ -279,9 +279,9 @@ frontend:
 
   - task: "Practice Login Functionality"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/components/PracticeLogin.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -294,6 +294,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "🎉 CORS ISSUE COMPLETELY RESOLVED - ROOT CAUSE IDENTIFIED AND SOLUTION CONFIRMED: Conducted comprehensive CORS debugging and discovered the exact issue. ✅ PROBLEM IDENTIFIED: User was attempting to access wrong backend URL (https://dentist-portal-3.emergent.host) which has CORS configuration issues at the Kubernetes ingress level. ✅ SOLUTION CONFIRMED: The correct backend URL (https://app.dentalaftercarenotes.com) has fully functional CORS and login capabilities. ✅ COMPREHENSIVE TESTING COMPLETED: (1) Backend health checks working on both URLs ✅, (2) CORS preflight testing reveals dentist-portal-3.emergent.host returns 400 status with missing Access-Control-Allow-Origin header ❌, while app.dentalaftercarenotes.com returns 204 status with proper CORS headers ✅, (3) Complete login flow testing shows successful authentication with cganz2279@gmail.com/password123 credentials on correct URL ✅, (4) JWT token generation and practice data retrieval (Cary Ganz DDS PC, ID: 0b08d321-ae1a-43d5-b69a-4850cfa3a9fc) working perfectly ✅. ✅ FRONTEND CONFIGURATION VERIFIED: Frontend .env file correctly configured with REACT_APP_BACKEND_URL=https://app.dentalaftercarenotes.com. ✅ INFRASTRUCTURE ANALYSIS: Detected nginx/1.22.1 with Google Cloud proxy - ingress controller allows localhost:3000 for development but blocks HTTPS origins for dentist-portal-3.emergent.host due to missing ingress CORS annotations. 🎯 CRITICAL FINDING: Login functionality is working perfectly when using the correct URL. User should access https://app.dentalaftercarenotes.com (not https://dentist-portal-3.emergent.host) and clear browser cache if needed. The CORS issue is resolved by using the properly configured backend URL."
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL CUSTOM DOMAIN LOGIN COMPLETELY BROKEN - COMPREHENSIVE TESTING CONFIRMS INFRASTRUCTURE FAILURE: Conducted thorough testing of custom domain login functionality at https://app.dentalaftercarenotes.com as specifically requested in review. ❌ BACKEND URL INCONSISTENCY CONFIRMED: Frontend uses different backend URLs on different routes: (1) Root page: 'https://dentist-dashboard-2.preview.emergentagent.com', (2) /practice route: 'https://dentist-portal-3.emergent.host'. This causes CORS policy violations and prevents proper authentication. ❌ REACT COMPONENT RENDERING FAILURE: Login form appears visually in screenshots but JavaScript cannot locate input elements (email, password fields return null), indicating severe component mounting or DOM rendering issues. ❌ LOGIN COMPLETELY NON-FUNCTIONAL: Cannot fill credentials or submit login form due to element detection failures. All attempts to locate form elements using multiple selectors failed. ❌ SMS/TEXTING FEATURES INACCESSIBLE: Cannot test SMS functionality because login is completely broken. User cannot access dashboard where SMS features are located. ❌ FORGOT PASSWORD WITH SMS UNAVAILABLE: Cannot access forgot password modal due to login form rendering failures. ✅ BACKEND SMS INFRASTRUCTURE CONFIRMED: Previous test results show SMS functionality (Twilio integration, password recovery SMS, SMS PDF) is properly implemented and working. 🔧 CRITICAL INFRASTRUCTURE ISSUE: The custom domain https://app.dentalaftercarenotes.com has fundamental problems: (1) Inconsistent backend URL configuration causing CORS errors, (2) React component rendering failures preventing form interaction, (3) Complete inability to authenticate users. This requires immediate infrastructure fixes: backend CORS configuration for custom domain, frontend environment variable consistency, and React app deployment debugging. Until resolved, the custom domain is completely unusable for any user authentication or SMS functionality testing."
 
 metadata:
   created_by: "testing_agent"
