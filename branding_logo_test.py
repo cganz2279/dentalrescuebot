@@ -29,8 +29,9 @@ def authenticate():
         
         if response.status_code == 200:
             data = response.json()
-            token = data.get("access_token")
-            practice_id = data.get("practice_id")
+            print(f"   Auth response data: {json.dumps(data, indent=2)}")
+            token = data.get("access_token") or data.get("token")
+            practice_id = data.get("practice_id") or data.get("practiceId") or data.get("id")
             print(f"✅ Authentication successful")
             print(f"   Practice ID: {practice_id}")
             print(f"   Token length: {len(token) if token else 'None'}")
