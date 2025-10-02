@@ -278,13 +278,16 @@ frontend:
     implemented: true
     working: false
     file: "/app/frontend/src/components/PracticeLogin.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
           comment: "🚨 CRITICAL LOGIN FAILURE - CORS ERROR AND BACKEND URL MISMATCH: User reports inability to login at https://app.dentalaftercarenotes.com with credentials cganz2279@gmail.com/password123. ❌ ROOT CAUSE: Frontend production build uses wrong backend URL 'https://dentist-portal-3.emergent.host' instead of 'https://app.dentalaftercarenotes.com', causing CORS policy violations. Browser blocks all API requests with 'Access to XMLHttpRequest blocked by CORS policy' error. ❌ CACHING ISSUE: Despite rebuilding frontend with correct environment variables, production server serves cached HTML/JS files with old backend URL. ✅ BACKEND CONFIRMED WORKING: Authentication APIs functional per previous tests. ✅ FRONTEND CODE CORRECT: New build contains correct configuration. 🔧 URGENT: CDN/caching layer must be cleared to serve updated frontend build. This prevents ALL users from logging in."
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL CDN CACHING ISSUE CONFIRMED - LOGIN STILL FAILING: Conducted comprehensive testing after frontend rebuild with correct environment variables. ❌ PERSISTENT CACHING PROBLEM: Despite rebuilding frontend with correct REACT_APP_BACKEND_URL=https://app.dentalaftercarenotes.com, browser continues loading old JavaScript file (main.9744b891.js) instead of new file (main.58d9e34b.js). ❌ CORS ERRORS PERSIST: All login attempts fail with 'Access to XMLHttpRequest at https://dentist-portal-3.emergent.host/api/auth/login blocked by CORS policy'. ✅ FRONTEND BUILD CORRECT: New build files contain correct backend URL configuration and are properly served by local server. ✅ BACKEND WORKING: Previous tests confirm authentication APIs are functional. ❌ CDN/PROXY CACHING: The issue is at the CDN or proxy layer serving cached static assets. Cache-busting attempts with query parameters failed to resolve the issue. 🔧 INFRASTRUCTURE ISSUE: This requires CDN cache invalidation or proxy configuration changes that are beyond application-level fixes. The login functionality will remain broken until the caching layer serves the updated JavaScript files."
 
 metadata:
   created_by: "testing_agent"
