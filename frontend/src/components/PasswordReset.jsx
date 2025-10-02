@@ -40,7 +40,7 @@ const PasswordReset = () => {
   const validateToken = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL || 'https://dentist-dashboard-2.preview.emergentagent.com'}/api/auth/validate-reset-token/${token}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/auth/validate-reset-token/${token}`,
         {
           method: 'GET',
         }
