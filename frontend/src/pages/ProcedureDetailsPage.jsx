@@ -468,21 +468,6 @@ const ProcedureDetailsPage = () => {
             margin: 1in;
             size: letter;
           }
-          
-          /* Hide any print preview elements */
-          .print-preview-window,
-          [class*="print-preview"],
-          iframe[src*="print"] {
-            display: none !important;
-            visibility: hidden !important;
-          }
-        }
-        
-        /* Hide print preview elements on screen too */
-        .print-preview-window,
-        [class*="print-preview"],
-        iframe[src*="print"] {
-          display: none !important;
         }
       `}</style>
 
