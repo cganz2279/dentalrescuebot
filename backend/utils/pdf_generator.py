@@ -59,8 +59,9 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
         'NormalText',
         parent=styles['Normal'],
         fontSize=11,
-        spaceBefore=4,
-        spaceAfter=4
+        spaceBefore=0,
+        spaceAfter=6,
+        leftIndent=10
     )
     
     # Build content
