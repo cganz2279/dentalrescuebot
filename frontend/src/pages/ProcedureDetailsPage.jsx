@@ -444,6 +444,11 @@ const ProcedureDetailsPage = () => {
             margin-left: 20pt !important;
             margin-bottom: 6pt !important;
           }
+          
+          .print-numbered:before {
+            content: attr(data-number) ". " !important;
+            font-weight: bold !important;
+          }
         }
         
         /* Hide print header by default */
