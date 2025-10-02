@@ -124,6 +124,7 @@ const AdminDashboard = ({ adminToken }) => {
   const [selectedPractice, setSelectedPractice] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showTutorialManagement, setShowTutorialManagement] = useState(false);
   
   // Procedures state
   const [procedures, setProcedures] = useState([]);
