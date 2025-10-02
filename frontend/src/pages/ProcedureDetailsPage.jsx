@@ -249,7 +249,7 @@ const ProcedureDetailsPage = () => {
   };
 
   const handlePrint = () => {
-    // Force immediate print without preview windows
+    // Simple print with browser keyboard shortcut to avoid preview
     try {
       if (!procedureData) {
         toast({
@@ -260,87 +260,34 @@ const ProcedureDetailsPage = () => {
         return;
       }
 
-      // Create a temporary style to force print behavior
-      const printStyle = document.createElement('style');
-      printStyle.innerHTML = `
-        @media print {
-          body { 
-            margin: 0 !important; 
-            padding: 0 !important;
-          }
-          * { 
-            visibility: hidden !important; 
-          }
-          .printable-content, .printable-content * { 
-            visibility: visible !important; 
-          }
-          .printable-content { 
-            position: absolute !important; 
-            left: 0 !important; 
-            top: 0 !important; 
-            width: 100% !important;
-          }
-        }
-      `;
-      document.head.appendChild(printStyle);
+      // Show instructions to user about printing
+      toast({
+        title: "Print Instructions",
+        description: "Use Ctrl+P (Windows) or Cmd+P (Mac) and select 'Print' directly to avoid preview window.",
+        variant: "default",
+      });
 
-      // Set up event listeners for print events
-      const beforePrint = () => {
-        // Hide browser UI elements that might show in preview
-        document.body.style.overflow = 'hidden';
-      };
-
-      const afterPrint = () => {
-        // Clean up
-        document.body.style.overflow = '';
-        if (printStyle.parentNode) {
-          printStyle.parentNode.removeChild(printStyle);
-        }
-        window.removeEventListener('beforeprint', beforePrint);
-        window.removeEventListener('afterprint', afterPrint);
-        
-        // Force close any remaining print dialogs/previews
-        setTimeout(() => {
-          // Try to close any print preview windows
-          if (window.chrome && window.chrome.tabs) {
-            // Chrome specific
-            window.chrome.tabs.query({}, (tabs) => {
-              tabs.forEach(tab => {
-                if (tab.url && tab.url.includes('chrome://print/')) {
-                  window.chrome.tabs.remove(tab.id);
-                }
-              });
-            });
-          }
-          
-          // Focus back to main window
-          window.focus();
-          
-          // Try to escape any remaining print mode
-          document.dispatchEvent(new KeyboardEvent('keydown', {
-            key: 'Escape',
-            code: 'Escape',
-            keyCode: 27,
-            which: 27
-          }));
-        }, 500);
-      };
-
-      // Add event listeners
-      window.addEventListener('beforeprint', beforePrint);
-      window.addEventListener('afterprint', afterPrint);
+      // Trigger keyboard shortcut for print
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const printEvent = new KeyboardEvent('keydown', {
+        key: 'p',
+        code: 'KeyP',
+        ctrlKey: !isMac,
+        metaKey: isMac,
+        bubbles: true
+      });
       
-      // Execute print
-      setTimeout(() => {
-        window.print();
-      }, 100);
+      document.dispatchEvent(printEvent);
       
     } catch (error) {
       console.error('Print error:', error);
+      // Fallback to window.print
+      window.print();
+      
       toast({
-        title: "Print Failed",
-        description: "Failed to print. Please try again.",
-        variant: "destructive",
+        title: "Print Tip",
+        description: "After printing, close any preview window that opens.",
+        variant: "default",
       });
     }
   };
