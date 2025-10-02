@@ -161,41 +161,55 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
     
     # Purpose section
     if procedure_data.get('overview'):
-        content.append(Paragraph("Purpose", bold_style))
+        content.append(Paragraph("<b>Purpose</b>", bold_style))
+        content.append(Spacer(1, 4))
         content.append(Paragraph(procedure_data['overview'], normal_style))
-        content.append(Spacer(1, 12))
+        content.append(Spacer(1, 16))
     
     # Immediate aftercare
     if procedure_data.get('immediateAftercare'):
-        content.append(Paragraph("First 24 Hours", bold_style))
+        content.append(Paragraph("<b>First 24-48 Hours</b>", bold_style))
+        content.append(Spacer(1, 4))
         for instruction in procedure_data['immediateAftercare']:
             content.append(Paragraph(f"• {instruction}", normal_style))
-        content.append(Spacer(1, 12))
+        content.append(Spacer(1, 16))
+    
+    # Pain and sensitivity (from medications field)
+    if procedure_data.get('medications'):
+        content.append(Paragraph("<b>Pain and Sensitivity</b>", bold_style))
+        content.append(Spacer(1, 4))
+        for medication in procedure_data['medications']:
+            content.append(Paragraph(f"• {medication}", normal_style))
+        content.append(Spacer(1, 16))
+    
+    # Oral Hygiene (this might be in immediateAftercare or a separate field)
+    if procedure_data.get('oralHygiene'):
+        content.append(Paragraph("<b>Oral Hygiene</b>", bold_style))
+        content.append(Spacer(1, 4))
+        for hygiene in procedure_data['oralHygiene']:
+            content.append(Paragraph(f"• {hygiene}", normal_style))
+        content.append(Spacer(1, 16))
     
     # Diet restrictions
     if procedure_data.get('dietRestrictions'):
-        content.append(Paragraph("Diet", bold_style))
+        content.append(Paragraph("<b>Diet</b>", bold_style))
+        content.append(Spacer(1, 4))
         for restriction in procedure_data['dietRestrictions']:
             content.append(Paragraph(f"• {restriction}", normal_style))
-        content.append(Spacer(1, 12))
+        content.append(Spacer(1, 16))
     
-    # Medications
-    if procedure_data.get('medications'):
-        content.append(Paragraph("Pain & Sensitivity", bold_style))
-        for medication in procedure_data['medications']:
-            content.append(Paragraph(f"• {medication}", normal_style))
-        content.append(Spacer(1, 12))
-    
-    # Warning signs
+    # Warning signs / Special Precautions
     if procedure_data.get('warningSignsToCallDoctor'):
-        content.append(Paragraph("Special Precautions", bold_style))
+        content.append(Paragraph("<b>Special Precautions</b>", bold_style))
+        content.append(Spacer(1, 4))
         for warning in procedure_data['warningSignsToCallDoctor']:
             content.append(Paragraph(f"• {warning}", normal_style))
-        content.append(Spacer(1, 12))
+        content.append(Spacer(1, 16))
     
-    # Recovery timeline
+    # Recovery timeline / Follow-up
     if procedure_data.get('recoveryTimeline'):
-        content.append(Paragraph("Follow-Up", bold_style))
+        content.append(Paragraph("<b>Followup</b>", bold_style))
+        content.append(Spacer(1, 4))
         for timeline_item in procedure_data['recoveryTimeline']:
             if isinstance(timeline_item, dict):
                 period = timeline_item.get('period', '')
@@ -203,7 +217,7 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
                 content.append(Paragraph(f"• {period}: {description}", normal_style))
             else:
                 content.append(Paragraph(f"• {timeline_item}", normal_style))
-        content.append(Spacer(1, 12))
+        content.append(Spacer(1, 16))
     
     # Practice information footer
     content.append(Spacer(1, 30))
