@@ -2016,6 +2016,13 @@ const AdminDashboard = ({ adminToken }) => {
             </Card>
           </CustomTabsContent>
         </CustomTabs>
+
+        {/* Tutorial Management Modal */}
+        <TutorialManagement
+          isOpen={showTutorialManagement}
+          onClose={() => setShowTutorialManagement(false)}
+          adminToken={adminToken}
+        />
       </div>
     </div>
   );
