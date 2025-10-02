@@ -80,7 +80,7 @@ const PasswordReset = () => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL || 'https://dentist-dashboard-2.preview.emergentagent.com'}/api/auth/reset-password`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/auth/reset-password`,
         {
           method: 'POST',
           headers: {
