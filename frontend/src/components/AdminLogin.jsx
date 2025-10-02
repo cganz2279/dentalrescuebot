@@ -470,7 +470,7 @@ const AdminDashboard = ({ adminToken }) => {
             adminLastName: practice.adminLastName || 'User',
             tempPassword: practice.tempPassword || 'Please contact support for password'
           },
-          appUrl: 'https://dentist-dashboard-2.preview.emergentagent.com'
+          appUrl: process.env.REACT_APP_BACKEND_URL
         })
       });
       
