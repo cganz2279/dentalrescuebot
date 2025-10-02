@@ -746,7 +746,7 @@ const PracticeDashboard = () => {
                   className="h-12 w-auto object-contain"
                   onError={(e) => {
                     console.error('Custom logo failed to load, falling back to default');
-                    e.target.src = "https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png";
+                    e.target.src = "https://customer-assets.emergentagent.com/job_dentist-dashboard-2/artifacts/tjqph8wg_ChatGPT%20Image%20Sep%2028%2C%202025%2C%2011_41_56%20PM.png";
                   }}
                 />
               ) : (
