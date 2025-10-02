@@ -328,6 +328,9 @@ const ProcedureDetailsPage = () => {
             margin: 0 !important;
             padding: 20px !important;
             background: white !important;
+            font-family: Arial, sans-serif !important;
+            font-size: 12pt !important;
+            line-height: 1.5 !important;
           }
           
           /* Completely hide navigation and buttons */
@@ -346,7 +349,8 @@ const ProcedureDetailsPage = () => {
           .print-header {
             display: block !important;
             visibility: visible !important;
-            margin-bottom: 2rem;
+            margin-bottom: 2rem !important;
+            text-align: center !important;
           }
           
           .print-header img {
@@ -357,39 +361,88 @@ const ProcedureDetailsPage = () => {
           }
           
           .print-header h1 {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 18pt !important;
+            font-weight: bold !important;
+            margin-bottom: 0.5rem !important;
             color: black !important;
+            text-align: center !important;
           }
           
           .print-header p {
-            font-size: 1.125rem;
-            margin-bottom: 0.25rem;
+            font-size: 12pt !important;
+            margin-bottom: 0.25rem !important;
             color: black !important;
+            text-align: center !important;
           }
           
           .print-header hr {
             border-top: 2px solid black;
             margin: 1rem 0;
+            width: 100%;
+          }
+          
+          /* Section formatting for print */
+          .print-section {
+            margin-bottom: 20pt !important;
+            page-break-inside: avoid !important;
+          }
+          
+          .print-section-label {
+            font-weight: bold !important;
+            font-size: 14pt !important;
+            color: black !important;
+            margin-bottom: 8pt !important;
+            margin-top: 16pt !important;
+            display: block !important;
+          }
+          
+          .print-section-content {
+            font-size: 12pt !important;
+            line-height: 1.5 !important;
+            color: black !important;
+            margin-bottom: 12pt !important;
+            text-align: justify !important;
+          }
+          
+          .print-section-content p {
+            margin-bottom: 8pt !important;
           }
           
           /* Ensure text colors are print-friendly */
           * {
             color: black !important;
-            background: transparent !important;
+            background: white !important;
           }
           
-          /* Remove shadows and gradients for printing */
-          .shadow-sm, .shadow-md, .shadow-lg {
+          /* Remove all styling that doesn't print well */
+          .shadow-sm, .shadow-md, .shadow-lg,
+          .bg-gradient-to-r, .bg-blue-50, .bg-green-50, .bg-gray-50,
+          .rounded, .rounded-lg, .border {
             box-shadow: none !important;
+            background: white !important;
+            border: none !important;
+            border-radius: 0 !important;
           }
           
-          .bg-gradient-to-r,
-          .bg-blue-50,
-          .bg-green-50,
-          .bg-gray-50 {
-            background: #f8f9fa !important;
+          /* Hide section numbers and decorative elements */
+          .bg-blue-500, .bg-green-500, .bg-gray-700, .bg-gray-800 {
+            display: none !important;
+          }
+          
+          /* Clean bullet points and numbered lists */
+          .print-bullet {
+            margin-left: 20pt !important;
+            margin-bottom: 6pt !important;
+          }
+          
+          .print-bullet:before {
+            content: "• " !important;
+            font-weight: bold !important;
+          }
+          
+          .print-numbered {
+            margin-left: 20pt !important;
+            margin-bottom: 6pt !important;
           }
         }
         
@@ -398,10 +451,11 @@ const ProcedureDetailsPage = () => {
           display: none;
         }
         
-        /* Prevent print dialog from staying open */
+        /* Print page settings */
         @media print {
           @page {
             margin: 1in;
+            size: letter;
           }
         }
       `}</style>
