@@ -262,11 +262,12 @@ const ProcedureDetailsPage = () => {
       // Simple, direct print call
       window.print();
       
-      // Note to user about browser behavior
+      // Clear instructions for users
       toast({
-        title: "Print Dialog Opened",
-        description: "Close any preview window manually after printing completes.",
+        title: "Printing Instructions",
+        description: "In the print dialog: Click 'Print' button directly. After printing, close the preview tab that opens (this is normal browser behavior).",
         variant: "default",
+        duration: 8000,
       });
       
     } catch (error) {
