@@ -36,6 +36,15 @@ print(f"Using database: {os.environ.get('DB_NAME', 'test_database')}")
 # Create the main app without a prefix
 app = FastAPI()
 
+# Create uploads directory
+uploads_dir = Path("/app/uploads")
+uploads_dir.mkdir(exist_ok=True)
+(uploads_dir / "tutorials").mkdir(exist_ok=True)
+
+# Mount static files for serving uploads
+from fastapi.staticfiles import StaticFiles
+app.mount("/uploads", StaticFiles(directory="/app/uploads"), name="uploads")
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
