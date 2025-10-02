@@ -123,7 +123,11 @@ function App() {
           <Route path="/reset-password" element={<PasswordReset />} />
           
           {/* Practice Login Route - For individual practices */}
-          <Route path="/practice" element={<PracticeLogin />} />
+          <Route path="/practice" element={
+            <AuthProvider>
+              <PracticeLogin />
+            </AuthProvider>
+          } />
           
           {/* All other specific routes within AuthProvider */}
           <Route path="/register" element={
