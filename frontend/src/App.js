@@ -225,11 +225,6 @@ function App() {
               <AppContent />
             </AuthProvider>
           } />
-          <Route path="/practice" element={
-            <AuthProvider>
-              <AppContent />
-            </AuthProvider>
-          } />
           <Route path="/" element={
             <AuthProvider>
               <AppContent />
