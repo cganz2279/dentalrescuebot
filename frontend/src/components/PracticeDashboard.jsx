@@ -844,6 +844,12 @@ const PracticeDashboard = () => {
         onSuccess={handleImportSuccess}
       />
 
+      {/* Tutorials Modal */}
+      <TutorialsModal
+        isOpen={showTutorialsModal}
+        onClose={() => setShowTutorialsModal(false)}
+      />
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats Cards */}
