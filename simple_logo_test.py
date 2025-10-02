@@ -27,7 +27,11 @@ try:
             dash_data = dash_response.json()
             print(f"Dashboard keys: {list(dash_data.keys())}")
             
-            branding = dash_data.get("branding", {})
+            # Check nested data structure
+            data_section = dash_data.get("data", {})
+            print(f"Data section keys: {list(data_section.keys())}")
+            
+            branding = data_section.get("branding", {})
             logo = branding.get("logo", "")
             
             print(f"Branding data: {branding}")
