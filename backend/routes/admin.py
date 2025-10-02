@@ -533,7 +533,7 @@ async def send_welcome_email(
         admin_name = f"{admin_credentials.get('adminFirstName', '')} {admin_credentials.get('adminLastName', '')}".strip()
         practice_name = practice_data.get('practiceName')
         temp_password = admin_credentials.get('tempPassword')
-        login_url = app_url or "https://dentist-dashboard-2.preview.emergentagent.com"
+        login_url = app_url or "https://app.dentalaftercarenotes.com"
         
         # Create welcome email HTML content
         html_content = f"""
