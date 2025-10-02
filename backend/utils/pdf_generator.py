@@ -166,62 +166,53 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
     print(f"🔍 DEBUG: Procedure data fields: {list(procedure_data.keys())}")
     print(f"🔍 DEBUG: Full overview content: {procedure_data.get('overview', 'NO OVERVIEW FOUND')}")
     
-    # Use the full overview content with simple formatting
+    # SIMPLE APPROACH: Just format the entire content properly without complex parsing
     if procedure_data.get('overview'):
         overview_text = procedure_data['overview']
         
-        # Split by common section separators but keep all content
-        sections = []
+        # Add main header
+        content.append(Paragraph("<b>Post-Operative Care Instructions</b>", bold_style))
+        content.append(Spacer(1, 6))
         
-        # Try to split by double newlines first (paragraph breaks)
-        paragraphs = overview_text.split('\n\n')
+        # Split into paragraphs and format each one
+        # Try different splitting methods to preserve all content
+        paragraphs = []
         
-        # If no double newlines, split by single newlines
-        if len(paragraphs) == 1:
-            paragraphs = overview_text.split('\n')
-        
-        # If still one big block, split by periods followed by capital letters (sentence breaks)
-        if len(paragraphs) == 1:
+        # First try double newline splits
+        if '\n\n' in overview_text:
+            paragraphs = [p.strip() for p in overview_text.split('\n\n') if p.strip()]
+        elif '\n' in overview_text:
+            paragraphs = [p.strip() for p in overview_text.split('\n') if p.strip()]
+        else:
+            # Single block of text - split by sentences for readability
             import re
-            paragraphs = re.split(r'(?<=\.)\s+(?=[A-Z])', overview_text)
+            sentences = re.split(r'(?<=\.)\s+', overview_text)
+            # Group sentences into paragraphs (3-4 sentences each)
+            for i in range(0, len(sentences), 3):
+                paragraph = ' '.join(sentences[i:i+3]).strip()
+                if paragraph:
+                    paragraphs.append(paragraph)
         
-        print(f"🔍 DEBUG: Split into {len(paragraphs)} paragraphs")
+        print(f"🔍 DEBUG: Created {len(paragraphs)} paragraphs from content")
         
-        # Look for obvious section headers in the text
-        section_headers = ['Purpose', 'First 24-48 Hours', 'Pain and Sensitivity', 'Oral Hygiene', 'Diet', 'Special Precautions', 'Followup']
-        current_section = 'Post-Operative Care Instructions'  # Default header
-        
-        for i, paragraph in enumerate(paragraphs):
-            paragraph = paragraph.strip()
-            if not paragraph:
-                continue
-                
-            # Check if this paragraph is a section header
-            is_header = False
-            for header in section_headers:
-                if header.lower() in paragraph.lower() and len(paragraph) < 100:
-                    current_section = header
-                    is_header = True
-                    break
-            
-            if is_header:
-                # Add section header
-                content.append(Paragraph(f"<b>{current_section}</b>", bold_style))
-                content.append(Spacer(1, 2))
-            else:
-                # Add content paragraph
-                # Clean up any existing formatting
-                clean_paragraph = paragraph.replace('**', '').replace('*', '').strip()
-                if clean_paragraph:
-                    content.append(Paragraph(clean_paragraph, normal_style))
-                    content.append(Spacer(1, 3))  # Small space between paragraphs
-        
-        # If no content was added (shouldn't happen), add the raw text
-        content_before = len([item for item in content if hasattr(item, 'text')])
-        if content_before == 0:
-            content.append(Paragraph("<b>Post-Operative Care Instructions</b>", bold_style))
-            content.append(Spacer(1, 4))
-            content.append(Paragraph(overview_text, normal_style))
+        # Add each paragraph with proper formatting
+        for paragraph in paragraphs:
+            if paragraph:
+                # Look for section-like headings and make them bold
+                if any(keyword in paragraph.lower() for keyword in ['purpose', 'first 24', 'pain', 'diet', 'hygiene', 'precaution', 'follow']):
+                    if len(paragraph) < 100:  # Likely a header
+                        content.append(Paragraph(f"<b>{paragraph}</b>", bold_style))
+                        content.append(Spacer(1, 2))
+                    else:
+                        content.append(Paragraph(paragraph, normal_style))
+                        content.append(Spacer(1, 4))
+                else:
+                    content.append(Paragraph(paragraph, normal_style))
+                    content.append(Spacer(1, 4))
+    
+    else:
+        # Fallback if no overview
+        content.append(Paragraph("<b>No instructions available</b>", bold_style))
     
     # Practice information footer
     content.append(Spacer(1, 30))
