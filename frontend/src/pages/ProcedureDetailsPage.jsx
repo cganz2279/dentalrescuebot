@@ -327,49 +327,101 @@ const ProcedureDetailsPage = () => {
       {/* Print Styles */}
       <style>{`
         @media print {
+          /* Hide everything first */
           body * {
-            visibility: hidden;
+            visibility: hidden !important;
           }
-          .printable-content, .printable-content * {
-            visibility: visible;
+          
+          /* Show only printable content */
+          .printable-content, 
+          .printable-content * {
+            visibility: visible !important;
           }
+          
+          /* Position printable content */
           .printable-content {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            background: white !important;
           }
-          .no-print {
+          
+          /* Completely hide navigation and buttons */
+          .no-print,
+          nav,
+          header,
+          .header,
+          button,
+          .button,
+          [role="button"] {
             display: none !important;
+            visibility: hidden !important;
           }
+          
+          /* Show print header */
           .print-header {
             display: block !important;
+            visibility: visible !important;
             margin-bottom: 2rem;
           }
+          
           .print-header img {
             max-height: 80px;
             width: auto;
             display: block !important;
             margin: 0 auto 1rem auto;
           }
+          
           .print-header h1 {
             font-size: 2rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
-            color: black;
+            color: black !important;
           }
+          
           .print-header p {
             font-size: 1.125rem;
             margin-bottom: 0.25rem;
-            color: black;
+            color: black !important;
           }
+          
           .print-header hr {
             border-top: 2px solid black;
             margin: 1rem 0;
           }
+          
+          /* Ensure text colors are print-friendly */
+          * {
+            color: black !important;
+            background: transparent !important;
+          }
+          
+          /* Remove shadows and gradients for printing */
+          .shadow-sm, .shadow-md, .shadow-lg {
+            box-shadow: none !important;
+          }
+          
+          .bg-gradient-to-r,
+          .bg-blue-50,
+          .bg-green-50,
+          .bg-gray-50 {
+            background: #f8f9fa !important;
+          }
         }
+        
+        /* Hide print header by default */
         .print-header {
           display: none;
+        }
+        
+        /* Prevent print dialog from staying open */
+        @media print {
+          @page {
+            margin: 1in;
+          }
         }
       `}</style>
 
