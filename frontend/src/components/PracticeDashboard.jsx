@@ -910,6 +910,14 @@ const PracticeDashboard = () => {
             <span className="text-xs opacity-90">View & Print Docs</span>
           </Button>
           <Button 
+            onClick={() => setShowTutorialsModal(true)}
+            className="bg-green-600 hover:bg-green-700 text-white h-20 flex flex-col"
+          >
+            <BookOpen className="h-6 w-6 mb-2" />
+            <span className="font-medium">Tutorials</span>
+            <span className="text-xs opacity-90">Learn the App</span>
+          </Button>
+          <Button 
             onClick={() => navigate('/practice-settings')}
             variant="outline" 
             className="h-20 flex flex-col"
