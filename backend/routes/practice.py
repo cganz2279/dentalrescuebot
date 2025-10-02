@@ -2453,30 +2453,61 @@ async def email_pdf_to_patient(
                 detail="Practice not found"
             )
         
-        # Try to get procedure details by ID first
+        # Enhanced procedure lookup with debugging
+        print(f"🔍 Looking for procedure - ID: {email_request.procedureId}, Name: {email_request.procedureName}")
+        
+        # Try multiple lookup strategies
+        procedure = None
+        
+        # Strategy 1: Direct ID match
         procedure = await db.procedures.find_one(
             {"id": email_request.procedureId},
             {"_id": 0}
         )
+        print(f"🔍 Strategy 1 (ID match): {'Found' if procedure else 'Not found'}")
         
-        # If not found by ID, try to find by name
+        # Strategy 2: UUID format ID match (in case ID is stored differently)
+        if not procedure:
+            procedure = await db.procedures.find_one(
+                {"_id": email_request.procedureId},
+                {"_id": 0}
+            )
+            print(f"🔍 Strategy 2 (UUID _id): {'Found' if procedure else 'Not found'}")
+        
+        # Strategy 3: Name exact match
+        if not procedure:
+            procedure = await db.procedures.find_one(
+                {"name": email_request.procedureName},
+                {"_id": 0}
+            )
+            print(f"🔍 Strategy 3 (Exact name): {'Found' if procedure else 'Not found'}")
+        
+        # Strategy 4: Case insensitive name match
+        if not procedure:
+            procedure = await db.procedures.find_one(
+                {"name": {"$regex": f"^{email_request.procedureName}$", "$options": "i"}},
+                {"_id": 0}
+            )
+            print(f"🔍 Strategy 4 (Case insensitive): {'Found' if procedure else 'Not found'}")
+        
+        # Strategy 5: Partial name match
         if not procedure:
             procedure = await db.procedures.find_one(
                 {"name": {"$regex": email_request.procedureName, "$options": "i"}},
                 {"_id": 0}
             )
+            print(f"🔍 Strategy 5 (Partial match): {'Found' if procedure else 'Not found'}")
         
-        # If still not found, create a minimal procedure object
+        # Last resort: List all available procedures for debugging
         if not procedure:
-            procedure = {
-                "id": email_request.procedureId,
-                "name": email_request.procedureName,
-                "overview": f"Post-operative instructions for {email_request.procedureName}",
-                "immediateAftercare": ["Follow your dentist's specific instructions"],
-                "dietRestrictions": ["Follow recommended dietary guidelines"],
-                "medications": ["Take medications as prescribed"],
-                "warningSignsToCallDoctor": ["Contact office if you experience unusual symptoms"]
-            }
+            all_procedures = await db.procedures.find({}, {"_id": 0, "id": 1, "name": 1}).to_list(length=10)
+            print(f"🔍 Available procedures in database: {all_procedures}")
+            
+            # CRITICAL: Don't create fake data - raise an error instead
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Procedure '{email_request.procedureName}' (ID: {email_request.procedureId}) not found in database. Available procedures: {[p.get('name', 'Unknown') for p in all_procedures]}"
+            )
         
         # Generate PDF content
         if not PDF_GENERATOR_AVAILABLE:
