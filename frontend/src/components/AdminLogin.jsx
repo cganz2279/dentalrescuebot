@@ -28,6 +28,7 @@ import {
   Mail
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
+import TutorialManagement from './TutorialManagement';
 
 // Error Boundary to catch React errors
 class ErrorBoundary extends React.Component {
