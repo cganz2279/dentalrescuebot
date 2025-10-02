@@ -249,7 +249,7 @@ const ProcedureDetailsPage = () => {
   };
 
   const handlePrint = () => {
-    // Print directly to printer without generating PDF or preview
+    // Print directly using the current page without any windows or previews
     try {
       if (!procedureData) {
         toast({
@@ -260,78 +260,30 @@ const ProcedureDetailsPage = () => {
         return;
       }
 
-      // Create a hidden iframe for printing to avoid preview pages
-      const printFrame = document.createElement('iframe');
-      printFrame.style.position = 'absolute';
-      printFrame.style.top = '-1000px';
-      printFrame.style.left = '-1000px';
-      printFrame.style.width = '0';
-      printFrame.style.height = '0';
-      printFrame.style.border = 'none';
-      
-      document.body.appendChild(printFrame);
-      
-      // Get the printable content
-      const printableContent = document.querySelector('.printable-content');
-      if (!printableContent) {
-        document.body.removeChild(printFrame);
-        throw new Error('Printable content not found');
-      }
-      
-      // Clone the content to avoid modifying the original
-      const contentClone = printableContent.cloneNode(true);
-      
-      // Write content to iframe
-      const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
-      printDocument.open();
-      printDocument.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Post-Operative Instructions</title>
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              margin: 20px; 
-              line-height: 1.6; 
-              color: black;
-            }
-            * { 
-              print-color-adjust: exact; 
-              -webkit-print-color-adjust: exact; 
-            }
-            .bg-gradient-to-r, .bg-blue-50, .bg-green-50, .bg-gray-50 {
-              background: #f8f9fa !important;
-              border: 1px solid #dee2e6 !important;
-            }
-            .text-white { color: black !important; }
-            .shadow-sm, .shadow-md { box-shadow: none !important; }
-          </style>
-        </head>
-        <body>
-          ${contentClone.innerHTML}
-        </body>
-        </html>
-      `);
-      printDocument.close();
-      
-      // Wait for content to load, then print
-      printFrame.onload = () => {
-        setTimeout(() => {
-          printFrame.contentWindow.focus();
-          printFrame.contentWindow.print();
-          
-          // Remove iframe after printing
-          setTimeout(() => {
-            if (document.body.contains(printFrame)) {
-              document.body.removeChild(printFrame);
-            }
-          }, 1000);
-        }, 100);
+      // Add event listener to detect when printing is finished
+      const afterPrint = () => {
+        // Clean up event listener
+        window.removeEventListener('afterprint', afterPrint);
+        
+        // Ensure no print preview remains visible
+        if (document.querySelector('.print-preview-window')) {
+          document.querySelector('.print-preview-window').remove();
+        }
+        
+        // Force focus back to main window
+        window.focus();
       };
+
+      // Add event listener for after print
+      window.addEventListener('afterprint', afterPrint);
+      
+      // Use native print function - this should only open print dialog
+      window.print();
       
     } catch (error) {
       console.error('Print error:', error);
+      // Clean up event listener on error
+      window.removeEventListener('afterprint', afterPrint);
       toast({
         title: "Print Failed",
         description: "Failed to print. Please try again.",
