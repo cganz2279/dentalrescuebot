@@ -13,7 +13,7 @@ class SecurePDFLinkService:
     
     def __init__(self):
         self.secret_key = JWT_SECRET
-        self.base_url = os.environ.get('FRONTEND_URL', 'https://dentist-dashboard-2.preview.emergentagent.com')
+        self.base_url = os.environ.get('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
     
     def generate_secure_link(self, assignment_id: str, patient_id: str, practice_id: str, 
                            procedure_name: str, expiry_hours: int = 72) -> str:
