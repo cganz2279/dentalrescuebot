@@ -9,7 +9,7 @@ import jwt
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from server import db
+from database import db
 
 router = APIRouter()
 security = HTTPBearer()
