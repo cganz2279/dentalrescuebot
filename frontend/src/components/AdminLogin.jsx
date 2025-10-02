@@ -371,7 +371,7 @@ const AdminDashboard = ({ adminToken }) => {
               body: JSON.stringify({
                 practiceData: practiceData,
                 adminCredentials: adminCredentials,
-                appUrl: 'https://dentist-dashboard-2.preview.emergentagent.com'
+                appUrl: process.env.REACT_APP_BACKEND_URL
               })
             });
             
