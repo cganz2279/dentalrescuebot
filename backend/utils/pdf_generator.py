@@ -140,8 +140,28 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
                         logo_bytes = base64.b64decode(logo_data)
                         logo_buffer = BytesIO(logo_bytes)
                         
-                        # Add default logo
-                        logo = Image(logo_buffer, width=2*inch, height=1*inch)
+                        # Add default logo with proper aspect ratio
+                        from PIL import Image as PILImage
+                        pil_img = PILImage.open(logo_buffer)
+                        img_width, img_height = pil_img.size
+                        
+                        # Calculate aspect ratio and scale to fit within max dimensions
+                        max_width = 2.5 * inch
+                        max_height = 1.2 * inch
+                        
+                        aspect_ratio = img_width / img_height
+                        
+                        if aspect_ratio > max_width / max_height:
+                            # Wide image - limit by width
+                            logo_width = max_width
+                            logo_height = max_width / aspect_ratio
+                        else:
+                            # Tall image - limit by height  
+                            logo_height = max_height
+                            logo_width = max_height * aspect_ratio
+                        
+                        logo_buffer.seek(0)  # Reset buffer position
+                        logo = Image(logo_buffer, width=logo_width, height=logo_height)
                         logo.hAlign = 'CENTER'
                         content.append(logo)
                         content.append(Spacer(1, 12))
