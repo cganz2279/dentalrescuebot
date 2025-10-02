@@ -113,7 +113,7 @@ const SpecialtyPage = ({ specialtyId, onSelectProcedure, onBackToHome }) => {
       
       // FINAL RAW TEXT ONLY - CACHE BUSTED
       const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
-      const success = await generateProcedurePDF(personalizedProcedure);
+      const success = await generateProcedurePDF(personalizedProcedure, practice);
       
       if (success) {
         toast({
