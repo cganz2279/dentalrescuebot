@@ -106,9 +106,8 @@ const AppContent = () => {
     }
   }
 
-  // Not authenticated - redirect to practice login
-  window.location.href = '/practice';
-  return null;
+  // Not authenticated - show original login form
+  return <LoginForm />;
 };
 
 function App() {
