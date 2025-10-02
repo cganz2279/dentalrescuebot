@@ -25,13 +25,12 @@ try:
         
         if dash_response.status_code == 200:
             dash_data = dash_response.json()
-            print(f"Dashboard keys: {list(dash_data.keys())}")
-            
-            # Check nested data structure
             data_section = dash_data.get("data", {})
-            print(f"Data section keys: {list(data_section.keys())}")
+            practice_data = data_section.get("practice", {})
             
-            branding = data_section.get("branding", {})
+            print(f"Practice data keys: {list(practice_data.keys())}")
+            
+            branding = practice_data.get("branding", {})
             logo = branding.get("logo", "")
             
             print(f"Branding data: {branding}")
