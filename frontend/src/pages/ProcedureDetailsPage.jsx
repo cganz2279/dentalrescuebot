@@ -249,7 +249,7 @@ const ProcedureDetailsPage = () => {
   };
 
   const handlePrint = () => {
-    // Generate a plain text file for direct printing without browser preview
+    // Standard browser print dialog
     try {
       if (!procedureData) {
         toast({
@@ -260,70 +260,14 @@ const ProcedureDetailsPage = () => {
         return;
       }
 
-      // Extract text content from procedure data
-      const practiceInfo = `
-${practice?.name || 'Dental Practice'}
-${practice?.address || practice?.location || ''}
-${practice?.phone || ''}
-Office Hours: ${practice?.officeHours || 'Contact office for hours'}
-Emergency Contact: ${practice?.emergencyContact || practice?.phone || 'Contact office'}
-
-========================================
-POST-OPERATIVE CARE INSTRUCTIONS
-========================================
-
-Procedure: ${procedureData.procedureName || 'Dental Procedure'}
-Patient: ${procedureData.patient ? `${procedureData.patient.firstName} ${procedureData.patient.lastName}` : 'Patient'}
-${procedureData.assignment?.dentistName ? `Dentist: ${procedureData.assignment.dentistName}` : ''}
-${procedureData.assignment?.performedDate ? `Date Performed: ${new Date(procedureData.assignment.performedDate).toLocaleDateString()}` : ''}
-
-`;
-
-      // Parse the overview text into clean, readable format
-      let instructionsText = '';
-      const overviewText = procedureData.procedureDetails.overview || '';
-      
-      if (overviewText) {
-        // Remove HTML tags and clean up formatting
-        const cleanText = overviewText
-          .replace(/<[^>]*>/g, '') // Remove HTML tags
-          .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
-          .replace(/&amp;/g, '&') // Replace HTML entities
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>')
-          .replace(/\s+/g, ' ') // Normalize whitespace
-          .trim();
-        
-        instructionsText = cleanText;
-      }
-
-      // Create the complete text content
-      const fullText = practiceInfo + instructionsText;
-
-      // Create a text file and trigger download
-      const blob = new Blob([fullText], { type: 'text/plain' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Post_Op_Instructions_${procedureData.procedureName?.replace(/\s+/g, '_') || 'Procedure'}.txt`;
-      
-      // Trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      toast({
-        title: "Instructions Downloaded",
-        description: "Open the downloaded .txt file and use Ctrl+P to print directly without preview.",
-        variant: "default",
-      });
+      // Use browser's native print function - opens normal print dialog
+      window.print();
       
     } catch (error) {
       console.error('Print error:', error);
       toast({
-        title: "Download Failed",
-        description: "Failed to create printable file. Please try again.",
+        title: "Print Failed",
+        description: "Failed to open print dialog. Please try again.",
         variant: "destructive",
       });
     }
