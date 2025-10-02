@@ -819,12 +819,12 @@ const ProcedureDetailsPage = () => {
                               
                               case 'numbered':
                                 return (
-                                  <div key={elementIndex} className="flex items-start bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-sm">
+                                  <div key={elementIndex} className="flex items-start bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-sm print-numbered">
                                     <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
                                       <span className="text-white font-bold text-sm">{element.number}</span>
                                     </div>
                                     <div className="flex-1">
-                                      <p className="text-gray-800 leading-relaxed font-medium">{element.content}</p>
+                                      <p className="text-gray-800 leading-relaxed font-medium print-section-content">{element.content}</p>
                                     </div>
                                   </div>
                                 );
