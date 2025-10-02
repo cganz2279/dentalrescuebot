@@ -8,7 +8,7 @@ import uuid
 import time
 
 # Configuration - Using the preview URL as specified in the review request
-BASE_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
+BASE_URL = "https://aftercareportal.preview.emergentagent.com/api"
 PRACTICE_EMAIL = "cganz2279@gmail.com"
 PRACTICE_PASSWORD = "password123"
 ADMIN_EMAIL = "cganz@admin.com"

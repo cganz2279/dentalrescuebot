@@ -7,8 +7,8 @@ import uuid
 import time
 
 # Configuration - Using the exact preview URL reported by user
-BASE_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
-FRONTEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com"
+BASE_URL = "https://aftercareportal.preview.emergentagent.com/api"
+FRONTEND_URL = "https://aftercareportal.preview.emergentagent.com"
 PRACTICE_EMAIL = "cganz2279@gmail.com"
 PRACTICE_PASSWORD = "password123"
 ADMIN_EMAIL = "cganz@admin.com"

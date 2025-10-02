@@ -11,7 +11,7 @@ import json
 from typing import Dict, Any
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
 
 def test_backend_availability():
     """Test 1: Verify backend is responding at the expected URL"""

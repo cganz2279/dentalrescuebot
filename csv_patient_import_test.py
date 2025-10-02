@@ -11,7 +11,7 @@ import csv
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

@@ -4,7 +4,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
+BASE_URL = "https://aftercareportal.preview.emergentagent.com/api"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
 
@@ -42,7 +42,7 @@ def test_email_functionality():
             "adminLastName": "Admin",
             "tempPassword": "TestPass123!"
         },
-        "appUrl": "https://dentist-dashboard-2.preview.emergentagent.com"
+        "appUrl": "https://aftercareportal.preview.emergentagent.com"
     }
     
     response = session.post(f"{BASE_URL}/admin/send-welcome-email", json=email_data)

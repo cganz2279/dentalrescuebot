@@ -10,7 +10,7 @@ import time
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
 
 # Test credentials
 TEST_EMAIL = "cganz2279@gmail.com"

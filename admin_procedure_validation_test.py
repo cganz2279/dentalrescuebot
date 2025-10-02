@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com"
+BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_EMAIL = "cganz@admin.com"

@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, Optional
 
 # Backend URL from review request
-BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com"
+BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
 
 class UrgentDashboardTester:
     def __init__(self):

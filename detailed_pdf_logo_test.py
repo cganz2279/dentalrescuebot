@@ -9,7 +9,7 @@ import base64
 from io import BytesIO
 
 # Configuration
-BASE_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
+BASE_URL = "https://aftercareportal.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

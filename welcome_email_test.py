@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
 
@@ -194,7 +194,7 @@ class WelcomeEmailTester:
                     "adminFirstName": practice_info["practice_data"]["adminFirstName"],
                     "adminLastName": practice_info["practice_data"]["adminLastName"]
                 },
-                "appUrl": "https://dentist-dashboard-2.preview.emergentagent.com"
+                "appUrl": "https://aftercareportal.preview.emergentagent.com"
             }
             
             headers = {
@@ -367,7 +367,7 @@ class WelcomeEmailTester:
                     "adminFirstName": practice_data["adminFirstName"],
                     "adminLastName": practice_data["adminLastName"]
                 },
-                "appUrl": "https://dentist-dashboard-2.preview.emergentagent.com"
+                "appUrl": "https://aftercareportal.preview.emergentagent.com"
             }
             
             email_response = self.session.post(
