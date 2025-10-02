@@ -795,7 +795,7 @@ const ProcedureDetailsPage = () => {
                                 return (
                                   <div key={elementIndex} className="mt-6 mb-4 first:mt-0">
                                     <div className="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-2 rounded-lg shadow-md">
-                                      <h5 className="font-bold text-base flex items-center">
+                                      <h5 className="font-bold text-base flex items-center print-section-label">
                                         <div className="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-2">
                                           <span className="text-white text-xs">⭐</span>
                                         </div>
