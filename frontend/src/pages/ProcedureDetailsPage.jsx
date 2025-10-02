@@ -701,8 +701,8 @@ const ProcedureDetailsPage = () => {
                 
                 // Render sections
                 return sections.map((section, sectionIndex) => (
-                  <div key={sectionIndex} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                    {/* Section Header */}
+                  <div key={sectionIndex} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden print-section">
+                    {/* Section Header - Screen View */}
                     <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3">
                       <h4 className="font-bold text-lg flex items-center">
                         <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
@@ -710,6 +710,11 @@ const ProcedureDetailsPage = () => {
                         </div>
                         {section.title}
                       </h4>
+                    </div>
+                    
+                    {/* Section Header - Print View */}
+                    <div className="print-section-label">
+                      {section.title.replace(':', '')}
                     </div>
                     
                     {/* Section Content */}
