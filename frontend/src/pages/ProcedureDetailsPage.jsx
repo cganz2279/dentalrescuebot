@@ -833,7 +833,7 @@ const ProcedureDetailsPage = () => {
                                 return (
                                   <div key={elementIndex} className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
                                     <div className="prose prose-sm max-w-none">
-                                      <p className="text-gray-700 leading-relaxed m-0" 
+                                      <p className="text-gray-700 leading-relaxed m-0 print-section-content" 
                                          dangerouslySetInnerHTML={{
                                            __html: element.content
                                              // Generic text formatting - no hard-coded words
