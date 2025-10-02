@@ -28,10 +28,16 @@ const LoginForm = ({ onSwitchToRegister }) => {
     setError('');
 
     try {
+      console.log('🔄 Attempting login with:', { email: formData.email, password: '***' });
+      console.log('🔄 Backend URL:', process.env.REACT_APP_BACKEND_URL);
+      
       // Make API call to login
       const response = await authApi.login(formData.email, formData.password);
       
+      console.log('✅ Login API response:', response);
+      
       if (response.success) {
+        console.log('✅ Login successful, calling auth context login...');
         // Pass the user data, token, and practice to AuthContext
         await login(response.user, response.token, response.practice);
         
@@ -41,12 +47,21 @@ const LoginForm = ({ onSwitchToRegister }) => {
           variant: "default",
         });
       } else {
-        setError(response.error || 'Login failed');
+        console.log('❌ Login failed with response:', response);
+        setError(response.error || response.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error caught:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        url: error.config?.url
+      });
       setError(
         error.response?.data?.detail || 
+        error.response?.data?.message ||
+        error.message ||
         'Login failed. Please check your email and password.'
       );
     } finally {
