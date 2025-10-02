@@ -183,7 +183,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
       setUsernameMessage('');
 
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dentist-dashboard-2.preview.emergentagent.com'}/api/auth/forgot-username`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/forgot-username`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
