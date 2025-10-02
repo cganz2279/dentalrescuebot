@@ -58,14 +58,25 @@ def get_practice_dashboard(token):
             data = response.json()
             print(f"✅ Dashboard data retrieved successfully")
             
-            # Extract practice info
+            # Extract practice info from the response structure
             practice_name = data.get("name", "Unknown")
             practice_id = data.get("id", "Unknown")
+            
+            # Check if practice data is nested
+            if not practice_name or practice_name == "Unknown":
+                practice_data = data.get("practice", {})
+                if practice_data:
+                    practice_name = practice_data.get("name", "Unknown")
+                    practice_id = practice_data.get("id", "Unknown")
+            
             print(f"   Practice Name: {practice_name}")
             print(f"   Practice ID: {practice_id}")
             
-            # Analyze branding data
+            # Analyze branding data - check both locations
             branding = data.get("branding", {})
+            if not branding:
+                practice_data = data.get("practice", {})
+                branding = practice_data.get("branding", {})
             if branding:
                 print(f"\n🎨 BRANDING DATA ANALYSIS:")
                 print(f"   Primary Color: {branding.get('primaryColor', 'Not set')}")
