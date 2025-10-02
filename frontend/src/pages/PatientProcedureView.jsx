@@ -200,10 +200,11 @@ const PatientProcedureView = () => {
       console.log('🏥 PatientProcedureView - Generating PDF with practice data:', {
         practiceName: procedureForPDF.practiceName,
         practiceOfficeHours: procedureForPDF.practiceOfficeHours,
-        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact,
+        practiceData: practice
       });
 
-      await generateProcedurePDF(procedureForPDF);
+      await generateProcedurePDF(procedureForPDF, practice);
       
     } catch (error) {
       console.error('Print tracking error:', error);
