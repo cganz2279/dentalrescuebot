@@ -7,6 +7,7 @@ from reportlab.lib.colors import HexColor
 from io import BytesIO
 import base64
 import os
+from PIL import Image as PILImage
 
 def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_info: dict) -> bytes:
     """
