@@ -167,11 +167,13 @@ const PracticeLibraryPage = () => {
       console.log('🏥 PracticeLibraryPage - Generating PDF with practice data:', {
         practiceName: procedureForPDF.practiceName,
         practiceOfficeHours: procedureForPDF.practiceOfficeHours,
-        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact,
+        practiceData: practice
       });
 
       console.log('📄 Calling generateProcedurePDF...');
-      const success = await generateProcedurePDF(procedureForPDF);
+      // Pass practice as the second parameter (practiceData) to ensure logo access
+      const success = await generateProcedurePDF(procedureForPDF, practice);
       console.log('📄 PDF generation result:', success);
       
       if (success) {
