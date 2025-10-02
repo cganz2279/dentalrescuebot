@@ -165,12 +165,86 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
     print(f"🔍 DEBUG: Procedure data fields: {list(procedure_data.keys())}")
     print(f"🔍 DEBUG: Overview content preview: {str(procedure_data.get('overview', ''))[:200]}...")
     
-    # For now, just use the raw overview content until we fix the data retrieval
+    # Parse the overview content and format with proper sections
     if procedure_data.get('overview'):
-        content.append(Paragraph("<b>Post-Operative Care Instructions</b>", bold_style))
-        content.append(Spacer(1, 8))
-        content.append(Paragraph(procedure_data['overview'], normal_style))
-        content.append(Spacer(1, 16))
+        overview_text = procedure_data['overview']
+        
+        # Define section keywords to look for in the text
+        section_keywords = {
+            'Purpose': ['purpose', 'overview', 'about this procedure', 'what is this'],
+            'First 24-48 Hours': ['first 24', 'first 48', 'immediate', 'immediately after', '24 hours', '48 hours'],
+            'Pain and Sensitivity': ['pain', 'sensitivity', 'discomfort', 'medication', 'pain management'],
+            'Oral Hygiene': ['oral hygiene', 'cleaning', 'brushing', 'flossing', 'mouth care'],
+            'Diet': ['diet', 'eating', 'food', 'drink', 'nutrition', 'what to eat'],
+            'Special Precautions': ['precautions', 'warning', 'avoid', 'do not', "don't", 'restrictions'],
+            'Followup': ['follow up', 'followup', 'next visit', 'appointment', 'return visit']
+        }
+        
+        # Split text into paragraphs
+        paragraphs = [p.strip() for p in overview_text.split('\n') if p.strip()]
+        
+        current_section = None
+        sections = {}
+        
+        for paragraph in paragraphs:
+            paragraph_lower = paragraph.lower()
+            
+            # Check if this paragraph starts a new section
+            found_section = None
+            for section_name, keywords in section_keywords.items():
+                for keyword in keywords:
+                    if keyword in paragraph_lower and len(paragraph) < 150:  # Section headers are usually shorter
+                        found_section = section_name
+                        break
+                if found_section:
+                    break
+            
+            if found_section:
+                current_section = found_section
+                sections[current_section] = []
+            elif current_section:
+                sections[current_section].append(paragraph)
+            else:
+                # If no section identified yet, assume it's Purpose
+                if 'Purpose' not in sections:
+                    sections['Purpose'] = []
+                sections['Purpose'].append(paragraph)
+        
+        # If no sections were detected, put everything under Purpose
+        if not sections:
+            sections['Purpose'] = [overview_text]
+        
+        # Render sections in a logical order
+        section_order = ['Purpose', 'First 24-48 Hours', 'Pain and Sensitivity', 'Oral Hygiene', 'Diet', 'Special Precautions', 'Followup']
+        
+        for section_name in section_order:
+            if section_name in sections and sections[section_name]:
+                # Bold section header
+                content.append(Paragraph(f"<b>{section_name}</b>", bold_style))
+                content.append(Spacer(1, 2))  # Small space after header
+                
+                # Add section content
+                for paragraph in sections[section_name]:
+                    # Remove any existing bold formatting and clean up
+                    clean_paragraph = paragraph.replace('**', '').replace('*', '').strip()
+                    if clean_paragraph:
+                        content.append(Paragraph(clean_paragraph, normal_style))
+                
+                # Single line space between sections (compact)
+                content.append(Spacer(1, 6))
+        
+        # Handle any remaining sections not in the standard order
+        for section_name, paragraphs in sections.items():
+            if section_name not in section_order and paragraphs:
+                content.append(Paragraph(f"<b>{section_name}</b>", bold_style))
+                content.append(Spacer(1, 2))
+                
+                for paragraph in paragraphs:
+                    clean_paragraph = paragraph.replace('**', '').replace('*', '').strip()
+                    if clean_paragraph:
+                        content.append(Paragraph(clean_paragraph, normal_style))
+                
+                content.append(Spacer(1, 6))
     
     # Practice information footer
     content.append(Spacer(1, 30))
