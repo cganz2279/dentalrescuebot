@@ -58,10 +58,11 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
     normal_style = ParagraphStyle(
         'NormalText',
         parent=styles['Normal'],
-        fontSize=11,
+        fontSize=10,
         spaceBefore=0,
-        spaceAfter=6,
-        leftIndent=10
+        spaceAfter=3,
+        leftIndent=0,
+        alignment=0  # Left alignment
     )
     
     # Build content
