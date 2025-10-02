@@ -19,6 +19,7 @@ from routes.webhooks import router as webhooks_router
 from routes.admin import router as admin_router
 from routes.patients import router as patients_router
 from routes.public import router as public_router
+from routes.tutorials import router as tutorials_router
 
 
 ROOT_DIR = Path(__file__).parent
