@@ -51,6 +51,7 @@ const PracticeDashboard = () => {
     endDate: ''
   });
   const [showCSVImportModal, setShowCSVImportModal] = useState(false);
+  const [showTutorialsModal, setShowTutorialsModal] = useState(false);
 
   const handleExportData = () => {
     setShowDatePickerModal(true);
