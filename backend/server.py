@@ -474,6 +474,7 @@ app.include_router(webhooks_router)
 app.include_router(admin_router)
 app.include_router(patients_router)
 app.include_router(public_router)
+app.include_router(tutorials_router)
 
 app.add_middleware(
     CORSMiddleware,
