@@ -846,13 +846,23 @@ const AdminDashboard = ({ adminToken }) => {
             </h1>
             <p className="opacity-90 mt-1">System Administration & Management</p>
           </div>
-          <Button 
-            onClick={handleLogout}
-            variant="outline"
-            className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-          >
-            Logout
-          </Button>
+          <div className="flex gap-3">
+            <Button 
+              onClick={() => setShowTutorialManagement(true)}
+              variant="outline"
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+            >
+              <BookOpen className="h-4 w-4 mr-2" />
+              Tutorials
+            </Button>
+            <Button 
+              onClick={handleLogout}
+              variant="outline"
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+            >
+              Logout
+            </Button>
+          </div>
         </div>
 
         {error && (
