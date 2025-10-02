@@ -361,7 +361,7 @@ const AdminDashboard = ({ adminToken }) => {
           console.log('🔍 User chose to send email, making API call...');
           try {
             console.log('🔍 Making email API call to:', `${API_BASE}/send-welcome-email`);
-            console.log('🔍 Email payload:', { practiceData, adminCredentials, appUrl: 'https://dentist-dashboard-2.preview.emergentagent.com' });
+            console.log('🔍 Email payload:', { practiceData, adminCredentials, appUrl: process.env.REACT_APP_BACKEND_URL });
             const emailResponse = await fetch(`${API_BASE}/send-welcome-email`, {
               method: 'POST',
               headers: {
