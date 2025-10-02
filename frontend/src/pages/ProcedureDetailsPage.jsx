@@ -248,82 +248,26 @@ const ProcedureDetailsPage = () => {
     setIsEditingOverview(false);
   };
 
-  const handlePrint = async () => {
-    // Generate proper PDF with Office Hours and Emergency Contact
+  const handlePrint = () => {
+    // Print directly to printer without generating PDF
     try {
-      // FINAL RAW TEXT ONLY - CACHE BUSTED
-      const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
-      
       if (!procedureData) {
         toast({
           title: "Error",
-          description: "Procedure data not available for PDF generation.",
+          description: "Procedure data not available for printing.",
           variant: "destructive",
         });
         return;
       }
 
-      console.log('🏥 Print Handler - Practice data:', practice);
-      console.log('📊 Practice officeHours:', practice?.officeHours);
-      console.log('📞 Practice emergencyContact:', practice?.emergencyContact);
-
-      // Prepare procedure data for PDF with practice information
-      const procedureForPDF = {
-        ...procedureData.procedureDetails,
-        name: procedureData.procedureName, // Add the procedure name
-        procedureName: procedureData.procedureName, // Add as backup field
-        practiceName: practice?.name || 'Dental Practice',
-        practiceAddress: practice?.address || practice?.location || '',
-        practicePhone: practice?.phone || '',
-        practiceWebsite: practice?.website || '',
-        practiceOfficeHours: practice?.officeHours || '',
-        practiceEmergencyContact: practice?.emergencyContact || '',
-        // Include patient information if available
-        patientName: procedureData.patient ? `${procedureData.patient.firstName} ${procedureData.patient.lastName}` : 'Patient',
-        patientEmail: procedureData.patient?.email || '',
-        dentistName: procedureData.assignment?.dentistName || '',
-        performedDate: procedureData.assignment?.performedDate ? new Date(procedureData.assignment.performedDate).toLocaleDateString() : '',
-        followUpDate: procedureData.assignment?.followUpDate ? new Date(procedureData.assignment.followUpDate).toLocaleDateString() : null,
-        status: procedureData.assignment?.status || '',
-        practiceNotes: procedureData.assignment?.practiceNotes || '',
-        customInstructions: procedureData.assignment?.customInstructions || []
-      };
+      // Use browser's native print function
+      window.print();
       
-      console.log('📋 Final procedure object structure:', {
-        hasImmediateAftercare: !!procedureForPDF.immediateAftercare,
-        hasDietRestrictions: !!procedureForPDF.dietRestrictions,
-        hasWarningSignsToCallDoctor: !!procedureForPDF.warningSignsToCallDoctor,
-        hasRecoveryTimeline: !!procedureForPDF.recoveryTimeline,
-        hasMedications: !!procedureForPDF.medications,
-        hasOverview: !!procedureForPDF.overview
-      });
-      
-      console.log('🏥 Generating PDF with practice data:', {
-        practiceName: procedureForPDF.practiceName,
-        practiceOfficeHours: procedureForPDF.practiceOfficeHours,
-        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
-      });
-      
-      console.log('📝 Procedure name for PDF:', {
-        originalName: procedureData.procedureName,
-        nameInPDF: procedureForPDF.name,
-        procedureNameInPDF: procedureForPDF.procedureName
-      });
-
-      const success = await generateProcedurePDF(procedureForPDF);
-      
-      if (success) {
-        toast({
-          title: "PDF Generated",
-          description: "Your post-operative care guide has been downloaded.",
-          variant: "default",
-        });
-      }
     } catch (error) {
-      console.error('PDF generation error:', error);
+      console.error('Print error:', error);
       toast({
-        title: "PDF Generation Failed",
-        description: "Failed to generate PDF. Please try again.",
+        title: "Print Failed",
+        description: "Failed to print. Please try again.",
         variant: "destructive",
       });
     }
