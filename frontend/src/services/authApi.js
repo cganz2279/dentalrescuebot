@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get backend URL with fallback
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://app.dentalaftercarenotes.com';
 
 console.log('Auth API using backend URL:', BACKEND_URL);
 console.log('Environment REACT_APP_BACKEND_URL:', process.env.REACT_APP_BACKEND_URL);
