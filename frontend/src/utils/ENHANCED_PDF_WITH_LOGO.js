@@ -25,19 +25,36 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
         try {
           const logoData = practiceData.branding.logo;
           
+          // Check if logo is corrupted (1x1 pixel placeholder)
+          if (logoData.length < 200) {
+            console.log('❌ Logo appears to be corrupted placeholder (too small):', logoData.length, 'characters');
+            console.log('❌ Logo content:', logoData.substring(0, 100) + '...');
+          } else {
+            console.log('✅ Logo data looks valid:', logoData.length, 'characters');
+          }
+          
           // Calculate centered position for logo
           const imgWidth = 40;
           const imgHeight = 30;
           const xPos = (pdf.internal.pageSize.width - imgWidth) / 2;
+          
+          console.log('🖼️ Adding custom logo to PDF...');
           
           // Add custom practice logo
           pdf.addImage(logoData, 'PNG', xPos, yPos, imgWidth, imgHeight);
           yPos += imgHeight + 10;
           logoAdded = true;
           
+          console.log('✅ Custom logo added successfully');
+          
         } catch (customLogoError) {
-          console.log('⚠️ Custom logo failed, using fallback');
+          console.log('❌ Custom logo failed:', customLogoError.message);
+          console.log('⚠️ Using fallback logo instead');
         }
+      } else {
+        console.log('❌ No custom logo found in practice data');
+        console.log('🔍 Practice data structure:', practiceData);
+        console.log('🔍 Branding data:', practiceData?.branding);
       }
       
       // Fallback to default logo if custom logo failed
