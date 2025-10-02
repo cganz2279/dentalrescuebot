@@ -48,10 +48,11 @@ def generate_pdf_content(procedure_name: str, procedure_data: dict, practice_inf
     bold_style = ParagraphStyle(
         'BoldText',
         parent=styles['Normal'],
-        fontSize=12,
+        fontSize=13,
         fontName='Helvetica-Bold',
-        spaceBefore=8,
-        spaceAfter=4
+        spaceBefore=12,
+        spaceAfter=0,
+        textColor=HexColor('#333333')
     )
     
     normal_style = ParagraphStyle(
