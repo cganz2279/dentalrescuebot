@@ -25,9 +25,12 @@ try:
         
         if dash_response.status_code == 200:
             dash_data = dash_response.json()
+            print(f"Dashboard keys: {list(dash_data.keys())}")
+            
             branding = dash_data.get("branding", {})
             logo = branding.get("logo", "")
             
+            print(f"Branding data: {branding}")
             print(f"Logo data length: {len(logo)} characters")
             if logo:
                 print(f"First 100 chars: {logo[:100]}")
