@@ -6,7 +6,11 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
   const timestamp = new Date().toISOString();
   const cacheKey = Date.now();
   
-  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v16 (PRODUCTION)');
+  console.log('🚨 ENHANCED PDF WITH LOGO GENERATOR LOADED - v17 (LOGO FIX)');
+  console.log('🔍 Procedure data:', procedure?.name);
+  console.log('🔍 Practice data structure:', practiceData);
+  console.log('🔍 Practice branding:', practiceData?.branding);
+  console.log('🔍 Practice logo:', practiceData?.branding?.logo ? `${practiceData.branding.logo.substring(0, 50)}...` : 'No logo');
   
   try {
     const pdf = new jsPDF();
