@@ -184,10 +184,11 @@ const PatientManagementPage = () => {
       console.log('📄 Final procedure object for PDF:', {
         practiceName: procedureForPDF.practiceName,
         practiceOfficeHours: procedureForPDF.practiceOfficeHours,
-        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
+        practiceEmergencyContact: procedureForPDF.practiceEmergencyContact,
+        practiceData: practice
       });
       
-      const success = generateProcedurePDF(procedureForPDF);
+      const success = generateProcedurePDF(procedureForPDF, practice);
       
       if (success) {
         toast({
