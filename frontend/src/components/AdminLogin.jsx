@@ -161,7 +161,7 @@ const AdminDashboard = ({ adminToken }) => {
   const [registrationsLoading, setRegistrationsLoading] = useState(false);
 
   console.log('🔥 VERSION 2.0 LOADED - Using dental-admin-3 backend');
-  const API_BASE = `https://dentist-dashboard-2.preview.emergentagent.com/api/admin`;
+  const API_BASE = `${process.env.REACT_APP_BACKEND_URL}/api/admin`;
   
   // Generate a secure random password
   const generateSecurePassword = () => {
@@ -2017,7 +2017,7 @@ const AdminLogin = () => {
   const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken'));
 
   console.log('🔥 VERSION 2.0 LOADED - Using dental-admin-3 backend');
-  const API_BASE = `https://dentist-dashboard-2.preview.emergentagent.com/api/admin`;
+  const API_BASE = `${process.env.REACT_APP_BACKEND_URL}/api/admin`;
 
   const handleLogin = async (e) => {
     e.preventDefault();
