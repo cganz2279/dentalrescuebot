@@ -158,9 +158,25 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
     // Save with timestamp filename
     const filenameProcedureName = procedure?.name || procedure?.procedureName || 'Procedure';
     const filename = `${filenameProcedureName.replace(/[^a-zA-Z0-9]/g, '_')}_RAW_${cacheKey}.pdf`;
-    pdf.save(filename);
     
-    console.log('🚨 ENHANCED PDF SAVED:', filename);
+    console.log('🚨 About to save PDF:', filename);
+    console.log('🚨 PDF object:', pdf);
+    console.log('🚨 Calling pdf.save()...');
+    
+    // Try to save the PDF with error handling
+    try {
+      pdf.save(filename);
+      console.log('✅ ENHANCED PDF SAVE COMMAND EXECUTED:', filename);
+      
+      // Give a moment for the download to start
+      setTimeout(() => {
+        console.log('✅ PDF save complete (after timeout)');
+      }, 1000);
+      
+    } catch (saveError) {
+      console.error('❌ PDF save error:', saveError);
+      throw new Error(`PDF save failed: ${saveError.message}`);
+    }
     
     return true;
     
