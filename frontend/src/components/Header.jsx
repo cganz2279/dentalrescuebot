@@ -16,8 +16,8 @@ const Header = ({
         {showBranding && (
           <div className="flex justify-center mb-6">
             <img 
-              src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png"
-              alt="DentalRescueBot Logo"
+              src="https://customer-assets.emergentagent.com/job_dentist-dashboard-2/artifacts/tjqph8wg_ChatGPT%20Image%20Sep%2028%2C%202025%2C%2011_41_56%20PM.png"
+              alt="Dental Aftercare Notes Logo"
               className="h-16 w-auto"
               onError={(e) => {
                 console.error('Logo failed to load');
