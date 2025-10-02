@@ -1008,7 +1008,7 @@ async def forgot_username(request: ForgotUsernameRequest):
         # TODO: Implement email sending with username recovery
         
         # Get frontend URL from environment variable
-        frontend_url = os.getenv('FRONTEND_URL', 'https://dentist-portal-3.emergent.host')
+        frontend_url = os.getenv('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
         
         return {
             "success": True,
