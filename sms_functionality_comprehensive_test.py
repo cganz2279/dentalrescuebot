@@ -12,7 +12,7 @@ import re
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
 
 # Test credentials
 TEST_EMAIL = "cganz2279@gmail.com"
@@ -336,7 +336,7 @@ class ComprehensiveSMSTester:
                                 if 'Invalid \'To\' Phone Number' in error_detail or 'trial' in error_detail.lower():
                                     print(f"     ✅ Valid phone format accepted but failed due to Twilio trial limitations: {test_case['phone']}")
                                     # Generate a mock secure link for testing
-                                    self.secure_link = f"https://dental-portal-debug.preview.emergentagent.com/secure-pdf/mock-token-for-testing"
+                                    self.secure_link = f"https://dentist-dashboard-2.preview.emergentagent.com/secure-pdf/mock-token-for-testing"
                                 else:
                                     print(f"     ❌ Unexpected error for valid phone: {test_case['phone']} - {error_detail}")
                                     all_passed = False
@@ -457,7 +457,7 @@ class ComprehensiveSMSTester:
                         print(f"   ✅ Link generation likely successful (failed at SMS sending)")
                         print(f"   ℹ️  SMS failed due to Twilio trial limitations")
                         # Generate a test link for further testing
-                        self.secure_link = f"https://dental-portal-debug.preview.emergentagent.com/secure-pdf/test-token-{int(time.time())}"
+                        self.secure_link = f"https://dentist-dashboard-2.preview.emergentagent.com/secure-pdf/test-token-{int(time.time())}"
                         return True
                     else:
                         print(f"   ❌ Link generation failed: {error_detail}")

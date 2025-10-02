@@ -9,7 +9,7 @@ import json
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
 
 # Test credentials
 REGULAR_USER_EMAIL = "cganz2279@gmail.com"
@@ -247,7 +247,7 @@ def test_cors_functionality():
     try:
         # Test CORS headers on regular login
         headers = {
-            "Origin": "https://dental-portal-debug.preview.emergentagent.com",
+            "Origin": "https://dentist-dashboard-2.preview.emergentagent.com",
             "Content-Type": "application/json"
         }
         

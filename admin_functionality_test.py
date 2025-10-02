@@ -6,7 +6,7 @@ import sys
 import uuid
 
 # Configuration
-BASE_URL = "https://dental-portal-debug.preview.emergentagent.com/api"
+BASE_URL = "https://dentist-dashboard-2.preview.emergentagent.com/api"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
 

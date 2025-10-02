@@ -731,7 +731,7 @@ async def forgot_password(request: ForgotPasswordRequest):
         })
         
         # Get frontend URL and reset link
-        frontend_url = os.getenv('FRONTEND_URL', 'https://dental-portal-debug.preview.emergentagent.com')
+        frontend_url = os.getenv('FRONTEND_URL', 'https://dentist-dashboard-2.preview.emergentagent.com')
         reset_link = f"{frontend_url}/reset-password?token={reset_token}"
         
         sent_methods = []

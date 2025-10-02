@@ -161,7 +161,7 @@ const AdminDashboard = ({ adminToken }) => {
   const [registrationsLoading, setRegistrationsLoading] = useState(false);
 
   console.log('🔥 VERSION 2.0 LOADED - Using dental-admin-3 backend');
-  const API_BASE = `https://dental-portal-debug.preview.emergentagent.com/api/admin`;
+  const API_BASE = `https://dentist-dashboard-2.preview.emergentagent.com/api/admin`;
   
   // Generate a secure random password
   const generateSecurePassword = () => {
@@ -361,7 +361,7 @@ const AdminDashboard = ({ adminToken }) => {
           console.log('🔍 User chose to send email, making API call...');
           try {
             console.log('🔍 Making email API call to:', `${API_BASE}/send-welcome-email`);
-            console.log('🔍 Email payload:', { practiceData, adminCredentials, appUrl: 'https://dental-portal-debug.preview.emergentagent.com' });
+            console.log('🔍 Email payload:', { practiceData, adminCredentials, appUrl: 'https://dentist-dashboard-2.preview.emergentagent.com' });
             const emailResponse = await fetch(`${API_BASE}/send-welcome-email`, {
               method: 'POST',
               headers: {
@@ -371,7 +371,7 @@ const AdminDashboard = ({ adminToken }) => {
               body: JSON.stringify({
                 practiceData: practiceData,
                 adminCredentials: adminCredentials,
-                appUrl: 'https://dental-portal-debug.preview.emergentagent.com'
+                appUrl: 'https://dentist-dashboard-2.preview.emergentagent.com'
               })
             });
             
@@ -470,7 +470,7 @@ const AdminDashboard = ({ adminToken }) => {
             adminLastName: practice.adminLastName || 'User',
             tempPassword: practice.tempPassword || 'Please contact support for password'
           },
-          appUrl: 'https://dental-portal-debug.preview.emergentagent.com'
+          appUrl: 'https://dentist-dashboard-2.preview.emergentagent.com'
         })
       });
       
@@ -2017,7 +2017,7 @@ const AdminLogin = () => {
   const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken'));
 
   console.log('🔥 VERSION 2.0 LOADED - Using dental-admin-3 backend');
-  const API_BASE = `https://dental-portal-debug.preview.emergentagent.com/api/admin`;
+  const API_BASE = `https://dentist-dashboard-2.preview.emergentagent.com/api/admin`;
 
   const handleLogin = async (e) => {
     e.preventDefault();

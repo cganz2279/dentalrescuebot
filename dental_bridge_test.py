@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://dental-portal-debug.preview.emergentagent.com"
+BACKEND_URL = "https://dentist-dashboard-2.preview.emergentagent.com"
 
 def authenticate(email: str, password: str) -> str:
     """Authenticate with the backend and return JWT token"""

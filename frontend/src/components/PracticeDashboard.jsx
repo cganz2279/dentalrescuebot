@@ -315,7 +315,7 @@ const PracticeDashboard = () => {
         try {
           console.log('🔄 Refreshing practice branding data for printing...');
           const token = localStorage.getItem('dentalToken');
-          const response = await fetch(`https://dental-portal-debug.preview.emergentagent.com/api/dashboard`, {
+          const response = await fetch(`https://dentist-dashboard-2.preview.emergentagent.com/api/dashboard`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',

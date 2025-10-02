@@ -16,7 +16,7 @@ ENVIRONMENTS = [
     },
     {
         "name": "Frontend .env URL", 
-        "url": "https://dental-portal-debug.preview.emergentagent.com/api"
+        "url": "https://dentist-dashboard-2.preview.emergentagent.com/api"
     }
 ]
 
