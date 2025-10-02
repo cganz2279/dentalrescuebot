@@ -175,60 +175,7 @@ const PracticeLibraryPage = () => {
     }
   };
 
-  const handleSMSPDF = async (procedure) => {
-    try {
-      // For library page, we need to ask for patient cellphone since it's not associated with a specific patient
-      const patientCellphone = prompt('Please enter patient cellphone number (e.g., +1234567890 or 1234567890):');
-      if (!patientCellphone || patientCellphone.trim().length < 10) {
-        toast({
-          title: "Error",
-          description: "Please enter a valid cellphone number",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Call backend API to send SMS
-      const response = await practiceApi.smsPDF({
-        patientCellphone: patientCellphone.trim(),
-        procedureId: procedure.id,
-        procedureName: procedure.name
-      });
-
-      if (response.success) {
-        toast({
-          title: "SMS Sent",
-          description: `PDF link sent to ${response.patientCellphone}`,
-          variant: "default",
-        });
-      }
-      
-    } catch (error) {
-      console.error('Error sending SMS:', error);
-      
-      // Check if it's a Twilio trial account limitation
-      if (error.response?.status === 400 && error.response?.data?.detail?.includes('Twilio trial account limitation')) {
-        const errorDetail = error.response.data.detail;
-        const linkMatch = errorDetail.match(/https:\/\/[^\s]+/);
-        const secureLink = linkMatch ? linkMatch[0] : null;
-        
-        toast({
-          title: "SMS Limited (Trial Account)",
-          description: secureLink ? 
-            `SMS cannot be sent due to trial account restrictions. However, you can share this link directly: ${secureLink}` :
-            errorDetail,
-          variant: "default",
-          duration: 10000, // Show longer for link copying
-        });
-      } else {
-        toast({
-          title: "SMS Failed",
-          description: error.response?.data?.detail || "Failed to send SMS with PDF link",
-          variant: "destructive",
-        });
-      }
-    }
-  };
+  // Functions removed - Email and SMS buttons not needed in procedure library
 
   const formatDuration = (duration) => {
     if (!duration) return 'Variable';
