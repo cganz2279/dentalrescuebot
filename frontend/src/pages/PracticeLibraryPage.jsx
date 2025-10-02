@@ -131,14 +131,27 @@ const PracticeLibraryPage = () => {
   };
 
   const handleDownloadPDF = async (procedure) => {
+    console.log('🎯 Starting PDF generation for procedure:', procedure?.name);
+    
     try {
       // FINAL RAW TEXT ONLY - CACHE BUSTED
       const { generateProcedurePDF } = await import('../utils/ENHANCED_PDF_WITH_LOGO');
       
       if (!procedure) {
         console.error('No procedure selected for PDF generation');
+        toast({
+          title: "Error", 
+          description: "No procedure selected for PDF generation",
+          variant: "destructive",
+        });
         return;
       }
+
+      // Show loading toast
+      toast({
+        title: "Creating PDF",
+        description: "Generating PDF document...",
+      });
 
       // Add practice information to procedure data
       const procedureForPDF = {
@@ -157,19 +170,62 @@ const PracticeLibraryPage = () => {
         practiceEmergencyContact: procedureForPDF.practiceEmergencyContact
       });
 
+      console.log('📄 Calling generateProcedurePDF...');
       const success = await generateProcedurePDF(procedureForPDF);
+      console.log('📄 PDF generation result:', success);
       
       if (success) {
         toast({
           title: "Success",
           description: `PDF generated for ${procedure.name}`,
         });
+      } else {
+        toast({
+          title: "Error",
+          description: "PDF generation failed - check console for details",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error('PDF generation error:', error);
+      console.error('❌ PDF generation error:', error);
       toast({
         title: "Error",
-        description: "Failed to generate PDF",
+        description: `Failed to generate PDF: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTestSimplePDF = async () => {
+    console.log('🧪 Testing simple PDF generation...');
+    
+    try {
+      const { testSimplePDF } = await import('../utils/TEST_PDF_SIMPLE');
+      
+      toast({
+        title: "Testing PDF",
+        description: "Running simple PDF test...",
+      });
+      
+      const success = testSimplePDF();
+      
+      if (success) {
+        toast({
+          title: "Test Success",
+          description: "Simple PDF test completed - check downloads folder",
+        });
+      } else {
+        toast({
+          title: "Test Failed",
+          description: "Simple PDF test failed - check console",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('❌ Simple PDF test error:', error);
+      toast({
+        title: "Test Error",
+        description: `Test failed: ${error.message}`,
         variant: "destructive",
       });
     }
