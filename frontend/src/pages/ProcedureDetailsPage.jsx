@@ -249,7 +249,7 @@ const ProcedureDetailsPage = () => {
   };
 
   const handlePrint = () => {
-    // Standard browser print dialog
+    // Print with automatic preview window closing
     try {
       if (!procedureData) {
         toast({
@@ -260,7 +260,76 @@ const ProcedureDetailsPage = () => {
         return;
       }
 
-      // Use browser's native print function - opens normal print dialog
+      // Track the current window and any new windows that open
+      const originalWindows = [];
+      
+      // Store reference to all existing windows
+      if (window.frames) {
+        for (let i = 0; i < window.frames.length; i++) {
+          originalWindows.push(window.frames[i]);
+        }
+      }
+
+      // Set up listeners for after print
+      const afterPrint = () => {
+        // Clean up the listener
+        window.removeEventListener('afterprint', afterPrint);
+        
+        // Force close any print preview windows after a short delay
+        setTimeout(() => {
+          try {
+            // Close any new windows/tabs that might have opened
+            if (window.frames) {
+              for (let i = 0; i < window.frames.length; i++) {
+                const frame = window.frames[i];
+                if (!originalWindows.includes(frame)) {
+                  try {
+                    frame.close();
+                  } catch (e) {
+                    // Ignore errors closing frames
+                  }
+                }
+              }
+            }
+            
+            // Try to close any print-specific elements
+            const printElements = document.querySelectorAll('[data-print-window], .print-preview, iframe[src*="print"]');
+            printElements.forEach(el => {
+              try {
+                if (el.parentNode) {
+                  el.parentNode.removeChild(el);
+                }
+              } catch (e) {
+                // Ignore removal errors
+              }
+            });
+
+            // Force focus back to main window
+            window.focus();
+            document.body.focus();
+            
+            // Try pressing escape to close any remaining dialogs
+            document.dispatchEvent(new KeyboardEvent('keydown', {
+              key: 'Escape',
+              code: 'Escape',
+              keyCode: 27
+            }));
+            
+          } catch (e) {
+            // Ignore cleanup errors
+          }
+        }, 1000);
+      };
+
+      // Add the afterprint listener
+      window.addEventListener('afterprint', afterPrint);
+
+      // Also add a timer-based cleanup as backup
+      const backupCleanup = setTimeout(() => {
+        afterPrint();
+      }, 5000);
+
+      // Execute print
       window.print();
       
     } catch (error) {
