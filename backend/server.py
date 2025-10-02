@@ -28,7 +28,7 @@ load_dotenv(ROOT_DIR / '.env')
 # Import database connection
 from database import db
 
-print(f"Connecting to MongoDB: {mongo_url}")
+print(f"Connecting to MongoDB: {os.environ.get('MONGO_URL', 'mongodb://localhost:27017')}")
 print(f"Using database: {os.environ.get('DB_NAME', 'test_database')}")
 
 # Create the main app without a prefix
