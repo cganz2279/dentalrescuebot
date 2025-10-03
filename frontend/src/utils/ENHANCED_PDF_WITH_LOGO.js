@@ -40,8 +40,18 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
           
           console.log('🖼️ Adding custom logo to PDF...');
           
-          // Add custom practice logo
-          pdf.addImage(logoData, 'PNG', xPos, yPos, imgWidth, imgHeight);
+          // Handle different logo data formats
+          let processedLogoData = logoData;
+          
+          // If logo data is a data URL, use it directly; if it's just base64, add the prefix
+          if (!logoData.startsWith('data:image')) {
+            processedLogoData = `data:image/png;base64,${logoData}`;
+          }
+          
+          console.log('🖼️ Using logo format:', processedLogoData.substring(0, 30) + '...');
+          
+          // Add custom practice logo  
+          pdf.addImage(processedLogoData, 'PNG', xPos, yPos, imgWidth, imgHeight);
           yPos += imgHeight + 10;
           logoAdded = true;
           
