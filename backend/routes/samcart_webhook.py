@@ -434,7 +434,7 @@ async def handle_samcart_webhook(request: Request, background_tasks: BackgroundT
         # Process webhook based on event type
         result = None
         
-        if event_type in ["ProductPurchased", "OrderCompleted", "Order.Completed"]:
+        if event_type in ["ProductPurchased", "OrderCompleted", "Order.Completed", "Order"]:
             print(f"🎯 Processing {event_type} event...")
             
             # Create practice account
