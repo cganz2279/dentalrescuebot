@@ -175,7 +175,8 @@ class DashboardBrandingTester:
         if response.status_code == 200:
             data = response.json()
             if data.get("success"):
-                branding = data.get("data", {}).get("branding", {})
+                practice_info = data.get("data", {}).get("practice", {})
+                branding = practice_info.get("branding", {})
                 
                 # Check for default values
                 primary_color = branding.get("primaryColor")
