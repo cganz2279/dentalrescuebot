@@ -294,6 +294,11 @@ def main():
     else:
         print(f"✅ Found {len(recent_practices)} recent practice account(s)")
     
+    if webhook_email_matches:
+        print(f"✅ Found {len(webhook_email_matches)} practice account(s) matching recent webhook emails")
+    elif recent_webhook_emails:
+        print(f"❌ NO practice accounts found for recent webhook emails: {recent_webhook_emails}")
+    
     if email_status:
         print("✅ Email service is operational")
     else:
