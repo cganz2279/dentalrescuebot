@@ -11,6 +11,10 @@ import os
 import sys
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+# Load backend environment variables
+load_dotenv('/app/backend/.env')
 
 # Configuration
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://aftercareportal.preview.emergentagent.com')
