@@ -99,7 +99,7 @@ class VideoTutorialTester:
             
             if response.status_code == 200:
                 data = response.json()
-                self.admin_token = data.get("access_token")
+                self.admin_token = data.get("token")  # Admin login returns 'token', not 'access_token'
                 
                 self.log_result(
                     "Admin Authentication",
