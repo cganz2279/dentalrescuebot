@@ -556,3 +556,30 @@ class EmailService:
 
 # Create a global instance
 email_service = EmailService()
+
+# Async function for SamCart integration
+async def send_email(email_data: EmailData) -> bool:
+    """
+    Async wrapper for sending emails using SendGrid
+    """
+    try:
+        from_email = email_data.from_email or email_service.sender_email
+        
+        message = Mail(
+            from_email=from_email,
+            to_emails=email_data.to,
+            subject=email_data.subject,
+            html_content=email_data.html_content
+        )
+        
+        response = email_service.sg.send(message)
+        
+        if response.status_code in [200, 202]:
+            return True
+        else:
+            print(f"❌ Failed to send email. Status: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error sending email: {e}")
+        return False
