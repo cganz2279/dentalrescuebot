@@ -29,16 +29,21 @@ def test_webhook_logs():
             # Show all logs with timestamps for debugging
             print(f"🔍 All webhook logs ({len(logs)} total):")
             for i, log in enumerate(logs):
-                timestamp = log.get('timestamp', 'Unknown time')
+                timestamp = log.get('created_at', 'Unknown time')
                 event_type = log.get('event_type', 'Unknown event')
-                status = log.get('status', 'Unknown status')
-                email = log.get('customer_email', 'No email')
+                status = log.get('processing_status', 'Unknown status')
+                
+                # Extract customer email from payload
+                email = 'No email'
+                if 'payload' in log and 'customer' in log['payload']:
+                    email = log['payload']['customer'].get('email', 'No email')
+                
                 print(f"   {i+1}. {timestamp} - {event_type} - {status} - {email}")
                 
                 # Check if this is a recent log
-                if 'timestamp' in log:
+                if 'created_at' in log:
                     try:
-                        log_time = datetime.fromisoformat(log['timestamp'].replace('Z', '+00:00'))
+                        log_time = datetime.fromisoformat(log['created_at'].replace('Z', '+00:00'))
                         if hasattr(log_time, 'tzinfo') and log_time.tzinfo is not None:
                             log_time = log_time.replace(tzinfo=None)
                         
