@@ -368,6 +368,7 @@ function addPracticeFooter(pdf, procedure) {
 function addSimpleFormattedContentToPDF(pdf, content, startY) {
   let yPos = startY;
   const lineHeight = 5.5;
+  const paragraphSpacing = 8; // Extra space between paragraphs
   const maxWidth = 170;
   const leftMargin = 20;
   
@@ -376,84 +377,137 @@ function addSimpleFormattedContentToPDF(pdf, content, startY) {
   pdf.setFontSize(11);
   pdf.setTextColor(0, 0, 0);
   
-  // Define bold keywords first
-  const boldKeywords = [
-    'Purpose',
-    'Instructions',
-    'First 24 Hours',
-    'First 24 hours',
-    'First Twenty-Four Hours',
-    'Pain & Sensitivity',
-    'Pain and Sensitivity',
-    'Pain & Swelling',
-    'Pain and Swelling',
-    'Pain Management',
-    'Pain Control',
-    'Bleeding',
-    'Blood/Bleeding',
-    'Oral Hygiene',
-    'Oral Care',
-    'Mouth Care',
-    'Diet',
-    'Dietary Instructions',
-    'Eating',
-    'Food',
-    'Special Precautions',
-    'Precautions',
-    'Important Notes',
-    'Follow-Up',
-    'Follow Up',
-    'Follow-up',
-    'Followup',
-    'Next Appointment',
-    'Return Visit',
-    'Activity',
-    'Activities',
-    'Medications',
-    'Medicine',
-    'Swelling',
-    'Ice/Cold Therapy',
-    'Ice Application',
-    'Healing',
-    'Recovery',
-    'Warning Signs',
-    'When to Call',
-    'Emergency'
+  console.log('🎯 Processing PDF content for formatting...');
+  
+  // Define section headers that should be bold (more comprehensive)
+  const sectionHeaders = [
+    'Purpose:',
+    'Instructions:',
+    'First 24 Hours:',
+    'First 24 hours:',
+    'First Twenty-Four Hours:',
+    'Pain & Sensitivity:',
+    'Pain and Sensitivity:',
+    'Pain & Swelling:',
+    'Pain and Swelling:',
+    'Pain Management:',
+    'Pain Control:',
+    'Bleeding:',
+    'Blood/Bleeding:',
+    'Oral Hygiene:',
+    'Oral Care:',
+    'Mouth Care:',
+    'Diet:',
+    'Dietary Instructions:',
+    'Eating:',
+    'Food:',
+    'Special Precautions:',
+    'Precautions:',
+    'Important Notes:',
+    'Follow-Up:',
+    'Follow Up:',
+    'Follow-up:',
+    'Followup:',
+    'Next Appointment:',
+    'Return Visit:',
+    'Activity:',
+    'Activities:',
+    'Medications:',
+    'Medicine:',
+    'Swelling:',
+    'Ice/Cold Therapy:',
+    'Ice Application:',
+    'Healing:',
+    'Recovery:',
+    'Warning Signs:',
+    'When to Call:',
+    'Emergency:',
+    'Do Not:',
+    'Avoid:',
+    'Remember:',
+    'Note:'
   ];
   
-  // Split content into lines using jsPDF's built-in function
-  const lines = pdf.splitTextToSize(content, maxWidth);
+  // First, split content into paragraphs (double line breaks or section breaks)
+  const paragraphs = content.split(/\n\s*\n|\r\n\s*\r\n/).filter(p => p.trim().length > 0);
   
-  for (const line of lines) {
-    // Check if we need a new page
-    if (yPos > 275) {
-      pdf.addPage();
-      yPos = 20;
-      pdf.setFont('times', 'normal');
-      pdf.setFontSize(11);
-    }
+  console.log(`🎯 Found ${paragraphs.length} paragraphs to format`);
+  
+  for (let i = 0; i < paragraphs.length; i++) {
+    const paragraph = paragraphs[i].trim();
+    if (!paragraph) continue;
     
-    // Check if this line contains any of our keywords for bold formatting
-    let shouldBeBold = false;
-    for (const keyword of boldKeywords) {
-      // Use simple case-insensitive includes for more reliable matching
-      if (line.toLowerCase().includes(keyword.toLowerCase())) {
-        shouldBeBold = true;
+    console.log(`🎯 Processing paragraph ${i + 1}: ${paragraph.substring(0, 50)}...`);
+    
+    // Check if this paragraph starts with a section header
+    let isSectionHeader = false;
+    let headerText = '';
+    let bodyText = '';
+    
+    for (const header of sectionHeaders) {
+      if (paragraph.toLowerCase().startsWith(header.toLowerCase())) {
+        isSectionHeader = true;
+        headerText = header;
+        bodyText = paragraph.substring(header.length).trim();
+        console.log(`✅ Found section header: "${header}"`);
         break;
       }
     }
     
-    // Apply formatting and render line
-    if (shouldBeBold) {
+    if (isSectionHeader && headerText) {
+      // Add extra space before section headers (except first one)
+      if (i > 0) {
+        yPos += paragraphSpacing;
+      }
+      
+      // Check if we need a new page
+      if (yPos > 270) {
+        pdf.addPage();
+        yPos = 20;
+      }
+      
+      // Render bold section header
       pdf.setFont('times', 'bold');
+      pdf.text(headerText, leftMargin, yPos);
+      yPos += lineHeight;
+      
+      // Render body text if present
+      if (bodyText) {
+        pdf.setFont('times', 'normal');
+        const bodyLines = pdf.splitTextToSize(bodyText, maxWidth);
+        
+        for (const line of bodyLines) {
+          if (yPos > 270) {
+            pdf.addPage();
+            yPos = 20;
+          }
+          
+          pdf.text(line, leftMargin, yPos);
+          yPos += lineHeight;
+        }
+      }
     } else {
+      // Regular paragraph - not a section header
+      if (i > 0) {
+        yPos += paragraphSpacing / 2; // Smaller space between regular paragraphs
+      }
+      
       pdf.setFont('times', 'normal');
+      const lines = pdf.splitTextToSize(paragraph, maxWidth);
+      
+      for (const line of lines) {
+        if (yPos > 270) {
+          pdf.addPage();
+          yPos = 20;
+        }
+        
+        pdf.text(line, leftMargin, yPos);
+        yPos += lineHeight;
+      }
     }
-    
-    pdf.text(line, leftMargin, yPos);
-    yPos += lineHeight;
   }
   
   // Reset font
   pdf.setFont('times', 'normal');
+  console.log('✅ PDF content formatting complete');
 }
