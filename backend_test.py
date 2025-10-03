@@ -174,6 +174,7 @@ def test_email_service_status():
             
             email_test_payload = {
                 "procedureId": "root-canal-therapy",
+                "procedureName": "Root Canal Therapy",
                 "patientName": "Test Patient",
                 "patientEmail": "test@example.com",
                 "customInstructions": "Email service test"
