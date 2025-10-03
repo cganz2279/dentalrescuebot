@@ -193,12 +193,18 @@ def send_welcome_email():
         admin_token = login_response.json().get('token')
         headers = {"Authorization": f"Bearer {admin_token}"}
         
-        # Send welcome email
+        # Send welcome email with correct payload format
         email_data = {
-            "practice_name": "The Dental Spa at Garden City",
-            "admin_email": "caryganz@gmail.com",
-            "admin_password": "DentalSpa2025!",
-            "owner_name": "Cary Ganz"
+            "practiceData": {
+                "practiceName": "The Dental Spa at Garden City"
+            },
+            "adminCredentials": {
+                "adminEmail": "caryganz@gmail.com",
+                "adminFirstName": "Cary",
+                "adminLastName": "Ganz",
+                "tempPassword": "DentalSpa2025!"
+            },
+            "appUrl": "https://app.dentalaftercarenotes.com"
         }
         
         email_response = requests.post(f"{BACKEND_URL}/api/admin/send-welcome-email", 
