@@ -261,7 +261,16 @@ def main():
     # Run all tests
     recent_logs = test_webhook_logs()
     stats = test_webhook_stats()
-    recent_practices = test_recent_practice_accounts()
+    
+    # Extract emails from recent webhooks
+    recent_webhook_emails = []
+    for log in recent_logs:
+        if 'payload' in log and 'customer' in log['payload']:
+            email = log['payload']['customer'].get('email')
+            if email:
+                recent_webhook_emails.append(email)
+    
+    recent_practices, webhook_email_matches = test_recent_practice_accounts(recent_webhook_emails)
     email_status = test_email_service_status()
     webhook_accessible = test_webhook_endpoint_accessibility()
     
