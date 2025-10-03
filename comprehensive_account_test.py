@@ -142,13 +142,17 @@ def create_fresh_account():
         admin_token = login_response.json().get('token')
         headers = {"Authorization": f"Bearer {admin_token}"}
         
-        # Create new practice account
+        # Create new practice account with correct payload format
         practice_data = {
-            "practice_name": "The Dental Spa at Garden City",
-            "admin_email": "caryganz@gmail.com",
-            "admin_password": "DentalSpa2025!",
-            "owner_name": "Cary Ganz",
-            "subscription_type": "trial"
+            "practiceName": "The Dental Spa at Garden City",
+            "adminEmail": "caryganz@gmail.com",
+            "adminFirstName": "Cary",
+            "adminLastName": "Ganz",
+            "phone": "+15162361083",
+            "address": "Garden City, NY",
+            "tempPassword": "DentalSpa2025!",
+            "subscriptionType": "trial",
+            "trialDays": 30
         }
         
         create_response = requests.post(f"{BACKEND_URL}/api/admin/create-practice", 
