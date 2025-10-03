@@ -322,7 +322,26 @@ def main():
         print("❌ Webhook endpoint accessibility issues")
     
     print("\n🔧 RECOMMENDED ACTIONS:")
-    if not recent_logs:
+    if recent_logs:
+        # Check if any recent logs were ignored
+        ignored_events = []
+        for log in recent_logs:
+            event_type = log.get('event_type', 'unknown')
+            processed_types = ["ProductPurchased", "OrderCompleted", "Order.Completed"]
+            if event_type not in processed_types:
+                ignored_events.append((event_type, log.get('payload', {}).get('customer', {}).get('email', 'unknown')))
+        
+        if ignored_events:
+            print("🚨 CRITICAL ISSUE IDENTIFIED:")
+            print("1. ⚠️ WEBHOOK RECEIVED BUT IGNORED - Event type mismatch!")
+            for event_type, email in ignored_events:
+                print(f"   - Event '{event_type}' for {email} was ignored by webhook handler")
+            print("2. ⚠️ UPDATE WEBHOOK HANDLER to process 'Order' event type")
+            print("3. ⚠️ MANUALLY CREATE ACCOUNT for caryganz@gmail.com")
+            print("4. ⚠️ SEND WELCOME EMAIL manually to caryganz@gmail.com")
+        else:
+            print("✅ Recent webhooks were processed correctly")
+    else:
         print("1. ⚠️ Check SamCart webhook configuration")
         print("2. ⚠️ Verify webhook URL in SamCart dashboard")
         print("3. ⚠️ Test webhook delivery from SamCart admin panel")
