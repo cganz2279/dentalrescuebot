@@ -73,9 +73,30 @@ def test_samcart_webhook_verification():
                 recent_logs = []
                 if logs_data.get('logs'):
                     for log in logs_data['logs']:
-                        log_time = datetime.fromisoformat(log['created_at'].replace('Z', '+00:00'))
-                        if log_time >= target_time:
-                            recent_logs.append(log)
+                        try:
+                            # Handle different datetime formats
+                            created_at = log['created_at']
+                            if isinstance(created_at, str):
+                                if created_at.endswith('Z'):
+                                    log_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                                elif '+' in created_at or created_at.endswith('UTC'):
+                                    log_time = datetime.fromisoformat(created_at.replace('UTC', '').strip())
+                                    if log_time.tzinfo is None:
+                                        log_time = log_time.replace(tzinfo=timezone.utc)
+                                else:
+                                    log_time = datetime.fromisoformat(created_at)
+                                    if log_time.tzinfo is None:
+                                        log_time = log_time.replace(tzinfo=timezone.utc)
+                            else:
+                                log_time = created_at
+                                if log_time.tzinfo is None:
+                                    log_time = log_time.replace(tzinfo=timezone.utc)
+                            
+                            if log_time >= target_time:
+                                recent_logs.append(log)
+                        except Exception as e:
+                            print(f"      ⚠️ Error parsing log timestamp: {e}")
+                            continue
                 
                 if recent_logs:
                     results["recent_activity_found"] = True
