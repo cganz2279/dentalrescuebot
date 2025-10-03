@@ -65,6 +65,14 @@ def test_webhook_logs():
                                     order = payload['order']
                                     print(f"      💰 Order Total: ${order.get('total', '0.00')}")
                                     print(f"      🆔 Order ID: {order.get('id', 'Unknown')}")
+                                
+                                # Check if this event type would be processed
+                                processed_types = ["ProductPurchased", "OrderCompleted", "Order.Completed"]
+                                if event_type in processed_types:
+                                    print(f"      ✅ Event type '{event_type}' WOULD BE PROCESSED")
+                                else:
+                                    print(f"      ❌ Event type '{event_type}' WOULD BE IGNORED - NOT PROCESSED!")
+                                    print(f"      🔧 Webhook handler only processes: {processed_types}")
                     except Exception as parse_error:
                         print(f"      ⚠️ Could not parse timestamp: {parse_error}")
             
