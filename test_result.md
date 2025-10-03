@@ -366,10 +366,12 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Video Tutorial System Backend"
     - "Practice Login Functionality"
     - "Custom Domain SMS/Texting Features Testing"
   stuck_tasks:
     - "Practice Login Functionality"
+    - "Video Tutorial System Backend"
   test_all: false
   test_priority: "high_first"
 
