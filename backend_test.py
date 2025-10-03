@@ -18,7 +18,8 @@ def test_webhook_logs():
     try:
         response = requests.get(f"{BACKEND_URL}/api/webhook/samcart/logs")
         if response.status_code == 200:
-            logs = response.json()
+            data = response.json()
+            logs = data.get('logs', [])
             print(f"✅ Webhook logs retrieved: {len(logs)} total logs")
             
             # Check for recent logs (last 10 minutes)
