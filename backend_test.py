@@ -25,47 +25,43 @@ def test_webhook_logs():
             now = datetime.utcnow()
             recent_logs = []
             
-            for log in logs:
+            # Show all logs with timestamps for debugging
+            print(f"🔍 All webhook logs ({len(logs)} total):")
+            for i, log in enumerate(logs):
+                timestamp = log.get('timestamp', 'Unknown time')
+                event_type = log.get('event_type', 'Unknown event')
+                status = log.get('status', 'Unknown status')
+                email = log.get('customer_email', 'No email')
+                print(f"   {i+1}. {timestamp} - {event_type} - {status} - {email}")
+                
+                # Check if this is a recent log
                 if 'timestamp' in log:
-                    # Parse timestamp
-                    log_time = datetime.fromisoformat(log['timestamp'].replace('Z', '+00:00'))
-                    if isinstance(log_time, datetime):
-                        log_time = log_time.replace(tzinfo=None)
-                    
-                    time_diff = now - log_time
-                    if time_diff.total_seconds() <= 600:  # 10 minutes
-                        recent_logs.append(log)
-                        print(f"🕐 RECENT LOG: {log_time} - {log.get('event_type', 'Unknown')} - {log.get('status', 'Unknown')}")
-                        if 'customer_email' in log:
-                            print(f"   📧 Customer Email: {log['customer_email']}")
+                    try:
+                        log_time = datetime.fromisoformat(log['timestamp'].replace('Z', '+00:00'))
+                        if hasattr(log_time, 'tzinfo') and log_time.tzinfo is not None:
+                            log_time = log_time.replace(tzinfo=None)
+                        
+                        time_diff = now - log_time
+                        if time_diff.total_seconds() <= 600:  # 10 minutes
+                            recent_logs.append(log)
+                            print(f"      🕐 RECENT LOG (within 10 minutes): {log_time}")
+                    except Exception as parse_error:
+                        print(f"      ⚠️ Could not parse timestamp: {parse_error}")
             
             if not recent_logs:
                 print("❌ NO RECENT WEBHOOK LOGS FOUND in last 10 minutes")
-                print("🔍 Most recent webhook logs:")
-                # Show last 3 logs safely
-                recent_logs_to_show = logs[-3:] if len(logs) >= 3 else logs
-                for log in recent_logs_to_show:
-                    timestamp = log.get('timestamp', 'Unknown time')
-                    event_type = log.get('event_type', 'Unknown event')
-                    status = log.get('status', 'Unknown status')
-                    email = log.get('customer_email', 'No email')
-                    print(f"   📝 {timestamp} - {event_type} - {status} - {email}")
-                    
-                # Show all logs with timestamps for debugging
-                print(f"🔍 All webhook logs ({len(logs)} total):")
-                for i, log in enumerate(logs):
-                    timestamp = log.get('timestamp', 'Unknown time')
-                    event_type = log.get('event_type', 'Unknown event')
-                    status = log.get('status', 'Unknown status')
-                    email = log.get('customer_email', 'No email')
-                    print(f"   {i+1}. {timestamp} - {event_type} - {status} - {email}")
+            else:
+                print(f"✅ Found {len(recent_logs)} recent webhook(s)")
             
             return recent_logs
         else:
             print(f"❌ Failed to get webhook logs: {response.status_code}")
+            print(f"Response: {response.text}")
             return []
     except Exception as e:
         print(f"❌ Error checking webhook logs: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return []
 
 def test_webhook_stats():
