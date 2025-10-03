@@ -198,40 +198,7 @@ const PracticeLibraryPage = () => {
     }
   };
 
-  const handleTestSimplePDF = async () => {
-    console.log('🧪 Testing simple PDF generation...');
-    
-    try {
-      const { testSimplePDF } = await import('../utils/TEST_PDF_SIMPLE');
-      
-      toast({
-        title: "Testing PDF",
-        description: "Running simple PDF test...",
-      });
-      
-      const success = testSimplePDF();
-      
-      if (success) {
-        toast({
-          title: "Test Success",
-          description: "Simple PDF test completed - check downloads folder",
-        });
-      } else {
-        toast({
-          title: "Test Failed",
-          description: "Simple PDF test failed - check console",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('❌ Simple PDF test error:', error);
-      toast({
-        title: "Test Error",
-        description: `Test failed: ${error.message}`,
-        variant: "destructive",
-      });
-    }
-  };
+  // Test PDF function removed per user request
 
   // Functions removed - Email and SMS buttons not needed in procedure library
 
