@@ -64,12 +64,18 @@ class DashboardBrandingTester:
             if data.get("success"):
                 practice_data = data.get("data", {})
                 print(f"✅ Dashboard API successful")
-                print(f"   Practice Name: {practice_data.get('name', 'N/A')}")
+                print(f"   Practice Name: {practice_data.get('practice', {}).get('name', 'N/A')}")
                 
-                # Check if branding data is included
-                branding = practice_data.get("branding")
+                # Debug: Print the full response structure
+                print(f"   Full response structure: {list(practice_data.keys())}")
+                
+                # Check if branding data is included in practice object
+                practice_info = practice_data.get("practice", {})
+                branding = practice_info.get("branding")
+                
                 if branding is None:
                     print("❌ CRITICAL: Branding data is missing from dashboard response")
+                    print(f"   Practice data keys: {list(practice_info.keys())}")
                     return False
                 
                 print("✅ Branding data is included in dashboard response")
