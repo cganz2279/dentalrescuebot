@@ -148,8 +148,12 @@ def test_recent_practice_accounts(recent_webhook_emails=None):
                     webhook_email_matches = []
                     
                     for practice in practices:
-                        admin_email = practice.get('admin_email', '')
-                        practice_name = practice.get('practice_name', 'Unknown')
+                        if isinstance(practice, dict):
+                            admin_email = practice.get('admin_email', '')
+                            practice_name = practice.get('practice_name', 'Unknown')
+                        else:
+                            # Handle case where practice might be a string or other type
+                            continue
                         
                         # Check if this practice matches a recent webhook email
                         if recent_webhook_emails and admin_email in recent_webhook_emails:
