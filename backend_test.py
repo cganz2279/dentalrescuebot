@@ -13,477 +13,250 @@ import sys
 BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
 
 def test_webhook_logs():
-    def __init__(self):
-        self.session = requests.Session()
-        self.auth_token = None
-        self.practice_id = None
-        self.user_id = None
-        self.test_activities = []
-        
-    def authenticate(self):
-        """Authenticate with test credentials"""
-        print("🔐 Authenticating with test credentials...")
-        
-        auth_data = {
-            "email": TEST_EMAIL,
-            "password": TEST_PASSWORD
-        }
-        
-        response = self.session.post(f"{BASE_URL}/auth/login", json=auth_data)
-        
+    """Check recent webhook logs for the last 10 minutes"""
+    print("🔍 CHECKING RECENT WEBHOOK LOGS...")
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/webhook/samcart/logs")
         if response.status_code == 200:
-            data = response.json()
-            if data.get("success"):
-                self.auth_token = data["token"]
-                self.practice_id = data["user"]["practiceId"]
-                self.user_id = data["user"]["id"]
-                
-                # Set authorization header for future requests
-                self.session.headers.update({
-                    "Authorization": f"Bearer {self.auth_token}"
-                })
-                
-                print(f"✅ Authentication successful")
-                print(f"   Practice ID: {self.practice_id}")
-                print(f"   User ID: {self.user_id}")
-                return True
-            else:
-                print(f"❌ Authentication failed: {data.get('error', 'Unknown error')}")
-                return False
-        else:
-            print(f"❌ Authentication failed with status {response.status_code}")
-            print(f"   Response: {response.text}")
-            return False
-    
-    def test_log_activity_endpoint(self):
-        """Test the /api/practice/log-activity endpoint"""
-        print("\n📝 Testing Activity Logging Endpoint...")
-        
-        # Test data for different activity types
-        test_activities = [
-            {
-                "patientId": str(uuid.uuid4()),
-                "patientName": "John Smith",
-                "patientEmail": "john.smith@gmail.com",
-                "procedureId": str(uuid.uuid4()),
-                "procedureName": "Root Canal Therapy",
-                "dentistName": "Dr. Cary Ganz",
-                "activityType": "print"
-            },
-            {
-                "patientId": str(uuid.uuid4()),
-                "patientName": "Jane Doe",
-                "patientEmail": "jane.doe@gmail.com",
-                "procedureId": str(uuid.uuid4()),
-                "procedureName": "Dental Crown Placement",
-                "dentistName": "Dr. Cary Ganz",
-                "activityType": "email"
-            },
-            {
-                "patientId": str(uuid.uuid4()),
-                "patientName": "Bob Johnson",
-                "patientEmail": "bob.johnson@gmail.com",
-                "procedureId": str(uuid.uuid4()),
-                "procedureName": "Tooth Extraction",
-                "dentistName": "Dr. Cary Ganz",
-                "activityType": "sms"
-            }
-        ]
-        
-        success_count = 0
-        
-        for i, activity_data in enumerate(test_activities):
-            print(f"\n   Testing activity {i+1}: {activity_data['activityType']} - {activity_data['procedureName']}")
+            logs = response.json()
+            print(f"✅ Webhook logs retrieved: {len(logs)} total logs")
             
-            response = self.session.post(f"{BASE_URL}/practice/log-activity", json=activity_data)
+            # Check for recent logs (last 10 minutes)
+            now = datetime.utcnow()
+            recent_logs = []
             
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("success"):
-                    activity_id = data.get("activityId")
-                    print(f"   ✅ Activity logged successfully - ID: {activity_id}")
+            for log in logs:
+                if 'timestamp' in log:
+                    # Parse timestamp
+                    log_time = datetime.fromisoformat(log['timestamp'].replace('Z', '+00:00'))
+                    if isinstance(log_time, datetime):
+                        log_time = log_time.replace(tzinfo=None)
                     
-                    # Store for later testing
-                    activity_data["activityId"] = activity_id
-                    self.test_activities.append(activity_data)
-                    success_count += 1
-                else:
-                    print(f"   ❌ Activity logging failed: {data.get('error', 'Unknown error')}")
-            else:
-                print(f"   ❌ Activity logging failed with status {response.status_code}")
-                print(f"      Response: {response.text}")
-        
-        print(f"\n📊 Activity Logging Results: {success_count}/{len(test_activities)} successful")
-        return success_count == len(test_activities)
-    
-    def test_log_activity_validation(self):
-        """Test activity logging endpoint with missing required fields"""
-        print("\n🔍 Testing Activity Logging Validation...")
-        
-        # Test missing required fields
-        invalid_activities = [
-            {
-                "patientName": "Test Patient",
-                "patientEmail": "test@gmail.com",
-                # Missing patientId, procedureId, procedureName, dentistName, activityType
-            },
-            {
-                "patientId": str(uuid.uuid4()),
-                "patientEmail": "test@gmail.com",
-                "procedureId": str(uuid.uuid4()),
-                "procedureName": "Test Procedure",
-                "dentistName": "Dr. Test",
-                # Missing patientName and activityType
-            }
-        ]
-        
-        validation_passed = True
-        
-        for i, invalid_data in enumerate(invalid_activities):
-            print(f"   Testing invalid activity {i+1}...")
+                    time_diff = now - log_time
+                    if time_diff.total_seconds() <= 600:  # 10 minutes
+                        recent_logs.append(log)
+                        print(f"🕐 RECENT LOG: {log_time} - {log.get('event_type', 'Unknown')} - {log.get('status', 'Unknown')}")
+                        if 'customer_email' in log:
+                            print(f"   📧 Customer Email: {log['customer_email']}")
             
-            response = self.session.post(f"{BASE_URL}/practice/log-activity", json=invalid_data)
+            if not recent_logs:
+                print("❌ NO RECENT WEBHOOK LOGS FOUND in last 10 minutes")
+                print("🔍 Most recent webhook logs:")
+                for log in logs[-3:]:  # Show last 3 logs
+                    timestamp = log.get('timestamp', 'Unknown time')
+                    event_type = log.get('event_type', 'Unknown event')
+                    status = log.get('status', 'Unknown status')
+                    email = log.get('customer_email', 'No email')
+                    print(f"   📝 {timestamp} - {event_type} - {status} - {email}")
             
-            # Should return error for missing fields, but backend might be lenient
-            if response.status_code in [400, 422, 500]:
-                print(f"   ✅ Validation correctly rejected invalid data (status: {response.status_code})")
-            elif response.status_code == 200:
-                print(f"   ⚠️  Backend accepted invalid data (status: {response.status_code}) - validation could be stricter")
-                # Don't fail the test since core functionality works
-            else:
-                print(f"   ❌ Unexpected response (status: {response.status_code})")
-                validation_passed = False
-        
-        return validation_passed
-    
-    def test_export_activities_endpoint(self):
-        """Test the /api/practice/export-activities endpoint"""
-        print("\n📤 Testing Export Activities Endpoint...")
-        
-        # Test 1: Export without date parameters (should default to last 30 days)
-        print("   Testing export without date parameters...")
-        response = self.session.get(f"{BASE_URL}/practice/export-activities")
-        
+            return recent_logs
+        else:
+            print(f"❌ Failed to get webhook logs: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"❌ Error checking webhook logs: {str(e)}")
+        return []
+
+def test_webhook_stats():
+    """Check webhook statistics"""
+    print("\n📊 CHECKING WEBHOOK STATISTICS...")
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/webhook/samcart/stats")
         if response.status_code == 200:
-            data = response.json()
-            if data.get("success"):
-                activities = data["data"]["activities"]
-                date_range = data["data"]["dateRange"]
-                total = data["data"]["total"]
-                
-                print(f"   ✅ Export successful - Found {total} activities")
-                print(f"      Date range: {date_range['start']} to {date_range['end']}")
-                
-                # Verify activities have required CSV fields
-                if activities:
-                    sample_activity = activities[0]
-                    required_fields = ["patientName", "patientEmail", "procedureName", "dentistName", "activityType", "performedAt"]
-                    missing_fields = [field for field in required_fields if field not in sample_activity]
-                    
-                    if not missing_fields:
-                        print("   ✅ Activities contain all required CSV fields")
-                    else:
-                        print(f"   ❌ Activities missing required fields: {missing_fields}")
-                        return False
-                else:
-                    print("   ⚠️  No activities found in default date range")
-            else:
-                print(f"   ❌ Export failed: {data.get('error', 'Unknown error')}")
-                return False
+            stats = response.json()
+            print(f"✅ Webhook stats retrieved:")
+            print(f"   📈 Total webhooks: {stats.get('total_webhooks', 0)}")
+            print(f"   ✅ Successful: {stats.get('successful_webhooks', 0)}")
+            print(f"   ❌ Failed: {stats.get('failed_webhooks', 0)}")
+            print(f"   📊 Success rate: {stats.get('success_rate', 0)}%")
+            print(f"   🆕 Recent signups (30 days): {stats.get('recent_practice_signups', 0)}")
+            return stats
         else:
-            print(f"   ❌ Export failed with status {response.status_code}")
-            print(f"      Response: {response.text}")
-            return False
-        
-        # Test 2: Export with specific date range
-        print("\n   Testing export with specific date range...")
-        
-        # Use last 7 days
-        end_date = datetime.now(timezone.utc)
-        start_date = end_date - timedelta(days=7)
-        
-        params = {
-            "start_date": start_date.isoformat(),
-            "end_date": end_date.isoformat()
-        }
-        
-        response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("success"):
-                activities = data["data"]["activities"]
-                total = data["data"]["total"]
-                print(f"   ✅ Date range export successful - Found {total} activities")
-            else:
-                print(f"   ❌ Date range export failed: {data.get('error', 'Unknown error')}")
-                return False
-        else:
-            print(f"   ❌ Date range export failed with status {response.status_code}")
-            return False
-        
-        # Test 3: Export with activity types filter
-        print("\n   Testing export with activity types filter...")
-        
-        params = {
-            "activity_types": "print,email"
-        }
-        
-        response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("success"):
-                activities = data["data"]["activities"]
-                total = data["data"]["total"]
-                activity_types = data["data"]["activityTypes"]
-                
-                print(f"   ✅ Activity types filter export successful - Found {total} activities")
-                print(f"      Filtered types: {activity_types}")
-                
-                # Verify only requested activity types are returned
-                if activities:
-                    returned_types = set([activity["activityType"] for activity in activities])
-                    expected_types = set(["print", "email"])
-                    
-                    if returned_types.issubset(expected_types):
-                        print("   ✅ Activity types filter working correctly")
-                    else:
-                        print(f"   ❌ Unexpected activity types returned: {returned_types - expected_types}")
-                        return False
-            else:
-                print(f"   ❌ Activity types filter export failed: {data.get('error', 'Unknown error')}")
-                return False
-        else:
-            print(f"   ❌ Activity types filter export failed with status {response.status_code}")
-            return False
-        
-        return True
+            print(f"❌ Failed to get webhook stats: {response.status_code}")
+            return {}
+    except Exception as e:
+        print(f"❌ Error checking webhook stats: {str(e)}")
+        return {}
+
+def test_recent_practice_accounts():
+    """Check for recent practice accounts created (requires admin access)"""
+    print("\n👥 CHECKING RECENT PRACTICE ACCOUNTS...")
     
-    def test_export_activities_validation(self):
-        """Test export activities endpoint with invalid parameters"""
-        print("\n🔍 Testing Export Activities Validation...")
-        
-        # Test invalid date formats
-        invalid_params = [
-            {"start_date": "invalid-date"},
-            {"end_date": "2024-13-45"},  # Invalid date
-        ]
-        
-        validation_passed = True
-        
-        for i, params in enumerate(invalid_params):
-            print(f"   Testing invalid parameters {i+1}: {params}")
+    # First try to login as admin
+    admin_credentials = {
+        "email": "cganz@admin.com",
+        "password": "Dentist1#"
+    }
+    
+    try:
+        # Admin login
+        login_response = requests.post(f"{BACKEND_URL}/api/admin/login", json=admin_credentials)
+        if login_response.status_code == 200:
+            admin_token = login_response.json().get('token')
+            print("✅ Admin login successful")
             
-            response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
+            # Get recent practices (this would require an admin endpoint to list practices)
+            headers = {"Authorization": f"Bearer {admin_token}"}
             
-            if response.status_code == 400:
-                print(f"   ✅ Validation correctly rejected invalid parameters")
-            else:
-                print(f"   ❌ Validation failed - should have rejected invalid parameters (status: {response.status_code})")
-                validation_passed = False
-        
-        # Test edge case: end date before start date (this might be handled differently)
-        print("   Testing edge case: end date before start date...")
-        params = {"start_date": "2024-01-01", "end_date": "2023-12-31"}
-        response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
-        
-        if response.status_code == 400:
-            print("   ✅ Validation correctly rejected end date before start date")
-        elif response.status_code == 200:
-            print("   ⚠️  Backend accepted end date before start date - could add validation")
-            # Don't fail the test since this is an edge case
-        else:
-            print(f"   ❌ Unexpected response for date range validation (status: {response.status_code})")
-            validation_passed = False
-        
-        return validation_passed
-    
-    def test_data_integration(self):
-        """Test data integration between logging and export"""
-        print("\n🔗 Testing Data Integration...")
-        
-        # Log a test activity with current timestamp
-        test_activity = {
-            "patientId": str(uuid.uuid4()),
-            "patientName": "Integration Test Patient",
-            "patientEmail": "integration.test@gmail.com",
-            "procedureId": str(uuid.uuid4()),
-            "procedureName": "Integration Test Procedure",
-            "dentistName": "Dr. Integration Test",
-            "activityType": "print"
-        }
-        
-        print("   Logging test activity...")
-        response = self.session.post(f"{BASE_URL}/practice/log-activity", json=test_activity)
-        
-        if response.status_code != 200 or not response.json().get("success"):
-            print("   ❌ Failed to log test activity")
-            return False
-        
-        activity_id = response.json().get("activityId")
-        print(f"   ✅ Test activity logged - ID: {activity_id}")
-        
-        # Wait a moment for database consistency
-        import time
-        time.sleep(1)
-        
-        # Export activities and verify the test activity is included
-        print("   Exporting activities to verify integration...")
-        
-        # Use a date range that includes the current time
-        end_date = datetime.now(timezone.utc) + timedelta(minutes=1)
-        start_date = end_date - timedelta(hours=1)
-        
-        params = {
-            "start_date": start_date.isoformat(),
-            "end_date": end_date.isoformat()
-        }
-        
-        response = self.session.get(f"{BASE_URL}/practice/export-activities", params=params)
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("success"):
-                activities = data["data"]["activities"]
-                
-                # Look for our test activity
-                found_activity = None
-                for activity in activities:
-                    if activity.get("patientName") == "Integration Test Patient":
-                        found_activity = activity
-                        break
-                
-                if found_activity:
-                    print("   ✅ Test activity found in export")
-                    
-                    # Verify all required fields are present
-                    required_fields = ["patientName", "patientEmail", "procedureName", "dentistName", "activityType", "performedAt"]
-                    missing_fields = [field for field in required_fields if field not in found_activity]
-                    
-                    if not missing_fields:
-                        print("   ✅ All required CSV fields present")
-                        
-                        # Verify field values match
-                        if (found_activity["patientName"] == test_activity["patientName"] and
-                            found_activity["patientEmail"] == test_activity["patientEmail"] and
-                            found_activity["procedureName"] == test_activity["procedureName"] and
-                            found_activity["dentistName"] == test_activity["dentistName"] and
-                            found_activity["activityType"] == test_activity["activityType"]):
-                            print("   ✅ Field values match logged activity")
-                            return True
-                        else:
-                            print("   ❌ Field values don't match logged activity")
-                            return False
-                    else:
-                        print(f"   ❌ Missing required fields: {missing_fields}")
-                        return False
-                else:
-                    print("   ❌ Test activity not found in export")
-                    return False
-            else:
-                print(f"   ❌ Export failed: {data.get('error', 'Unknown error')}")
-                return False
-        else:
-            print(f"   ❌ Export failed with status {response.status_code}")
-            return False
-    
-    def test_authentication_required(self):
-        """Test that endpoints require authentication"""
-        print("\n🔒 Testing Authentication Requirements...")
-        
-        # Create a session without authentication
-        unauth_session = requests.Session()
-        
-        # Test log-activity endpoint
-        print("   Testing log-activity endpoint without auth...")
-        response = unauth_session.post(f"{BASE_URL}/practice/log-activity", json={})
-        
-        if response.status_code == 401 or response.status_code == 403:
-            print("   ✅ log-activity correctly requires authentication")
-        else:
-            print(f"   ❌ log-activity should require authentication (status: {response.status_code})")
-            return False
-        
-        # Test export-activities endpoint
-        print("   Testing export-activities endpoint without auth...")
-        response = unauth_session.get(f"{BASE_URL}/practice/export-activities")
-        
-        if response.status_code == 401 or response.status_code == 403:
-            print("   ✅ export-activities correctly requires authentication")
-            return True
-        else:
-            print(f"   ❌ export-activities should require authentication (status: {response.status_code})")
-            return False
-    
-    def run_all_tests(self):
-        """Run all CSV Export with Activity Logging tests"""
-        print("🚀 Starting CSV Export with Activity Logging Tests")
-        print("=" * 60)
-        
-        # Authenticate first
-        if not self.authenticate():
-            print("❌ Authentication failed - cannot proceed with tests")
-            return False
-        
-        # Run all tests
-        tests = [
-            ("Authentication Requirements", self.test_authentication_required),
-            ("Activity Logging Endpoint", self.test_log_activity_endpoint),
-            ("Activity Logging Validation", self.test_log_activity_validation),
-            ("Export Activities Endpoint", self.test_export_activities_endpoint),
-            ("Export Activities Validation", self.test_export_activities_validation),
-            ("Data Integration", self.test_data_integration)
-        ]
-        
-        results = []
-        
-        for test_name, test_func in tests:
+            # Try to get practice list (if endpoint exists)
             try:
-                result = test_func()
-                results.append((test_name, result))
-                
-                if result:
-                    print(f"✅ {test_name}: PASSED")
-                else:
-                    print(f"❌ {test_name}: FAILED")
+                practices_response = requests.get(f"{BACKEND_URL}/api/admin/practices", headers=headers)
+                if practices_response.status_code == 200:
+                    practices = practices_response.json()
+                    print(f"✅ Found {len(practices)} total practices")
                     
+                    # Check for recent practices (last 10 minutes)
+                    now = datetime.utcnow()
+                    recent_practices = []
+                    
+                    for practice in practices:
+                        if 'created_at' in practice or 'createdAt' in practice:
+                            created_field = practice.get('created_at') or practice.get('createdAt')
+                            try:
+                                created_time = datetime.fromisoformat(created_field.replace('Z', '+00:00'))
+                                if isinstance(created_time, datetime):
+                                    created_time = created_time.replace(tzinfo=None)
+                                
+                                time_diff = now - created_time
+                                if time_diff.total_seconds() <= 600:  # 10 minutes
+                                    recent_practices.append(practice)
+                                    print(f"🆕 RECENT PRACTICE: {practice.get('practice_name', 'Unknown')} - {practice.get('admin_email', 'No email')} - {created_time}")
+                            except:
+                                pass
+                    
+                    if not recent_practices:
+                        print("❌ NO RECENT PRACTICE ACCOUNTS FOUND in last 10 minutes")
+                    
+                    return recent_practices
+                else:
+                    print(f"❌ Could not retrieve practices list: {practices_response.status_code}")
+                    return []
             except Exception as e:
-                print(f"❌ {test_name}: ERROR - {str(e)}")
-                results.append((test_name, False))
-        
-        # Summary
-        print("\n" + "=" * 60)
-        print("📊 TEST SUMMARY")
-        print("=" * 60)
-        
-        passed = sum(1 for _, result in results if result)
-        total = len(results)
-        
-        for test_name, result in results:
-            status = "✅ PASSED" if result else "❌ FAILED"
-            print(f"{test_name}: {status}")
-        
-        print(f"\nOverall: {passed}/{total} tests passed")
-        
-        if passed == total:
-            print("🎉 All CSV Export with Activity Logging tests PASSED!")
+                print(f"❌ Error retrieving practices: {str(e)}")
+                return []
+        else:
+            print(f"❌ Admin login failed: {login_response.status_code}")
+            return []
+    except Exception as e:
+        print(f"❌ Error with admin access: {str(e)}")
+        return []
+
+def test_email_service_status():
+    """Test email service functionality"""
+    print("\n📧 TESTING EMAIL SERVICE STATUS...")
+    
+    # Test with existing practice account
+    practice_credentials = {
+        "email": "cganz2279@gmail.com",
+        "password": "password123"
+    }
+    
+    try:
+        # Practice login
+        login_response = requests.post(f"{BACKEND_URL}/api/auth/login", json=practice_credentials)
+        if login_response.status_code == 200:
+            token = login_response.json().get('token')
+            print("✅ Practice login successful")
+            
+            # Test email functionality by trying to send a test PDF email
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            email_test_payload = {
+                "procedureId": "root-canal-therapy",
+                "patientName": "Test Patient",
+                "patientEmail": "test@example.com",
+                "customInstructions": "Email service test"
+            }
+            
+            try:
+                email_response = requests.post(f"{BACKEND_URL}/api/practice/email-pdf", 
+                                             json=email_test_payload, headers=headers)
+                if email_response.status_code == 200:
+                    print("✅ Email service is operational - test email sent successfully")
+                    return True
+                else:
+                    print(f"⚠️ Email service test failed: {email_response.status_code}")
+                    print(f"Response: {email_response.text}")
+                    return False
+            except Exception as e:
+                print(f"❌ Error testing email service: {str(e)}")
+                return False
+        else:
+            print(f"❌ Practice login failed: {login_response.status_code}")
+            return False
+    except Exception as e:
+        print(f"❌ Error testing email service: {str(e)}")
+        return False
+
+def test_webhook_endpoint_accessibility():
+    """Test if webhook endpoint is accessible"""
+    print("\n🔗 TESTING WEBHOOK ENDPOINT ACCESSIBILITY...")
+    try:
+        # Test GET request (should return 405 Method Not Allowed)
+        response = requests.get(f"{BACKEND_URL}/api/webhook/samcart")
+        if response.status_code == 405:
+            print("✅ Webhook endpoint is accessible (returns 405 for GET as expected)")
             return True
         else:
-            print("⚠️  Some tests FAILED - see details above")
+            print(f"⚠️ Unexpected response from webhook endpoint: {response.status_code}")
             return False
+    except Exception as e:
+        print(f"❌ Error accessing webhook endpoint: {str(e)}")
+        return False
 
 def main():
-    """Main function to run the tests"""
-    tester = CSVExportActivityLoggingTester()
-    success = tester.run_all_tests()
+    print("🚨 URGENT: SAMCART PAYMENT INVESTIGATION")
+    print("=" * 60)
+    print("Investigating missing welcome email for real payment")
+    print(f"Backend URL: {BACKEND_URL}")
+    print(f"Investigation time: {datetime.utcnow().isoformat()}Z")
+    print("=" * 60)
     
-    if success:
-        print("\n✅ CSV Export with Activity Logging functionality is working correctly!")
-        sys.exit(0)
+    # Run all tests
+    recent_logs = test_webhook_logs()
+    stats = test_webhook_stats()
+    recent_practices = test_recent_practice_accounts()
+    email_status = test_email_service_status()
+    webhook_accessible = test_webhook_endpoint_accessibility()
+    
+    # Summary
+    print("\n" + "=" * 60)
+    print("🎯 INVESTIGATION SUMMARY")
+    print("=" * 60)
+    
+    if not recent_logs:
+        print("❌ CRITICAL: NO webhook received for recent payment")
+        print("   This indicates SamCart did NOT send webhook for the real payment")
     else:
-        print("\n❌ CSV Export with Activity Logging functionality has issues!")
-        sys.exit(1)
+        print(f"✅ Found {len(recent_logs)} recent webhook(s)")
+    
+    if stats:
+        print(f"📊 Total webhooks processed: {stats.get('total_webhooks', 0)}")
+        print(f"📊 Success rate: {stats.get('success_rate', 0)}%")
+    
+    if not recent_practices:
+        print("❌ NO recent practice accounts created")
+    else:
+        print(f"✅ Found {len(recent_practices)} recent practice account(s)")
+    
+    if email_status:
+        print("✅ Email service is operational")
+    else:
+        print("❌ Email service has issues")
+    
+    if webhook_accessible:
+        print("✅ Webhook endpoint is accessible")
+    else:
+        print("❌ Webhook endpoint accessibility issues")
+    
+    print("\n🔧 RECOMMENDED ACTIONS:")
+    if not recent_logs:
+        print("1. ⚠️ Check SamCart webhook configuration")
+        print("2. ⚠️ Verify webhook URL in SamCart dashboard")
+        print("3. ⚠️ Test webhook delivery from SamCart admin panel")
+        print("4. ⚠️ Manually create account for paying customer")
+    
+    print("\n" + "=" * 60)
 
 if __name__ == "__main__":
     main()
