@@ -42,12 +42,23 @@ def test_webhook_logs():
             if not recent_logs:
                 print("❌ NO RECENT WEBHOOK LOGS FOUND in last 10 minutes")
                 print("🔍 Most recent webhook logs:")
-                for log in logs[-3:]:  # Show last 3 logs
+                # Show last 3 logs safely
+                recent_logs_to_show = logs[-3:] if len(logs) >= 3 else logs
+                for log in recent_logs_to_show:
                     timestamp = log.get('timestamp', 'Unknown time')
                     event_type = log.get('event_type', 'Unknown event')
                     status = log.get('status', 'Unknown status')
                     email = log.get('customer_email', 'No email')
                     print(f"   📝 {timestamp} - {event_type} - {status} - {email}")
+                    
+                # Show all logs with timestamps for debugging
+                print(f"🔍 All webhook logs ({len(logs)} total):")
+                for i, log in enumerate(logs):
+                    timestamp = log.get('timestamp', 'Unknown time')
+                    event_type = log.get('event_type', 'Unknown event')
+                    status = log.get('status', 'Unknown status')
+                    email = log.get('customer_email', 'No email')
+                    print(f"   {i+1}. {timestamp} - {event_type} - {status} - {email}")
             
             return recent_logs
         else:
