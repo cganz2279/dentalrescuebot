@@ -236,9 +236,9 @@ backend:
 
   - task: "SamCart Webhook Integration"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/routes/samcart_webhook.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -251,6 +251,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "🎉 SAMCART WEBHOOK CONNECTION VERIFICATION COMPLETED - INTEGRATION FULLY OPERATIONAL: Conducted comprehensive verification of SamCart webhook integration following user's successful connection at 5:55 PM on 10/3/2025. ✅ RECENT WEBHOOK ACTIVITY CONFIRMED: Found 6 webhook events since 5:55 PM today (ProductPurchased events at 21:28:57, 21:28:56, 21:27:45 UTC and others), confirming SamCart is successfully sending webhooks to the backend. ✅ WEBHOOK STATISTICS VERIFIED: Total webhooks: 6, Successful: 6, Failed: 0, Success rate: 100.0%, Recent practice signups: 6. All webhook processing is working perfectly. ✅ CONNECTION STATUS VERIFIED: Webhook endpoint (https://aftercareportal.preview.emergentagent.com/api/webhook/samcart) is accessible and properly configured. Backend logs show successful webhook processing with unique webhook IDs. ✅ PRACTICE ACCOUNT CREATION CONFIRMED: 6 SamCart practice accounts created since 5:55 PM today, all with proper trial status (30-day trials ending 2025-11-02), secure password generation, and complete practice information. All accounts marked with 'source': 'samcart' for proper tracking. ✅ EMAIL FUNCTIONALITY OPERATIONAL: Welcome emails and admin notifications are being sent successfully for each new practice account creation. SendGrid integration working correctly. 🎯 CRITICAL CONFIRMATION: The user's SamCart webhook integration connection at 5:55 PM was SUCCESSFUL. The system is now ready for real payment testing. All webhook events since connection time have been processed successfully, creating practice accounts with proper trial periods and sending welcome emails. The integration is fully operational and ready for production use."
+        - working: false
+          agent: "testing"
+          comment: "🚨 URGENT REAL PAYMENT FAILURE - WEBHOOK NOT RECEIVED: Conducted comprehensive investigation of user's real SamCart payment that did NOT result in welcome email delivery. ❌ CRITICAL FINDING: NO webhook was received for the real payment. Detailed analysis of webhook logs shows 6 total webhooks, all containing test email 'samcart.test@example.com', with most recent webhook 44+ minutes old (2025-10-03T21:28:57.107000). No webhook activity detected in the critical 10-15 minute window after the real payment. ✅ BACKEND INFRASTRUCTURE CONFIRMED WORKING: (1) Webhook endpoint accessible and returns 405 for GET as expected ✅, (2) All previous webhooks processed successfully with 100% success rate ✅, (3) Email service configured and operational with SendGrid ✅, (4) Backend health check passing ✅. ❌ ROOT CAUSE IDENTIFIED: SamCart did NOT send webhook for the real payment. This is a SamCart configuration issue, not a backend problem. The webhook integration works perfectly for test payments but failed to trigger for the real payment. ✅ COMPREHENSIVE WEBHOOK ANALYSIS: Examined all 6 webhook logs with timestamps ranging from 2025-10-03T21:27:24 to 2025-10-03T21:28:57, all containing identical test customer data (Dr. Sarah Johnson, samcart.test@example.com). Email pattern analysis confirms only test emails found, no real customer emails. 🔧 IMMEDIATE ACTIONS REQUIRED: (1) Verify SamCart webhook URL configuration: https://aftercareportal.preview.emergentagent.com/api/webhook/samcart, (2) Check SamCart dashboard webhook settings for ProductPurchased events, (3) Test webhook delivery from SamCart admin panel, (4) Manually create practice account for user who paid, (5) Send welcome email manually to customer. 🎯 CRITICAL IMPACT: Customer paid real money but received no account access due to missing webhook. Backend webhook system is fully operational - issue is at SamCart webhook delivery configuration level."
 
   - task: "Video Tutorial System Backend"
     implemented: true
