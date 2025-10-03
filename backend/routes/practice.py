@@ -251,11 +251,28 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                 detail="Access denied"
             )
         
-        # Get practice info
+        # Get practice info with explicit branding data
         practice = await db.practices.find_one(
             {"id": practice_id},
             {"_id": 0}
         )
+        
+        # Ensure branding data structure exists with defaults
+        if practice:
+            if "branding" not in practice:
+                practice["branding"] = {}
+            
+            branding = practice["branding"]
+            
+            # Set defaults for missing branding fields
+            if "logo" not in branding:
+                branding["logo"] = None
+            if "primaryColor" not in branding:
+                branding["primaryColor"] = "#2563eb"
+            if "secondaryColor" not in branding:
+                branding["secondaryColor"] = "#1e40af"
+            if "welcomeMessage" not in branding:
+                branding["welcomeMessage"] = "Welcome to our practice!"
         
         if not practice:
             raise HTTPException(
