@@ -45,74 +45,19 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
           
           console.log('🖼️ Using logo format:', processedLogoData.substring(0, 30) + '...');
           
-          // Calculate proper aspect ratio to prevent distortion
-          const maxWidth = 60;  // Maximum logo width in PDF units
-          const maxHeight = 45; // Maximum logo height in PDF units
-          
-          // Create an image element to get natural dimensions
-          const img = new Image();
-          img.onload = () => {
-            console.log(`📏 Logo natural dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
-            
-            // Calculate aspect ratio
-            const aspectRatio = img.naturalWidth / img.naturalHeight;
-            
-            let finalWidth, finalHeight;
-            
-            if (aspectRatio > maxWidth / maxHeight) {
-              // Wide image - limit by width
-              finalWidth = maxWidth;
-              finalHeight = maxWidth / aspectRatio;
-            } else {
-              // Tall image - limit by height  
-              finalHeight = maxHeight;
-              finalWidth = maxHeight * aspectRatio;
-            }
-            
-            console.log(`📏 Calculated logo dimensions: ${finalWidth}x${finalHeight} (aspect ratio: ${aspectRatio})`);
-            
-            // Calculate centered position
-            const xPos = (pdf.internal.pageSize.width - finalWidth) / 2;
-            
-            try {
-              // Add custom practice logo with proper aspect ratio
-              pdf.addImage(processedLogoData, 'PNG', xPos, yPos, finalWidth, finalHeight);
-              console.log('✅ Custom logo added successfully with proper aspect ratio');
-            } catch (addImageError) {
-              console.error('❌ Error adding logo to PDF:', addImageError);
-            }
-          };
-          
-          img.onerror = () => {
-            console.error('❌ Failed to load logo image for dimension calculation');
-            // Fallback to default dimensions if image loading fails
-            const imgWidth = 40;
-            const imgHeight = 30;
-            const xPos = (pdf.internal.pageSize.width - imgWidth) / 2;
-            
-            try {
-              pdf.addImage(processedLogoData, 'PNG', xPos, yPos, imgWidth, imgHeight);
-              console.log('⚠️ Logo added with default dimensions (fallback)');
-            } catch (fallbackError) {
-              console.error('❌ Fallback logo add also failed:', fallbackError);
-            }
-          };
-          
-          // Set the image source to trigger loading
-          img.src = processedLogoData;
-          
-          // For synchronous execution, we need to handle this differently
-          // Let's use a more direct approach that works with jsPDF
-          
+          // Use jsPDF's built-in getImageProperties for accurate dimensions
           try {
-            // Get image format info directly from jsPDF
-            const format = pdf.getImageProperties ? pdf.getImageProperties(processedLogoData) : null;
+            const imageProps = pdf.getImageProperties(processedLogoData);
+            console.log(`📏 Image properties:`, imageProps);
             
-            if (format && format.width && format.height) {
-              console.log(`📏 jsPDF detected dimensions: ${format.width}x${format.height}`);
+            if (imageProps && imageProps.width && imageProps.height) {
+              // Calculate aspect ratio from actual image properties
+              const aspectRatio = imageProps.width / imageProps.height;
+              console.log(`📏 Aspect ratio: ${aspectRatio}`);
               
-              // Calculate aspect ratio from jsPDF format info
-              const aspectRatio = format.width / format.height;
+              // Set maximum dimensions for the logo in the PDF
+              const maxWidth = 60;  // Maximum logo width in PDF units
+              const maxHeight = 45; // Maximum logo height in PDF units
               
               let finalWidth, finalHeight;
               
@@ -126,7 +71,7 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
                 finalWidth = maxHeight * aspectRatio;
               }
               
-              console.log(`📏 Final calculated dimensions: ${finalWidth}x${finalHeight}`);
+              console.log(`📏 Final calculated dimensions: ${finalWidth.toFixed(2)}x${finalHeight.toFixed(2)}`);
               
               // Calculate centered position
               const xPos = (pdf.internal.pageSize.width - finalWidth) / 2;
@@ -136,25 +81,25 @@ export const generateProcedurePDF = async (procedure, practiceData) => {
               yPos += finalHeight + 10;
               logoAdded = true;
               
-              console.log('✅ Custom logo added successfully with calculated aspect ratio');
+              console.log('✅ Custom logo added successfully with preserved aspect ratio');
               
             } else {
-              // Fallback to reasonable default dimensions if we can't get format info
-              console.log('⚠️ Could not determine logo dimensions, using default sizing');
-              const imgWidth = 50;
-              const imgHeight = 38;
-              const xPos = (pdf.internal.pageSize.width - imgWidth) / 2;
-              
-              pdf.addImage(processedLogoData, 'PNG', xPos, yPos, imgWidth, imgHeight);
-              yPos += imgHeight + 10;
-              logoAdded = true;
-              
-              console.log('✅ Custom logo added with default dimensions');
+              throw new Error('Could not get image properties');
             }
             
           } catch (dimensionError) {
-            console.error('❌ Error calculating logo dimensions:', dimensionError);
-            throw dimensionError;
+            console.log(`⚠️ Could not calculate aspect ratio (${dimensionError.message}), using proportional default`);
+            
+            // Use a reasonable square-ish default that works for most logos
+            const imgWidth = 50;
+            const imgHeight = 40;  // Slightly rectangular default
+            const xPos = (pdf.internal.pageSize.width - imgWidth) / 2;
+            
+            pdf.addImage(processedLogoData, 'PNG', xPos, yPos, imgWidth, imgHeight);
+            yPos += imgHeight + 10;
+            logoAdded = true;
+            
+            console.log('✅ Custom logo added with default proportional dimensions');
           }
           
         } catch (customLogoError) {
