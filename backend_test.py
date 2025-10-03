@@ -105,7 +105,7 @@ def test_webhook_stats():
         print(f"❌ Error checking webhook stats: {str(e)}")
         return {}
 
-def test_recent_practice_accounts():
+def test_recent_practice_accounts(recent_webhook_emails=None):
     """Check for recent practice accounts created (requires admin access)"""
     print("\n👥 CHECKING RECENT PRACTICE ACCOUNTS...")
     
@@ -136,7 +136,22 @@ def test_recent_practice_accounts():
                     now = datetime.utcnow()
                     recent_practices = []
                     
+                    # Also check for practices matching recent webhook emails
+                    webhook_email_matches = []
+                    
                     for practice in practices:
+                        admin_email = practice.get('admin_email', '')
+                        practice_name = practice.get('practice_name', 'Unknown')
+                        
+                        # Check if this practice matches a recent webhook email
+                        if recent_webhook_emails and admin_email in recent_webhook_emails:
+                            webhook_email_matches.append(practice)
+                            print(f"🎯 WEBHOOK EMAIL MATCH: {practice_name} - {admin_email}")
+                            if 'created_at' in practice or 'createdAt' in practice:
+                                created_field = practice.get('created_at') or practice.get('createdAt')
+                                print(f"   📅 Created: {created_field}")
+                        
+                        # Check for recent practices (last 10 minutes)
                         if 'created_at' in practice or 'createdAt' in practice:
                             created_field = practice.get('created_at') or practice.get('createdAt')
                             try:
@@ -147,26 +162,29 @@ def test_recent_practice_accounts():
                                 time_diff = now - created_time
                                 if time_diff.total_seconds() <= 600:  # 10 minutes
                                     recent_practices.append(practice)
-                                    print(f"🆕 RECENT PRACTICE: {practice.get('practice_name', 'Unknown')} - {practice.get('admin_email', 'No email')} - {created_time}")
+                                    print(f"🆕 RECENT PRACTICE: {practice_name} - {admin_email} - {created_time}")
                             except:
                                 pass
                     
                     if not recent_practices:
                         print("❌ NO RECENT PRACTICE ACCOUNTS FOUND in last 10 minutes")
                     
-                    return recent_practices
+                    if not webhook_email_matches and recent_webhook_emails:
+                        print(f"❌ NO PRACTICE ACCOUNTS FOUND for webhook emails: {recent_webhook_emails}")
+                    
+                    return recent_practices, webhook_email_matches
                 else:
                     print(f"❌ Could not retrieve practices list: {practices_response.status_code}")
-                    return []
+                    return [], []
             except Exception as e:
                 print(f"❌ Error retrieving practices: {str(e)}")
-                return []
+                return [], []
         else:
             print(f"❌ Admin login failed: {login_response.status_code}")
-            return []
+            return [], []
     except Exception as e:
         print(f"❌ Error with admin access: {str(e)}")
-        return []
+        return [], []
 
 def test_email_service_status():
     """Test email service functionality"""
