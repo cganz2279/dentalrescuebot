@@ -140,38 +140,76 @@ def validate_password(password: str) -> bool:
 @router.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest):
     try:
-        # Find user by email
+        # First try to find user by email (existing system)
         user = await db.users.find_one({"email": request.email.lower()})
         
-        if not user or not user.get('isActive', True):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
+        # If user found, use existing authentication flow
+        if user and user.get('isActive', True):
+            # Verify password
+            if not verify_password(request.password, user['password']):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid credentials"
+                )
+            
+            # Update last login
+            await db.users.update_one(
+                {"id": user['id']},
+                {
+                    "$set": {"lastLoginAt": datetime.utcnow()},
+                    "$inc": {"loginCount": 1}
+                }
             )
+            
+            # Get practice info if user has practice
+            practice = None
+            if user.get('practiceId'):
+                practice = await db.practices.find_one(
+                    {"id": user['practiceId']},
+                    {"_id": 0, "password": 0}
+                )
         
-        # Verify password
-        if not verify_password(request.password, user['password']):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
+        else:
+            # Try SamCart-created practice (new system)
+            practice = await db.practices.find_one({
+                "email": request.email.lower(),
+                "isActive": True
+            })
+            
+            if not practice:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid credentials"
+                )
+            
+            # Verify password against practice password
+            import bcrypt
+            if not bcrypt.checkpw(request.password.encode('utf-8'), practice['password'].encode('utf-8')):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid credentials"
+                )
+            
+            # Update practice last login
+            await db.practices.update_one(
+                {"id": practice['id']},
+                {
+                    "$set": {"lastLoginAt": datetime.utcnow()},
+                    "$inc": {"loginCount": 1}
+                }
             )
-        
-        # Update last login
-        await db.users.update_one(
-            {"id": user['id']},
-            {
-                "$set": {"lastLoginAt": datetime.utcnow()},
-                "$inc": {"loginCount": 1}
+            
+            # Create user object for SamCart practice
+            user = {
+                "id": practice['id'],
+                "email": practice['email'],
+                "role": "practice_admin",  # SamCart practices are admin by default
+                "practiceId": practice['id'],
+                "firstName": practice.get('ownerName', '').split(' ')[0] if practice.get('ownerName') else 'Practice',
+                "lastName": ' '.join(practice.get('ownerName', '').split(' ')[1:]) if practice.get('ownerName') else 'Owner',
+                "isActive": practice.get('isActive', True),
+                "source": "samcart"
             }
-        )
-        
-        # Get practice info if user has practice
-        practice = None
-        if user.get('practiceId'):
-            practice = await db.practices.find_one(
-                {"id": user['practiceId']},
-                {"_id": 0, "password": 0}
-            )
         
         # Generate token
         token = generate_token(user['id'], user['role'], user.get('practiceId'))
