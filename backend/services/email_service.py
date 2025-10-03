@@ -10,6 +10,12 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
 
+class EmailData(BaseModel):
+    to: List[str]
+    subject: str
+    html_content: str
+    from_email: Optional[str] = None
+
 class EmailService:
     def __init__(self):
         self.sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
