@@ -103,11 +103,27 @@ def test_samcart_webhook_verification():
                     print(f"   ✅ Found {len(recent_logs)} webhook events since 5:55 PM today!")
                     
                     for i, log in enumerate(recent_logs[:3], 1):  # Show first 3
-                        log_time = datetime.fromisoformat(log['created_at'].replace('Z', '+00:00'))
-                        print(f"      {i}. Event: {log.get('event_type', 'unknown')} at {log_time.strftime('%H:%M:%S')} UTC")
-                        print(f"         Status: {log.get('processing_status', 'unknown')}")
-                        if log.get('error_message'):
-                            print(f"         Error: {log['error_message']}")
+                        try:
+                            created_at = log['created_at']
+                            if isinstance(created_at, str):
+                                if created_at.endswith('Z'):
+                                    log_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                                else:
+                                    log_time = datetime.fromisoformat(created_at)
+                                    if log_time.tzinfo is None:
+                                        log_time = log_time.replace(tzinfo=timezone.utc)
+                            else:
+                                log_time = created_at
+                                if log_time.tzinfo is None:
+                                    log_time = log_time.replace(tzinfo=timezone.utc)
+                            
+                            print(f"      {i}. Event: {log.get('event_type', 'unknown')} at {log_time.strftime('%H:%M:%S')} UTC")
+                            print(f"         Status: {log.get('processing_status', 'unknown')}")
+                            if log.get('error_message'):
+                                print(f"         Error: {log['error_message']}")
+                        except Exception as e:
+                            print(f"      {i}. Event: {log.get('event_type', 'unknown')} (timestamp parse error)")
+                            print(f"         Status: {log.get('processing_status', 'unknown')}")
                 else:
                     print(f"   ⚠️ No webhook activity found since {target_time.strftime('%H:%M:%S')} UTC")
                     
