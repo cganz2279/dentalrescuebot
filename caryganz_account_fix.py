@@ -32,12 +32,12 @@ def manually_create_account():
             
             # Create practice account
             practice_data = {
-                "practice_name": "Cary Ganz Dental Practice",
-                "admin_email": "caryganz@gmail.com",
-                "admin_password": "CaryGanz123!",  # Strong password
-                "admin_first_name": "Cary",
-                "admin_last_name": "Ganz",
-                "subscription_type": "trial"
+                "practiceName": "Cary Ganz Dental Practice",
+                "adminEmail": "caryganz@gmail.com",
+                "tempPassword": "CaryGanz123!",  # Strong password
+                "adminFirstName": "Cary",
+                "adminLastName": "Ganz",
+                "subscriptionType": "trial"
             }
             
             try:
