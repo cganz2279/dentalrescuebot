@@ -279,15 +279,7 @@ const PracticeLibraryPage = () => {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleTestSimplePDF}
-                className="flex items-center"
-              >
-                <TestTube className="h-4 w-4 mr-2" />
-                Test PDF
-              </Button>
+              {/* Test PDF button removed per user request */}
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Procedure Library</h1>
                 <p className="text-gray-600">Browse and access post-operative care documents</p>
