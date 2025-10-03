@@ -14,7 +14,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 # Import existing services
 from database import db
-from ..services.email_service import send_email, EmailData
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.email_service import send_email, EmailData
 
 router = APIRouter(prefix="/api/webhook", tags=["samcart"])
 
