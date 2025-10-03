@@ -51,6 +51,20 @@ def test_webhook_logs():
                         if time_diff.total_seconds() <= 600:  # 10 minutes
                             recent_logs.append(log)
                             print(f"      🕐 RECENT LOG (within 10 minutes): {log_time}")
+                            print(f"      📧 Customer: {email}")
+                            print(f"      🎯 Event: {event_type}")
+                            print(f"      ✅ Status: {status}")
+                            
+                            # Show more details about the payload
+                            if 'payload' in log:
+                                payload = log['payload']
+                                if 'customer' in payload:
+                                    customer = payload['customer']
+                                    print(f"      👤 Customer Name: {customer.get('first_name', '')} {customer.get('last_name', '')}")
+                                if 'order' in payload:
+                                    order = payload['order']
+                                    print(f"      💰 Order Total: ${order.get('total', '0.00')}")
+                                    print(f"      🆔 Order ID: {order.get('id', 'Unknown')}")
                     except Exception as parse_error:
                         print(f"      ⚠️ Could not parse timestamp: {parse_error}")
             
