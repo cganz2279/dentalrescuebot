@@ -2470,6 +2470,22 @@ async def email_pdf_to_patient(
                 detail="Practice not found"
             )
         
+        # Ensure branding data structure exists with defaults (same as dashboard)
+        if "branding" not in practice:
+            practice["branding"] = {}
+        
+        branding = practice["branding"]
+        
+        # Set defaults for missing branding fields
+        if "logo" not in branding:
+            branding["logo"] = None
+        if "primaryColor" not in branding:
+            branding["primaryColor"] = "#2563eb"
+        if "secondaryColor" not in branding:
+            branding["secondaryColor"] = "#1e40af"
+        if "welcomeMessage" not in branding:
+            branding["welcomeMessage"] = "Welcome to our practice!"
+        
         # Enhanced procedure lookup with debugging
         print(f"🔍 Looking for procedure - ID: {email_request.procedureId}, Name: {email_request.procedureName}")
         
