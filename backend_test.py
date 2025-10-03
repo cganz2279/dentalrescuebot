@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
+"""
+URGENT: SamCart Payment Investigation - Real Payment Missing Email
+Testing webhook logs, stats, and recent account creation for user's payment issue
+"""
 
 import requests
 import json
+from datetime import datetime, timedelta
 import sys
-from datetime import datetime, timedelta, timezone
-import uuid
 
-# Configuration
-BASE_URL = "https://aftercareportal.preview.emergentagent.com/api"
-TEST_EMAIL = "cganz2279@gmail.com"
-TEST_PASSWORD = "password123"
+# Backend URL from frontend .env
+BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
 
-class CSVExportActivityLoggingTester:
+def test_webhook_logs():
     def __init__(self):
         self.session = requests.Session()
         self.auth_token = None
