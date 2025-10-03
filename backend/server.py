@@ -20,6 +20,7 @@ from routes.admin import router as admin_router
 from routes.patients import router as patients_router
 from routes.public import router as public_router
 from routes.tutorials import router as tutorials_router
+from routes.samcart_webhook import router as samcart_webhook_router
 
 
 ROOT_DIR = Path(__file__).parent
