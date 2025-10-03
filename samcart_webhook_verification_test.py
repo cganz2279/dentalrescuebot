@@ -130,8 +130,23 @@ def test_samcart_webhook_verification():
                     # Show most recent activity for context
                     if logs_data.get('logs'):
                         latest_log = logs_data['logs'][0]
-                        latest_time = datetime.fromisoformat(latest_log['created_at'].replace('Z', '+00:00'))
-                        print(f"   📝 Most recent webhook: {latest_log.get('event_type', 'unknown')} at {latest_time.strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                        try:
+                            created_at = latest_log['created_at']
+                            if isinstance(created_at, str):
+                                if created_at.endswith('Z'):
+                                    latest_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                                else:
+                                    latest_time = datetime.fromisoformat(created_at)
+                                    if latest_time.tzinfo is None:
+                                        latest_time = latest_time.replace(tzinfo=timezone.utc)
+                            else:
+                                latest_time = created_at
+                                if latest_time.tzinfo is None:
+                                    latest_time = latest_time.replace(tzinfo=timezone.utc)
+                            
+                            print(f"   📝 Most recent webhook: {latest_log.get('event_type', 'unknown')} at {latest_time.strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                        except Exception as e:
+                            print(f"   📝 Most recent webhook: {latest_log.get('event_type', 'unknown')} (timestamp parse error)")
                 
             else:
                 print(f"   ❌ Failed to fetch webhook logs: {logs_response.status_code}")
