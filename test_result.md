@@ -234,6 +234,18 @@ backend:
           agent: "testing"
           comment: "✅ 30-DAY TRIAL PERIOD COMPREHENSIVE TESTING COMPLETED - FEATURE WORKING CORRECTLY: Conducted thorough testing of 30-day trial period implementation. (1) ✅ PRACTICE REGISTRATION TRIAL: Practice registration via /api/auth/register-practice successfully creates 30-day trial period, tested with 29-day remaining confirming proper implementation and trial end date calculation. (2) ✅ ADMIN CREATE PRACTICE TRIAL: Admin create practice endpoint working with trial subscription type, backend code properly configured for 30-day trial periods in admin.py. (3) ✅ TRIAL PERIOD VERIFICATION: Trial periods correctly set to 30 days from registration date, proper database storage of trial end dates, and subscription status management. (4) ✅ BACKEND IMPLEMENTATION CONFIRMED: Code analysis confirms 30-day trial period is properly implemented in both user registration and admin practice creation flows, replacing previous 15-day trial period as requested. All trial functionality is working correctly and ready for production use."
 
+  - task: "Video Tutorial System Backend"
+    implemented: true
+    working: false
+    file: "/app/backend/routes/tutorials.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL VIDEO SERVING ISSUE IDENTIFIED - ROOT CAUSE FOUND: Conducted comprehensive testing of video tutorial system as requested. User reports videos load but don't play. ✅ AUTHENTICATION WORKING: Successfully authenticated with cganz2279@gmail.com/password123 and cganz@admin.com/Dentist1# credentials. ✅ TUTORIAL ENDPOINTS FUNCTIONAL: Both /api/tutorials (practice users) and /api/admin/tutorials (admin) endpoints working correctly. Created test tutorial successfully. ✅ BACKEND VIDEO SERVING CORRECT: Local backend serves video files with proper MIME type (video/webm) and supports partial content requests (HTTP 206) for streaming. ❌ CRITICAL INFRASTRUCTURE ISSUE: External requests to video files (https://aftercareportal.preview.emergentagent.com/uploads/tutorials/*.webm) return HTML content (text/html; charset=utf-8) instead of video files. This indicates reverse proxy/load balancer is serving frontend React app instead of backend static files. ❌ VIDEO PLAYBACK BLOCKED: Videos appear to load but don't play because browsers receive HTML content with wrong MIME type instead of actual video files. ✅ STATIC FILE CONFIGURATION CORRECT: FastAPI static file mounting is properly configured in server.py. ✅ CORS HEADERS WORKING: CORS configuration allows video requests from frontend. 🔧 INFRASTRUCTURE FIX REQUIRED: Reverse proxy/load balancer configuration needs to route /uploads/* requests to backend FastAPI server instead of frontend React app. This is preventing video playback across the entire tutorial system."
+
   - task: "PDF Library Generation Backend Testing"
     implemented: true
     working: true
