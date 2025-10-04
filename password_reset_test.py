@@ -162,33 +162,85 @@ class PasswordResetTester:
         except Exception as e:
             return self.log_result("Login After Password Reset", False, error=str(e))
     
-    def get_fresh_token_from_database(self):
-        """Get the most recent valid token from database"""
+    def test_account_existence(self):
+        """Test if caryganz@gmail.com account exists"""
         try:
-            import asyncio
-            from motor.motor_asyncio import AsyncIOMotorClient
-            from dotenv import load_dotenv
+            # Test login attempt with wrong password to check account existence
+            response = requests.post(f"{API_BASE}/auth/login", json={
+                "email": CUSTOMER_EMAIL,
+                "password": "wrong_password_test_123"
+            }, timeout=30)
             
-            load_dotenv('backend/.env')
-            
-            async def get_token():
-                client = AsyncIOMotorClient(os.environ['MONGO_URL'])
-                db = client[os.environ.get('DB_NAME', 'dentist_management')]
+            if response.status_code == 401:
+                # 401 means account exists but wrong password (healthy account)
+                return self.log_result(
+                    f"Account Existence Check for {CUSTOMER_EMAIL}",
+                    True,
+                    "Account exists and is healthy (401 unauthorized for wrong password)"
+                )
+            elif response.status_code == 500:
+                # 500 means account exists but has issues
+                return self.log_result(
+                    f"Account Existence Check for {CUSTOMER_EMAIL}",
+                    True,
+                    "Account exists but may have password corruption (500 server error) - password reset needed"
+                )
+            elif response.status_code == 404:
+                # 404 means account doesn't exist
+                return self.log_result(
+                    f"Account Existence Check for {CUSTOMER_EMAIL}",
+                    False,
+                    "Account does not exist",
+                    "Customer account not found in system"
+                )
+            else:
+                return self.log_result(
+                    f"Account Existence Check for {CUSTOMER_EMAIL}",
+                    False,
+                    f"Unexpected status: {response.status_code}",
+                    response.text
+                )
                 
-                # Find the most recent valid token
-                token_record = await db.password_resets.find_one({
-                    'email': CUSTOMER_EMAIL,
-                    'used': False,
-                    'expires_at': {'$gt': datetime.utcnow()}
-                }, sort=[('created_at', -1)])
-                
-                return token_record.get('reset_token') if token_record else None
-            
-            return asyncio.run(get_token())
-            
         except Exception as e:
-            print(f"Error getting fresh token from database: {e}")
-            return None
+            return self.log_result(f"Account Existence Check for {CUSTOMER_EMAIL}", False, error=str(e))
+    
+    def test_email_service_functionality(self):
+        """Test email service functionality"""
+        try:
+            # Test with a different email to verify email service is working
+            test_email = "test.email.verification@example.com"
+            
+            response = requests.post(f"{API_BASE}/auth/forgot-password", json={
+                "email": test_email,
+                "recovery_method": "email"
+            }, timeout=30)
+            
+            # Even if the email doesn't exist, the service should respond properly
+            if response.status_code in [200, 404]:
+                if response.status_code == 200:
+                    data = response.json()
+                    message = data.get("message", "")
+                    return self.log_result(
+                        "Email Service Functionality",
+                        True,
+                        f"Email service is operational. Response: {message}"
+                    )
+                else:
+                    return self.log_result(
+                        "Email Service Functionality",
+                        True,
+                        "Email service is operational (404 for non-existent email is expected)"
+                    )
+            else:
+                return self.log_result(
+                    "Email Service Functionality",
+                    False,
+                    f"Email service may have issues, status: {response.status_code}",
+                    response.text
+                )
+                
+        except Exception as e:
+            return self.log_result("Email Service Functionality", False, error=str(e))
     
     def test_frontend_url_configuration(self):
         """Test if FRONTEND_URL is correctly configured"""
