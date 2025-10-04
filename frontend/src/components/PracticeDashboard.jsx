@@ -482,9 +482,17 @@ const PracticeDashboard = () => {
           // Don't fail the main operation if logging fails
         }
 
+        // Mark as delivered and schedule 24-hour follow-up
+        try {
+          await handleMarkAsDelivered(procedure.id, procedure.procedureName || procedure.name);
+        } catch (deliveredError) {
+          console.error('Failed to mark as delivered after email:', deliveredError);
+          // Don't fail the main operation if this fails
+        }
+
         toast({
           title: "Email Sent",
-          description: `PDF instructions sent to ${patientEmail}`,
+          description: `PDF instructions sent to ${patientEmail} - Follow-up scheduled in 24 hours`,
           variant: "default",
         });
       }
