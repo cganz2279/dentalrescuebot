@@ -7,7 +7,7 @@ Tests login with specific existing users mentioned in review request
 import requests
 import json
 
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
 
 def test_user_login(email, password, expected_name=None):
     """Test login for a specific user"""

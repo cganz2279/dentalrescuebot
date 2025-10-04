@@ -13,7 +13,7 @@ import os
 import tempfile
 import io
 
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 ADMIN_CREDENTIALS = {
     "email": "cganz@admin.com",
     "password": "Dentist1#"

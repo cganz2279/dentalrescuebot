@@ -13,7 +13,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
 

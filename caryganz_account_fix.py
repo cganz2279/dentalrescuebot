@@ -10,7 +10,7 @@ from datetime import datetime
 import sys
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 
 def manually_create_account():
     """Manually create account using admin endpoint"""

@@ -3,7 +3,7 @@ import requests
 import json
 
 # Test authentication and logo data
-url = "https://aftercareportal.preview.emergentagent.com"
+url = "https://dentalpractice-hub-1.preview.emergentagent.com"
 auth_data = {"email": "cganz2279@gmail.com", "password": "password123"}
 
 print("Testing authentication...")

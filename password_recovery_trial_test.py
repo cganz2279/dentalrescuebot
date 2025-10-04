@@ -28,7 +28,7 @@ except:
     pass
 
 if not backend_url:
-    backend_url = "https://aftercareportal.preview.emergentagent.com"
+    backend_url = "https://dentalpractice-hub-1.preview.emergentagent.com"
 
 API_BASE = f"{backend_url}/api"
 

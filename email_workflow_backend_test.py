@@ -26,7 +26,7 @@ if frontend_env_path.exists():
                 BACKEND_URL = line.split('=', 1)[1].strip()
                 break
 else:
-    BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+    BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 
 API_BASE = f"{BACKEND_URL}/api"
 

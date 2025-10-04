@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 
 def log_test(message):
     """Log test messages with timestamp"""

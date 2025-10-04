@@ -14,7 +14,7 @@ import os
 import sys
 
 # Test configuration
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 CRITICAL_TEST_EMAIL = "critical.test@example.com"
 REAL_CUSTOMER_EMAIL = "caryganzconsulting@gmail.com"
 

@@ -11,7 +11,7 @@ import sys
 import time
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 
 def test_password_reset():
     """Test password reset functionality"""

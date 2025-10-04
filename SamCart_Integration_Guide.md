@@ -16,7 +16,7 @@ Your SamCart integration is **LIVE and WORKING**! When customers pay through Sam
 ### **Test Method 1: Simulate SamCart Payment**
 ```bash
 # Test endpoint (creates real account)
-curl -X POST "https://aftercareportal.preview.emergentagent.com/api/webhook/samcart/test?test_email=your.test@email.com"
+curl -X POST "https://dentalpractice-hub-1.preview.emergentagent.com/api/webhook/samcart/test?test_email=your.test@email.com"
 ```
 
 This creates a **real practice account** you can login to!
@@ -24,10 +24,10 @@ This creates a **real practice account** you can login to!
 ### **Test Method 2: Check Integration Status**
 ```bash
 # View recent webhook activity
-curl "https://aftercareportal.preview.emergentagent.com/api/webhook/samcart/stats"
+curl "https://dentalpractice-hub-1.preview.emergentagent.com/api/webhook/samcart/stats"
 
 # View detailed logs
-curl "https://aftercareportal.preview.emergentagent.com/api/webhook/samcart/logs"
+curl "https://dentalpractice-hub-1.preview.emergentagent.com/api/webhook/samcart/logs"
 ```
 
 ---
@@ -55,7 +55,7 @@ curl "https://aftercareportal.preview.emergentagent.com/api/webhook/samcart/logs
 
 **Your Webhook URL:**
 ```
-https://aftercareportal.preview.emergentagent.com/api/webhook/samcart
+https://dentalpractice-hub-1.preview.emergentagent.com/api/webhook/samcart
 ```
 
 **SamCart Events to Listen For:**
@@ -118,7 +118,7 @@ https://aftercareportal.preview.emergentagent.com/api/webhook/samcart
 
 ### **Domain Configuration:**  
 1. ✅ Customer login: `https://app.dentalaftercarenotes.com/login`
-2. ✅ Webhook endpoint: `https://aftercareportal.preview.emergentagent.com/api/webhook/samcart`
+2. ✅ Webhook endpoint: `https://dentalpractice-hub-1.preview.emergentagent.com/api/webhook/samcart`
 
 ---
 

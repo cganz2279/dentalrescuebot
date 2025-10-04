@@ -8,7 +8,7 @@ import asyncio
 import aiohttp
 import json
 
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 PRACTICE_EMAIL = "cganz2279@gmail.com"
 PRACTICE_PASSWORD = "password123"
 

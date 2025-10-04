@@ -7,7 +7,7 @@ import base64
 from datetime import datetime
 
 # Configuration - Using the correct backend URL from frontend/.env
-BASE_URL = "https://aftercareportal.preview.emergentagent.com/api"
+BASE_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

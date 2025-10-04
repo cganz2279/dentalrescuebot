@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 
 def analyze_payment_timing():
     """Analyze webhook timing to determine if real payment triggered a webhook"""
@@ -164,7 +164,7 @@ def provide_recommendations():
     print("   - SamCart webhook configuration issue")
     print()
     print("4. ✅ IMMEDIATE ACTIONS:")
-    print("   - Verify SamCart webhook URL: https://aftercareportal.preview.emergentagent.com/api/webhook/samcart")
+    print("   - Verify SamCart webhook URL: https://dentalpractice-hub-1.preview.emergentagent.com/api/webhook/samcart")
     print("   - Check SamCart dashboard webhook settings")
     print("   - Test webhook delivery from SamCart admin panel")
     print("   - Manually create practice account for the user")

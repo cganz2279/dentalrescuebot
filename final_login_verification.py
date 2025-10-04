@@ -12,7 +12,7 @@ from pymongo import MongoClient
 import os
 
 # Get backend URL from frontend .env file
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
 
 class FinalLoginVerification:
     def __init__(self, base_url: str):

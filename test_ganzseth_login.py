@@ -6,7 +6,7 @@ Test login for ganzseth@gmail.com (the account that DOES exist)
 import requests
 import json
 
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
 
 def test_ganzseth_login():
     """Test login with ganzseth@gmail.com and common passwords"""

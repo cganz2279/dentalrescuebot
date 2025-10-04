@@ -12,7 +12,7 @@ from datetime import datetime
 import time
 
 # Configuration
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
 CUSTOMER_EMAIL = "cganz2279@gmail.com"
 PRACTICE_NAME = "The Dental Spa at Garden City"
 OWNER_NAME = "Cary Ganz"

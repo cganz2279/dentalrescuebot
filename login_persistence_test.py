@@ -11,7 +11,7 @@ import subprocess
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://aftercareportal.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
 
 # Test credentials
 REGULAR_LOGIN_CREDENTIALS = {

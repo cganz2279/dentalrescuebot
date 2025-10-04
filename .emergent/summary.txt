@@ -1,87 +1,78 @@
 <analysis>
-The trajectory details a complex and iterative development cycle for a dental practice management application, transitioning from initial bug fixes to significant feature development and persistent deployment troubleshooting. The work began by resolving critical backend errors, including a  in the Add Practice feature and a 500 error in the SendGrid email service.
-
-A major portion of the effort was dedicated to debugging a multi-faceted deployment and caching issue related to a new custom domain (). This recurring problem was traced through numerous false leads, including CORS misconfigurations and server-side caching, before the root causes were identified: hardcoded preview URLs in the frontend code, multiple conflicting  files (, ), and ultimately, a deployment routing issue where the custom domain was pointing to an outdated build.
-
-Concurrently, several features were implemented based on user requests: a Tutorials section with video upload capabilities for admins, significant formatting changes to emailed and printed patient instructions (bolding labels, separating paragraphs), and direct-to-printer functionality. The final phase focused on fixing critical data integrity issues where generated PDFs contained incorrect or incomplete patient instructions and distorted logos. The trajectory concludes with the engineer investigating a newly reported bug where the PDF download from the procedure library is failing.
+The trajectory details a complex, iterative development for a dental practice management app. Initially, it involved fixing PDF generation (download, logo distortion, formatting) and addressing deployment issues with custom domains. Significant feature work included a tutorial system with video uploads, which faced infrastructure challenges resolved by a backend API workaround. The core of the recent work focused on a robust **SamCart payment integration**, which was highly problematic due to webhook event mismatches, authentication complexities, and password reset failures. The AI systematically addressed these critical payment flow issues, leading to a near production-ready state. Concurrently, a Delivered status workflow with a 24-hour follow-up email sequence was implemented for patient aftercare, including logo integration in emails and dashboard updates. The development frequently involved deep debugging, often with user clarification, and a recent call to the troubleshoot agent for systemic payment issues.
 </analysis>
 
 <product_requirements>
-The application is a multi-tenant SaaS platform for dental offices, featuring a central admin panel for practice management and a separate, brandable portal for individual practice users.
-
-**Initial Bug Fixes & Core Features:**
-*   Fix the broken Add Practice feature.
-*   Resolve 500 Internal Server Errors for the welcome email system.
-*   Implement a full password recovery system via Email and SMS (Twilio).
-*   Add a button for admins to resend welcome emails.
-
-**Custom Domain & Branding:**
-*   Establish a custom domain () for a dedicated, unbranded practice login portal.
-*   Allow practices to customize their portal with their own logo. The initial logo was later replaced with a user-provided one, which needed to be implemented across all relevant pages and PDFs.
-
-**New Functionality - Tutorials:**
-*   Add a Tutorials button to the main practice dashboard for viewing instructional videos.
-*   Create a Tutorials management section in the admin panel, allowing admins to upload and label MP4 tutorial videos.
-
-**User Experience & Formatting Enhancements:**
-*   **Printing:** Modify the Print Details button to trigger the browser's direct print dialog, not generate a PDF. This was a complex requirement, as the user did not want the browser's default print preview window to remain open.
-*   **Content Formatting:** Ensure that all printouts and emailed PDFs format post-operative instructions correctly, with bolded labels (e.g., **Purpose**, **First 24-48 Hours**) followed by a line space and the corresponding text, not one large paragraph.
-*   **Data Accuracy:** Ensure PDFs generated for emails contain the correct, full instruction data from the database, not placeholder text.
+The application is a multi-tenant SaaS platform for dental offices, offering an admin panel for practice management and a brandable portal for individual practice users. Key requirements include:
+- Fixing the Add Practice feature and welcome email errors.
+- Implementing a full password recovery system and custom domain () with logo branding.
+- Adding an admin-managed Tutorials section for video uploads and a patient-facing viewer.
+- Enhancing UX for patient instructions: Print Details for direct printing, bolded labels, paragraph separation in PDFs/printouts, and accurate content.
+- Integrating SamCart for payment, automatically creating practice accounts, sending welcome emails with login, and redirecting users to settings for password change and branding.
+- Implementing a Delivered status for patient procedures, triggering a 24-hour follow-up Just Checking In email to patients, and evolving status from Delivered to Second.
+- Ensuring practice logos are present in all patient and office-facing emails (welcome, procedure, follow-up).
+- Removing REAL PATIENT text from the Recent Patients section.
+- An export feature for correspondence (patient, date, procedure, doctor, sorted by date).
 </product_requirements>
 
 <key_technical_concepts>
-- **Frontend:** React, React Router, Axios, Create React App.
-- **Backend:** Python, FastAPI.
-- **Database:** MongoDB.
-- **Deployment:** Supervisor for process management, Nginx/Caddy for reverse proxying. Key challenges involved debugging CORS, browser/CDN caching, and environment variable () loading in production builds.
-- **External Services:** SendGrid (email), Twilio (SMS).
-- **PDF Generation:**  library in Python for creating PDFs, with Pillow (PIL) used for image processing to fix logo aspect ratios.
+- **Frontend:** React, React Router, Axios, jsPDF (for client-side PDF generation).
+- **Backend:** Python, FastAPI, MongoDB,  (for server-side PDF generation), Pillow (PIL) for image processing,  for password hashing.
+- **Deployment:** Supervisor, Nginx/Caddy (reverse proxy).
+- **External Services:** SendGrid (email), Twilio (SMS), SamCart (e-commerce), Stripe (payments).
+- **Core Challenges:** CORS, caching, environment variable management, infrastructure routing, authentication/authorization.
 </key_technical_concepts>
 
 <code_architecture>
-The application is a monolith with separate  and  directories. The backend serves a REST API consumed by the React single-page application.
+The application uses a monolith architecture with  (React) and  (FastAPI/Python) directories.
 
 
 
--   ** (and variants like )**
-    -   **Importance:** Critically important. This file defines the backend URL (). An incorrect value in this file (or its variants) was the root cause of the most persistent login failures, CORS errors, and caching hell.
-    -   **Summary of Changes:** Initially pointed to preview URLs. Was later discovered that  and  existed with outdated URLs, overriding the main  file and causing massive confusion. The final state required correcting all three files to point to .
-
--   ****
-    -   **Importance:** This file is responsible for generating all PDF documents, primarily for patient instructions sent via email.
-    -   **Summary of Changes:** This file was heavily modified to solve critical bugs.
-        1.  **Data Integrity:** The logic was fixed to stop generating placeholder text and instead correctly parse the  field from the procedure data to extract and format all sections.
-        2.  **Formatting:** Updated to render section labels in bold (, , etc.) and ensure single line spacing between paragraphs.
-        3.  **Logo Distortion:** Added logic using the Pillow library to read the logo's dimensions and calculate the correct aspect ratio, preventing distortion.
-
--   ****
-    -   **Importance:** This page displays procedure details and contains the Print functionality that was a major focus of user requests.
-    -   **Summary of Changes:** The  function was modified multiple times. Initial attempts to prevent the browser's print preview window failed. The final, stable version reverted to a simple  call. The component's JSX and CSS were also updated with print-specific styles () to ensure the printed output was formatted with bold labels and separated paragraphs as requested.
-
--   ****
-    -   **Importance:** This component serves as both the login form for administrators and the main dashboard view after login.
-    -   **Summary of Changes:** A Tutorials button was added to the header, which toggles the visibility of the new  modal, allowing admins to upload and manage tutorial videos. Hardcoded preview URLs were also removed from this file.
-
--   ****
-    -   **Importance:** Displays the library of all available procedures.
-    -   **Summary of Changes:** Erroneous Email and Text buttons, which were accidentally added, were removed to restore the correct UI. The component's PDF download functionality was identified as broken at the end of the trajectory.
+-   ****: Crucial for . Past issues due to conflicting  files.
+-   ****: Generates patient PDFs. Modified for data integrity, bold labels, paragraph spacing, and logo aspect ratio (using Pillow).
+-   ****: Print button logic, adapted for direct browser print and print-specific styling.
+-   ****: Added Tutorials button.
+-   ****: PDF download investigation. Passed complete  to . Removed erroneous Email/Text buttons.
+-   ****: Frontend PDF generation. Fixed: incorrect logo passing, logo distortion (aspect ratio), formatting (bold labels, paragraphs), logo data URL format.
+-   ****:
+    -   Added Mark as Delivered button with associated handler.
+    -   Added follow-up status indicator and stats display.
+    -   Updated button logic for Delivered and Second statuses.
+    -   Removed REAL PATIENT text.
+    -   Modified , ,  to trigger 24-hour follow-up.
+-   ** & **: Updated video  to use new video API endpoint.
+-   ****: Context for practice data.
+-   ****:
+    -    endpoint: Modified to explicitly include branding data and correctly calculate  based on active status.
+    -   :  endpoint supports  updates.
+    -   : Confirmed  is passed to PDF generator, added branding defaults.
+    -   Added  management endpoints.
+-   ****: Modified login logic to support SamCart-created practice accounts (email-based username). Updated password reset for practice accounts.
+-   ****:
+    -    endpoint: Fixed to handle various ID formats (ObjectId, string) and improved error handling/file cleanup.
+-   ** (New)**: Handles incoming SamCart webhooks. Processes payment events (, , ), creates practice accounts, generates secure passwords, and dispatches welcome emails.
+-   ** (New)**: Workaround for reverse proxy issue. Provides  endpoint for authenticated video streaming. Fixed authentication to use  and .
+-   ****: Updated with  model and  function. Integrated practice logo into welcome, procedure, and follow-up email templates with validation and fallback.
+-   ** (New)**: Implements a background scheduler to check for and send 24-hour follow-up emails for Delivered procedures, updating their status to Second.
+-   ****: Mounts  for static files, includes new routers (, ), and initializes  on startup.
+-   ****: Created to document SamCart testing steps.
 </code_architecture>
 
 <pending_tasks>
-- **Fix PDF Download in Library:** The PDF download button in the  is not working. It shows a creating PDF message, but no file is downloaded.
-- **Apply Logo Fix Everywhere:** The aspect-ratio fix for the logo, implemented in the PDF generator, needs to be verified and applied to all other places where logos are displayed (e.g., login pages, dashboards) to ensure there is no distortion.
-- **Confirm Custom Domain Routing:** The user must confirm with platform support that the custom domain  is pointing to the absolute latest deployment.
+- **Export Data Feature:** Implement a feature to export all patient correspondence, including patient name, email date, procedure sent, doctor's name, and other relevant details, sorted by date range.
+- **Confirm Custom Domain Routing:** Verify with platform support that  points to the absolute latest deployment to prevent caching issues.
 </pending_tasks>
 
 <current_work>
-The most recent task involves fixing a critical bug reported by the user: Please check the PDF function in the Library. It says it is creating the PDF but I do not see it in my downloads folders.
+The immediate work before this summary involved making the **SamCart payment integration** robust and production-ready, as it was designated top priority. The AI engineer, with assistance from the troubleshoot agent, addressed several critical issues:
+1.  **Authentication Flow:** The  was modified to correctly authenticate users based on email from SamCart-created practice accounts, ensuring consistency with the JWT token system.
+2.  **Password Reset System:** The password reset functionality was fixed and extended in  to reliably work for SamCart-provisioned practice accounts. This was crucial for customer access.
+3.  **Webhook Password Generation:** The  was updated to generate secure and immediately usable passwords for new accounts, preventing login failures.
+4.  **Welcome Email Clarity:** The  was adjusted to correctly include the plain-text generated password in the welcome email, so customers can log in without needing a reset.
 
-The AI engineer had just begun investigating this issue. The last actions taken were:
-1.  Identifying the relevant frontend file: .
-2.  Locating the  handler for the PDF button within that file, which calls a function named .
-3.  The engineer's next step was to investigate the  function to understand why it was failing to trigger a file download in the browser. The investigation was cut short before the implementation of that function could be examined. This is the immediate point of continuation. The core problem is that a frontend action is failing silently, without providing a downloadable file to the user as expected.
+After these fixes and a backend restart, comprehensive testing was performed on the SamCart integration. The results indicated a 93.5% pass rate across 31 tests, with the new customer flow being 100% automated, and existing customer access functional (with password reset as a fallback). The system is now considered near production ready, pending final user verification of the complete end-to-end customer journey.
 </current_work>
 
 <optional_next_step>
-Investigate the  utility function to determine why it's not triggering a download when called from the  component.
+Run additional frontend testing to fully verify the complete user experience of the SamCart payment integration before going live.
 </optional_next_step>
