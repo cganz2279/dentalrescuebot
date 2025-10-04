@@ -176,6 +176,20 @@ class FollowUpScheduler:
             dentist_name = practice.get("ownerName", "Dr. Smith")
             practice_email = practice.get("email", "office@dentalpractice.com")
             
+            # Get practice logo for email header
+            logo_html = ""
+            if practice.get("branding", {}).get("logo"):
+                logo_data = practice["branding"]["logo"]
+                # Ensure logo is in proper data URL format
+                if not logo_data.startswith('data:image'):
+                    logo_data = f"data:image/png;base64,{logo_data}"
+                
+                logo_html = f"""
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <img src="{logo_data}" alt="{practice_name} Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;" />
+                </div>
+                """
+            
             # Create follow-up email content
             email_subject = "Just Checking In – How Are You Feeling After Your Visit?"
             
