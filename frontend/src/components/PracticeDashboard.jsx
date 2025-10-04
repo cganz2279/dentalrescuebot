@@ -630,6 +630,41 @@ const PracticeDashboard = () => {
     setProcedureSearchTerm('');
   };
 
+  const handleMarkAsDelivered = async (procedureId, procedureName) => {
+    try {
+      console.log('📦 Marking procedure as delivered:', procedureId, procedureName);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/practice/assignment/${procedureId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ status: 'delivered' })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: `${procedureName} marked as delivered`,
+        });
+
+        // Reload dashboard to update the count and status
+        loadDashboard();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update status');
+      }
+    } catch (error) {
+      console.error('❌ Error marking as delivered:', error);
+      toast({
+        title: "Error",
+        description: `Failed to mark ${procedureName} as delivered: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  };
+
   // Filter and sort real patients only - search by patient name or email
   const filteredRealPatients = realPatients?.filter(patient => {
     if (patientSearchTerm) {
