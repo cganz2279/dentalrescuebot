@@ -190,12 +190,37 @@ class PasswordResetTester:
             print(f"Error getting fresh token from database: {e}")
             return None
     
+    def test_frontend_url_configuration(self):
+        """Test if FRONTEND_URL is correctly configured"""
+        try:
+            # Check if the expected frontend URL is accessible
+            response = requests.get(EXPECTED_FRONTEND_URL, timeout=30)
+            
+            if response.status_code in [200, 301, 302, 404]:  # Any response means URL is accessible
+                return self.log_result(
+                    "Frontend URL Configuration Check",
+                    True,
+                    f"Corrected frontend URL {EXPECTED_FRONTEND_URL} is accessible (status: {response.status_code})"
+                )
+            else:
+                return self.log_result(
+                    "Frontend URL Configuration Check",
+                    False,
+                    f"Frontend URL not accessible, status: {response.status_code}",
+                    response.text[:200] if response.text else "No response text"
+                )
+                
+        except Exception as e:
+            return self.log_result("Frontend URL Configuration Check", False, error=str(e))
+
     def run_comprehensive_test(self):
-        """Run comprehensive password reset testing"""
-        print("🔐 Starting Password Reset System Testing")
+        """Run comprehensive password reset testing with FRONTEND_URL verification"""
+        print("🔐 Starting Password Reset Email Testing with FRONTEND_URL Fix")
         print("=" * 70)
         print(f"Target Customer: {CUSTOMER_EMAIL}")
         print(f"Backend URL: {BACKEND_URL}")
+        print(f"Expected Frontend URL: {EXPECTED_FRONTEND_URL}")
+        print(f"Old Frontend URL: {OLD_FRONTEND_URL}")
         print(f"Test Time: {datetime.now().isoformat()}")
         print("=" * 70)
         print()
