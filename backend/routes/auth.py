@@ -746,12 +746,42 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         token = credentials.credentials
         payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
         user_id = payload['userId']
+        role = payload.get('role', '')
         
-        # Get user from database
+        # First try to get user from users collection
         user = await db.users.find_one(
             {"id": user_id},
             {"_id": 0, "password": 0}
         )
+        
+        practice = None
+        
+        if user and user.get('isActive'):
+            # Regular user found
+            if user.get('practiceId'):
+                practice = await db.practices.find_one(
+                    {"id": user['practiceId']},
+                    {"_id": 0, "password": 0}
+                )
+        else:
+            # Try SamCart practice account (user_id is practice_id for SamCart accounts)
+            practice = await db.practices.find_one(
+                {"id": user_id, "isActive": True},
+                {"_id": 0, "password": 0}
+            )
+            
+            if practice:
+                # Create user object from practice data for SamCart accounts
+                user = {
+                    "id": practice['id'],
+                    "email": practice['email'],
+                    "role": role or "practice_admin",
+                    "practiceId": practice['id'],
+                    "firstName": practice.get('ownerName', '').split(' ')[0] if practice.get('ownerName') else 'Practice',
+                    "lastName": ' '.join(practice.get('ownerName', '').split(' ')[1:]) if practice.get('ownerName') else 'Owner',
+                    "isActive": practice.get('isActive', True),
+                    "source": "samcart"
+                }
         
         if not user or not user.get('isActive'):
             raise HTTPException(
@@ -759,18 +789,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
                 detail="User not found or inactive"
             )
         
-        # Get practice info if applicable
-        practice = None
-        if user.get('practiceId'):
-            practice = await db.practices.find_one(
-                {"id": user['practiceId']},
-                {"_id": 0}
-            )
-        
         return {
             "success": True,
             "user": user,
-            "practice": practice
+            "practice": clean_practice_document(practice)
         }
         
     except jwt.ExpiredSignatureError:
