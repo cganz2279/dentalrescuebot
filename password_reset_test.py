@@ -22,23 +22,27 @@ CUSTOMER_EMAIL = "caryganz@gmail.com"
 VALID_TOKEN = "dbb2e957-4239-43cc-af4c-bbd32a35d5ca"
 
 class PasswordResetTester:
-    def __init__(self, base_url: str):
-        self.base_url = base_url
-        self.session = requests.Session()
+    def __init__(self):
         self.test_results = []
         
-    def log_test(self, test_name: str, success: bool, details: str = ""):
-        """Log test results"""
+    def log_result(self, test_name, success, details="", error=""):
+        """Log test result"""
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}")
+        result = {
+            "test": test_name,
+            "status": status,
+            "success": success,
+            "details": details,
+            "error": error,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        print(f"{status}: {test_name}")
         if details:
             print(f"   Details: {details}")
-        
-        self.test_results.append({
-            "test": test_name,
-            "success": success,
-            "details": details
-        })
+        if error:
+            print(f"   Error: {error}")
+        print()
         return success
     
     def test_forgot_password_valid_email(self):
