@@ -184,20 +184,50 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         role = payload['role']
         practice_id = payload['practiceId']
         
-        # Get user from database
+        # First try to get user from users collection
         user = await db.users.find_one({"id": user_id})
-        if not user or not user.get('isActive'):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User not found or inactive"
-            )
         
-        return {
-            "userId": user_id,
-            "user": user,
-            "role": role,
-            "practiceId": practice_id
-        }
+        if user and user.get('isActive'):
+            # Regular user found
+            return {
+                "userId": user_id,
+                "user": user,
+                "role": role,
+                "practiceId": practice_id
+            }
+        else:
+            # Try SamCart practice account (user_id is practice_id for SamCart accounts)
+            practice = await db.practices.find_one(
+                {"id": user_id, "isActive": True},
+                {"_id": 0, "password": 0}
+            )
+            
+            if practice:
+                # Create user object from practice data for SamCart accounts
+                user = {
+                    "id": practice['id'],
+                    "email": practice['email'],
+                    "role": role or "practice_admin",
+                    "practiceId": practice['id'],
+                    "firstName": practice.get('ownerName', '').split(' ')[0] if practice.get('ownerName') else 'Practice',
+                    "lastName": ' '.join(practice.get('ownerName', '').split(' ')[1:]) if practice.get('ownerName') else 'Owner',
+                    "isActive": practice.get('isActive', True),
+                    "source": "samcart"
+                }
+                
+                return {
+                    "userId": user_id,
+                    "user": user,
+                    "role": role,
+                    "practiceId": practice_id
+                }
+        
+        # No valid user found
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or inactive"
+        )
+        
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
