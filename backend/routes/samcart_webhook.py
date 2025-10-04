@@ -309,18 +309,18 @@ async def handle_samcart_webhook(request: Request):
             print(f"🔍 Full payload structure: {json.dumps(payload, indent=2)}")
             raise HTTPException(status_code=400, detail="Customer email required")
             
-            if not customer_name or customer_name == " ":
-                customer_name = customer_email.split("@")[0]  # Use email prefix as fallback
-            
-            print(f"👤 Customer: {customer_name} ({customer_email})")
-            print(f"🔖 Order ID: {order_id}")
-            
-            # Create practice account
-            account_result = await create_practice_account(
-                customer_email=customer_email,
-                customer_name=customer_name,
-                order_id=order_id
-            )
+        if not customer_name or customer_name == " ":
+            customer_name = customer_email.split("@")[0]  # Use email prefix as fallback
+        
+        print(f"👤 Customer: {customer_name} ({customer_email})")
+        print(f"🔖 Order ID: {order_id}")
+        
+        # Create practice account
+        account_result = await create_practice_account(
+            customer_email=customer_email,
+            customer_name=customer_name,
+            order_id=order_id
+        )
             
             # Log the webhook event
             await log_webhook_event({
