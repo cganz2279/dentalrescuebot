@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/webhook", tags=["samcart"])
 TRIAL_PERIOD_DAYS = 30
 MONTHLY_PRICE = 49.95
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@theoncallbot.com')
+# Note: Admin notifications disabled for privacy
 
 # Models
 class SamCartWebhook(BaseModel):
