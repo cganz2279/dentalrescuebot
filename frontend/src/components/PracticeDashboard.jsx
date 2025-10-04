@@ -856,13 +856,13 @@ const PracticeDashboard = () => {
         </div>
       </div>
 
-      {/* Date Picker Modal for Export */}
+      {/* Export Correspondence Modal */}
       {showDatePickerModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Export Patient Activities</h3>
+            <h3 className="text-lg font-semibold mb-4">Export Patient Correspondence</h3>
             <p className="text-sm text-gray-600 mb-4">
-              Select a date range to export patient activities (Print, Email, SMS). Leave fields empty to export all recent data.
+              Export all patient correspondence including patient name, email, date sent, procedure, doctor name, and status. Leave date fields empty to export all data.
             </p>
             
             <div className="space-y-4">
@@ -889,6 +889,20 @@ const PracticeDashboard = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Export Format
+                </label>
+                <select
+                  value={exportDateRange.format}
+                  onChange={(e) => setExportDateRange(prev => ({ ...prev, format: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="csv">CSV (.csv)</option>
+                  <option value="excel">Excel (.xlsx)</option>
+                </select>
+              </div>
             </div>
             
             <div className="flex gap-3 mt-6">
@@ -896,7 +910,7 @@ const PracticeDashboard = () => {
                 onClick={handleExportWithDateRange}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Export CSV
+                Export {exportDateRange.format.toUpperCase()}
               </Button>
               <Button
                 onClick={() => setShowDatePickerModal(false)}
