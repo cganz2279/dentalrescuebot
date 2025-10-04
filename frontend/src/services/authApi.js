@@ -255,6 +255,13 @@ export const practiceApi = {
     return response.data;
   },
 
+  exportCorrespondence: async (exportRequest) => {
+    const response = await practiceAxios.post('/api/practice/export-correspondence', exportRequest, {
+      responseType: 'blob' // Important for file downloads
+    });
+    return response;
+  },
+
   logActivity: async (activityData) => {
     const response = await practiceAxios.post('/api/practice/log-activity', activityData);
     return response.data;
