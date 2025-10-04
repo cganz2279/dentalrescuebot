@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 """
-Password Reset Email Testing for caryganz@gmail.com
-Focus: Verify corrected FRONTEND_URL in password reset emails
-Review Request: Send fresh password reset email with corrected FRONTEND_URL
+URGENT: Password Reset Fix Testing for caryganz@gmail.com
+Testing the validate-reset-token endpoint fix for SamCart practice accounts
+
+Review Request:
+1. Generate a fresh password reset token for caryganz@gmail.com
+2. Test the validate-reset-token endpoint with the new token 
+3. Verify it now returns valid=true instead of "Invalid or expired reset token"
+4. Test the complete password reset flow to ensure it works end-to-end
+
+The fix was to make the validation endpoint check both users and practices collections 
+based on the account_collection field, just like the reset password endpoint does.
 """
 
 import requests
@@ -11,6 +19,8 @@ import sys
 import os
 from datetime import datetime
 import time
+import asyncio
+import aiohttp
 
 # Configuration
 BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
@@ -18,10 +28,6 @@ API_BASE = f"{BACKEND_URL}/api"
 
 # Customer from review request
 CUSTOMER_EMAIL = "caryganz@gmail.com"
-
-# Expected corrected FRONTEND_URL (fixed from app.dentalaftercarenotes.com)
-EXPECTED_FRONTEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
-OLD_FRONTEND_URL = "app.dentalaftercarenotes.com"
 
 class PasswordResetTester:
     def __init__(self):
