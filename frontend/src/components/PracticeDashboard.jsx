@@ -1426,16 +1426,7 @@ const PracticeDashboard = () => {
                           >
                             Text
                           </Button>
-                          {procedure.status === 'active' && (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleMarkAsDelivered(procedure.id, procedure.procedureName)}
-                              className="text-xs px-2 py-1 h-7 bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-300"
-                            >
-                              Mark Delivered
-                            </Button>
-                          )}
+                          {/* Mark Delivered button removed - status changes automatically when Print/Email/SMS is used */}
                         </div>
                       </div>
                     </div>
