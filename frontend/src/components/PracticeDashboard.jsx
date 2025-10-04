@@ -1349,7 +1349,7 @@ const PracticeDashboard = () => {
                           >
                             Text
                           </Button>
-                          {procedure.status !== 'delivered' && (
+                          {procedure.status === 'active' && (
                             <Button 
                               size="sm" 
                               variant="outline"
