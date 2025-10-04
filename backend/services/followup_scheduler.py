@@ -124,11 +124,12 @@ class FollowUpScheduler:
                         }
                     )
                     
-                    # Update original assignment
+                    # Update original assignment - change status from "delivered" to "second"
                     await db.patientprocedures.update_one(
                         {"id": followup["assignmentId"]},
                         {
                             "$set": {
+                                "status": "second",  # Change from delivered to second
                                 "followUpStatus": "sent",
                                 "followUpSentAt": datetime.now(timezone.utc),
                                 "updatedAt": datetime.now(timezone.utc)
