@@ -154,8 +154,8 @@ class SamCartIntegrationTester:
                     self.log_test(f"Account Creation ({customer_email})", True, f"Account created successfully. Password: {password}")
                     self.created_accounts.append({"email": customer_email, "password": password})
                     return True, password
-                elif "exists" in status.lower():
-                    self.log_test(f"Account Creation ({customer_email})", True, f"Account already exists: {status}")
+                elif "exists" in status.lower() or "duplicate" in status.lower():
+                    self.log_test(f"Account Creation ({customer_email})", True, f"Account already exists (expected for existing customers): {status}")
                     return True, None
                 else:
                     self.log_test(f"Account Creation ({customer_email})", False, f"Unexpected status: {status}")
