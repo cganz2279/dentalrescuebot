@@ -196,6 +196,64 @@ class UrgentPracticeCreator:
             self.log_result("Create Practice Account", False, error=str(e))
             return False
     
+    def create_practice_directly_via_samcart_webhook(self):
+        """Create practice account directly via SamCart webhook test endpoint"""
+        try:
+            # Use the SamCart webhook test endpoint to create the practice
+            response = requests.post(
+                f"{API_BASE}/webhook/samcart/test",
+                params={"test_email": PRACTICE_EMAIL},
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                status = data.get("status")
+                message = data.get("message", "")
+                
+                if status == "success":
+                    practice_info = data.get("practice_info", {})
+                    password = practice_info.get("password", "N/A")
+                    practice_name = practice_info.get("practice_name", "N/A")
+                    
+                    self.log_result(
+                        "Create Practice via SamCart Webhook",
+                        True,
+                        f"Practice created successfully: {practice_name}, Generated Password: {password}"
+                    )
+                    
+                    # Store the generated password for login testing
+                    global PRACTICE_PASSWORD
+                    PRACTICE_PASSWORD = password
+                    
+                    return True
+                elif "already exists" in message.lower() or "duplicate" in message.lower():
+                    self.log_result(
+                        "Create Practice via SamCart Webhook",
+                        True,
+                        "Practice account already exists (duplicate prevention working)"
+                    )
+                    return True
+                else:
+                    self.log_result(
+                        "Create Practice via SamCart Webhook",
+                        False,
+                        f"Unexpected response: {message}"
+                    )
+                    return False
+            else:
+                self.log_result(
+                    "Create Practice via SamCart Webhook",
+                    False,
+                    f"Status: {response.status_code}",
+                    response.text
+                )
+                return False
+                
+        except Exception as e:
+            self.log_result("Create Practice via SamCart Webhook", False, error=str(e))
+            return False
+    
     def test_practice_login(self):
         """Test practice login with created credentials"""
         try:
