@@ -648,7 +648,7 @@ const PracticeDashboard = () => {
       if (response.ok) {
         toast({
           title: "Success",
-          description: `${procedureName} marked as delivered`,
+          description: `${procedureName} marked as delivered - Follow-up email scheduled for 24 hours`,
         });
 
         // Reload dashboard to update the count and status
@@ -664,6 +664,27 @@ const PracticeDashboard = () => {
         description: `Failed to mark ${procedureName} as delivered: ${error.message}`,
         variant: "destructive",
       });
+    }
+  };
+
+  const loadFollowUpStats = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/practice/followup-stats`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setFollowUpStats(data.data);
+        }
+      } else {
+        console.error('Failed to load follow-up stats');
+      }
+    } catch (error) {
+      console.error('❌ Error loading follow-up stats:', error);
     }
   };
 
