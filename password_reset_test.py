@@ -32,6 +32,7 @@ CUSTOMER_EMAIL = "caryganz@gmail.com"
 class PasswordResetTester:
     def __init__(self):
         self.test_results = []
+        self.reset_token = None
         
     def log_result(self, test_name, success, details="", error=""):
         """Log test result"""
