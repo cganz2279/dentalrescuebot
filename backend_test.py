@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 """
-SamCart Webhook Integration Testing - Critical Payment Sequence Fix
-Focus: Fix webhook account creation with corrupted/missing password field
+Backend Testing Script for Tutorial Delete Functionality
+Tests the enhanced tutorial delete endpoint with ID format handling
 """
 
-import asyncio
-import aiohttp
+import requests
 import json
-import bcrypt
-import uuid
-from datetime import datetime, timezone
 import os
-import sys
+from datetime import datetime
 
-# Test configuration
+# Configuration
 BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
-TEST_EMAIL = "test.samcart.payment@gmail.com"
+ADMIN_EMAIL = "cganz@admin.com"
+ADMIN_PASSWORD = "Dentist1#"
 
-class SamCartWebhookTester:
+class TutorialDeleteTester:
     def __init__(self):
         self.session = None
         self.test_results = []
