@@ -391,6 +391,23 @@ const PracticeDashboard = () => {
         // Don't fail the main operation if logging fails
       }
 
+      // Mark as delivered and schedule 24-hour follow-up
+      try {
+        await handleMarkAsDelivered(procedure.id, procedure.procedureName || procedure.name);
+        
+        toast({
+          title: "Print Completed",
+          description: "Instructions printed - Follow-up scheduled in 24 hours",
+        });
+      } catch (deliveredError) {
+        console.error('Failed to mark as delivered after print:', deliveredError);
+        // Still show success for the print operation
+        toast({
+          title: "Print Completed", 
+          description: "Instructions printed successfully",
+        });
+      }
+
     } catch (error) {
       console.error('Print procedure error:', error);
       toast({
