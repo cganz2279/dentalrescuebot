@@ -594,8 +594,13 @@ class SamCartWebhookEmailTester:
                 print(f"   {i+1}. {test_name}: {result}")
             print()
             
-            # Count results
-            passed = sum(1 for result in results if result is True)
+            # Count results (handle tuples from some tests)
+            passed = 0
+            for result in results:
+                if isinstance(result, tuple):
+                    passed += 1 if result[0] is True else 0
+                else:
+                    passed += 1 if result is True else 0
             failed = len(results) - passed
             
             print("=" * 60)
