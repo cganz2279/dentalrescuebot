@@ -25,25 +25,23 @@ FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://app.dentalaftercarenotes.
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@theoncallbot.com')
 
 # Models
-class SamCartWebhookLog(BaseModel):
+class SamCartWebhook(BaseModel):
     webhook_id: str
     event_type: str
-    payload: Dict[str, Any]
-    processing_status: str
-    error_message: Optional[str] = None
+    customer_email: str
+    order_id: str
+    status: str
     created_at: datetime
-    processing_duration: Optional[float] = None
+    error_message: Optional[str] = None
 
-class PracticeAccountData(BaseModel):
-    practice_name: str
+class PracticeAccount(BaseModel):
+    id: str
+    name: str
+    email: str
     owner_name: str
-    email: EmailStr
-    phone: Optional[str] = None
-    address: Dict[str, str]
-    subscription_info: Dict[str, Any]
-    login_credentials: Dict[str, str]
+    password_hash: str
+    subscription_status: str
     trial_end_date: datetime
-    account_status: str = "active"
     created_at: datetime
 
 def verify_samcart_signature(payload_body: bytes, signature_header: str) -> bool:
