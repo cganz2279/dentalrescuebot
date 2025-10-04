@@ -1273,12 +1273,15 @@ const PracticeDashboard = () => {
                           <Badge 
                             variant="outline" 
                             className={`mb-1 ${
-                              procedure.status === 'delivered' 
+                              procedure.status === 'second' 
+                                ? 'bg-purple-100 text-purple-800 border-purple-300'
+                                : procedure.status === 'delivered' 
                                 ? 'bg-blue-100 text-blue-800 border-blue-300' 
                                 : 'bg-green-100 text-green-800 border-green-300'
                             }`}
                           >
-                            {procedure.status === 'delivered' ? 'Delivered' : 'Active'}
+                            {procedure.status === 'second' ? 'Second' : 
+                             procedure.status === 'delivered' ? 'Delivered' : 'Active'}
                           </Badge>
                           {procedure.followUpStatus && (
                             <Badge 
