@@ -150,125 +150,49 @@ async def create_practice_account(customer_email: str, customer_name: str, order
         print(f"❌ Error creating practice account: {e}")
         raise e
 
-async def create_practice_from_samcart(samcart_data: Dict[str, Any]) -> Dict[str, Any]:
-    """Create practice account from SamCart webhook data"""
+async def send_welcome_email(practice_info: Dict[str, Any]) -> bool:
+    """Send welcome email to new practice owner"""
     try:
-        customer = samcart_data.get("customer", {})
-        product = samcart_data.get("product", {})
-        order = samcart_data.get("order", {})
+        # Extract practice information
+        practice_name = practice_info.get('practice_name', 'Your Practice')
+        owner_name = practice_info.get('owner_name', 'Practice Owner')
+        admin_email = practice_info.get('email')
+        temp_password = practice_info.get('password')
         
-        # Extract customer information
-        first_name = customer.get("first_name", "")
-        last_name = customer.get("last_name", "")
-        email = customer.get("email", "").lower().strip()
-        phone = customer.get("phone_number", "")
+        if not admin_email or not temp_password:
+            print(f"❌ Missing email or password for welcome email")
+            return False
         
-        if not email:
-            raise ValueError("Customer email is required")
+        # Create admin credentials dictionary for email template
+        admin_credentials = {
+            'adminEmail': admin_email,
+            'tempPassword': temp_password,
+            'adminFirstName': owner_name.split()[0] if owner_name else 'Doctor',
+            'adminLastName': owner_name.split()[-1] if ' ' in owner_name else 'Practice'
+        }
         
-        # Check if practice already exists
-        existing_practice = await db.practices.find_one({"email": email})
-        if existing_practice:
-            return {
-                "status": "duplicate",
-                "message": "Practice account already exists",
-                "practice_id": str(existing_practice["_id"]),
-                "email": email
-            }
-        
-        # Generate secure password and hash it properly
-        password = generate_secure_password()
-        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        
-        print(f"🔐 Generated password for {email}: {password}")
-        print(f"🔐 Password hash length: {len(password_hash)}")
-        print(f"🔐 Hash starts with: {password_hash[:10]}...")
-        
-        # Create practice name
-        if last_name:
-            practice_name = f"Dr. {last_name} Dental Practice"
-        else:
-            practice_name = f"{first_name} Dental Practice"
-        
-        # Calculate trial end date
-        trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_PERIOD_DAYS)
-        
-        # Create practice document
+        # Create practice data dictionary for email template
         practice_data = {
-            "id": str(uuid.uuid4()),
-            "name": practice_name,
-            "email": email,
-            "phone": phone,
-            "address": customer.get("billing_address_line1", ""),
-            "city": customer.get("billing_city", ""),
-            "state": customer.get("billing_state", ""),
-            "zipCode": customer.get("billing_zip", ""),
-            "country": customer.get("billing_country", "United States"),
-            
-            # Owner information
-            "ownerName": f"{first_name} {last_name}".strip(),
-            "ownerEmail": email,
-            "ownerPhone": phone,
-            
-            # Subscription information
-            "subscription": {
-                "status": "trial",
-                "type": "monthly",
-                "price": MONTHLY_PRICE,
-                "trialEndDate": trial_end,
-                "currentPeriodEnd": trial_end,
-                "samcartOrderId": order.get("id"),
-                "samcartCustomerId": customer.get("customer_id"),
-                "productName": product.get("name", "Dental Practice Management"),
-                "productPrice": product.get("price", "0.00")
-            },
-            
-            # Login credentials (store hashed password)
-            "password": password_hash,
-            
-            # Account settings
-            "isActive": True,
-            "emailVerified": True,  # SamCart email is considered verified
-            "setupCompleted": False,  # User needs to complete setup
-            
-            # Branding (will be set up by user)
-            "branding": {
-                "logo": None,
-                "primaryColor": "#2563eb",
-                "secondaryColor": "#1e40af",
-                "welcomeMessage": "Welcome to our practice!"
-            },
-            
-            # Metadata
-            "createdAt": datetime.now(timezone.utc),
-            "updatedAt": datetime.now(timezone.utc),
-            "source": "samcart",
-            "samcartData": {
-                "orderId": order.get("id"),
-                "customerId": customer.get("customer_id"),
-                "productId": product.get("id"),
-                "originalPayload": samcart_data
-            }
+            'practiceName': practice_name
         }
         
-        # Insert practice into database
-        result = await db.practices.insert_one(practice_data)
-        practice_id = str(result.inserted_id)
+        # Use the existing welcome email method from email service
+        success = email_service.send_welcome_email(
+            practice_data=practice_data,
+            admin_credentials=admin_credentials,
+            app_url=FRONTEND_URL
+        )
         
-        return {
-            "status": "success",
-            "message": "Practice account created successfully",
-            "practice_id": practice_id,
-            "email": email,
-            "password": password,  # Plain password for email
-            "practice_name": practice_name,
-            "owner_name": f"{first_name} {last_name}".strip(),
-            "trial_end": trial_end
-        }
+        if success:
+            print(f"✅ Welcome email sent successfully to {admin_email}")
+        else:
+            print(f"❌ Failed to send welcome email to {admin_email}")
+        
+        return success
         
     except Exception as e:
-        print(f"❌ Error creating practice account: {e}")
-        raise e
+        print(f"❌ Error sending welcome email: {e}")
+        return False
 
 async def send_welcome_email(practice_info: Dict[str, Any]) -> bool:
     """Send welcome email to new practice owner"""
