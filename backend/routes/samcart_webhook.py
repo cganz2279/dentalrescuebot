@@ -249,21 +249,34 @@ async def send_welcome_email(practice_info: Dict[str, Any]) -> bool:
         # Get practice branding for logo
         practice_branding = await db.practices.find_one(
             {"email": practice_info['email']},
-            {"_id": 0, "branding": 1}
+            {"_id": 0, "branding": 1, "name": 1}
         )
         
         logo_html = ""
-        if practice_branding and practice_branding.get("branding", {}).get("logo"):
-            logo_data = practice_branding["branding"]["logo"]
-            # Ensure logo is in proper data URL format
-            if not logo_data.startswith('data:image'):
-                logo_data = f"data:image/png;base64,{logo_data}"
-            
-            logo_html = f"""
-            <div style="text-align: center; margin-bottom: 30px;">
-                <img src="{logo_data}" alt="Practice Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;" />
-            </div>
-            """
+        try:
+            if practice_branding and practice_branding.get("branding", {}).get("logo"):
+                logo_data = practice_branding["branding"]["logo"]
+                practice_name = practice_branding.get("name", "Practice")
+                
+                # Validate logo data is not empty or corrupted
+                if logo_data and len(logo_data) > 100:  # Ensure it's not a tiny placeholder
+                    # Ensure logo is in proper data URL format
+                    if not logo_data.startswith('data:image'):
+                        logo_data = f"data:image/png;base64,{logo_data}"
+                    
+                    logo_html = f"""
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <img src="{logo_data}" alt="{practice_name} Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;" />
+                    </div>
+                    """
+                    print(f"✅ Added practice logo to welcome email for {practice_name}")
+                else:
+                    print(f"⚠️ Logo data too small or corrupted for welcome email")
+            else:
+                print(f"ℹ️ No logo available for welcome email")
+        except Exception as logo_error:
+            print(f"❌ Error processing logo for welcome email: {logo_error}")
+            logo_html = ""  # Fallback to no logo
         
         # Create welcome email content
         email_content = f"""
