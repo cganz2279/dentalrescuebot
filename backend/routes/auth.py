@@ -570,10 +570,8 @@ async def register_practice_samcart(request: PracticeRegisterRequest):
                     "samcartCustomerId": request.samcartCustomerId
                 }
                 
-                email_sent = email_service.send_registration_notification(
-                    registration_data, 
-                    "samcart"
-                )
+                # Admin notification disabled for privacy  
+                email_sent = True  # Skip admin notifications
                 
                 if not email_sent:
                     print(f"Failed to send email notification for registration: {request.email}")
