@@ -17,11 +17,10 @@ router = APIRouter(prefix="/api/video", tags=["video"])
 UPLOADS_DIR = "/app/uploads/tutorials"
 
 @router.get("/tutorial/{filename}")
-@router.head("/tutorial/{filename}")
 async def serve_tutorial_video(
     filename: str, 
     request: Request,
-    admin_data: dict = Depends(verify_admin_token)
+    admin_email: str = Depends(verify_admin_token)
 ):
     """
     Serve tutorial video files with proper streaming support
