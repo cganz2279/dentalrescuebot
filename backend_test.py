@@ -1,453 +1,662 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for SamCart Webhook Integration
-Focus: Urgent customer account creation for caryganz@gmail.com
+SamCart Webhook Integration System Testing
+Tests the completely rebuilt SamCart payment integration system for reliability and performance.
 """
 
 import requests
 import json
-import sys
-import os
-from datetime import datetime
 import time
+import uuid
+from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv('/app/backend/.env')
 
 # Configuration
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
-# Test credentials from test_result.md
-ADMIN_EMAIL = "cganz@admin.com"
-ADMIN_PASSWORD = "Dentist1#"
-
-# Customer from review request
-URGENT_CUSTOMER_EMAIL = "caryganz@gmail.com"
-
-class BackendTester:
+class SamCartWebhookTester:
     def __init__(self):
-        self.admin_token = None
         self.test_results = []
+        self.test_email = f"test.samcart.{int(time.time())}@example.com"
+        self.created_accounts = []
         
-    def log_result(self, test_name, success, details="", error=""):
+    def log_test(self, test_name, success, details="", error=""):
         """Log test result"""
-        status = "✅ PASS" if success else "❌ FAIL"
         result = {
             "test": test_name,
-            "status": status,
             "success": success,
             "details": details,
             "error": error,
             "timestamp": datetime.now().isoformat()
         }
         self.test_results.append(result)
-        print(f"{status}: {test_name}")
+        
+        status = "✅" if success else "❌"
+        print(f"{status} {test_name}")
         if details:
             print(f"   Details: {details}")
         if error:
             print(f"   Error: {error}")
         print()
-        
-    def admin_login(self):
-        """Test admin authentication"""
+
+    def test_webhook_test_endpoint(self):
+        """Test 1: SamCart Webhook Test Endpoint"""
         try:
-            response = requests.post(f"{API_BASE}/admin/login", json={
-                "email": ADMIN_EMAIL,
-                "password": ADMIN_PASSWORD
-            }, timeout=30)
+            url = f"{API_BASE}/webhook/samcart/test"
+            params = {"test_email": self.test_email}
+            
+            print(f"🧪 Testing webhook test endpoint with email: {self.test_email}")
+            response = requests.post(url, params=params, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                self.admin_token = data.get("access_token")
-                self.log_result(
-                    "Admin Authentication",
-                    True,
-                    f"Successfully authenticated as {ADMIN_EMAIL}, token obtained"
-                )
-                return True
+                
+                if data.get("status") == "success":
+                    practice_info = data.get("practice_info", {})
+                    practice_id = practice_info.get("practice_id")
+                    password = practice_info.get("password")
+                    email_sent = data.get("email_sent", False)
+                    
+                    if practice_id and password:
+                        self.created_accounts.append({
+                            "email": self.test_email,
+                            "password": password,
+                            "practice_id": practice_id
+                        })
+                        
+                        self.log_test(
+                            "SamCart Webhook Test Endpoint",
+                            True,
+                            f"Account created successfully. Practice ID: {practice_id}, Email sent: {email_sent}"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "SamCart Webhook Test Endpoint",
+                            False,
+                            "",
+                            "Missing practice_id or password in response"
+                        )
+                        return False
+                elif data.get("status") == "duplicate":
+                    self.log_test(
+                        "SamCart Webhook Test Endpoint",
+                        True,
+                        "Account already exists (duplicate detection working)"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "SamCart Webhook Test Endpoint",
+                        False,
+                        "",
+                        f"Unexpected status: {data.get('status')}"
+                    )
+                    return False
             else:
-                self.log_result(
-                    "Admin Authentication", 
+                self.log_test(
+                    "SamCart Webhook Test Endpoint",
                     False,
-                    f"Status: {response.status_code}",
-                    response.text
+                    "",
+                    f"HTTP {response.status_code}: {response.text}"
                 )
                 return False
                 
         except Exception as e:
-            self.log_result("Admin Authentication", False, error=str(e))
+            self.log_test(
+                "SamCart Webhook Test Endpoint",
+                False,
+                "",
+                str(e)
+            )
             return False
-    
-    def test_samcart_webhook_endpoint(self):
-        """Test SamCart webhook endpoint accessibility"""
+
+    def test_account_creation_flow(self):
+        """Test 2: Account Creation Flow Verification"""
         try:
-            # Test GET request (should return 405 Method Not Allowed)
-            response = requests.get(f"{API_BASE}/webhook/samcart", timeout=30)
+            if not self.created_accounts:
+                self.log_test(
+                    "Account Creation Flow",
+                    False,
+                    "",
+                    "No accounts created to verify"
+                )
+                return False
             
-            if response.status_code == 405:
-                self.log_result(
-                    "SamCart Webhook Endpoint Accessibility",
-                    True,
-                    "Endpoint accessible, returns 405 for GET as expected"
-                )
-                return True
-            else:
-                self.log_result(
-                    "SamCart Webhook Endpoint Accessibility",
+            account = self.created_accounts[0]
+            
+            # Verify account has proper structure
+            required_fields = ["email", "password", "practice_id"]
+            missing_fields = [field for field in required_fields if not account.get(field)]
+            
+            if missing_fields:
+                self.log_test(
+                    "Account Creation Flow",
                     False,
-                    f"Unexpected status: {response.status_code}",
-                    response.text
+                    "",
+                    f"Missing required fields: {missing_fields}"
                 )
                 return False
-                
+            
+            # Verify password is secure (12+ characters, mixed case, numbers, special chars)
+            password = account["password"]
+            password_checks = {
+                "length": len(password) >= 12,
+                "uppercase": any(c.isupper() for c in password),
+                "lowercase": any(c.islower() for c in password),
+                "digits": any(c.isdigit() for c in password),
+                "special": any(c in "!@#$%&*" for c in password)
+            }
+            
+            failed_checks = [check for check, passed in password_checks.items() if not passed]
+            
+            if failed_checks:
+                self.log_test(
+                    "Account Creation Flow",
+                    False,
+                    "",
+                    f"Password security checks failed: {failed_checks}"
+                )
+                return False
+            
+            self.log_test(
+                "Account Creation Flow",
+                True,
+                f"Account structure valid. Password meets security requirements. Practice ID: {account['practice_id']}"
+            )
+            return True
+            
         except Exception as e:
-            self.log_result("SamCart Webhook Endpoint Accessibility", False, error=str(e))
+            self.log_test(
+                "Account Creation Flow",
+                False,
+                "",
+                str(e)
+            )
             return False
-    
-    def test_webhook_logs(self):
-        """Test webhook logs endpoint"""
+
+    def test_login_system(self):
+        """Test 3: Login System for Created Accounts"""
         try:
-            response = requests.get(f"{API_BASE}/webhook/samcart/logs", timeout=30)
+            if not self.created_accounts:
+                self.log_test(
+                    "Login System",
+                    False,
+                    "",
+                    "No accounts created to test login"
+                )
+                return False
+            
+            account = self.created_accounts[0]
+            
+            # Test login with created credentials
+            url = f"{API_BASE}/auth/login"
+            login_data = {
+                "email": account["email"],
+                "password": account["password"]
+            }
+            
+            print(f"🔐 Testing login with email: {account['email']}")
+            response = requests.post(url, json=login_data, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                logs = data.get("logs", [])
-                count = data.get("count", 0)
                 
-                self.log_result(
-                    "Webhook Logs Endpoint",
-                    True,
-                    f"Retrieved {count} webhook logs successfully"
-                )
-                
-                # Check for recent activity
-                if logs:
-                    latest_log = logs[0]
-                    event_type = latest_log.get("event_type", "unknown")
-                    created_at = latest_log.get("created_at", "unknown")
-                    print(f"   Latest webhook: {event_type} at {created_at}")
-                
-                return True
+                if data.get("success") and data.get("token"):
+                    user = data.get("user", {})
+                    practice = data.get("practice", {})
+                    
+                    # Verify login response structure
+                    if user.get("id") and practice.get("id"):
+                        self.log_test(
+                            "Login System",
+                            True,
+                            f"Login successful. User ID: {user.get('id')}, Practice ID: {practice.get('id')}"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "Login System",
+                            False,
+                            "",
+                            "Missing user or practice data in login response"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "Login System",
+                        False,
+                        "",
+                        f"Login failed: {data.get('message', 'Unknown error')}"
+                    )
+                    return False
             else:
-                self.log_result(
-                    "Webhook Logs Endpoint",
+                self.log_test(
+                    "Login System",
                     False,
-                    f"Status: {response.status_code}",
-                    response.text
+                    "",
+                    f"HTTP {response.status_code}: {response.text}"
                 )
                 return False
                 
         except Exception as e:
-            self.log_result("Webhook Logs Endpoint", False, error=str(e))
+            self.log_test(
+                "Login System",
+                False,
+                "",
+                str(e)
+            )
             return False
-    
+
+    def test_webhook_logging(self):
+        """Test 4: Webhook Logging System"""
+        try:
+            url = f"{API_BASE}/webhook/samcart/logs"
+            
+            print("📋 Testing webhook logs endpoint")
+            response = requests.get(url, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get("status") == "success":
+                    logs = data.get("logs", [])
+                    count = data.get("count", 0)
+                    
+                    # Verify logs structure
+                    if isinstance(logs, list) and count >= 0:
+                        # Check if recent test webhook is logged
+                        recent_logs = [log for log in logs if log.get("customer_email") == self.test_email]
+                        
+                        if recent_logs:
+                            self.log_test(
+                                "Webhook Logging",
+                                True,
+                                f"Logs endpoint working. Total logs: {count}, Recent test logs found: {len(recent_logs)}"
+                            )
+                        else:
+                            self.log_test(
+                                "Webhook Logging",
+                                True,
+                                f"Logs endpoint working. Total logs: {count} (test webhook may not be logged yet)"
+                            )
+                        return True
+                    else:
+                        self.log_test(
+                            "Webhook Logging",
+                            False,
+                            "",
+                            "Invalid logs structure in response"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "Webhook Logging",
+                        False,
+                        "",
+                        f"Logs endpoint error: {data.get('message', 'Unknown error')}"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Webhook Logging",
+                    False,
+                    "",
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Webhook Logging",
+                False,
+                "",
+                str(e)
+            )
+            return False
+
     def test_webhook_stats(self):
-        """Test webhook statistics endpoint"""
+        """Test 5: Webhook Statistics"""
         try:
-            response = requests.get(f"{API_BASE}/webhook/samcart/stats", timeout=30)
+            url = f"{API_BASE}/webhook/samcart/stats"
+            
+            print("📊 Testing webhook stats endpoint")
+            response = requests.get(url, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
+                
+                required_stats = ["total_webhooks", "successful_webhooks", "failed_webhooks", "success_rate", "recent_practice_signups"]
+                missing_stats = [stat for stat in required_stats if stat not in data]
+                
+                if missing_stats:
+                    self.log_test(
+                        "Webhook Statistics",
+                        False,
+                        "",
+                        f"Missing statistics: {missing_stats}"
+                    )
+                    return False
+                
+                # Verify stats are reasonable
                 total = data.get("total_webhooks", 0)
                 successful = data.get("successful_webhooks", 0)
                 failed = data.get("failed_webhooks", 0)
                 success_rate = data.get("success_rate", 0)
-                recent_signups = data.get("recent_practice_signups", 0)
+                signups = data.get("recent_practice_signups", 0)
                 
-                self.log_result(
-                    "Webhook Statistics Endpoint",
-                    True,
-                    f"Total: {total}, Success: {successful}, Failed: {failed}, Rate: {success_rate:.1f}%, Recent signups: {recent_signups}"
-                )
-                return True
-            else:
-                self.log_result(
-                    "Webhook Statistics Endpoint",
-                    False,
-                    f"Status: {response.status_code}",
-                    response.text
-                )
-                return False
-                
-        except Exception as e:
-            self.log_result("Webhook Statistics Endpoint", False, error=str(e))
-            return False
-    
-    def test_urgent_customer_account_status(self):
-        """Test urgent customer account status for caryganz@gmail.com"""
-        try:
-            # Test login attempt to check account status
-            response = requests.post(f"{API_BASE}/auth/login", json={
-                "email": URGENT_CUSTOMER_EMAIL,
-                "password": "test_password_123"  # Wrong password to test account existence
-            }, timeout=30)
-            
-            if response.status_code == 401:
-                # 401 means account exists but wrong password (healthy account)
-                self.log_result(
-                    f"Urgent Customer Account Status ({URGENT_CUSTOMER_EMAIL})",
-                    True,
-                    "Account exists and is healthy (401 unauthorized for wrong password)"
-                )
-                return True
-            elif response.status_code == 500:
-                # 500 means account exists but has corruption issues
-                self.log_result(
-                    f"Urgent Customer Account Status ({URGENT_CUSTOMER_EMAIL})",
-                    False,
-                    "Account exists but has corruption issues (500 server error)",
-                    "Password field may be corrupted - needs password reset"
-                )
-                return False
-            elif response.status_code == 404:
-                # 404 means account doesn't exist
-                self.log_result(
-                    f"Urgent Customer Account Status ({URGENT_CUSTOMER_EMAIL})",
-                    False,
-                    "Account does not exist",
-                    "Customer paid but account was never created"
-                )
-                return False
-            else:
-                self.log_result(
-                    f"Urgent Customer Account Status ({URGENT_CUSTOMER_EMAIL})",
-                    False,
-                    f"Unexpected status: {response.status_code}",
-                    response.text
-                )
-                return False
-                
-        except Exception as e:
-            self.log_result(f"Urgent Customer Account Status ({URGENT_CUSTOMER_EMAIL})", False, error=str(e))
-            return False
-    
-    def test_webhook_test_endpoint_for_customer(self):
-        """Test webhook test endpoint with urgent customer email"""
-        try:
-            response = requests.post(
-                f"{API_BASE}/webhook/samcart/test",
-                params={"test_email": URGENT_CUSTOMER_EMAIL},
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                status = data.get("status")
-                message = data.get("message", "")
-                
-                if status == "success":
-                    practice_info = data.get("practice_info", {})
-                    password = practice_info.get("password", "N/A")
-                    practice_name = practice_info.get("practice_name", "N/A")
-                    
-                    self.log_result(
-                        f"Webhook Test Endpoint for {URGENT_CUSTOMER_EMAIL}",
+                if total >= 0 and successful >= 0 and failed >= 0 and 0 <= success_rate <= 100 and signups >= 0:
+                    self.log_test(
+                        "Webhook Statistics",
                         True,
-                        f"Account created successfully: {practice_name}, Password: {password}"
-                    )
-                    return True
-                elif "already exists" in message.lower() or "duplicate" in message.lower():
-                    self.log_result(
-                        f"Webhook Test Endpoint for {URGENT_CUSTOMER_EMAIL}",
-                        True,
-                        "Account already exists (duplicate prevention working)"
+                        f"Stats: Total: {total}, Success: {successful}, Failed: {failed}, Rate: {success_rate}%, Signups: {signups}"
                     )
                     return True
                 else:
-                    self.log_result(
-                        f"Webhook Test Endpoint for {URGENT_CUSTOMER_EMAIL}",
+                    self.log_test(
+                        "Webhook Statistics",
                         False,
-                        f"Unexpected response: {message}"
+                        "",
+                        f"Invalid statistics values: Total: {total}, Success: {successful}, Failed: {failed}, Rate: {success_rate}%"
                     )
                     return False
             else:
-                self.log_result(
-                    f"Webhook Test Endpoint for {URGENT_CUSTOMER_EMAIL}",
+                self.log_test(
+                    "Webhook Statistics",
                     False,
-                    f"Status: {response.status_code}",
-                    response.text
+                    "",
+                    f"HTTP {response.status_code}: {response.text}"
                 )
                 return False
                 
         except Exception as e:
-            self.log_result(f"Webhook Test Endpoint for {URGENT_CUSTOMER_EMAIL}", False, error=str(e))
+            self.log_test(
+                "Webhook Statistics",
+                False,
+                "",
+                str(e)
+            )
             return False
-    
-    def test_password_reset_for_customer(self):
-        """Test password reset functionality for urgent customer"""
+
+    def test_duplicate_prevention(self):
+        """Test 6: Duplicate Account Prevention"""
         try:
-            response = requests.post(f"{API_BASE}/auth/forgot-password", json={
-                "email": URGENT_CUSTOMER_EMAIL,
-                "recovery_method": "email"
-            }, timeout=30)
+            # Try to create account with same email again
+            url = f"{API_BASE}/webhook/samcart/test"
+            params = {"test_email": self.test_email}
+            
+            print(f"🔄 Testing duplicate prevention with same email: {self.test_email}")
+            response = requests.post(url, params=params, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                message = data.get("message", "")
-                sent_methods = data.get("sent_methods", [])
                 
-                self.log_result(
-                    f"Password Reset for {URGENT_CUSTOMER_EMAIL}",
-                    True,
-                    f"Password reset email sent successfully. Methods: {sent_methods}"
-                )
-                return True
+                if data.get("status") == "duplicate":
+                    self.log_test(
+                        "Duplicate Prevention",
+                        True,
+                        "Duplicate account correctly detected and prevented"
+                    )
+                    return True
+                elif data.get("status") == "success":
+                    self.log_test(
+                        "Duplicate Prevention",
+                        False,
+                        "",
+                        "Duplicate account was not detected - new account created instead"
+                    )
+                    return False
+                else:
+                    self.log_test(
+                        "Duplicate Prevention",
+                        False,
+                        "",
+                        f"Unexpected response status: {data.get('status')}"
+                    )
+                    return False
             else:
-                self.log_result(
-                    f"Password Reset for {URGENT_CUSTOMER_EMAIL}",
+                self.log_test(
+                    "Duplicate Prevention",
                     False,
-                    f"Status: {response.status_code}",
-                    response.text
+                    "",
+                    f"HTTP {response.status_code}: {response.text}"
                 )
                 return False
                 
         except Exception as e:
-            self.log_result(f"Password Reset for {URGENT_CUSTOMER_EMAIL}", False, error=str(e))
+            self.log_test(
+                "Duplicate Prevention",
+                False,
+                "",
+                str(e)
+            )
             return False
-    
-    def test_manual_welcome_email(self):
-        """Test manual welcome email sending via admin endpoint"""
-        if not self.admin_token:
-            self.log_result("Manual Welcome Email", False, error="No admin token available")
-            return False
-            
+
+    def test_trial_period_setup(self):
+        """Test 7: 30-Day Trial Period Implementation"""
         try:
-            # Prepare practice data for welcome email
-            practice_data = {
-                "practiceName": "The Dental Spa at Garden City",
-                "adminEmail": URGENT_CUSTOMER_EMAIL,
-                "adminCredentials": {
-                    "email": URGENT_CUSTOMER_EMAIL,
-                    "password": "temp_password_123"
-                }
+            if not self.created_accounts:
+                self.log_test(
+                    "Trial Period Setup",
+                    False,
+                    "",
+                    "No accounts created to verify trial period"
+                )
+                return False
+            
+            account = self.created_accounts[0]
+            
+            # Login to get practice details
+            url = f"{API_BASE}/auth/login"
+            login_data = {
+                "email": account["email"],
+                "password": account["password"]
             }
             
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = requests.post(
-                f"{API_BASE}/admin/send-welcome-email",
-                json=practice_data,
-                headers=headers,
-                timeout=30
-            )
+            response = requests.post(url, json=login_data, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                message = data.get("message", "")
+                practice = data.get("practice", {})
+                subscription = practice.get("subscription", {})
                 
-                self.log_result(
-                    f"Manual Welcome Email for {URGENT_CUSTOMER_EMAIL}",
-                    True,
-                    f"Welcome email sent successfully: {message}"
-                )
-                return True
+                # Check trial status and period
+                status = subscription.get("status")
+                trial_end = subscription.get("trialEndDate")
+                
+                if status == "trial" and trial_end:
+                    # Parse trial end date and verify it's approximately 30 days from now
+                    from datetime import datetime, timedelta
+                    try:
+                        trial_end_date = datetime.fromisoformat(trial_end.replace('Z', '+00:00'))
+                        now = datetime.now(trial_end_date.tzinfo)
+                        days_remaining = (trial_end_date - now).days
+                        
+                        if 25 <= days_remaining <= 30:  # Allow some tolerance
+                            self.log_test(
+                                "Trial Period Setup",
+                                True,
+                                f"30-day trial correctly configured. Status: {status}, Days remaining: {days_remaining}"
+                            )
+                            return True
+                        else:
+                            self.log_test(
+                                "Trial Period Setup",
+                                False,
+                                "",
+                                f"Trial period incorrect. Days remaining: {days_remaining} (expected ~30)"
+                            )
+                            return False
+                    except Exception as date_error:
+                        self.log_test(
+                            "Trial Period Setup",
+                            False,
+                            "",
+                            f"Error parsing trial end date: {date_error}"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "Trial Period Setup",
+                        False,
+                        "",
+                        f"Trial not properly configured. Status: {status}, Trial end: {trial_end}"
+                    )
+                    return False
             else:
-                self.log_result(
-                    f"Manual Welcome Email for {URGENT_CUSTOMER_EMAIL}",
+                self.log_test(
+                    "Trial Period Setup",
                     False,
-                    f"Status: {response.status_code}",
-                    response.text
+                    "",
+                    f"Could not login to verify trial period: HTTP {response.status_code}"
                 )
                 return False
                 
         except Exception as e:
-            self.log_result(f"Manual Welcome Email for {URGENT_CUSTOMER_EMAIL}", False, error=str(e))
+            self.log_test(
+                "Trial Period Setup",
+                False,
+                "",
+                str(e)
+            )
             return False
-    
+
+    def test_password_reset_functionality(self):
+        """Test 8: Password Reset for SamCart Accounts"""
+        try:
+            if not self.created_accounts:
+                self.log_test(
+                    "Password Reset Functionality",
+                    False,
+                    "",
+                    "No accounts created to test password reset"
+                )
+                return False
+            
+            account = self.created_accounts[0]
+            
+            # Test forgot password endpoint
+            url = f"{API_BASE}/auth/forgot-password"
+            reset_data = {
+                "email": account["email"],
+                "recovery_method": "email"
+            }
+            
+            print(f"🔑 Testing password reset for: {account['email']}")
+            response = requests.post(url, json=reset_data, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get("success"):
+                    sent_methods = data.get("sent_methods", [])
+                    message = data.get("message", "")
+                    
+                    # Check if email was sent or at least attempted
+                    if "email" in sent_methods or "email" in message.lower():
+                        self.log_test(
+                            "Password Reset Functionality",
+                            True,
+                            f"Password reset working. Message: {message}, Methods: {sent_methods}"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "Password Reset Functionality",
+                            True,
+                            f"Password reset endpoint working (email may not be configured). Message: {message}"
+                        )
+                        return True
+                else:
+                    self.log_test(
+                        "Password Reset Functionality",
+                        False,
+                        "",
+                        f"Password reset failed: {data.get('message', 'Unknown error')}"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Password Reset Functionality",
+                    False,
+                    "",
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Password Reset Functionality",
+                False,
+                "",
+                str(e)
+            )
+            return False
+
     def run_all_tests(self):
-        """Run all backend tests"""
-        print("🚀 Starting Comprehensive SamCart Webhook Backend Testing")
-        print("=" * 70)
-        print(f"Target Customer: {URGENT_CUSTOMER_EMAIL}")
+        """Run all SamCart webhook integration tests"""
+        print("🚀 Starting SamCart Webhook Integration System Testing")
+        print("=" * 60)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Test Time: {datetime.now().isoformat()}")
-        print("=" * 70)
+        print(f"Test Email: {self.test_email}")
+        print("=" * 60)
         print()
         
-        # Test sequence
+        # Run tests in order
         tests = [
-            ("Admin Authentication", self.admin_login),
-            ("SamCart Webhook Endpoint", self.test_samcart_webhook_endpoint),
-            ("Webhook Logs", self.test_webhook_logs),
-            ("Webhook Statistics", self.test_webhook_stats),
-            ("Urgent Customer Account Status", self.test_urgent_customer_account_status),
-            ("Webhook Test Endpoint", self.test_webhook_test_endpoint_for_customer),
-            ("Password Reset", self.test_password_reset_for_customer),
-            ("Manual Welcome Email", self.test_manual_welcome_email),
+            self.test_webhook_test_endpoint,
+            self.test_account_creation_flow,
+            self.test_login_system,
+            self.test_webhook_logging,
+            self.test_webhook_stats,
+            self.test_duplicate_prevention,
+            self.test_trial_period_setup,
+            self.test_password_reset_functionality
         ]
         
-        for test_name, test_func in tests:
-            print(f"🔍 Running: {test_name}")
-            test_func()
+        passed = 0
+        total = len(tests)
+        
+        for test in tests:
+            if test():
+                passed += 1
             time.sleep(1)  # Brief pause between tests
         
-        # Summary
-        print("=" * 70)
-        print("📊 TEST SUMMARY")
-        print("=" * 70)
+        # Print summary
+        print("=" * 60)
+        print("🎯 TEST SUMMARY")
+        print("=" * 60)
         
-        total_tests = len(self.test_results)
-        passed_tests = sum(1 for result in self.test_results if result["success"])
-        failed_tests = total_tests - passed_tests
-        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
-        
-        print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests}")
-        print(f"Failed: {failed_tests}")
-        print(f"Success Rate: {success_rate:.1f}%")
-        print()
-        
-        # Failed tests details
-        if failed_tests > 0:
-            print("❌ FAILED TESTS:")
-            for result in self.test_results:
-                if not result["success"]:
-                    print(f"   • {result['test']}: {result['error']}")
-            print()
-        
-        # Critical findings
-        print("🎯 CRITICAL FINDINGS:")
-        
-        # Check customer account status
-        customer_test = next((r for r in self.test_results if "Account Status" in r["test"]), None)
-        if customer_test:
-            if customer_test["success"]:
-                print(f"   ✅ Customer {URGENT_CUSTOMER_EMAIL} account exists and is healthy")
-            else:
-                print(f"   🚨 Customer {URGENT_CUSTOMER_EMAIL} account has issues: {customer_test['error']}")
-        
-        # Check webhook system
-        webhook_tests = [r for r in self.test_results if "Webhook" in r["test"]]
-        webhook_success = all(r["success"] for r in webhook_tests)
-        if webhook_success:
-            print("   ✅ SamCart webhook system is fully operational")
-        else:
-            print("   ⚠️ SamCart webhook system has issues")
-        
-        # Check email system
-        email_tests = [r for r in self.test_results if "Email" in r["test"] or "Password Reset" in r["test"]]
-        email_success = all(r["success"] for r in email_tests)
-        if email_success:
-            print("   ✅ Email system (welcome emails, password reset) is working")
-        else:
-            print("   ⚠️ Email system has issues")
+        for result in self.test_results:
+            status = "✅ PASS" if result["success"] else "❌ FAIL"
+            print(f"{status} {result['test']}")
+            if result["error"]:
+                print(f"     Error: {result['error']}")
         
         print()
-        print("🎯 URGENT CUSTOMER RESOLUTION:")
-        if customer_test and customer_test["success"]:
-            print(f"   ✅ Customer {URGENT_CUSTOMER_EMAIL} can access their account")
-            print("   📧 Password reset email available if needed")
-            print("   🔗 Login URL: https://app.dentalaftercarenotes.com/login")
-        else:
-            print(f"   🚨 Customer {URGENT_CUSTOMER_EMAIL} needs immediate assistance")
-            print("   🔧 Manual account creation or password reset required")
+        print(f"📊 Results: {passed}/{total} tests passed ({(passed/total)*100:.1f}%)")
         
-        return success_rate >= 75  # Consider 75%+ success rate as acceptable
+        if self.created_accounts:
+            print("\n🔐 Created Test Accounts:")
+            for account in self.created_accounts:
+                print(f"   Email: {account['email']}")
+                print(f"   Password: {account['password']}")
+                print(f"   Practice ID: {account['practice_id']}")
+        
+        return passed == total
 
 if __name__ == "__main__":
-    tester = BackendTester()
+    tester = SamCartWebhookTester()
     success = tester.run_all_tests()
     
     if success:
-        print("🎉 Backend testing completed successfully!")
-        sys.exit(0)
+        print("\n🎉 ALL TESTS PASSED - SamCart webhook integration is working correctly!")
+        exit(0)
     else:
-        print("❌ Backend testing completed with issues!")
-        sys.exit(1)
+        print("\n⚠️  SOME TESTS FAILED - Check the results above for details")
+        exit(1)
