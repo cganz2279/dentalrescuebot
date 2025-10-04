@@ -57,7 +57,7 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 
-user_problem_statement: "Debug the missing email functionality in admin panel: User reports there's no email button in the admin panel after creating a practice. The welcome email functionality should trigger automatically via a prompt after successful practice creation. Authentication: cganz@admin.com / Dentist1#. Investigation Required: 1) Admin Panel Access, 2) Practice Creation Flow, 3) JavaScript Console Debug, 4) Expected vs Actual Behavior, 5) Alternative Solutions."
+user_problem_statement: "User needs to understand what 'Active practices' means in the system. Need to investigate: 1. Check Practice Data Structure: What fields determine if a practice is 'active', 2. Get Current Practices List: Show all practices in the system and their status, 3. Check Practice Status Logic: How is 'active' vs 'inactive' determined, 4. Admin Panel Context: Where does 'Active practices' appear and what it shows. Authentication: cganz@admin.com / Dentist1#. Key Questions: What makes a practice 'active' vs 'inactive'? How many active practices currently exist? What are the criteria for active status? Where in the UI does this appear? Expected Information: Practice status definitions, Current list of practices with their active/inactive status, Business logic for practice activation/deactivation, Any trial period or subscription status impact on 'active' status."
 
 backend:
   - task: "Practice Authentication API"
