@@ -934,25 +934,52 @@ async def reset_password(request: ResetPasswordRequest):
                 detail="Invalid or expired reset token"
             )
         
-        # Find user
-        user = await db.users.find_one({"id": reset_record["user_id"]})
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
+        # Determine which collection to search based on reset record
+        account_collection = reset_record.get("account_collection", "users")
+        is_samcart_account = reset_record.get("is_samcart_account", False)
         
-        # Update password
+        # Find user or practice account
+        if account_collection == "practices":
+            account = await db.practices.find_one({"id": reset_record["user_id"]})
+            if not account:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Practice account not found"
+                )
+            print(f"🔍 Found SamCart practice account for password reset: {account.get('email')}")
+        else:
+            account = await db.users.find_one({"id": reset_record["user_id"]})
+            if not account:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="User not found"
+                )
+        
+        # Update password in appropriate collection
         hashed_password = hash_password(new_password)
-        await db.users.update_one(
-            {"id": user["id"]},
-            {
-                "$set": {
-                    "password": hashed_password,
-                    "updatedAt": datetime.utcnow()
+        
+        if account_collection == "practices":
+            await db.practices.update_one(
+                {"id": account["id"]},
+                {
+                    "$set": {
+                        "password": hashed_password,
+                        "updatedAt": datetime.utcnow()
+                    }
                 }
-            }
-        )
+            )
+            print(f"✅ Password updated for SamCart practice: {account.get('email')}")
+        else:
+            await db.users.update_one(
+                {"id": account["id"]},
+                {
+                    "$set": {
+                        "password": hashed_password,
+                        "updatedAt": datetime.utcnow()
+                    }
+                }
+            )
+            print(f"✅ Password updated for user: {account.get('email')}")
         
         # Mark reset token as used
         await db.password_resets.update_one(
