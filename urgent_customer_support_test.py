@@ -90,12 +90,13 @@ class UrgentCustomerSupportTester:
             )
             
             if response.status_code == 200:
-                practices = response.json()
+                data = response.json()
+                practices = data.get("practices", [])
                 customer_practice = None
                 
                 # Look for customer's practice
                 for practice in practices:
-                    if practice.get("adminEmail") == CUSTOMER_EMAIL:
+                    if practice.get("email") == CUSTOMER_EMAIL:
                         customer_practice = practice
                         break
                 
