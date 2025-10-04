@@ -1038,6 +1038,66 @@ const PracticeDashboard = () => {
           </Button>
         </div>
 
+        {/* Follow-up Stats Section */}
+        {showFollowUpStats && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Activity className="h-5 w-5 mr-2 text-purple-600" />
+                Follow-up Statistics
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {followUpStats ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-800">Successful Follow-ups</p>
+                        <p className="text-2xl font-bold text-green-900">{followUpStats.successful || 0}</p>
+                      </div>
+                      <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <Activity className="h-4 w-4 text-green-600" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-yellow-800">Pending Follow-ups</p>
+                        <p className="text-2xl font-bold text-yellow-900">{followUpStats.pending || 0}</p>
+                      </div>
+                      <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <Clock className="h-4 w-4 text-yellow-600" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-red-800">Failed Follow-ups</p>
+                        <p className="text-2xl font-bold text-red-900">{followUpStats.failed || 0}</p>
+                      </div>
+                      <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center">
+                        <AlertCircle className="h-4 w-4 text-red-600" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center py-8">
+                  <div className="text-center">
+                    <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">Loading follow-up statistics...</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Patients */}
           <Card>
