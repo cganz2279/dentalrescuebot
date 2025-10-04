@@ -59,11 +59,14 @@ def test_practice_login_and_dashboard():
             
         dashboard_data = dashboard_response.json()
         
-        # Extract key metrics
-        practice_name = dashboard_data.get("name", "Unknown")
-        stats = dashboard_data.get("stats", {})
+        # Extract key metrics from the correct nested structure
+        data = dashboard_data.get("data", {})
+        practice_info = data.get("practice", {})
+        stats = data.get("stats", {})
+        
+        practice_name = practice_info.get("name", "Unknown")
         active_procedures = stats.get("activeProcedures", 0)
-        total_patients = stats.get("totalPatients", 0)
+        total_patients = stats.get("patientCount", 0)  # Note: it's patientCount, not totalPatients
         
         print(f"📄 Dashboard Response: {json.dumps(dashboard_data, indent=2)}")
         
