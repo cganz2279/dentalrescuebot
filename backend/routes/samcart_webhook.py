@@ -223,49 +223,7 @@ async def log_webhook_event(webhook_data: Dict[str, Any]) -> bool:
         print(f"❌ Error logging webhook event: {e}")
         return False
 
-async def send_admin_notification(practice_info: Dict[str, Any]) -> bool:
-    """Send admin notification about new practice"""
-    try:
-        # Create admin notification content
-        admin_content = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #dc2626;">🚀 New Practice Account Created</h2>
-            
-            <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin-top: 0;">Practice Details:</h3>
-                <p><strong>Practice Name:</strong> {practice_info['practice_name']}</p>
-                <p><strong>Owner:</strong> {practice_info['owner_name']}</p>
-                <p><strong>Email:</strong> {practice_info['email']}</p>
-                <p><strong>Created:</strong> {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
-                <p><strong>Trial Ends:</strong> {practice_info['trial_end'].strftime('%Y-%m-%d')}</p>
-                <p><strong>Source:</strong> SamCart Integration</p>
-            </div>
-            
-            <p style="color: #374151;">
-                A welcome email with login credentials has been sent to the practice owner.
-                Please monitor the account setup progress in the admin dashboard.
-            </p>
-        </div>
-        """
-        
-        admin_email_data = EmailData(
-            to=[ADMIN_EMAIL],
-            subject=f"New Practice: {practice_info['practice_name']}",
-            html_content=admin_content
-        )
-        
-        success = await send_email(admin_email_data)
-        
-        if success:
-            print(f"✅ Admin notification sent for {practice_info['practice_name']}")
-        else:
-            print(f"❌ Failed to send admin notification for {practice_info['practice_name']}")
-        
-        return success
-        
-    except Exception as e:
-        print(f"❌ Error sending admin notification: {e}")
-        return False
+# Admin notifications removed for privacy - practice creation is logged in admin dashboard
 
 # Note: log_webhook_event function is now inline in the webhook handlers
 
