@@ -322,63 +322,52 @@ async def handle_samcart_webhook(request: Request):
             order_id=order_id
         )
             
-            # Log the webhook event
-            await log_webhook_event({
-                "webhook_id": webhook_id,
-                "event_type": event_type,
-                "customer_email": customer_email,
-                "order_id": order_id,
-                "status": account_result["status"]
-            })
-            
-            if account_result["status"] == "success":
-                # Send welcome email immediately (not in background)
-                print(f"📧 Sending welcome email to {customer_email}...")
-                email_success = await send_welcome_email(account_result)
-                
-                if email_success:
-                    print(f"✅ Welcome email sent successfully to {customer_email}")
-                else:
-                    print(f"⚠️ Welcome email failed for {customer_email} - but account was created")
-                
-                return JSONResponse(
-                    status_code=200,
-                    content={
-                        "webhook_id": webhook_id,
-                        "status": "success",
-                        "message": "Practice account created and welcome email sent",
-                        "practice_id": account_result["practice_id"],
-                        "email": customer_email,
-                        "email_sent": email_success
-                    }
-                )
-            
-            elif account_result["status"] == "duplicate":
-                print(f"⚠️ Duplicate account for {customer_email}")
-                return JSONResponse(
-                    status_code=200,
-                    content={
-                        "webhook_id": webhook_id,
-                        "status": "duplicate",
-                        "message": f"Account already exists for {customer_email}",
-                        "practice_id": account_result.get("practice_id")
-                    }
-                )
-            
-            else:
-                print(f"❌ Account creation failed: {account_result}")
-                raise HTTPException(status_code=500, detail="Account creation failed")
+        # Log the webhook event
+        await log_webhook_event({
+            "webhook_id": webhook_id,
+            "event_type": event_type,
+            "customer_email": customer_email,
+            "order_id": order_id,
+            "status": account_result["status"]
+        })
         
-        else:
-            print(f"ℹ️ Ignoring event type: {event_type}")
+        if account_result["status"] == "success":
+            # Send welcome email immediately (not in background)
+            print(f"📧 Sending welcome email to {customer_email}...")
+            email_success = await send_welcome_email(account_result)
+            
+            if email_success:
+                print(f"✅ Welcome email sent successfully to {customer_email}")
+            else:
+                print(f"⚠️ Welcome email failed for {customer_email} - but account was created")
+            
             return JSONResponse(
                 status_code=200,
                 content={
                     "webhook_id": webhook_id,
-                    "status": "ignored",
-                    "message": f"Event type '{event_type}' not processed"
+                    "status": "success", 
+                    "message": "Practice account created and welcome email sent",
+                    "practice_id": account_result["practice_id"],
+                    "email": customer_email,
+                    "email_sent": email_success
                 }
             )
+        
+        elif account_result["status"] == "duplicate":
+            print(f"⚠️ Duplicate account for {customer_email}")
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "webhook_id": webhook_id,
+                    "status": "duplicate",
+                    "message": f"Account already exists for {customer_email}",
+                    "practice_id": account_result.get("practice_id")
+                }
+            )
+        
+        else:
+            print(f"❌ Account creation failed: {account_result}")
+            raise HTTPException(status_code=500, detail="Account creation failed")
         
     except HTTPException:
         raise
