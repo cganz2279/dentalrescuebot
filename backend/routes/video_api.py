@@ -20,7 +20,7 @@ UPLOADS_DIR = "/app/uploads/tutorials"
 async def serve_tutorial_video(
     filename: str, 
     request: Request,
-    current_user: dict = Depends(get_current_user)
+    admin_data: dict = Depends(verify_admin_token)
 ):
     """
     Serve tutorial video files with proper streaming support
