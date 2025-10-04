@@ -359,7 +359,7 @@ const TutorialManagement = ({ isOpen, onClose, adminToken }) => {
                     <div className="bg-black rounded overflow-hidden">
                       <video
                         controls
-                        className="w-full h-48 object-cover"
+                        className="w-full aspect-video object-contain"
                         poster={tutorial.thumbnail_url}
                       >
                         <source src={`${process.env.REACT_APP_BACKEND_URL}/api/video/tutorial/${tutorial.video_url.split('/').pop()}`} type="video/mp4" />
