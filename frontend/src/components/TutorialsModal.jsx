@@ -156,7 +156,7 @@ const TutorialsModal = ({ isOpen, onClose }) => {
                   <video
                     key={selectedTutorial.id}
                     controls
-                    className="w-full h-full max-h-[500px]"
+                    className="w-full h-full aspect-video object-contain"
                     poster={selectedTutorial.thumbnail_url}
                   >
                     <source src={`${process.env.REACT_APP_BACKEND_URL}/api/video/tutorial/${selectedTutorial.video_url.split('/').pop()}`} type="video/mp4" />
