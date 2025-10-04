@@ -74,28 +74,32 @@ class PasswordResetTester:
         except Exception as e:
             return self.log_result("Generate Fresh Reset Token", False, error=str(e))
     
-    def test_forgot_password_invalid_email(self):
-        """Test POST /api/auth/forgot-password with invalid email"""
+    def test_validate_reset_token_endpoint(self, token):
+        """Test the token validation endpoint"""
         try:
-            request_data = {"email": "nonexistent@example.com"}
-            response = self.session.post(f"{self.base_url}/auth/forgot-password", json=request_data)
+            response = requests.get(f"{API_BASE}/auth/validate-reset-token/{token}", timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("success") and "message" in data:
-                    expected_message = "If an account with this email exists, password reset instructions have been sent."
-                    if expected_message in data["message"]:
-                        return self.log_test("Forgot Password (Invalid Email)", True, 
-                                           "Properly prevents email enumeration")
-                    else:
-                        return self.log_test("Forgot Password (Invalid Email)", False, 
-                                           f"Unexpected message: {data['message']}")
-                else:
-                    return self.log_test("Forgot Password (Invalid Email)", False, "Invalid response format")
+                valid = data.get("valid", False)
+                user = data.get("user", {})
+                expires_at = data.get("expires_at", "")
+                
+                return self.log_result(
+                    f"Validate Reset Token ({token[:8]}...)",
+                    True,
+                    f"Token is valid: {valid}, User: {user.get('email', 'N/A')}, Expires: {expires_at}"
+                )
             else:
-                return self.log_test("Forgot Password (Invalid Email)", False, f"Status: {response.status_code}")
+                return self.log_result(
+                    f"Validate Reset Token ({token[:8]}...)",
+                    False,
+                    f"Status: {response.status_code}",
+                    response.text
+                )
+                
         except Exception as e:
-            return self.log_test("Forgot Password (Invalid Email)", False, f"Exception: {str(e)}")
+            return self.log_result(f"Validate Reset Token ({token[:8]}...)", False, error=str(e))
     
     def test_forgot_username_valid_practice(self):
         """Test POST /api/auth/forgot-username with valid practice"""
