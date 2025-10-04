@@ -816,14 +816,18 @@ async def forgot_password(request: ForgotPasswordRequest):
         # Store reset token in database
         await db.password_resets.insert_one({
             "id": str(uuid.uuid4()),
-            "user_id": user["id"],
+            "user_id": account_id,
             "email": email,
             "reset_token": reset_token,
             "expires_at": reset_expires,
             "used": False,
             "recovery_method": recovery_method,
+            "account_collection": account_collection,
+            "is_samcart_account": is_samcart_account,
             "created_at": datetime.utcnow()
         })
+        
+        print(f"✅ Password reset token generated for {email} in {account_collection} collection")
         
         # Get frontend URL and reset link
         frontend_url = os.getenv('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
