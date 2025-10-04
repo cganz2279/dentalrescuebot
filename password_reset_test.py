@@ -272,39 +272,66 @@ class PasswordResetTester:
         except Exception as e:
             return self.log_result("Frontend URL Configuration Check", False, error=str(e))
 
+    def test_validate_reset_token_fix(self):
+        """Test the specific fix for validate-reset-token endpoint"""
+        print("🔍 Testing validate-reset-token endpoint fix for SamCart accounts")
+        
+        # Test with invalid token first to verify endpoint structure
+        invalid_token = "test-invalid-token-12345"
+        try:
+            response = requests.get(f"{API_BASE}/auth/validate-reset-token/{invalid_token}", timeout=30)
+            
+            if response.status_code == 400:
+                data = response.json()
+                detail = data.get("detail", "")
+                if "Invalid or expired reset token" in detail:
+                    return self.log_result(
+                        "Validate Reset Token Endpoint Structure",
+                        True,
+                        "Endpoint correctly rejects invalid tokens with proper error message"
+                    )
+                else:
+                    return self.log_result(
+                        "Validate Reset Token Endpoint Structure", 
+                        False,
+                        f"Unexpected error message: {detail}"
+                    )
+            else:
+                return self.log_result(
+                    "Validate Reset Token Endpoint Structure",
+                    False,
+                    f"Unexpected status code: {response.status_code}",
+                    response.text
+                )
+        except Exception as e:
+            return self.log_result("Validate Reset Token Endpoint Structure", False, error=str(e))
+
     def run_comprehensive_test(self):
-        """Run comprehensive password reset testing with FRONTEND_URL verification"""
-        print("🔐 Starting Password Reset Email Testing with FRONTEND_URL Fix")
+        """Run comprehensive password reset testing focusing on the validate-reset-token fix"""
+        print("🎯 URGENT: Password Reset Fix Testing for caryganz@gmail.com")
         print("=" * 70)
+        print("Testing the validate-reset-token endpoint fix for SamCart practice accounts")
+        print()
         print(f"Target Customer: {CUSTOMER_EMAIL}")
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Expected Frontend URL: {EXPECTED_FRONTEND_URL}")
-        print(f"Old Frontend URL: {OLD_FRONTEND_URL}")
         print(f"Test Time: {datetime.now().isoformat()}")
         print("=" * 70)
         print()
         
-        # Step 1: Test Frontend URL Configuration
-        print("🔍 Step 1: Test Frontend URL Configuration")
-        self.test_frontend_url_configuration()
-        
-        # Step 2: Generate fresh reset token (main test)
-        print("🔍 Step 2: Send Fresh Password Reset Email")
+        # Step 1: Generate fresh password reset token
+        print("🔍 Step 1: Generate Fresh Password Reset Token")
         fresh_token_generated = self.test_generate_fresh_reset_token()
         
-        # Step 3: Verify multiple reset attempts work
-        print("🔍 Step 3: Test Multiple Reset Email Attempts")
-        for i in range(2):
-            print(f"   Attempt {i+2}:")
-            self.test_generate_fresh_reset_token()
-            time.sleep(1)
+        # Step 2: Test validate-reset-token endpoint fix
+        print("🔍 Step 2: Test validate-reset-token Endpoint Fix")
+        self.test_validate_reset_token_fix()
         
-        # Step 4: Test account existence
-        print("🔍 Step 4: Verify Account Exists")
+        # Step 3: Test account existence and type detection
+        print("🔍 Step 3: Verify SamCart Account Detection")
         self.test_account_existence()
         
-        # Step 5: Test email service functionality
-        print("🔍 Step 5: Test Email Service")
+        # Step 4: Test email service functionality
+        print("🔍 Step 4: Test Email Service")
         self.test_email_service_functionality()
         
         # Summary
