@@ -44,49 +44,25 @@ class PracticeAccount(BaseModel):
     trial_end_date: datetime
     created_at: datetime
 
-def verify_samcart_signature(payload_body: bytes, signature_header: str) -> bool:
-    """Verify SamCart webhook signature"""
-    if not signature_header or not SAMCART_WEBHOOK_SECRET:
-        print(f"⚠️ Missing signature or secret: sig={bool(signature_header)}, secret={bool(SAMCART_WEBHOOK_SECRET)}")
-        return False
+def generate_secure_password() -> str:
+    """Generate a secure password for new practice accounts"""
+    import secrets
+    import string
     
-    try:
-        # SamCart typically uses HMAC-SHA256 with different header formats
-        # Try multiple signature formats
-        expected_signatures = []
-        
-        # Format 1: sha256=hash
-        mac1 = hmac.new(
-            SAMCART_WEBHOOK_SECRET.encode('utf-8'),
-            payload_body,
-            hashlib.sha256
-        )
-        expected_signatures.append(f"sha256={mac1.hexdigest()}")
-        
-        # Format 2: just the hash
-        expected_signatures.append(mac1.hexdigest())
-        
-        # Format 3: SHA1 format (some webhooks use this)
-        mac2 = hmac.new(
-            SAMCART_WEBHOOK_SECRET.encode('utf-8'),
-            payload_body,
-            hashlib.sha1
-        )
-        expected_signatures.append(f"sha1={mac2.hexdigest()}")
-        expected_signatures.append(mac2.hexdigest())
-        
-        # Use constant-time comparison
-        for expected in expected_signatures:
-            if hmac.compare_digest(expected, signature_header):
-                print(f"✅ Signature verified with format: {expected[:10]}...")
-                return True
-        
-        print(f"❌ Signature verification failed. Received: {signature_header[:20]}...")
-        return False
-        
-    except Exception as e:
-        print(f"❌ Signature verification error: {e}")
-        return False
+    # Create a strong password with mix of characters
+    alphabet = string.ascii_letters + string.digits + "!@#$%&*"
+    password = ''.join(secrets.choice(alphabet) for _ in range(12))
+    
+    # Ensure it has required character types
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    has_special = any(c in "!@#$%&*" for c in password)
+    
+    if not all([has_upper, has_lower, has_digit, has_special]):
+        return generate_secure_password()  # Regenerate if requirements not met
+    
+    return password
 
 def generate_secure_password(length: int = 12) -> str:
     """Generate a secure, user-friendly password"""
