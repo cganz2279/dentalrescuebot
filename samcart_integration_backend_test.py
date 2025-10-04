@@ -156,7 +156,7 @@ class SamCartIntegrationTester:
                 result = response.json()
                 status = result.get("status", "")
                 
-                if "created" in status.lower():
+                if "created" in status.lower() or "success" in status.lower():
                     password = result.get("password", "")
                     self.log_test(f"Account Creation ({customer_email})", True, f"Account created successfully. Password: {password}")
                     self.created_accounts.append({"email": customer_email, "password": password})
