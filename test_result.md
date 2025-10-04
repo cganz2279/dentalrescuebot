@@ -314,9 +314,9 @@ backend:
 
   - task: "Tutorial Video Upload System"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/routes/tutorials.py"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
