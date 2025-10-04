@@ -536,7 +536,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Email/Print/Text Workflow Testing Complete"
+    - "Tutorial Delete Functionality Fix"
   stuck_tasks:
     - "Practice Login Functionality"
     - "Video Tutorial System Backend"
