@@ -560,10 +560,23 @@ email_service = EmailService()
 # Async function for SamCart integration
 async def send_email(email_data: EmailData) -> bool:
     """
-    Async wrapper for sending emails using SendGrid
+    Async wrapper for sending emails using SendGrid with improved background task support
     """
     try:
-        from_email = email_data.from_email or email_service.sender_email
+        # Get fresh environment variables for each send (fixes background task issues)
+        sendgrid_api_key = os.environ.get('SENDGRID_API_KEY')
+        sender_email = os.environ.get('SENDER_EMAIL', 'noreply@theoncallbot.com')
+        
+        if not sendgrid_api_key:
+            print(f"❌ SENDGRID_API_KEY not found in environment variables")
+            return False
+            
+        # Create new SendGrid client instance for each send (fixes background task auth issues)
+        sg_client = SendGridAPIClient(sendgrid_api_key)
+        
+        from_email = email_data.from_email or sender_email
+        
+        print(f"🔍 Sending email from {from_email} to {email_data.to}")
         
         message = Mail(
             from_email=from_email,
@@ -572,14 +585,21 @@ async def send_email(email_data: EmailData) -> bool:
             html_content=email_data.html_content
         )
         
-        response = email_service.sg.send(message)
+        # Send email with detailed error logging
+        response = sg_client.send(message)
+        
+        print(f"🔍 SendGrid response - Status: {response.status_code}")
         
         if response.status_code in [200, 202]:
+            print(f"✅ Email sent successfully to {email_data.to}")
             return True
         else:
-            print(f"❌ Failed to send email. Status: {response.status_code}")
+            error_body = response.body.decode('utf-8') if hasattr(response.body, 'decode') else str(response.body)
+            print(f"❌ Failed to send email. Status: {response.status_code}, Body: {error_body}")
             return False
             
     except Exception as e:
-        print(f"❌ Error sending email: {e}")
+        print(f"❌ Error sending email: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
