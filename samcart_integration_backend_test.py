@@ -36,6 +36,13 @@ TEST_CUSTOMERS = [
     }
 ]
 
+# New customer for testing complete flow
+NEW_TEST_CUSTOMER = {
+    "email": f"samcart.integration.test.{int(time.time())}@example.com",
+    "name": "Dr. Test Integration",
+    "practice_name": "SamCart Integration Test Practice"
+}
+
 class SamCartIntegrationTester:
     def __init__(self):
         self.admin_token = None
