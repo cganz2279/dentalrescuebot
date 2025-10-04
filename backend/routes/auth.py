@@ -284,7 +284,7 @@ async def login(request: LoginRequest):
             success=True,
             user=user_response,
             token=token,
-            practice=practice
+            practice=clean_practice_document(practice)
         )
         
     except HTTPException:
