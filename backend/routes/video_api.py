@@ -10,7 +10,7 @@ import stat
 from pathlib import Path
 import mimetypes
 from typing import Optional
-from auth import get_current_user
+from .auth import get_current_user
 
 router = APIRouter(prefix="/api/video", tags=["video"])
 
