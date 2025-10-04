@@ -95,6 +95,17 @@ class APIResponse(BaseModel):
     data: Any
     error: Optional[str] = None
 
+@app.on_event("startup")
+async def startup_event():
+    """Initialize background services"""
+    try:
+        # Start the follow-up email scheduler
+        import asyncio
+        asyncio.create_task(start_followup_scheduler())
+        print("✅ Follow-up email scheduler started")
+    except Exception as e:
+        print(f"❌ Failed to start follow-up scheduler: {e}")
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
