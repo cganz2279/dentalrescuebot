@@ -49,7 +49,8 @@ const PracticeDashboard = () => {
   const [showDatePickerModal, setShowDatePickerModal] = useState(false);
   const [exportDateRange, setExportDateRange] = useState({
     startDate: '',
-    endDate: ''
+    endDate: '',
+    format: 'csv' // csv or excel
   });
   const [followUpStats, setFollowUpStats] = useState(null);
   const [showFollowUpStats, setShowFollowUpStats] = useState(false);
