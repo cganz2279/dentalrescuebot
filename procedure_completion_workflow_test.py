@@ -121,9 +121,10 @@ class ProcedureCompletionWorkflowTester:
             return None
             
     async def get_recent_procedures(self):
-        """Test 3: Get recent procedures to analyze current statuses"""
+        """Test 3: Get recent procedures from dashboard data to analyze current statuses"""
         try:
-            url = f"{BACKEND_URL}/api/practice/recent-procedures"
+            # Recent procedures are included in the dashboard data
+            url = f"{BACKEND_URL}/api/practice/dashboard"
             headers = {"Authorization": f"Bearer {self.auth_token}"}
             
             async with self.session.get(url, headers=headers) as response:
@@ -132,7 +133,8 @@ class ProcedureCompletionWorkflowTester:
                 if response.status == 200:
                     response_data = json.loads(response_text)
                     if response_data.get("success"):
-                        procedures = response_data.get("data", [])
+                        dashboard_data = response_data.get("data", {})
+                        procedures = dashboard_data.get("recentProcedures", [])
                         self.procedure_assignments = procedures
                         
                         # Analyze statuses
@@ -146,7 +148,7 @@ class ProcedureCompletionWorkflowTester:
                         return procedures
                     else:
                         self.log_result("Recent Procedures Analysis", False, 
-                                      f"Recent procedures request failed: {response_data}")
+                                      f"Dashboard request failed: {response_data}")
                         return []
                 else:
                     self.log_result("Recent Procedures Analysis", False, 
