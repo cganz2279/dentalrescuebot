@@ -182,9 +182,44 @@ async def login(request: LoginRequest):
                     detail="Invalid credentials"
                 )
             
-            # Verify password against practice password
+            print(f"🔍 Found SamCart practice account: {practice.get('email')}")
+            
+            # Verify password against practice password using bcrypt
             import bcrypt
-            if not bcrypt.checkpw(request.password.encode('utf-8'), practice['password'].encode('utf-8')):
+            stored_password = practice.get('password', '')
+            
+            print(f"🔍 Password verification for SamCart account...")
+            print(f"🔍 Stored password length: {len(stored_password)}")
+            print(f"🔍 Input password length: {len(request.password)}")
+            
+            try:
+                # Check if stored password is already hashed (starts with $2b$)
+                if stored_password.startswith('$2b$'):
+                    password_valid = bcrypt.checkpw(request.password.encode('utf-8'), stored_password.encode('utf-8'))
+                else:
+                    # If not hashed, it might be plain text (fallback)
+                    password_valid = (request.password == stored_password)
+                    
+                    # Hash the plain text password and update it
+                    if password_valid:
+                        hashed_password = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                        await db.practices.update_one(
+                            {"id": practice['id']},
+                            {"$set": {"password": hashed_password}}
+                        )
+                        print(f"✅ Updated plain text password to hashed for {practice.get('email')}")
+                
+                if not password_valid:
+                    print(f"❌ Password verification failed for {practice.get('email')}")
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid credentials"
+                    )
+                    
+                print(f"✅ Password verified successfully for {practice.get('email')}")
+                
+            except Exception as password_error:
+                print(f"❌ Password verification error: {password_error}")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid credentials"
@@ -198,6 +233,8 @@ async def login(request: LoginRequest):
                     "$inc": {"loginCount": 1}
                 }
             )
+            
+            print(f"✅ Login successful for SamCart practice: {practice.get('email')}")
             
             # Create user object for SamCart practice
             user = {
