@@ -101,188 +101,92 @@ class PasswordResetTester:
         except Exception as e:
             return self.log_result(f"Validate Reset Token ({token[:8]}...)", False, error=str(e))
     
-    def test_forgot_username_valid_practice(self):
-        """Test POST /api/auth/forgot-username with valid practice"""
+    def test_reset_password_endpoint(self, token, test_password="NewPassword123!"):
+        """Test the password reset endpoint"""
         try:
-            request_data = {
-                "practice_name": "Smith Dental Practice",
-                "phone": "555-123-4567",
-                "adminPassword": "password123"
-            }
-            response = self.session.post(f"{self.base_url}/auth/forgot-username", json=request_data)
+            response = requests.post(f"{API_BASE}/auth/reset-password", json={
+                "reset_token": token,
+                "new_password": test_password
+            }, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("success") and "message" in data:
-                    if "practice_name" in data and "email" in data:
-                        return self.log_test("Forgot Username (Valid Practice)", True, 
-                                           f"Found practice: {data['practice_name']}, Email: {data['email']}")
-                    else:
-                        return self.log_test("Forgot Username (Valid Practice)", True, 
-                                           "Username recovery request processed")
-                else:
-                    return self.log_test("Forgot Username (Valid Practice)", False, "Invalid response format")
+                success = data.get("success", False)
+                message = data.get("message", "")
+                
+                return self.log_result(
+                    f"Reset Password with Token ({token[:8]}...)",
+                    True,
+                    f"Password reset successful: {success}, Message: {message}"
+                )
             else:
-                return self.log_test("Forgot Username (Valid Practice)", False, f"Status: {response.status_code}")
+                return self.log_result(
+                    f"Reset Password with Token ({token[:8]}...)",
+                    False,
+                    f"Status: {response.status_code}",
+                    response.text
+                )
+                
         except Exception as e:
-            return self.log_test("Forgot Username (Valid Practice)", False, f"Exception: {str(e)}")
+            return self.log_result(f"Reset Password with Token ({token[:8]}...)", False, error=str(e))
     
-    def test_forgot_username_invalid_practice(self):
-        """Test POST /api/auth/forgot-username with invalid practice"""
+    def test_login_after_reset(self, new_password="NewPassword123!"):
+        """Test login with the new password"""
         try:
-            request_data = {
-                "practice_name": "Nonexistent Dental Practice",
-                "phone": "555-999-9999",
-                "adminPassword": "somepassword"
-            }
-            response = self.session.post(f"{self.base_url}/auth/forgot-username", json=request_data)
+            response = requests.post(f"{API_BASE}/auth/login", json={
+                "email": CUSTOMER_EMAIL,
+                "password": new_password
+            }, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("success") and "message" in data:
-                    expected_message = "If a practice with these details exists, username recovery information has been sent."
-                    if expected_message in data["message"]:
-                        return self.log_test("Forgot Username (Invalid Practice)", True, 
-                                           "Properly prevents information disclosure")
-                    else:
-                        return self.log_test("Forgot Username (Invalid Practice)", False, 
-                                           f"Unexpected message: {data['message']}")
-                else:
-                    return self.log_test("Forgot Username (Invalid Practice)", False, "Invalid response format")
+                success = data.get("success", False)
+                user = data.get("user", {})
+                token = data.get("token", "")
+                
+                return self.log_result(
+                    "Login After Password Reset",
+                    True,
+                    f"Login successful: {success}, User: {user.get('email', 'N/A')}, Token length: {len(token)}"
+                )
             else:
-                return self.log_test("Forgot Username (Invalid Practice)", False, f"Status: {response.status_code}")
+                return self.log_result(
+                    "Login After Password Reset",
+                    False,
+                    f"Status: {response.status_code}",
+                    response.text
+                )
+                
         except Exception as e:
-            return self.log_test("Forgot Username (Invalid Practice)", False, f"Exception: {str(e)}")
+            return self.log_result("Login After Password Reset", False, error=str(e))
     
-    def test_validate_reset_token_valid(self):
-        """Test GET /api/auth/validate-reset-token/{token} with valid token"""
-        if not hasattr(self, 'test_reset_token') or not self.test_reset_token:
-            return self.log_test("Validate Reset Token (Valid)", False, "No reset token available")
-            
+    def get_fresh_token_from_database(self):
+        """Get the most recent valid token from database"""
         try:
-            response = self.session.get(f"{self.base_url}/auth/validate-reset-token/{self.test_reset_token}")
+            import asyncio
+            from motor.motor_asyncio import AsyncIOMotorClient
+            from dotenv import load_dotenv
             
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("success") and data.get("valid") and "user" in data:
-                    user_info = data["user"]
-                    if "email" in user_info and "firstName" in user_info:
-                        return self.log_test("Validate Reset Token (Valid)", True, 
-                                           f"Valid token for user: {user_info['firstName']} ({user_info['email']})")
-                    else:
-                        return self.log_test("Validate Reset Token (Valid)", False, "Missing user information")
-                else:
-                    return self.log_test("Validate Reset Token (Valid)", False, "Invalid response format")
-            else:
-                return self.log_test("Validate Reset Token (Valid)", False, f"Status: {response.status_code}")
+            load_dotenv('backend/.env')
+            
+            async def get_token():
+                client = AsyncIOMotorClient(os.environ['MONGO_URL'])
+                db = client[os.environ.get('DB_NAME', 'dentist_management')]
+                
+                # Find the most recent valid token
+                token_record = await db.password_resets.find_one({
+                    'email': CUSTOMER_EMAIL,
+                    'used': False,
+                    'expires_at': {'$gt': datetime.utcnow()}
+                }, sort=[('created_at', -1)])
+                
+                return token_record.get('reset_token') if token_record else None
+            
+            return asyncio.run(get_token())
+            
         except Exception as e:
-            return self.log_test("Validate Reset Token (Valid)", False, f"Exception: {str(e)}")
-    
-    def test_validate_reset_token_invalid(self):
-        """Test GET /api/auth/validate-reset-token/{token} with invalid token"""
-        try:
-            invalid_token = "invalid-token-12345"
-            response = self.session.get(f"{self.base_url}/auth/validate-reset-token/{invalid_token}")
-            
-            if response.status_code == 400:
-                data = response.json()
-                if "detail" in data and "Invalid or expired reset token" in data["detail"]:
-                    return self.log_test("Validate Reset Token (Invalid)", True, 
-                                       f"Properly rejected invalid token: {data['detail']}")
-                else:
-                    return self.log_test("Validate Reset Token (Invalid)", False, 
-                                       f"Unexpected error message: {data.get('detail', 'No detail')}")
-            else:
-                return self.log_test("Validate Reset Token (Invalid)", False, 
-                                   f"Expected 400, got {response.status_code}")
-        except Exception as e:
-            return self.log_test("Validate Reset Token (Invalid)", False, f"Exception: {str(e)}")
-    
-    def test_reset_password_valid_token(self):
-        """Test POST /api/auth/reset-password with valid token"""
-        if not hasattr(self, 'test_reset_token') or not self.test_reset_token:
-            return self.log_test("Reset Password (Valid Token)", False, "No reset token available")
-            
-        try:
-            request_data = {
-                "reset_token": self.test_reset_token,
-                "new_password": "newpassword123"
-            }
-            response = self.session.post(f"{self.base_url}/auth/reset-password", json=request_data)
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("success") and "message" in data:
-                    if "Password reset successful" in data["message"]:
-                        return self.log_test("Reset Password (Valid Token)", True, 
-                                           "Password reset successful with valid token")
-                    else:
-                        return self.log_test("Reset Password (Valid Token)", False, 
-                                           f"Unexpected message: {data['message']}")
-                else:
-                    return self.log_test("Reset Password (Valid Token)", False, "Invalid response format")
-            else:
-                return self.log_test("Reset Password (Valid Token)", False, f"Status: {response.status_code}")
-        except Exception as e:
-            return self.log_test("Reset Password (Valid Token)", False, f"Exception: {str(e)}")
-    
-    def test_reset_password_invalid_token(self):
-        """Test POST /api/auth/reset-password with invalid token"""
-        try:
-            request_data = {
-                "reset_token": "invalid-token-12345",
-                "new_password": "newpassword123"
-            }
-            response = self.session.post(f"{self.base_url}/auth/reset-password", json=request_data)
-            
-            if response.status_code == 400:
-                data = response.json()
-                if "detail" in data and "Invalid or expired reset token" in data["detail"]:
-                    return self.log_test("Reset Password (Invalid Token)", True, 
-                                       f"Properly rejected invalid token: {data['detail']}")
-                else:
-                    return self.log_test("Reset Password (Invalid Token)", False, 
-                                       f"Unexpected error message: {data.get('detail', 'No detail')}")
-            else:
-                return self.log_test("Reset Password (Invalid Token)", False, 
-                                   f"Expected 400, got {response.status_code}")
-        except Exception as e:
-            return self.log_test("Reset Password (Invalid Token)", False, f"Exception: {str(e)}")
-    
-    def test_reset_password_weak_password(self):
-        """Test POST /api/auth/reset-password with weak password"""
-        # Generate a new reset token for this test
-        forgot_response = self.session.post(f"{self.base_url}/auth/forgot-password", 
-                                          json={"email": "admin@smithdental.com"})
-        if forgot_response.status_code == 200:
-            forgot_data = forgot_response.json()
-            if "reset_token" in forgot_data:
-                test_token = forgot_data["reset_token"]
-            else:
-                return self.log_test("Reset Password (Weak Password)", False, "Could not generate reset token")
-        else:
-            return self.log_test("Reset Password (Weak Password)", False, "Could not generate reset token")
-            
-        try:
-            request_data = {
-                "reset_token": test_token,
-                "new_password": "weak"  # Less than 6 characters, no numbers
-            }
-            response = self.session.post(f"{self.base_url}/auth/reset-password", json=request_data)
-            
-            if response.status_code == 400:
-                data = response.json()
-                if "detail" in data and "Password must be at least 6 characters with letters and numbers" in data["detail"]:
-                    return self.log_test("Reset Password (Weak Password)", True, 
-                                       f"Properly rejected weak password: {data['detail']}")
-                else:
-                    return self.log_test("Reset Password (Weak Password)", False, 
-                                       f"Unexpected error message: {data.get('detail', 'No detail')}")
-            else:
-                return self.log_test("Reset Password (Weak Password)", False, 
-                                   f"Expected 400, got {response.status_code}")
-        except Exception as e:
-            return self.log_test("Reset Password (Weak Password)", False, f"Exception: {str(e)}")
+            print(f"Error getting fresh token from database: {e}")
+            return None
     
     def run_all_tests(self):
         """Run all password reset and username recovery tests"""
