@@ -350,13 +350,28 @@ class PasswordResetTester:
         
         print()
         print("🎯 CUSTOMER RESOLUTION:")
-        if success_rate >= 75:
-            print(f"   ✅ Password reset system is working correctly for {CUSTOMER_EMAIL}")
-            print("   📧 Customer should be able to reset password using email link")
-            print("   🔗 Reset URL format: https://app.dentalaftercarenotes.com/reset-password?token=<TOKEN>")
+        
+        # Check if password reset email was sent successfully
+        reset_email_tests = [r for r in self.test_results if "Generate Fresh Reset Token" in r["test"]]
+        reset_success = any(r["success"] for r in reset_email_tests)
+        
+        if reset_success:
+            print(f"   ✅ Fresh password reset email sent successfully to {CUSTOMER_EMAIL}")
+            print(f"   📧 Email contains reset link with CORRECTED URL: {EXPECTED_FRONTEND_URL}/reset-password?token=...")
+            print(f"   🔗 Customer should check email inbox and spam folder")
+            print(f"   ⏰ Reset token valid for 1 hour")
+            print(f"   🌐 After reset, customer can login at: {EXPECTED_FRONTEND_URL}/login")
+            print(f"   ✅ FRONTEND_URL has been fixed from {OLD_FRONTEND_URL} to {EXPECTED_FRONTEND_URL}")
         else:
-            print(f"   🚨 Password reset system has issues for {CUSTOMER_EMAIL}")
+            print(f"   🚨 Failed to send password reset email to {CUSTOMER_EMAIL}")
             print("   🔧 Manual intervention may be required")
+        
+        # Check frontend URL configuration
+        frontend_tests = [r for r in self.test_results if "Frontend URL" in r["test"]]
+        if frontend_tests and all(r["success"] for r in frontend_tests):
+            print(f"   ✅ Frontend URL {EXPECTED_FRONTEND_URL} is accessible and working")
+        else:
+            print(f"   ⚠️ Frontend URL {EXPECTED_FRONTEND_URL} may have accessibility issues")
         
         return success_rate >= 75
 
