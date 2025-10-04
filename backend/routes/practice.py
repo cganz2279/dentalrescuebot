@@ -943,6 +943,19 @@ async def update_procedure_assignment(
                 detail="Procedure assignment not found"
             )
         
+        # If status is being changed to "delivered", schedule follow-up email
+        if "status" in update_data and update_data["status"] == "delivered":
+            try:
+                from services.followup_scheduler import followup_scheduler
+                success = await followup_scheduler.schedule_followup_email(assignment_id, practice_id)
+                if success:
+                    print(f"✅ Follow-up email scheduled for assignment {assignment_id}")
+                else:
+                    print(f"⚠️ Failed to schedule follow-up email for assignment {assignment_id}")
+            except Exception as e:
+                print(f"❌ Error scheduling follow-up email: {e}")
+                # Don't fail the main request if follow-up scheduling fails
+        
         return {
             "success": True,
             "message": "Procedure assignment updated successfully"
