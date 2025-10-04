@@ -174,7 +174,7 @@ async def login(request: LoginRequest):
             practice = await db.practices.find_one({
                 "email": request.email.lower(),
                 "isActive": True
-            })
+            }, {"_id": 0, "password": 0})
             
             if not practice:
                 raise HTTPException(
