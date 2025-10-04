@@ -46,19 +46,13 @@ def main():
     practice_data = {
         "practiceName": PRACTICE_NAME,
         "adminEmail": PRACTICE_EMAIL,
-        "adminCredentials": {
-            "email": PRACTICE_EMAIL,
-            "password": PRACTICE_PASSWORD
-        },
+        "adminFirstName": "Cary",
+        "adminLastName": "Ganz",
+        "phone": PRACTICE_PHONE,
+        "address": "Garden City Medical Plaza, Suite 200",
+        "tempPassword": PRACTICE_PASSWORD,
         "subscriptionType": "trial",
-        "practiceDetails": {
-            "owner": PRACTICE_OWNER,
-            "phone": PRACTICE_PHONE,
-            "address": "",
-            "city": "Garden City",
-            "state": "NY",
-            "zipCode": "11530"
-        }
+        "trialDays": 30
     }
     
     headers = {"Authorization": f"Bearer {admin_token}"}
