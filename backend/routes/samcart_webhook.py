@@ -395,74 +395,46 @@ async def handle_samcart_webhook(request: Request):
         
         raise HTTPException(status_code=500, detail=f"Webhook processing failed: {str(e)}")
 
-# Test endpoint for webhook simulation
 @router.post("/samcart/test")
 async def test_samcart_webhook(test_email: str = "test@example.com"):
-    """Test endpoint to simulate SamCart webhook (for development)"""
-    
-    # Create test payload
-    test_payload = {
-        "type": "ProductPurchased",
-        "api_key": None,
-        "product": {
-            "id": 999999,
-            "sku": "DENTAL-TEST-001",
-            "name": "Dental Practice Management - Test",
-            "price": "49.95",
-            "tax": "0.00",
-            "shipping": "0.00",
-            "sub_total": "49.95",
-            "product_price": "49.95"
-        },
-        "customer": {
-            "first_name": "Dr. Test",
-            "last_name": "Practice",
-            "email": test_email,
-            "phone_number": "555-123-4567",
-            "customer_id": 999999,
-            "billing_address_line1": "123 Test Medical Plaza",
-            "billing_address_line2": "Suite 100",
-            "billing_city": "Test City",
-            "billing_state": "TX",
-            "billing_zip": "78759",
-            "billing_country": "United States"
-        },
-        "order": {
-            "id": 999999,
-            "total": "49.95",
-            "ip_address": "127.0.0.1",
-            "custom_fields": []
-        }
-    }
+    """Test endpoint to simulate SamCart payment - REBUILT VERSION"""
     
     try:
-        # Process the test webhook
-        result = await create_practice_from_samcart(test_payload)
+        # Generate test data
+        test_name = "Dr. Test Practice"
+        test_order_id = f"TEST_{int(datetime.now().timestamp())}"
         
-        if result["status"] == "success":
-            # Send emails
-            email_success = await send_welcome_email(result)
-            admin_success = await send_admin_notification(result)
+        print(f"🧪 Testing SamCart integration for {test_email}")
+        
+        # Create practice account
+        account_result = await create_practice_account(
+            customer_email=test_email,
+            customer_name=test_name,
+            order_id=test_order_id
+        )
+        
+        if account_result["status"] == "success":
+            # Send welcome email
+            email_success = await send_welcome_email(account_result)
             
             return {
                 "status": "success",
-                "message": "Test practice account created successfully",
+                "message": "Test practice account created and email sent",
                 "practice_info": {
-                    "practice_id": result["practice_id"],
-                    "email": result["email"],
-                    "practice_name": result["practice_name"],
-                    "password": result["password"],  # Include password for testing
-                    "owner_name": result["owner_name"]
+                    "practice_id": account_result["practice_id"],
+                    "email": account_result["email"],
+                    "practice_name": account_result["practice_name"],
+                    "password": account_result["password"],  # Include for testing
+                    "owner_name": account_result["owner_name"],
+                    "trial_end": account_result["trial_end"]
                 },
-                "emails_sent": {
-                    "welcome_email": email_success,
-                    "admin_notification": admin_success
-                }
+                "email_sent": email_success
             }
         else:
-            return result
+            return account_result
             
     except Exception as e:
+        print(f"❌ Test webhook error: {e}")
         raise HTTPException(status_code=500, detail=f"Test failed: {str(e)}")
 
 @router.get("/samcart/logs")
