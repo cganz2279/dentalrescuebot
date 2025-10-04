@@ -267,133 +267,133 @@ async def log_webhook_event(webhook_log: SamCartWebhookLog):
         print(f"❌ Error logging webhook event: {e}")
 
 @router.post("/samcart")
-async def handle_samcart_webhook(request: Request, background_tasks: BackgroundTasks):
-    """Handle SamCart webhook for practice account creation"""
+async def handle_samcart_webhook(request: Request):
+    """Handle SamCart webhook for practice account creation - REBUILT FOR RELIABILITY"""
     webhook_id = str(uuid.uuid4())
     start_time = datetime.now(timezone.utc)
     
-    print(f"🔔 SamCart webhook received: {webhook_id}")
+    print(f"🚀 NEW SamCart webhook received: {webhook_id}")
     
     try:
-        # Get request body and headers
+        # Get request body
         body = await request.body()
-        signature_header = (
-            request.headers.get("X-Webhook-Signature") or 
-            request.headers.get("X-Hub-Signature-256") or
-            request.headers.get("Signature")
-        )
-        
-        print(f"📝 Body length: {len(body)} bytes")
-        print(f"🔑 Signature header: {signature_header[:20] if signature_header else 'None'}...")
-        
-        # For development/testing, allow webhooks without signature verification
-        # In production, uncomment the signature verification
-        """
-        if not verify_samcart_signature(body, signature_header):
-            await log_webhook_event(SamCartWebhookLog(
-                webhook_id=webhook_id,
-                event_type="signature_verification_failed",
-                payload={"error": "Invalid signature"},
-                processing_status="failed",
-                error_message="Webhook signature verification failed",
-                created_at=datetime.now(timezone.utc)
-            ))
-            raise HTTPException(status_code=403, detail="Invalid webhook signature")
-        """
+        print(f"📦 Received payload ({len(body)} bytes)")
         
         # Parse JSON payload
         try:
             payload = json.loads(body.decode('utf-8'))
-            print(f"📦 Parsed payload type: {payload.get('type', 'unknown')}")
+            event_type = payload.get("type", "unknown")
+            print(f"📋 Event type: {event_type}")
         except json.JSONDecodeError as e:
-            await log_webhook_event(SamCartWebhookLog(
-                webhook_id=webhook_id,
-                event_type="json_parse_error",
-                payload={"error": str(e)},
-                processing_status="failed",
-                error_message="Failed to parse JSON payload",
-                created_at=datetime.now(timezone.utc)
-            ))
+            print(f"❌ Invalid JSON payload: {e}")
             raise HTTPException(status_code=400, detail="Invalid JSON payload")
         
-        event_type = payload.get("type", "unknown")
-        
-        # Process webhook based on event type
-        result = None
-        
-        if event_type in ["ProductPurchased", "OrderCompleted", "Order.Completed", "Order"]:
-            print(f"🎯 Processing {event_type} event...")
+        # Process payment events only
+        if event_type in ["ProductPurchased", "Order", "OrderCompleted", "Order.Completed"]:
+            print(f"💰 Processing payment event: {event_type}")
+            
+            # Extract customer data
+            customer = payload.get("customer", {})
+            order = payload.get("order", {})
+            
+            customer_email = customer.get("email", "").strip().lower()
+            customer_name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
+            order_id = str(order.get("id", webhook_id))
+            
+            if not customer_email:
+                print(f"❌ No customer email in webhook payload")
+                raise HTTPException(status_code=400, detail="Customer email required")
+            
+            if not customer_name or customer_name == " ":
+                customer_name = customer_email.split("@")[0]  # Use email prefix as fallback
+            
+            print(f"👤 Customer: {customer_name} ({customer_email})")
+            print(f"🔖 Order ID: {order_id}")
             
             # Create practice account
-            practice_result = await create_practice_from_samcart(payload)
-            
-            if practice_result["status"] == "success":
-                # Send welcome email and admin notification in background
-                background_tasks.add_task(send_welcome_email, practice_result)
-                background_tasks.add_task(send_admin_notification, practice_result)
-                
-                result = {
-                    "status": "success",
-                    "message": "Practice account created and welcome email queued",
-                    "practice_id": practice_result["practice_id"],
-                    "email": practice_result["email"]
-                }
-            else:
-                result = practice_result
-                
-        else:
-            result = {
-                "status": "ignored",
-                "message": f"Event type '{event_type}' not processed"
-            }
-            print(f"ℹ️ Ignoring event type: {event_type}")
-        
-        # Log successful webhook processing
-        processing_duration = (datetime.now(timezone.utc) - start_time).total_seconds()
-        background_tasks.add_task(
-            log_webhook_event,
-            SamCartWebhookLog(
-                webhook_id=webhook_id,
-                event_type=event_type,
-                payload=payload,
-                processing_status="success",
-                created_at=start_time,
-                processing_duration=processing_duration
+            account_result = await create_practice_account(
+                customer_email=customer_email,
+                customer_name=customer_name,
+                order_id=order_id
             )
-        )
-        
-        print(f"✅ Webhook {webhook_id} processed successfully in {processing_duration:.2f}s")
-        
-        return JSONResponse(
-            status_code=200,
-            content={
+            
+            # Log the webhook event
+            await log_webhook_event({
                 "webhook_id": webhook_id,
-                "status": "success",
-                "result": result
-            }
-        )
+                "event_type": event_type,
+                "customer_email": customer_email,
+                "order_id": order_id,
+                "status": account_result["status"]
+            })
+            
+            if account_result["status"] == "success":
+                # Send welcome email immediately (not in background)
+                print(f"📧 Sending welcome email to {customer_email}...")
+                email_success = await send_welcome_email(account_result)
+                
+                if email_success:
+                    print(f"✅ Welcome email sent successfully to {customer_email}")
+                else:
+                    print(f"⚠️ Welcome email failed for {customer_email} - but account was created")
+                
+                return JSONResponse(
+                    status_code=200,
+                    content={
+                        "webhook_id": webhook_id,
+                        "status": "success",
+                        "message": "Practice account created and welcome email sent",
+                        "practice_id": account_result["practice_id"],
+                        "email": customer_email,
+                        "email_sent": email_success
+                    }
+                )
+            
+            elif account_result["status"] == "duplicate":
+                print(f"⚠️ Duplicate account for {customer_email}")
+                return JSONResponse(
+                    status_code=200,
+                    content={
+                        "webhook_id": webhook_id,
+                        "status": "duplicate",
+                        "message": f"Account already exists for {customer_email}",
+                        "practice_id": account_result.get("practice_id")
+                    }
+                )
+            
+            else:
+                print(f"❌ Account creation failed: {account_result}")
+                raise HTTPException(status_code=500, detail="Account creation failed")
+        
+        else:
+            print(f"ℹ️ Ignoring event type: {event_type}")
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "webhook_id": webhook_id,
+                    "status": "ignored",
+                    "message": f"Event type '{event_type}' not processed"
+                }
+            )
         
     except HTTPException:
         raise
     except Exception as e:
         print(f"❌ Webhook processing error: {e}")
         
-        # Log failed webhook processing
-        processing_duration = (datetime.now(timezone.utc) - start_time).total_seconds()
-        background_tasks.add_task(
-            log_webhook_event,
-            SamCartWebhookLog(
-                webhook_id=webhook_id,
-                event_type=payload.get("type", "unknown") if 'payload' in locals() else "unknown",
-                payload=payload if 'payload' in locals() else {},
-                processing_status="failed",
-                error_message=str(e),
-                created_at=start_time,
-                processing_duration=processing_duration
-            )
-        )
+        # Log failed webhook
+        try:
+            await log_webhook_event({
+                "webhook_id": webhook_id,
+                "event_type": "unknown",
+                "customer_email": "unknown",
+                "order_id": "unknown", 
+                "status": "failed",
+                "error_message": str(e)
+            })
+        except:
+            pass  # Don't fail webhook if logging fails
         
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=f"Webhook processing failed: {str(e)}")
 
 # Test endpoint for webhook simulation
 @router.post("/samcart/test")
