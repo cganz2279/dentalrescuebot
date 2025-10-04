@@ -20,7 +20,8 @@ import {
   Eye,
   User,
   Upload,
-  BookOpen
+  BookOpen,
+  CheckCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
