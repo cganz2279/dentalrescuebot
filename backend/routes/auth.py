@@ -136,6 +136,24 @@ def validate_password(password: str) -> bool:
         return False
     return True
 
+def clean_practice_document(practice_doc):
+    """Clean practice document for JSON serialization"""
+    if not practice_doc:
+        return None
+    
+    # Create a copy and remove problematic fields
+    clean_doc = dict(practice_doc)
+    
+    # Remove MongoDB ObjectId fields
+    if '_id' in clean_doc:
+        del clean_doc['_id']
+    
+    # Remove password for security
+    if 'password' in clean_doc:
+        del clean_doc['password']
+    
+    return clean_doc
+
 # Auth routes
 @router.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest):
