@@ -144,14 +144,17 @@ class UrgentCustomerSupportTester:
             # Prepare practice data for welcome email
             welcome_data = {
                 "practiceData": {
-                    "name": practice_data.get("name", "Your Practice"),
+                    "practiceName": practice_data.get("name", "Your Dental Practice"),
                     "adminEmail": CUSTOMER_EMAIL,
                     "id": practice_data.get("id", "")
                 },
                 "adminCredentials": {
-                    "email": CUSTOMER_EMAIL,
-                    "password": "Please use password reset to set your password"
-                }
+                    "adminEmail": CUSTOMER_EMAIL,
+                    "adminFirstName": "Dr.",
+                    "adminLastName": "Customer",
+                    "tempPassword": "Please use password reset to set your password"
+                },
+                "appUrl": "https://app.dentalaftercarenotes.com"
             }
             
             response = self.session.post(
