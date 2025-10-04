@@ -115,6 +115,31 @@ class PracticeLogoEmailTester:
                     branding = response_data.get("branding", {})
                     logo = branding.get("logo")
                     
+                    # Also check if logo is in the main practice data (from auth response)
+                    if not logo and hasattr(self, 'auth_token'):
+                        # Try to get practice data from the auth response
+                        try:
+                            auth_url = f"{BACKEND_URL}/api/auth/login"
+                            auth_data = {
+                                "email": TEST_CREDENTIALS["email"],
+                                "password": TEST_CREDENTIALS["password"]
+                            }
+                            
+                            async with self.session.post(auth_url, json=auth_data) as auth_response:
+                                if auth_response.status == 200:
+                                    auth_response_data = await auth_response.json()
+                                    practice_from_auth = auth_response_data.get("practice", {})
+                                    auth_branding = practice_from_auth.get("branding", {})
+                                    logo = auth_branding.get("logo")
+                                    if logo:
+                                        # Update our practice data with the logo from auth
+                                        if "branding" not in self.practice_data:
+                                            self.practice_data["branding"] = {}
+                                        self.practice_data["branding"]["logo"] = logo
+                                        branding = self.practice_data["branding"]
+                        except Exception as e:
+                            print(f"Error getting logo from auth response: {e}")
+                    
                     if logo:
                         logo_size = len(logo) if isinstance(logo, str) else 0
                         self.log_result("Get Practice Dashboard Data", True, 
