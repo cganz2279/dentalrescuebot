@@ -1022,6 +1022,20 @@ const PracticeDashboard = () => {
             <span className="font-medium">Export Data</span>
             <span className="text-xs text-gray-600">Download CSV</span>
           </Button>
+          <Button 
+            onClick={() => {
+              setShowFollowUpStats(!showFollowUpStats);
+              if (!showFollowUpStats && !followUpStats) {
+                loadFollowUpStats();
+              }
+            }} 
+            variant="outline" 
+            className="h-20 flex flex-col"
+          >
+            <Activity className="h-6 w-6 mb-2" />
+            <span className="font-medium">Follow-up Stats</span>
+            <span className="text-xs text-gray-600">{showFollowUpStats ? 'Hide Stats' : 'View Stats'}</span>
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
