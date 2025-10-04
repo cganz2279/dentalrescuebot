@@ -65,6 +65,8 @@ def test_practice_login_and_dashboard():
         active_procedures = stats.get("activeProcedures", 0)
         total_patients = stats.get("totalPatients", 0)
         
+        print(f"📄 Dashboard Response: {json.dumps(dashboard_data, indent=2)}")
+        
         print(f"✅ Dashboard data retrieved successfully")
         print(f"🏥 Practice Name: {practice_name}")
         print(f"📈 Current Active Procedures: {active_procedures}")
