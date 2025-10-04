@@ -216,27 +216,65 @@ async def delete_tutorial(
 ):
     """Delete a tutorial"""
     try:
-        # Validate tutorial ID
-        if not ObjectId.is_valid(tutorial_id):
-            raise HTTPException(status_code=400, detail="Invalid tutorial ID")
+        print(f"🗑️ Attempting to delete tutorial: {tutorial_id}")
         
-        # Get tutorial to delete video file
-        tutorial = await db.tutorials.find_one({"_id": ObjectId(tutorial_id)})
+        # Handle both custom ID format and MongoDB ObjectId format
+        tutorial = None
+        
+        # First try as MongoDB ObjectId
+        if ObjectId.is_valid(tutorial_id):
+            tutorial = await db.tutorials.find_one({"_id": ObjectId(tutorial_id)})
+            print(f"🔍 Searched by ObjectId: {tutorial_id} - Found: {tutorial is not None}")
+        
+        # If not found, try as custom ID field
         if not tutorial:
+            tutorial = await db.tutorials.find_one({"id": tutorial_id})
+            print(f"🔍 Searched by custom ID: {tutorial_id} - Found: {tutorial is not None}")
+        
+        # If still not found, try searching by string representation of _id
+        if not tutorial:
+            tutorial = await db.tutorials.find_one({})  # Get any tutorial to check ID format
+            if tutorial:
+                print(f"🔍 Sample tutorial _id format: {tutorial['_id']} (type: {type(tutorial['_id'])})")
+                print(f"🔍 Sample tutorial _id as string: {str(tutorial['_id'])}")
+            
+            # Try to find by string representation of _id
+            all_tutorials = await db.tutorials.find().to_list(length=None)
+            for t in all_tutorials:
+                if str(t["_id"]) == tutorial_id:
+                    tutorial = t
+                    print(f"🔍 Found tutorial by string _id match: {tutorial_id}")
+                    break
+        
+        if not tutorial:
+            print(f"❌ Tutorial not found with ID: {tutorial_id}")
             raise HTTPException(status_code=404, detail="Tutorial not found")
         
         # Delete video file if it exists
         video_url = tutorial.get("video_url", "")
         if video_url.startswith("/uploads/tutorials/"):
             file_path = f"/app{video_url}"
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            try:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print(f"✅ Deleted video file: {file_path}")
+                else:
+                    print(f"ℹ️ Video file not found: {file_path}")
+            except Exception as file_error:
+                print(f"⚠️ Error deleting video file: {file_error}")
+                # Don't fail the entire operation if file deletion fails
         
-        # Delete tutorial from database
-        await db.tutorials.delete_one({"_id": ObjectId(tutorial_id)})
+        # Delete tutorial from database using the actual _id
+        result = await db.tutorials.delete_one({"_id": tutorial["_id"]})
         
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Failed to delete tutorial from database")
+        
+        print(f"✅ Tutorial deleted successfully: {tutorial_id}")
         return {"success": True, "message": "Tutorial deleted successfully"}
         
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"Error deleting tutorial: {e}")
-        raise HTTPException(status_code=500, detail="Failed to delete tutorial")
+        print(f"❌ Error deleting tutorial {tutorial_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete tutorial: {str(e)}")
