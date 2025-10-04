@@ -151,9 +151,13 @@ async def create_practice_from_samcart(samcart_data: Dict[str, Any]) -> Dict[str
                 "email": email
             }
         
-        # Generate secure password
+        # Generate secure password and hash it properly
         password = generate_secure_password()
         password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        print(f"🔐 Generated password for {email}: {password}")
+        print(f"🔐 Password hash length: {len(password_hash)}")
+        print(f"🔐 Hash starts with: {password_hash[:10]}...")
         
         # Create practice name
         if last_name:
