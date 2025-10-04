@@ -576,6 +576,24 @@ class SamCartWebhookEmailTester:
             
             results = await asyncio.gather(*tests, return_exceptions=True)
             
+            # Debug: Print all results
+            print("🔍 DEBUG: Individual test results:")
+            for i, result in enumerate(results):
+                test_name = [
+                    "Webhook Endpoint Accessibility",
+                    "Webhook Test Endpoint Basic", 
+                    "Email Service Validation",
+                    "Background Task Email Sending",
+                    "SendGrid Authentication Fix",
+                    "End-to-End Payment Flow",
+                    "Webhook Logs Functionality",
+                    "Webhook Stats Functionality", 
+                    "Duplicate Account Prevention",
+                    "Environment Variables Access"
+                ][i]
+                print(f"   {i+1}. {test_name}: {result}")
+            print()
+            
             # Count results
             passed = sum(1 for result in results if result is True)
             failed = len(results) - passed
