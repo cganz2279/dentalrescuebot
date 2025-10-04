@@ -1049,7 +1049,7 @@ const PracticeDashboard = () => {
           >
             <Download className="h-6 w-6 mb-2" />
             <span className="font-medium">Export Data</span>
-            <span className="text-xs text-gray-600">Download CSV</span>
+            <span className="text-xs text-gray-600">CSV & Excel</span>
           </Button>
           <Button 
             onClick={() => {
