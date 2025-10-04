@@ -1183,9 +1183,30 @@ const PracticeDashboard = () => {
                           >
                             {procedure.status === 'delivered' ? 'Delivered' : 'Active'}
                           </Badge>
+                          {procedure.followUpStatus && (
+                            <Badge 
+                              variant="outline" 
+                              className={`mb-1 ml-1 text-xs ${
+                                procedure.followUpStatus === 'sent' 
+                                  ? 'bg-purple-100 text-purple-800 border-purple-300' 
+                                  : procedure.followUpStatus === 'scheduled'
+                                  ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
+                                  : 'bg-gray-100 text-gray-800 border-gray-300'
+                              }`}
+                            >
+                              {procedure.followUpStatus === 'sent' ? 'Follow-up Sent' : 
+                               procedure.followUpStatus === 'scheduled' ? 'Follow-up Scheduled' : 
+                               'Follow-up Failed'}
+                            </Badge>
+                          )}
                           <p className="text-xs text-gray-400">
                             {new Date(procedure.performedDate).toLocaleDateString()}
                           </p>
+                          {procedure.followUpSentAt && (
+                            <p className="text-xs text-purple-500">
+                              Follow-up: {new Date(procedure.followUpSentAt).toLocaleDateString()}
+                            </p>
+                          )}
                         </div>
                         <div className="flex flex-col space-y-1">
                           <Button 
