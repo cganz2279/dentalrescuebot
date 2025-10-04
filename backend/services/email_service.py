@@ -568,7 +568,7 @@ async def send_email(email_data: EmailData) -> bool:
         sender_email = os.environ.get('SENDER_EMAIL', 'noreply@theoncallbot.com')
         
         if not sendgrid_api_key:
-            print(f"❌ SENDGRID_API_KEY not found in environment variables")
+            print("❌ SENDGRID_API_KEY not found in environment variables")
             return False
             
         # Create new SendGrid client instance for each send (fixes background task auth issues)
