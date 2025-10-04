@@ -1208,11 +1208,27 @@ async def validate_reset_token(token: str):
                 detail="Invalid or expired reset token"
             )
         
-        # Get user info (without sensitive data)
-        user = await db.users.find_one(
-            {"id": reset_record["user_id"]},
-            {"_id": 0, "email": 1, "firstName": 1, "lastName": 1}
-        )
+        # Determine which collection to search based on reset record
+        account_collection = reset_record.get("account_collection", "users")
+        
+        # Get user info from appropriate collection (without sensitive data)
+        if account_collection == "practices":
+            user = await db.practices.find_one(
+                {"id": reset_record["user_id"]},
+                {"_id": 0, "email": 1, "practiceName": 1}
+            )
+            # Format practice data to match expected user format
+            if user:
+                user = {
+                    "email": user.get("email"),
+                    "firstName": user.get("practiceName", "Practice"),
+                    "lastName": "Admin"
+                }
+        else:
+            user = await db.users.find_one(
+                {"id": reset_record["user_id"]},
+                {"_id": 0, "email": 1, "firstName": 1, "lastName": 1}
+            )
         
         return {
             "success": True,
