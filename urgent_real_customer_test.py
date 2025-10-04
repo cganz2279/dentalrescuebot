@@ -133,21 +133,24 @@ class UrgentRealCustomerHandler:
         print(f"\n📧 Sending manual welcome email to {customer['email']}...")
         
         try:
-            # Prepare practice data for welcome email
-            practice_data = {
-                "practiceName": customer["practice_name"],
-                "adminEmail": customer["email"],
-                "adminFirstName": customer["name"].split()[0] if customer["name"] else "Doctor",
-                "adminLastName": customer["name"].split()[-1] if len(customer["name"].split()) > 1 else "Practice",
-                "tempPassword": "TempPass123!",  # Temporary password for welcome email
-                "phone": "",
-                "address": ""
+            # Prepare practice data and admin credentials in correct format
+            request_data = {
+                "practiceData": {
+                    "practiceName": customer["practice_name"]
+                },
+                "adminCredentials": {
+                    "adminEmail": customer["email"],
+                    "adminFirstName": customer["name"].split()[0] if customer["name"] else "Doctor",
+                    "adminLastName": customer["name"].split()[-1] if len(customer["name"].split()) > 1 else "Practice",
+                    "tempPassword": "TempPass123!"  # Temporary password for welcome email
+                },
+                "appUrl": "https://app.dentalaftercarenotes.com"
             }
             
             # Send welcome email via admin endpoint
             response = self.session.post(
                 f"{BACKEND_URL}/api/admin/send-welcome-email",
-                json=practice_data,
+                json=request_data,
                 headers=self.get_admin_headers()
             )
             
