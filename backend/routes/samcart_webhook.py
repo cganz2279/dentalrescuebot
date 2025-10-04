@@ -443,9 +443,10 @@ async def get_webhook_logs(limit: int = 50):
     try:
         logs = await db.samcart_webhook_logs.find().sort("created_at", -1).limit(limit).to_list(length=limit)
         
-        # Convert ObjectIds to strings
+        # Convert ObjectIds to strings and format response
         for log in logs:
-            log["_id"] = str(log["_id"])
+            if "_id" in log:
+                log["_id"] = str(log["_id"])
         
         return {
             "status": "success",
@@ -455,25 +456,24 @@ async def get_webhook_logs(limit: int = 50):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch logs: {str(e)}")
 
-@router.get("/samcart/stats")
+@router.get("/samcart/stats") 
 async def get_webhook_stats():
     """Get webhook processing statistics"""
     try:
         total_webhooks = await db.samcart_webhook_logs.count_documents({})
-        successful_webhooks = await db.samcart_webhook_logs.count_documents({"processing_status": "success"})
-        failed_webhooks = await db.samcart_webhook_logs.count_documents({"processing_status": "failed"})
+        successful_webhooks = await db.samcart_webhook_logs.count_documents({"status": "success"})
+        failed_webhooks = await db.samcart_webhook_logs.count_documents({"status": "failed"})
         
         # Get recent practice creations from SamCart
         recent_practices = await db.practices.count_documents({
-            "source": "samcart",
-            "createdAt": {"$gte": datetime.now(timezone.utc) - timedelta(days=30)}
+            "source": "samcart"
         })
         
         return {
             "total_webhooks": total_webhooks,
             "successful_webhooks": successful_webhooks,
             "failed_webhooks": failed_webhooks,
-            "success_rate": (successful_webhooks / total_webhooks * 100) if total_webhooks > 0 else 0,
+            "success_rate": round((successful_webhooks / total_webhooks * 100), 1) if total_webhooks > 0 else 0,
             "recent_practice_signups": recent_practices
         }
     except Exception as e:
