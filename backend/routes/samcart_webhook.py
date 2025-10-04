@@ -101,6 +101,15 @@ async def create_practice_account(customer_email: str, customer_name: str, order
             "ownerName": customer_name,
             "ownerEmail": customer_email,
             
+            # Contact info - blank since not provided in SamCart payment
+            "phone": None,
+            "address": "",
+            "city": "",
+            "state": "",
+            "zipCode": "",
+            "country": "",
+            "ownerPhone": None,
+            
             # Subscription details
             "subscription": {
                 "status": "trial",  # Start as trial
