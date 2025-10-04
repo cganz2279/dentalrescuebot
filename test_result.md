@@ -594,7 +594,8 @@ metadata:
 test_plan:
   current_focus:
     - "Tutorial Video Upload System"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Tutorial Video Upload System"
   test_all: false
   test_priority: "high_first"
 
