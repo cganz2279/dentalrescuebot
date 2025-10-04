@@ -98,8 +98,12 @@ def handle_range_request(file_path: Path, file_size: int, range_header: str, con
         end = int(range_end) if range_end else file_size - 1
         
         # Validate range
-        if start >= file_size or end >= file_size or start > end:
+        if start >= file_size or start > end:
             raise HTTPException(status_code=416, detail="Range not satisfiable")
+        
+        # Adjust end if it exceeds file size
+        if end >= file_size:
+            end = file_size - 1
         
         chunk_size = end - start + 1
         
