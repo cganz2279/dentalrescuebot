@@ -179,17 +179,29 @@ class FollowUpScheduler:
             
             # Get practice logo for email header
             logo_html = ""
-            if practice.get("branding", {}).get("logo"):
-                logo_data = practice["branding"]["logo"]
-                # Ensure logo is in proper data URL format
-                if not logo_data.startswith('data:image'):
-                    logo_data = f"data:image/png;base64,{logo_data}"
-                
-                logo_html = f"""
-                <div style="text-align: center; margin-bottom: 25px;">
-                    <img src="{logo_data}" alt="{practice_name} Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;" />
-                </div>
-                """
+            try:
+                if practice.get("branding", {}).get("logo"):
+                    logo_data = practice["branding"]["logo"]
+                    
+                    # Validate logo data is not empty or corrupted
+                    if logo_data and len(logo_data) > 100:  # Ensure it's not a tiny placeholder
+                        # Ensure logo is in proper data URL format
+                        if not logo_data.startswith('data:image'):
+                            logo_data = f"data:image/png;base64,{logo_data}"
+                        
+                        logo_html = f"""
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <img src="{logo_data}" alt="{practice_name} Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;" />
+                        </div>
+                        """
+                        print(f"✅ Added practice logo to follow-up email for {practice_name}")
+                    else:
+                        print(f"⚠️ Logo data too small or corrupted for {practice_name}")
+                else:
+                    print(f"ℹ️ No logo available for {practice_name}")
+            except Exception as logo_error:
+                print(f"❌ Error processing logo for {practice_name}: {logo_error}")
+                logo_html = ""  # Fallback to no logo
             
             # Create follow-up email content
             email_subject = "Just Checking In – How Are You Feeling After Your Visit?"
