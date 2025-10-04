@@ -64,22 +64,91 @@ def generate_secure_password() -> str:
     
     return password
 
-def generate_secure_password(length: int = 12) -> str:
-    """Generate a secure, user-friendly password"""
-    # Use a mix that's secure but user-friendly (avoid confusing characters)
-    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&*"
-    password = ''.join(secrets.choice(alphabet) for _ in range(length))
-    
-    # Ensure password has variety
-    has_lower = any(c.islower() for c in password)
-    has_upper = any(c.isupper() for c in password)
-    has_digit = any(c.isdigit() for c in password)
-    has_symbol = any(c in "!@#$%&*" for c in password)
-    
-    if not all([has_lower, has_upper, has_digit, has_symbol]):
-        return generate_secure_password(length)
-    
-    return password
+async def create_practice_account(customer_email: str, customer_name: str, order_id: str) -> Dict[str, Any]:
+    """Create a new practice account from SamCart payment data"""
+    try:
+        # Check if practice already exists
+        existing_practice = await db.practices.find_one({"email": customer_email})
+        if existing_practice:
+            print(f"⚠️ Practice already exists for {customer_email}")
+            return {
+                "status": "duplicate",
+                "message": f"Account already exists for {customer_email}",
+                "practice_id": existing_practice.get("id")
+            }
+        
+        # Generate secure credentials
+        practice_id = str(uuid.uuid4())
+        password = generate_secure_password()
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        # Calculate trial period
+        trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_PERIOD_DAYS)
+        
+        # Create practice name from customer name
+        if " " in customer_name:
+            first_name, last_name = customer_name.split(" ", 1)
+            practice_name = f"Dr. {last_name} Dental Practice"
+        else:
+            practice_name = f"{customer_name} Dental Practice"
+        
+        # Create practice document
+        practice_data = {
+            "id": practice_id,
+            "name": practice_name,
+            "email": customer_email,
+            "password": password_hash,
+            "ownerName": customer_name,
+            "ownerEmail": customer_email,
+            
+            # Subscription details
+            "subscription": {
+                "status": "trial",  # Start as trial
+                "type": "monthly",
+                "price": MONTHLY_PRICE,
+                "trialEndDate": trial_end.isoformat(),
+                "samcartOrderId": order_id,
+                "currentPeriodEnd": trial_end.isoformat()
+            },
+            
+            # Account status
+            "isActive": True,
+            "emailVerified": True,
+            "setupCompleted": False,
+            
+            # Default branding
+            "branding": {
+                "logo": None,
+                "primaryColor": "#2563eb",
+                "secondaryColor": "#1e40af",
+                "welcomeMessage": "Welcome to our practice!"
+            },
+            
+            # Metadata
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "updatedAt": datetime.now(timezone.utc).isoformat(),
+            "source": "samcart",
+            "samcartOrderId": order_id
+        }
+        
+        # Insert into database
+        result = await db.practices.insert_one(practice_data)
+        
+        print(f"✅ Created practice account: {customer_email} (ID: {practice_id})")
+        
+        return {
+            "status": "success",
+            "practice_id": practice_id,
+            "email": customer_email,
+            "password": password,  # Return plain password for welcome email
+            "practice_name": practice_name,
+            "owner_name": customer_name,
+            "trial_end": trial_end.isoformat()
+        }
+        
+    except Exception as e:
+        print(f"❌ Error creating practice account: {e}")
+        raise e
 
 async def create_practice_from_samcart(samcart_data: Dict[str, Any]) -> Dict[str, Any]:
     """Create practice account from SamCart webhook data"""
