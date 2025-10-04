@@ -1,37 +1,20 @@
-from fastapi import APIRouter, HTTPException, Request, status, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
 from typing import Dict, Any, Optional
-import hmac
-import hashlib
 import json
 import uuid
-import secrets
 import bcrypt
 from datetime import datetime, timedelta, timezone
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+import asyncio
 
 # Import existing services
 from database import db
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.email_service import EmailService
 
-# Import email service with proper error handling
-try:
-    from services.email_service import send_email, EmailData
-except ImportError:
-    print("Warning: Email service not available")
-    def send_email(email_data):
-        print(f"Mock email send to: {email_data.to}")
-        return True
-    
-    class EmailData:
-        def __init__(self, to, subject, html_content):
-            self.to = to
-            self.subject = subject
-            self.html_content = html_content
+# Initialize email service
+email_service = EmailService()
 
 router = APIRouter(prefix="/api/webhook", tags=["samcart"])
 
