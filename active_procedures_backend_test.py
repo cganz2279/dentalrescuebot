@@ -34,10 +34,13 @@ def test_practice_login_and_dashboard():
             return False
             
         login_result = login_response.json()
-        token = login_result.get("access_token")
-        practice_id = login_result.get("practice_id")
+        print(f"📄 Login Response: {json.dumps(login_result, indent=2)}")
+        
+        token = login_result.get("access_token") or login_result.get("token")
+        practice_id = login_result.get("practice_id") or login_result.get("practiceId")
         
         print(f"✅ Login successful")
+        print(f"🔑 Token: {token[:20]}..." if token else "❌ No token found")
         print(f"🏥 Practice ID: {practice_id}")
         
         # Get dashboard data
