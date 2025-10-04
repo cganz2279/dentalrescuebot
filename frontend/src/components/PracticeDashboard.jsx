@@ -661,11 +661,6 @@ const PracticeDashboard = () => {
       });
 
       if (response.ok) {
-        toast({
-          title: "Success",
-          description: `${procedureName} marked as delivered - Follow-up email scheduled for 24 hours`,
-        });
-
         // Reload dashboard to update the count and status
         loadDashboard();
       } else {
