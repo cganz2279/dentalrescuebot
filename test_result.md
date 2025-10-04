@@ -539,10 +539,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tutorial Delete Functionality Fix"
+    - "SamCart Webhook Integration"
+    - "SamCart Account Creation with Password Hashing"
+    - "Password Reset System for SamCart Accounts"
+    - "Welcome Email System"
+    - "Real Customer Access Verification"
   stuck_tasks:
-    - "Practice Login Functionality"
-    - "Video Tutorial System Backend"
+    - "caryganz@gmail.com Account Corruption (password field corrupted)"
   test_all: false
   test_priority: "high_first"
 
