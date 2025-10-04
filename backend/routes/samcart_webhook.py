@@ -614,7 +614,9 @@ async def test_samcart_webhook(test_email: str = "test@example.com"):
                 "practice_info": {
                     "practice_id": result["practice_id"],
                     "email": result["email"],
-                    "practice_name": result["practice_name"]
+                    "practice_name": result["practice_name"],
+                    "password": result["password"],  # Include password for testing
+                    "owner_name": result["owner_name"]
                 },
                 "emails_sent": {
                     "welcome_email": email_success,
