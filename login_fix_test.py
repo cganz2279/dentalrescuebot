@@ -14,7 +14,8 @@ async def test_login_fix():
     """Test the login fix"""
     
     # First create a test account
-    test_email = f"loginfix.test@example.com"
+    import uuid
+    test_email = f"loginfix.test.{uuid.uuid4().hex[:8]}@example.com"
     
     async with aiohttp.ClientSession() as session:
         # Create test account
