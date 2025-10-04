@@ -506,7 +506,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Active Procedures Investigation in Practice Dashboard"
+    - "Sequential Status System with Second Status Progression"
   stuck_tasks:
     - "Practice Login Functionality"
     - "Video Tutorial System Backend"
