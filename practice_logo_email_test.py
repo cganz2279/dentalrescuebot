@@ -73,7 +73,8 @@ class PracticeLogoEmailTester:
             async with self.session.post(url, json=login_data) as response:
                 if response.status == 200:
                     response_data = await response.json()
-                    self.auth_token = response_data.get("access_token")
+                    # Handle both possible token field names
+                    self.auth_token = response_data.get("access_token") or response_data.get("token")
                     user_data = response_data.get("user", {})
                     self.practice_id = user_data.get("practiceId")
                     
