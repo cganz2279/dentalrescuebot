@@ -779,11 +779,31 @@ async def forgot_password(request: ForgotPasswordRequest):
         email = request.email.lower()
         recovery_method = request.recovery_method or "email"
         
-        # Find user by email
+        # First try to find in users collection
         user = await db.users.find_one({"email": email})
+        is_samcart_account = False
+        account_id = None
+        account_collection = "users"
+        
+        if user and user.get('isActive', True):
+            account_id = user['id']
+            print(f"🔍 Found user account for password reset: {email}")
+        else:
+            # Try SamCart practice account
+            practice = await db.practices.find_one({
+                "email": email,
+                "isActive": True
+            })
+            
+            if practice:
+                account_id = practice['id']
+                account_collection = "practices"
+                is_samcart_account = True
+                user = practice  # Use practice as user for token generation
+                print(f"🔍 Found SamCart practice account for password reset: {email}")
         
         # Always return success to prevent email enumeration attacks
-        if not user:
+        if not account_id:
             return {
                 "success": True,
                 "message": f"If an account with this email exists, password reset instructions have been sent via {recovery_method}."
