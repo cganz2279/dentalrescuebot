@@ -236,13 +236,15 @@ class FollowUpScheduler:
             
             if success:
                 print(f"✅ Follow-up email sent to {followup.get('patientName')} ({followup.get('patientEmail')})")
+                print(f"📈 Status progression: delivered → second for {followup.get('procedureName')}")
                 
                 # Log the email activity
                 await self.log_followup_activity(followup, "email_sent", {
                     "subject": email_subject,
                     "recipient": followup.get('patientEmail'),
                     "practice": practice_name,
-                    "dentist": dentist_name
+                    "dentist": dentist_name,
+                    "status_change": "delivered → second"
                 })
             else:
                 print(f"❌ Failed to send follow-up email to {followup.get('patientName')} ({followup.get('patientEmail')})")
