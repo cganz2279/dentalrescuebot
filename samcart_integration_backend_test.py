@@ -475,6 +475,7 @@ if __name__ == "__main__":
     if success:
         print("\n🎉 SAMCART INTEGRATION FULLY OPERATIONAL!")
         print("All critical requirements met - ready for real paying customers")
+        print("Note: One known corrupted account (caryganz@gmail.com) requires manual password reset")
     else:
         print("\n⚠️ CRITICAL ISSUES IDENTIFIED!")
         print("SamCart integration requires immediate attention before production use")
