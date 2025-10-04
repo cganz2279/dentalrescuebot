@@ -135,7 +135,7 @@ def handle_range_request(file_path: Path, file_size: int, range_header: str, con
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/list")
-async def list_tutorial_videos(current_user: dict = Depends(get_current_user)):
+async def list_tutorial_videos(admin_data: dict = Depends(verify_admin_token)):
     """List available tutorial videos"""
     try:
         uploads_path = Path(UPLOADS_DIR)
