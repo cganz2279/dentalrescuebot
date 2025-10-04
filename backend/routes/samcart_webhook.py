@@ -246,11 +246,31 @@ async def send_welcome_email(practice_info: Dict[str, Any]) -> bool:
     try:
         login_url = f"{FRONTEND_URL}/practice/login"
         
+        # Get practice branding for logo
+        practice_branding = await db.practices.find_one(
+            {"email": practice_info['email']},
+            {"_id": 0, "branding": 1}
+        )
+        
+        logo_html = ""
+        if practice_branding and practice_branding.get("branding", {}).get("logo"):
+            logo_data = practice_branding["branding"]["logo"]
+            # Ensure logo is in proper data URL format
+            if not logo_data.startswith('data:image'):
+                logo_data = f"data:image/png;base64,{logo_data}"
+            
+            logo_html = f"""
+            <div style="text-align: center; margin-bottom: 30px;">
+                <img src="{logo_data}" alt="Practice Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;" />
+            </div>
+            """
+        
         # Create welcome email content
         email_content = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
             <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h1 style="color: #2563eb; margin-bottom: 20px;">Welcome to Dental AfterCare Notes!</h1>
+                {logo_html}
+                <h1 style="color: #2563eb; margin-bottom: 20px; text-align: center;">Welcome to Dental AfterCare Notes!</h1>
                 
                 <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
                     Dear {practice_info['owner_name']},
