@@ -1049,42 +1049,95 @@ const PracticeDashboard = () => {
             </CardHeader>
             <CardContent>
               {followUpStats ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-green-800">Successful Follow-ups</p>
-                        <p className="text-2xl font-bold text-green-900">{followUpStats.successful || 0}</p>
+                <div className="space-y-6">
+                  {/* Follow-up Email Stats */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">Follow-up Email Status</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-yellow-800">Scheduled</p>
+                            <p className="text-2xl font-bold text-yellow-900">{followUpStats.scheduled || 0}</p>
+                          </div>
+                          <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <Clock className="h-4 w-4 text-yellow-600" />
+                          </div>
+                        </div>
                       </div>
-                      <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <Activity className="h-4 w-4 text-green-600" />
+                      
+                      <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-green-800">Sent Successfully</p>
+                            <p className="text-2xl font-bold text-green-900">{followUpStats.sent || 0}</p>
+                          </div>
+                          <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <Activity className="h-4 w-4 text-green-600" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-red-800">Failed</p>
+                            <p className="text-2xl font-bold text-red-900">{followUpStats.failed || 0}</p>
+                          </div>
+                          <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <AlertCircle className="h-4 w-4 text-red-600" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-yellow-800">Pending Follow-ups</p>
-                        <p className="text-2xl font-bold text-yellow-900">{followUpStats.pending || 0}</p>
-                      </div>
-                      <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <Clock className="h-4 w-4 text-yellow-600" />
+
+                  {/* Procedure Sequence Status */}
+                  {followUpStats.procedure_stats && (
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-3">Procedure Sequence Status</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-blue-800">Active</p>
+                              <p className="text-xs text-blue-600">Not delivered yet</p>
+                              <p className="text-2xl font-bold text-blue-900">{followUpStats.procedure_stats.active || 0}</p>
+                            </div>
+                            <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <Activity className="h-4 w-4 text-blue-600" />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-indigo-800">Delivered</p>
+                              <p className="text-xs text-indigo-600">Follow-up scheduled</p>
+                              <p className="text-2xl font-bold text-indigo-900">{followUpStats.procedure_stats.delivered || 0}</p>
+                            </div>
+                            <div className="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                              <Clock className="h-4 w-4 text-indigo-600" />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-purple-800">Second</p>
+                              <p className="text-xs text-purple-600">Follow-up sent</p>
+                              <p className="text-2xl font-bold text-purple-900">{followUpStats.procedure_stats.second || 0}</p>
+                            </div>
+                            <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
+                              <CheckCircle className="h-4 w-4 text-purple-600" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-red-800">Failed Follow-ups</p>
-                        <p className="text-2xl font-bold text-red-900">{followUpStats.failed || 0}</p>
-                      </div>
-                      <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center">
-                        <AlertCircle className="h-4 w-4 text-red-600" />
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex items-center justify-center py-8">
