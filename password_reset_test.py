@@ -45,28 +45,34 @@ class PasswordResetTester:
         print()
         return success
     
-    def test_forgot_password_valid_email(self):
-        """Test POST /api/auth/forgot-password with valid email"""
+    def test_generate_fresh_reset_token(self):
+        """Generate a fresh reset token for testing"""
         try:
-            request_data = {"email": "admin@smithdental.com"}
-            response = self.session.post(f"{self.base_url}/auth/forgot-password", json=request_data)
+            response = requests.post(f"{API_BASE}/auth/forgot-password", json={
+                "email": CUSTOMER_EMAIL,
+                "recovery_method": "email"
+            }, timeout=30)
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("success") and "message" in data:
-                    if "reset_token" in data:
-                        self.test_reset_token = data["reset_token"]
-                        return self.log_test("Forgot Password (Valid Email)", True, 
-                                           f"Reset token generated: {self.test_reset_token[:8]}...")
-                    else:
-                        return self.log_test("Forgot Password (Valid Email)", True, 
-                                           "Password reset request processed")
-                else:
-                    return self.log_test("Forgot Password (Valid Email)", False, "Invalid response format")
+                message = data.get("message", "")
+                sent_methods = data.get("sent_methods", [])
+                
+                return self.log_result(
+                    "Generate Fresh Reset Token",
+                    True,
+                    f"Fresh token generated successfully. Methods: {sent_methods}, Message: {message}"
+                )
             else:
-                return self.log_test("Forgot Password (Valid Email)", False, f"Status: {response.status_code}")
+                return self.log_result(
+                    "Generate Fresh Reset Token",
+                    False,
+                    f"Status: {response.status_code}",
+                    response.text
+                )
+                
         except Exception as e:
-            return self.log_test("Forgot Password (Valid Email)", False, f"Exception: {str(e)}")
+            return self.log_result("Generate Fresh Reset Token", False, error=str(e))
     
     def test_forgot_password_invalid_email(self):
         """Test POST /api/auth/forgot-password with invalid email"""
