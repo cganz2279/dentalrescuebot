@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for Tutorial Delete Functionality
-Tests the enhanced tutorial delete endpoint with ID format handling
+Comprehensive Backend Testing for Correspondence Export Functionality
+Testing the new POST /api/practice/export-correspondence endpoint
 """
 
 import requests
 import json
-import os
-from datetime import datetime
+import sys
+from datetime import datetime, timedelta
+import io
+import csv
+import openpyxl
 
 # Configuration
 BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
-ADMIN_EMAIL = "cganz@admin.com"
-ADMIN_PASSWORD = "Dentist1#"
+TEST_EMAIL = "cganz2279@gmail.com"
+TEST_PASSWORD = "password123"
 
-class TutorialDeleteTester:
+class CorrespondenceExportTester:
     def __init__(self):
         self.admin_token = None
         self.test_results = []
