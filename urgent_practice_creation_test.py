@@ -442,10 +442,13 @@ class UrgentPracticeCreator:
         
         # Step 3: Create or handle existing account
         if account_status == "not_exists":
-            print("🔧 Creating new practice account...")
-            if not self.create_practice_account():
-                print("❌ Failed to create practice account")
-                return False
+            print("🔧 Creating new practice account via SamCart webhook...")
+            if not self.create_practice_directly_via_samcart_webhook():
+                print("❌ Failed to create practice account via SamCart webhook")
+                print("🔧 Trying admin create-practice endpoint...")
+                if not self.create_practice_account():
+                    print("❌ Failed to create practice account via admin endpoint")
+                    return False
         elif account_status == "exists_healthy":
             print("✅ Practice account already exists and is healthy")
         elif account_status == "exists_corrupted":
