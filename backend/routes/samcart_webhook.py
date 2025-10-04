@@ -304,9 +304,10 @@ async def handle_samcart_webhook(request: Request):
         print(f"📧 Customer email extracted: '{customer_email}'")
         print(f"👤 Customer name extracted: '{customer_name}'")
             
-            if not customer_email:
-                print(f"❌ No customer email in webhook payload")
-                raise HTTPException(status_code=400, detail="Customer email required")
+        if not customer_email:
+            print(f"❌ No customer email in webhook payload")
+            print(f"🔍 Full payload structure: {json.dumps(payload, indent=2)}")
+            raise HTTPException(status_code=400, detail="Customer email required")
             
             if not customer_name or customer_name == " ":
                 customer_name = customer_email.split("@")[0]  # Use email prefix as fallback
