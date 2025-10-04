@@ -239,20 +239,18 @@ class DeliveredStatusTester:
                         
                         status_updated = updated_procedure and updated_procedure.get("status") == "delivered"
                         
-                        # Verify active procedures only include status="active"
+                        # Note: Recent procedures are limited to 10 most recent, but active count is from entire database
+                        # This is correct behavior - we just need to verify the count decreased and status updated
                         active_only_procedures = [proc for proc in recent_procedures if proc.get("status") == "active"]
-                        active_count_matches = len(active_only_procedures) == new_active_procedures
-                        
-                        # Debug information
                         delivered_procedures = [proc for proc in recent_procedures if proc.get("status") == "delivered"]
                         
-                        success = count_decreased and status_updated and active_count_matches
+                        # The key verification is that count decreased and status was updated
+                        success = count_decreased and status_updated
                         
                         details = f"Active procedures: {initial_active_procedures} → {new_active_procedures} (expected: {expected_count}). "
                         details += f"Count decreased: {count_decreased}. "
                         details += f"Status updated to delivered: {status_updated}. "
-                        details += f"Active count matches filter: {active_count_matches}. "
-                        details += f"Recent procedures: {len(recent_procedures)} total, {len(active_only_procedures)} active, {len(delivered_procedures)} delivered"
+                        details += f"Recent procedures (limited to 10): {len(recent_procedures)} total, {len(active_only_procedures)} active, {len(delivered_procedures)} delivered"
                         
                         self.log_result("Verify Dashboard Changes", success, details)
                         return success
