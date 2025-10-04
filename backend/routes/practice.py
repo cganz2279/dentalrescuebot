@@ -2711,6 +2711,129 @@ async def sms_pdf_to_patient(
             detail="Failed to send SMS with PDF link"
         )
 
+@router.get("/followup-stats")
+async def get_followup_email_stats(current_user: dict = Depends(get_current_user)):
+    """Get follow-up email statistics for the practice"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        from services.followup_scheduler import followup_scheduler
+        stats = await followup_scheduler.get_followup_stats(practice_id)
+        
+        return {
+            "success": True,
+            "data": stats
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting follow-up stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get follow-up email statistics"
+        )
+
+@router.get("/followup-logs")
+async def get_followup_email_logs(
+    limit: int = 50,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get follow-up email activity logs for the practice"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Get follow-up logs
+        logs = await db.followup_activity_log.find({
+            "practiceId": practice_id
+        }).sort("timestamp", -1).limit(limit).to_list(length=limit)
+        
+        # Convert ObjectIds to strings
+        for log in logs:
+            log["_id"] = str(log["_id"])
+            
+        return {
+            "success": True,
+            "data": {
+                "logs": logs,
+                "count": len(logs)
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting follow-up logs: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get follow-up email logs"
+        )
+
+@router.post("/followup-test/{assignment_id}")
+async def test_followup_email(
+    assignment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Test follow-up email for a specific assignment (for debugging)"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Verify assignment belongs to this practice
+        assignment = await db.patientprocedures.find_one({
+            "id": assignment_id,
+            "practiceId": practice_id
+        })
+        
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Procedure assignment not found"
+            )
+        
+        from services.followup_scheduler import followup_scheduler
+        success = await followup_scheduler.schedule_followup_email(assignment_id, practice_id)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Follow-up email scheduled for {assignment.get('procedureName')} - {assignment.get('patientName')}"
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to schedule follow-up email"
+            )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error testing follow-up email: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to test follow-up email"
+        )
+
 @router.get("/secure-pdf/{token}")
 async def access_secure_pdf(token: str):
     """Access PDF via secure token"""
