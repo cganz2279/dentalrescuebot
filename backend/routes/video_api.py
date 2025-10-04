@@ -17,6 +17,7 @@ router = APIRouter(prefix="/api/video", tags=["video"])
 UPLOADS_DIR = "/app/uploads/tutorials"
 
 @router.get("/tutorial/{filename}")
+@router.head("/tutorial/{filename}")
 async def serve_tutorial_video(
     filename: str, 
     request: Request
