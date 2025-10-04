@@ -19,8 +19,7 @@ UPLOADS_DIR = "/app/uploads/tutorials"
 @router.get("/tutorial/{filename}")
 async def serve_tutorial_video(
     filename: str, 
-    request: Request,
-    admin_email: str = Depends(verify_admin_token)
+    request: Request
 ):
     """
     Serve tutorial video files with proper streaming support
