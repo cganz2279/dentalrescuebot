@@ -74,32 +74,12 @@ class CorrespondenceExportTester:
             self.log_test("Authentication", False, f"Exception: {str(e)}")
             return False
     
-    def get_admin_headers(self):
-        """Get headers with admin token"""
+    def get_auth_headers(self):
+        """Get authentication headers"""
         return {
-            "Authorization": f"Bearer {self.admin_token}",
+            "Authorization": f"Bearer {self.auth_token}",
             "Content-Type": "application/json"
         }
-    
-    def get_tutorials(self):
-        """Get all tutorials to find existing tutorial IDs"""
-        try:
-            response = requests.get(
-                f"{BACKEND_URL}/api/admin/tutorials",
-                headers=self.get_admin_headers()
-            )
-            
-            if response.status_code == 200:
-                tutorials = response.json()
-                self.log_test("Get Tutorials", True, f"Retrieved {len(tutorials)} tutorials")
-                return tutorials
-            else:
-                self.log_test("Get Tutorials", False, f"Failed to get tutorials: {response.status_code}")
-                return []
-                
-        except Exception as e:
-            self.log_test("Get Tutorials", False, f"Error getting tutorials: {str(e)}")
-            return []
     
     def create_test_tutorial(self):
         """Create a test tutorial for deletion testing"""
