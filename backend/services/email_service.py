@@ -311,7 +311,7 @@ class EmailService:
             admin_name = f"{admin_credentials.get('adminFirstName', '')} {admin_credentials.get('adminLastName', '')}".strip()
             
             # Create email subject
-            subject = f"Welcome to Dental Aftercare Notes – Your Account Is Ready"
+            subject = "Welcome to Dental Aftercare Notes – Your Account Is Ready"
             
             # Professional HTML template with dynamic field replacement
             html_content = f"""<!DOCTYPE html>
