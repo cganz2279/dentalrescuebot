@@ -164,6 +164,8 @@ async def create_tutorial(
             "message": "Tutorial created successfully"
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error creating tutorial: {e}")
         raise HTTPException(status_code=500, detail="Failed to create tutorial")
