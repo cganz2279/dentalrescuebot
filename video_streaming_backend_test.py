@@ -295,12 +295,13 @@ class VideoStreamingTester:
                 
                 # Verify partial content response
                 has_content_range = content_range.startswith('bytes 0-')
-                has_correct_length = content_length == '1024'
+                expected_length = min(1024, file_size)  # Adjust for small files
+                has_correct_length = content_length == str(expected_length)
                 has_range_support = accept_ranges == 'bytes'
                 actual_content_length = len(response.content)
                 
                 range_success = (has_content_range and has_correct_length and 
-                               has_range_support and actual_content_length <= 1024)
+                               has_range_support and actual_content_length == expected_length)
                 
                 self.log_test(
                     "Range Request Support", 
