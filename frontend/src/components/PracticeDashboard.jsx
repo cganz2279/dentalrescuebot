@@ -78,108 +78,88 @@ const PracticeDashboard = () => {
 
   const handleExportWithDateRange = async () => {
     try {
-      console.log('🔍 Starting CSV export with date range:', exportDateRange);
+      console.log('🔍 Starting correspondence export with date range:', exportDateRange);
       
-      // Build query parameters
-      const params = new URLSearchParams();
-      if (exportDateRange.startDate) {
-        params.append('start_date', exportDateRange.startDate);
+      // Prepare export request
+      const exportRequest = {
+        start_date: exportDateRange.startDate || null,
+        end_date: exportDateRange.endDate || null,
+        format: exportDateRange.format || 'csv'
+      };
+      
+      console.log('🔍 Export request:', exportRequest);
+      
+      // Call the new correspondence export API
+      const response = await practiceApi.exportCorrespondence(exportRequest);
+      
+      // Get filename from response headers
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `correspondence_export_${Date.now()}`;
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename=(.+)/);
+        if (filenameMatch) {
+          filename = filenameMatch[1].replace(/"/g, '');
+        }
+      } else {
+        // Generate filename based on format and date range
+        const startStr = exportDateRange.startDate ? new Date(exportDateRange.startDate).toISOString().split('T')[0] : 'all';
+        const endStr = exportDateRange.endDate ? new Date(exportDateRange.endDate).toISOString().split('T')[0] : 'recent';
+        const extension = exportDateRange.format === 'excel' ? 'xlsx' : 'csv';
+        filename = `correspondence_export_${startStr}_to_${endStr}.${extension}`;
       }
-      if (exportDateRange.endDate) {
-        params.append('end_date', exportDateRange.endDate);
-      }
-      params.append('activity_types', 'print,email,sms'); // All activity types
-      
-      console.log('🔍 API query params:', params.toString());
-      
-      const response = await practiceApi.getExportActivities(params.toString());
-      console.log('🔍 Export API response:', response);
-      const exportData = response.data;
-      
-      // Create CSV content with required fields
-      let csvContent = "Patient Name,Patient Email,Procedure Name,Doctor Name,Activity Type,Date Performed\n";
-      
-      exportData.activities.forEach(activity => {
-        const row = [
-          `"${activity.patientName || 'Unknown Patient'}"`,
-          `"${activity.patientEmail || 'Unknown Email'}"`,
-          `"${activity.procedureName || 'Unknown Procedure'}"`,
-          `"${activity.dentistName || 'Unknown Doctor'}"`,
-          `"${activity.activityType?.toUpperCase() || 'UNKNOWN'}"`,
-          `"${new Date(activity.performedAt).toLocaleDateString()} ${new Date(activity.performedAt).toLocaleTimeString()}"`
-        ].join(',');
-        csvContent += row + "\n";
-      });
-      
-      if (exportData.activities.length === 0) {
-        csvContent += "No activities found for the selected date range\n";
-      }
-      
-      console.log('🔍 Generated CSV content (first 200 chars):', csvContent.substring(0, 200));
-      
-      // Create filename with date range
-      const startStr = exportDateRange.startDate ? new Date(exportDateRange.startDate).toISOString().split('T')[0] : 'all';
-      const endStr = exportDateRange.endDate ? new Date(exportDateRange.endDate).toISOString().split('T')[0] : 'recent';
-      const filename = `patient_activities_${startStr}_to_${endStr}.csv`;
       
       console.log('🔍 Generated filename:', filename);
       
-      // Create and download file using multiple methods for better browser compatibility
-      try {
-        // Method 1: Modern browsers with download attribute
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        
-        // Create temporary link element
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.style.display = 'none';
-        
-        // Append to body, click, and remove
-        document.body.appendChild(link);
-        console.log('🔍 Triggering download...');
-        link.click();
-        
-        // Clean up
-        setTimeout(() => {
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-          console.log('🔍 Download link cleaned up');
-        }, 100);
-        
-      } catch (downloadError) {
-        console.error('🔍 Download method 1 failed:', downloadError);
-        
-        // Method 2: Fallback using data URL
-        try {
-          const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
-          const link = document.createElement('a');
-          link.href = dataUrl;
-          link.download = filename;
-          link.click();
-          console.log('🔍 Fallback download method used');
-        } catch (fallbackError) {
-          console.error('🔍 Fallback download method failed:', fallbackError);
-          throw new Error('Both download methods failed');
-        }
-      }
+      // Create blob from response data
+      const blob = new Blob([response.data], { 
+        type: exportDateRange.format === 'excel' 
+          ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          : 'text/csv'
+      });
+      
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      // Trigger download
+      document.body.appendChild(link);
+      console.log('🔍 Triggering download...');
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log('🔍 Download cleaned up');
+      }, 100);
       
       toast({
         title: "Export Complete",
-        description: `Exported ${exportData.activities.length} patient activities to CSV file: ${filename}`,
+        description: `Correspondence data exported successfully as ${exportDateRange.format.toUpperCase()} file: ${filename}`,
         variant: "default",
       });
       
       setShowDatePickerModal(false);
       
     } catch (error) {
-      console.error('🔍 Full export error:', error);
-      console.error('🔍 Error stack:', error.stack);
+      console.error('🔍 Export error:', error);
+      
+      let errorMessage = "Failed to export correspondence data. Please try again.";
+      if (error.response?.status === 400) {
+        errorMessage = "Invalid date range. Please check your dates and try again.";
+      } else if (error.response?.status === 403) {
+        errorMessage = "You don't have permission to export data.";
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      }
       
       toast({
         title: "Export Failed",
-        description: error.response?.data?.detail || error.message || "Failed to export activity data. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
