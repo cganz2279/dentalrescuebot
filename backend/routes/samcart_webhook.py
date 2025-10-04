@@ -18,10 +18,9 @@ email_service = EmailService()
 
 router = APIRouter(prefix="/api/webhook", tags=["samcart"])
 
-# Configuration
-SAMCART_WEBHOOK_SECRET = os.environ.get('SAMCART_WEBHOOK_SECRET', 'default_secret')
-TRIAL_PERIOD_DAYS = int(os.environ.get('TRIAL_PERIOD_DAYS', '30'))
-MONTHLY_PRICE = float(os.environ.get('MONTHLY_SUBSCRIPTION_PRICE', '49.95'))
+# Configuration - Get from environment
+TRIAL_PERIOD_DAYS = 30
+MONTHLY_PRICE = 49.95
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@theoncallbot.com')
 
