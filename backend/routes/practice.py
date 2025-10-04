@@ -178,6 +178,11 @@ class PracticeProcedureOverride(BaseModel):
     customizedAt: datetime
     customizedBy: str
 
+class CorrespondenceExportRequest(BaseModel):
+    start_date: Optional[str] = None  # ISO date string
+    end_date: Optional[str] = None    # ISO date string
+    format: str = "csv"  # "csv" or "excel"
+
 # Helper function to verify token and get user
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
