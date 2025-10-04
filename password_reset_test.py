@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Password Reset System Testing for caryganz@gmail.com
-Focus: Test the specific issue with "Invalid or expired reset token" errors
+Password Reset Email Testing for caryganz@gmail.com
+Focus: Verify corrected FRONTEND_URL in password reset emails
+Review Request: Send fresh password reset email with corrected FRONTEND_URL
 """
 
 import requests
@@ -18,8 +19,9 @@ API_BASE = f"{BACKEND_URL}/api"
 # Customer from review request
 CUSTOMER_EMAIL = "caryganz@gmail.com"
 
-# Valid token from database (most recent)
-VALID_TOKEN = "dbb2e957-4239-43cc-af4c-bbd32a35d5ca"
+# Expected corrected FRONTEND_URL (fixed from app.dentalaftercarenotes.com)
+EXPECTED_FRONTEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+OLD_FRONTEND_URL = "app.dentalaftercarenotes.com"
 
 class PasswordResetTester:
     def __init__(self):
