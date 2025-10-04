@@ -320,7 +320,7 @@ backend:
 
   - task: "Active Procedures Investigation in Practice Dashboard"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
@@ -329,6 +329,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "🎯 ACTIVE PROCEDURES INVESTIGATION COMPLETED - COMPREHENSIVE UNDERSTANDING ACHIEVED: Conducted thorough investigation of 'Active procedures' in the PRACTICE dashboard as specifically requested in review. (1) ✅ PRACTICE AUTHENTICATION SUCCESSFUL: Successfully authenticated with cganz2279@gmail.com/password123 credentials and obtained valid JWT token with practice ID (0b08d321-ae1a-43d5-b69a-4850cfa3a9fc). (2) ✅ PRACTICE DASHBOARD DATA ANALYZED: Practice 'Cary Ganz DDS PC' currently has 11 Active Procedures and 12 Total Patients. Dashboard shows recent procedures with all having status='active'. (3) ✅ ACTIVE PROCEDURES DEFINITION CLARIFIED: 'Active Procedures' refers to procedures ASSIGNED to patients with status='active' in the patientprocedures collection. This is NOT the total available procedures in the library (87 procedures available). Query: db.patientprocedures.count_documents({'practiceId': practice_id, 'status': 'active'}). (4) ✅ PROCEDURE STATUS LOGIC IDENTIFIED: Procedures are assigned to patients via /api/practice/assign-procedure endpoint with default status='active'. Practices can update procedure status via PUT /api/practice/assignment/{assignment_id} endpoint (allowed fields include 'status'). Status can be changed from 'active' to other values like 'completed', 'cancelled', etc. (5) ✅ PRACTICE LIBRARY CONTEXT CONFIRMED: Found 87 procedures in the global library/catalog via /api/procedures endpoint. These are available procedures that practices can assign to patients. Once assigned, they become 'active procedures' in the practice dashboard. (6) ✅ CURRENT PRACTICE STATUS: Cary Ganz DDS PC has 11 active procedures assigned to patients (mostly to Michael Brown), representing ongoing patient aftercare/post-operative instructions. Recent procedures include Root Canal Therapy, Alveoloplasty, Apicoectomy, and Amalgam Fillings. 🎯 CRITICAL FINDINGS: (1) 'Active Procedures' = patient-assigned procedures with status='active' (currently 11), (2) Appears in Practice Dashboard under stats.activeProcedures, (3) Represents ongoing patient care, not library catalog, (4) Practices can activate/deactivate via assignment status updates, (5) Completely separate from the 87 procedures available in the global library. USER'S QUESTION FULLY ANSWERED: Active procedures in practice dashboard shows ongoing patient care assignments, not available procedure catalog."
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL DISCREPANCY DISCOVERED: User reports seeing only 6 active procedures but backend API returns 11 active procedures. Real-time testing confirmed backend correctly shows 11 active procedures for practice cganz2279@gmail.com including Root Canal Therapy, Alveoloplasty, Apicoectomy, Amalgam Fillings across patients Michael Brown, John Doe, and Barb Schmidt. This indicates a FRONTEND DISPLAY ISSUE or data filtering problem hiding 5 active procedures from user's view. Backend data is accurate - issue is in frontend rendering/filtering of dashboard statistics."
 
   - task: "Video Tutorial System Backend"
     implemented: true
