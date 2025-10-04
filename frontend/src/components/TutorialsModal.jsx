@@ -159,7 +159,7 @@ const TutorialsModal = ({ isOpen, onClose }) => {
                     className="w-full h-full max-h-[500px]"
                     poster={selectedTutorial.thumbnail_url}
                   >
-                    <source src={`${process.env.REACT_APP_BACKEND_URL}${selectedTutorial.video_url}`} type="video/mp4" />
+                    <source src={`${process.env.REACT_APP_BACKEND_URL}/api/video/tutorial/${selectedTutorial.video_url.split('/').pop()}`} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 </div>
