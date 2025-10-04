@@ -282,17 +282,27 @@ async def handle_samcart_webhook(request: Request):
             print(f"❌ Invalid JSON payload: {e}")
             raise HTTPException(status_code=400, detail="Invalid JSON payload")
         
-        # Process payment events only
-        if event_type in ["ProductPurchased", "Order", "OrderCompleted", "Order.Completed"]:
-            print(f"💰 Processing payment event: {event_type}")
-            
-            # Extract customer data
-            customer = payload.get("customer", {})
-            order = payload.get("order", {})
-            
-            customer_email = customer.get("email", "").strip().lower()
-            customer_name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
-            order_id = str(order.get("id", webhook_id))
+        # Process ALL payment events (SamCart sends different event types than expected)
+        print(f"💰 Processing SamCart event: {event_type} (accepting all events)")
+        
+        # Extract customer data - handle real SamCart payload structure
+        customer = payload.get("customer", {})
+        order = payload.get("order", {})
+        products = payload.get("products", [])
+        
+        # Real SamCart structure: payload.customer.email
+        customer_email = customer.get("email", "").strip().lower()
+        customer_name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
+        
+        # Try multiple order ID sources from real SamCart webhooks
+        order_id = str(order.get("id", webhook_id))
+        if not order_id or order_id == webhook_id:
+            # Try product transaction_id if order_id not available
+            if products and isinstance(products, list) and len(products) > 0:
+                order_id = products[0].get("transaction_id", webhook_id)
+        
+        print(f"📧 Customer email extracted: '{customer_email}'")
+        print(f"👤 Customer name extracted: '{customer_name}'")
             
             if not customer_email:
                 print(f"❌ No customer email in webhook payload")
