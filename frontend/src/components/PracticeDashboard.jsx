@@ -1267,7 +1267,7 @@ const PracticeDashboard = () => {
                   <p className="text-sm">
                     {patientSearchTerm 
                       ? `No patients match "${patientSearchTerm}"`
-                      : "No real patients found"
+                      : "No patients found"
                     }
                   </p>
                 </div>
