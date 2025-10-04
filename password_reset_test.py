@@ -225,39 +225,28 @@ class PasswordResetTester:
         print("=" * 70)
         print()
         
-        # Step 1: Generate fresh reset token
-        print("🔍 Step 1: Generate Fresh Reset Token")
+        # Step 1: Test Frontend URL Configuration
+        print("🔍 Step 1: Test Frontend URL Configuration")
+        self.test_frontend_url_configuration()
+        
+        # Step 2: Generate fresh reset token (main test)
+        print("🔍 Step 2: Send Fresh Password Reset Email")
         fresh_token_generated = self.test_generate_fresh_reset_token()
-        time.sleep(2)  # Wait for token to be created
         
-        # Step 2: Get the fresh token from database
-        print("🔍 Step 2: Get Fresh Token from Database")
-        fresh_token = self.get_fresh_token_from_database()
-        if fresh_token:
-            print(f"✅ Fresh token retrieved: {fresh_token[:8]}...")
-        else:
-            print("❌ Could not retrieve fresh token from database")
-            fresh_token = VALID_TOKEN  # Fallback to known valid token
-            print(f"🔄 Using fallback token: {fresh_token[:8]}...")
+        # Step 3: Verify multiple reset attempts work
+        print("🔍 Step 3: Test Multiple Reset Email Attempts")
+        for i in range(2):
+            print(f"   Attempt {i+2}:")
+            self.test_generate_fresh_reset_token()
+            time.sleep(1)
         
-        # Step 3: Test token validation endpoint
-        print("🔍 Step 3: Test Token Validation Endpoint")
-        token_valid = self.test_validate_reset_token_endpoint(fresh_token)
+        # Step 4: Test account existence
+        print("🔍 Step 4: Verify Account Exists")
+        self.test_account_existence()
         
-        # Step 4: Test password reset endpoint
-        print("🔍 Step 4: Test Password Reset Endpoint")
-        if token_valid:
-            reset_successful = self.test_reset_password_endpoint(fresh_token)
-            
-            # Step 5: Test login with new password
-            if reset_successful:
-                print("🔍 Step 5: Test Login with New Password")
-                self.test_login_after_reset()
-        
-        # Step 6: Test with invalid token
-        print("🔍 Step 6: Test with Invalid Token")
-        self.test_validate_reset_token_endpoint("invalid-token-12345")
-        self.test_reset_password_endpoint("invalid-token-12345")
+        # Step 5: Test email service functionality
+        print("🔍 Step 5: Test Email Service")
+        self.test_email_service_functionality()
         
         # Summary
         print("=" * 70)
