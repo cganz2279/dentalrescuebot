@@ -56,7 +56,7 @@ class VideoAPITester:
             
             if response.status_code == 200:
                 data = response.json()
-                self.admin_token = data.get("access_token")
+                self.admin_token = data.get("token")
                 
                 self.log_result(
                     "Admin Authentication",
