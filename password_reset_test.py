@@ -1,14 +1,25 @@
 #!/usr/bin/env python3
 """
-Focused Password Reset and Username Recovery Testing
-Tests the new authentication endpoints for password reset functionality
+Password Reset System Testing for caryganz@gmail.com
+Focus: Test the specific issue with "Invalid or expired reset token" errors
 """
 
 import requests
 import json
 import sys
+import os
+from datetime import datetime
+import time
 
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+# Configuration
+BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+API_BASE = f"{BACKEND_URL}/api"
+
+# Customer from review request
+CUSTOMER_EMAIL = "caryganz@gmail.com"
+
+# Valid token from database (most recent)
+VALID_TOKEN = "dbb2e957-4239-43cc-af4c-bbd32a35d5ca"
 
 class PasswordResetTester:
     def __init__(self, base_url: str):
