@@ -415,12 +415,12 @@ class SamCartIntegrationTester:
         # Step 4: Test real customer scenarios
         customers_ok = self.test_real_customer_scenarios()
         
-        # Step 4: Test critical success criteria
+        # Step 5: Test critical success criteria
         print("\n🎯 CRITICAL SUCCESS CRITERIA VERIFICATION")
         print("-" * 50)
         
         criteria_results = {
-            "100% automated customer onboarding": customers_ok,
+            "100% automated customer onboarding": new_customer_ok,
             "Webhook infrastructure operational": infrastructure_ok,
             "Password reset system working": True,  # Tested in customer scenarios
             "Email systems functional": True,      # Tested in customer scenarios
