@@ -407,7 +407,7 @@ class PracticeLogoEmailTester:
                 # Simulate the logo processing logic from email services
                 logo_html = ""
                 try:
-                    if logo_data and len(logo_data) > 100:  # Check from email service logic
+                    if logo_data and len(logo_data) > 200:  # Check from email service logic
                         # Ensure logo is in proper data URL format
                         if not logo_data.startswith('data:image'):
                             logo_data = f"data:image/png;base64,{logo_data}"
