@@ -362,7 +362,7 @@ const TutorialManagement = ({ isOpen, onClose, adminToken }) => {
                         className="w-full h-48 object-cover"
                         poster={tutorial.thumbnail_url}
                       >
-                        <source src={`${process.env.REACT_APP_BACKEND_URL}${tutorial.video_url}`} type="video/mp4" />
+                        <source src={`${process.env.REACT_APP_BACKEND_URL}/api/video/tutorial/${tutorial.video_url.split('/').pop()}`} type="video/mp4" />
                       </video>
                     </div>
                   </CardContent>
