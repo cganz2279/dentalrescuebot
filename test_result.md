@@ -462,10 +462,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "caryganz@gmail.com Login Issue Investigation"
-    - "Video Tutorial System Backend"
-    - "Practice Login Functionality"
-    - "Custom Domain SMS/Texting Features Testing"
+    - "Active Procedures Investigation in Practice Dashboard"
   stuck_tasks:
     - "Practice Login Functionality"
     - "Video Tutorial System Backend"
