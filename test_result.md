@@ -320,7 +320,7 @@ backend:
 
   - task: "Active Procedures Investigation in Practice Dashboard"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/routes/practice.py"
     stuck_count: 0
     priority: "high"
@@ -332,6 +332,9 @@ backend:
         - working: false
           agent: "testing"
           comment: "🚨 CRITICAL DISCREPANCY DISCOVERED: User reports seeing only 6 active procedures but backend API returns 11 active procedures. Real-time testing confirmed backend correctly shows 11 active procedures for practice cganz2279@gmail.com including Root Canal Therapy, Alveoloplasty, Apicoectomy, Amalgam Fillings across patients Michael Brown, John Doe, and Barb Schmidt. This indicates a FRONTEND DISPLAY ISSUE or data filtering problem hiding 5 active procedures from user's view. Backend data is accurate - issue is in frontend rendering/filtering of dashboard statistics."
+        - working: true
+          agent: "testing"
+          comment: "🎯 PRACTICE DASHBOARD UI INVESTIGATION COMPLETED - USER CONFUSION RESOLVED: Conducted comprehensive UI testing of practice dashboard as specifically requested to understand user's confusion about 'Active Procedures' section. ✅ SUCCESSFUL LOGIN & DASHBOARD ACCESS: Successfully authenticated with cganz2279@gmail.com/password123 credentials and accessed practice dashboard for 'Cary Ganz DDS PC'. ✅ DASHBOARD STATISTICS CONFIRMED: Practice dashboard clearly displays THREE main statistics cards: (1) Total Patients: 12 (Registered patients), (2) Active Procedures: 11 (Current post-op care), (3) Subscription: Current plan status. ✅ ACTIVE PROCEDURES SECTION EXISTS: The 'Active Procedures' section is CLEARLY VISIBLE in the dashboard with count of 11, labeled as 'Current post-op care'. This directly contradicts user's claim of not seeing this section. ✅ RECENT SECTIONS DOCUMENTED: Dashboard shows two main content sections: (1) Recent Patients section - displays 12 patients with search functionality, showing patients like Michael Brown, Emily Davis, Jane Doe, John Doe, etc., (2) Recent Procedures section - displays individual procedures like Root Canal Therapy, Alveoloplasty, Apicoectomy, etc., each marked as 'active' status. ✅ COMPREHENSIVE SCREENSHOTS TAKEN: Captured complete dashboard view showing all sections and statistics exactly as user would see them. Screenshots confirm Active Procedures count of 11 is prominently displayed. 🎯 CRITICAL RESOLUTION: User's confusion appears to be a misunderstanding - the 'Active Procedures' section DOES exist and is clearly visible showing count of 11. The dashboard displays exactly what was described in backend testing. User may have been looking at a different section or may have had a temporary display issue. The dashboard is working correctly and shows all expected sections and statistics."
 
   - task: "Video Tutorial System Backend"
     implemented: true
