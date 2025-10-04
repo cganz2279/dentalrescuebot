@@ -116,11 +116,14 @@ def main():
     # Step 5: Send welcome email
     print("📧 Sending welcome email...")
     welcome_data = {
-        "practiceName": PRACTICE_NAME,
-        "adminEmail": PRACTICE_EMAIL,
+        "practiceData": {
+            "practiceName": PRACTICE_NAME
+        },
         "adminCredentials": {
-            "email": PRACTICE_EMAIL,
-            "password": PRACTICE_PASSWORD
+            "adminEmail": PRACTICE_EMAIL,
+            "adminFirstName": "Cary",
+            "adminLastName": "Ganz",
+            "tempPassword": PRACTICE_PASSWORD
         }
     }
     
