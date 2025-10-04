@@ -50,6 +50,8 @@ const PracticeDashboard = () => {
     startDate: '',
     endDate: ''
   });
+  const [followUpStats, setFollowUpStats] = useState(null);
+  const [showFollowUpStats, setShowFollowUpStats] = useState(false);
   const [showCSVImportModal, setShowCSVImportModal] = useState(false);
   const [showTutorialsModal, setShowTutorialsModal] = useState(false);
 
