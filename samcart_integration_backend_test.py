@@ -409,7 +409,10 @@ class SamCartIntegrationTester:
         # Step 2: Test webhook infrastructure
         infrastructure_ok = self.test_webhook_infrastructure()
         
-        # Step 3: Test real customer scenarios
+        # Step 3: Test new customer complete flow
+        new_customer_ok = self.test_new_customer_flow()
+        
+        # Step 4: Test real customer scenarios
         customers_ok = self.test_real_customer_scenarios()
         
         # Step 4: Test critical success criteria
