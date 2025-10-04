@@ -258,13 +258,7 @@ async def send_admin_notification(practice_info: Dict[str, Any]) -> bool:
         print(f"❌ Error sending admin notification: {e}")
         return False
 
-async def log_webhook_event(webhook_log: SamCartWebhookLog):
-    """Log webhook processing event"""
-    try:
-        log_doc = webhook_log.dict()
-        await db.samcart_webhook_logs.insert_one(log_doc)
-    except Exception as e:
-        print(f"❌ Error logging webhook event: {e}")
+# Note: log_webhook_event function is now inline in the webhook handlers
 
 @router.post("/samcart")
 async def handle_samcart_webhook(request: Request):
