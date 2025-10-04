@@ -4,7 +4,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+BASE_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
 
@@ -42,7 +42,7 @@ def test_email_functionality():
             "adminLastName": "Admin",
             "tempPassword": "TestPass123!"
         },
-        "appUrl": "https://dentalpractice-hub-1.preview.emergentagent.com"
+        "appUrl": "https://samcart-auth-fix.preview.emergentagent.com"
     }
     
     response = session.post(f"{BASE_URL}/admin/send-welcome-email", json=email_data)

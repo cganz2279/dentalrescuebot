@@ -10,7 +10,7 @@ from datetime import datetime
 import sys
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 
 def test_account_creation_webhook():
     """Test the webhook that was supposed to create the account"""

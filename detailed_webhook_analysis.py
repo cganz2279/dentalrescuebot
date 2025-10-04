@@ -8,7 +8,7 @@ import json
 from datetime import datetime, timedelta
 import sys
 
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 
 def analyze_webhook_logs():
     """Get detailed webhook log analysis"""

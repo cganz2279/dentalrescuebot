@@ -6,7 +6,7 @@ import sys
 import uuid
 
 # Configuration
-BASE_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+BASE_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
 

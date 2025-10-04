@@ -9,7 +9,7 @@ import json
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
 
 # Test credentials
 REGULAR_USER_EMAIL = "cganz2279@gmail.com"
@@ -247,7 +247,7 @@ def test_cors_functionality():
     try:
         # Test CORS headers on regular login
         headers = {
-            "Origin": "https://dentalpractice-hub-1.preview.emergentagent.com",
+            "Origin": "https://samcart-auth-fix.preview.emergentagent.com",
             "Content-Type": "application/json"
         }
         

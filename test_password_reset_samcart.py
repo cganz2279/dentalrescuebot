@@ -7,7 +7,7 @@ import asyncio
 import aiohttp
 import json
 
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 
 async def test_password_reset_functionality():
     """Test password reset for both user types"""

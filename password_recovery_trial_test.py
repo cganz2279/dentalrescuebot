@@ -28,7 +28,7 @@ except:
     pass
 
 if not backend_url:
-    backend_url = "https://dentalpractice-hub-1.preview.emergentagent.com"
+    backend_url = "https://samcart-auth-fix.preview.emergentagent.com"
 
 API_BASE = f"{backend_url}/api"
 

@@ -8,7 +8,7 @@ import aiohttp
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 
 async def debug_password_issue():
     """Debug the password corruption issue"""

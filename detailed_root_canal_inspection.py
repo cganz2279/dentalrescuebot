@@ -9,7 +9,7 @@ import json
 import sys
 
 # Backend URL from frontend configuration
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
 
 def authenticate():
     """Authenticate and get JWT token"""

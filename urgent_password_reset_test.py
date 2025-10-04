@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 
 class UrgentPasswordResetTester:
     def __init__(self):

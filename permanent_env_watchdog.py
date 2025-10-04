@@ -22,7 +22,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CORRECT_URL = "https://dentist-portal-3.emergent.host"
-WRONG_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+WRONG_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 ENV_FILE = "/app/frontend/.env"
 BACKUP_FILE = "/app/frontend/.env.backup"
 

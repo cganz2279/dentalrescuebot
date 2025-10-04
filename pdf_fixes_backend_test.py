@@ -11,7 +11,7 @@ import base64
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 TEST_CREDENTIALS = {
     "email": "cganz2279@gmail.com",
     "password": "password123"

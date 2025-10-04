@@ -9,7 +9,7 @@ import json
 from typing import List, Dict, Any
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
 
 # Test credentials
 TEST_EMAIL = "cganz2279@gmail.com"

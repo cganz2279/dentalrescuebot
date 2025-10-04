@@ -26,7 +26,7 @@ except:
     pass
 
 if not backend_url:
-    backend_url = "https://dentalpractice-hub-1.preview.emergentagent.com"
+    backend_url = "https://samcart-auth-fix.preview.emergentagent.com"
 
 print(f"🔗 Using backend URL: {backend_url}")
 

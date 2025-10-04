@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 # Get backend URL from environment
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 
 def test_video_api_endpoint():
     """Test the video API endpoint /api/video/tutorial/{filename} directly"""

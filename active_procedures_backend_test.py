@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
 
 def test_practice_login_and_dashboard():
     """Test practice login and get current dashboard data"""

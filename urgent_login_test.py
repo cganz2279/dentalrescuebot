@@ -12,7 +12,7 @@ from datetime import datetime
 import sys
 
 # Test configuration
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 CRITICAL_EMAIL = "caryganzconsulting@gmail.com"
 CRITICAL_PASSWORD = "TempPass123!"
 EXPECTED_PRACTICE_ID = "68ddb2eb4c5e345f1746e47b"

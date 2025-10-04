@@ -13,7 +13,7 @@ import os
 import sys
 
 # Test configuration
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 URGENT_EMAIL = "caryganzconsulting@gmail.com"
 
 class UrgentPaymentInvestigator:
@@ -295,7 +295,7 @@ class UrgentPaymentInvestigator:
             print("\n🔧 IMMEDIATE ACTIONS REQUIRED:")
             if not webhook_found:
                 print("1. ❗ Check SamCart webhook configuration")
-                print("2. ❗ Verify webhook URL: https://dentalpractice-hub-1.preview.emergentagent.com/api/webhook/samcart")
+                print("2. ❗ Verify webhook URL: https://samcart-auth-fix.preview.emergentagent.com/api/webhook/samcart")
                 print("3. ❗ Test webhook delivery from SamCart admin panel")
                 print("4. ❗ Manually create account for customer")
             elif login_status == "exists_corrupted":

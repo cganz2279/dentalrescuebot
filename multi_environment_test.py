@@ -16,7 +16,7 @@ ENVIRONMENTS = [
     },
     {
         "name": "Frontend .env URL", 
-        "url": "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+        "url": "https://samcart-auth-fix.preview.emergentagent.com/api"
     }
 ]
 

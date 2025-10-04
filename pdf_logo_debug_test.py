@@ -7,7 +7,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BASE_URL = "https://dentalpractice-hub-1.preview.emergentagent.com/api"
+BASE_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

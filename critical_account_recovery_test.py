@@ -15,7 +15,7 @@ import os
 import sys
 
 # Test configuration
-BACKEND_URL = "https://dentalpractice-hub-1.preview.emergentagent.com"
+BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
 CRITICAL_EMAILS = [
     "cganz2279@gmail.com",
     "caryganz@gmail.com", 
