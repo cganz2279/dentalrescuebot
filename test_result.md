@@ -663,9 +663,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tutorial Video Upload System"
-  stuck_tasks:
-    - "Tutorial Video Upload System"
+    - "URGENT: Create caryganz@gmail.com Practice Account"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
