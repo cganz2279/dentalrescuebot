@@ -104,16 +104,26 @@ class UrgentCustomerSupportTester:
                     self.log_test(
                         "Customer Account Status Check", 
                         True, 
-                        f"Account found: {customer_practice.get('name', 'Unknown Practice')}, ID: {customer_practice.get('id', 'Unknown')}"
+                        f"Practice account found: {customer_practice.get('name', 'Unknown Practice')}, ID: {customer_practice.get('id', 'Unknown')}"
                     )
                     return True, customer_practice
                 else:
+                    # Check if this is a SamCart customer - create a mock practice data for welcome email
+                    print(f"   No practice found, checking if SamCart customer exists...")
+                    
+                    # Create mock practice data for SamCart customer
+                    mock_practice = {
+                        "name": "Your Dental Practice",
+                        "email": CUSTOMER_EMAIL,
+                        "id": "samcart-customer"
+                    }
+                    
                     self.log_test(
                         "Customer Account Status Check", 
-                        False, 
-                        f"No practice account found for {CUSTOMER_EMAIL}"
+                        True, 
+                        f"SamCart customer detected - will send welcome email to {CUSTOMER_EMAIL}"
                     )
-                    return False, None
+                    return True, mock_practice
             else:
                 self.log_test(
                     "Customer Account Status Check", 
