@@ -582,9 +582,17 @@ const PracticeDashboard = () => {
           // Don't fail the main operation if logging fails
         }
 
+        // Mark as delivered and schedule 24-hour follow-up
+        try {
+          await handleMarkAsDelivered(procedure.id, procedure.procedureName || procedure.name);
+        } catch (deliveredError) {
+          console.error('Failed to mark as delivered after SMS:', deliveredError);
+          // Don't fail the main operation if this fails
+        }
+
         toast({
           title: "SMS Sent",
-          description: `PDF link sent to ${response.patientCellphone}`,
+          description: `PDF link sent to ${response.patientCellphone} - Follow-up scheduled in 24 hours`,
           variant: "default",
         });
       }
