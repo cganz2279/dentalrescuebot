@@ -39,6 +39,10 @@ def test_practice_login_and_dashboard():
         token = login_result.get("access_token") or login_result.get("token")
         practice_id = login_result.get("practice_id") or login_result.get("practiceId")
         
+        # Extract practice ID from user object if not directly available
+        if not practice_id and "user" in login_result:
+            practice_id = login_result["user"].get("practiceId")
+        
         print(f"✅ Login successful")
         print(f"🔑 Token: {token[:20]}..." if token else "❌ No token found")
         print(f"🏥 Practice ID: {practice_id}")
