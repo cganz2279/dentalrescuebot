@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """
-URGENT: Real Payment Investigation
-User made real SamCart payment but did NOT receive welcome email
-Need to investigate webhook logs, stats, and recent account creation
+URGENT: SamCart Payment Investigation for caryganzconsulting@gmail.com
+User just completed payment but did NOT receive welcome email
+Time Window: Last 10-15 minutes
 """
 
-import requests
+import asyncio
+import aiohttp
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
+import os
 import sys
 
-# Backend URL from frontend .env
+# Test configuration
 BACKEND_URL = "https://aftercareportal.preview.emergentagent.com"
+URGENT_EMAIL = "caryganzconsulting@gmail.com"
 
 def print_section(title):
     print(f"\n{'='*60}")
