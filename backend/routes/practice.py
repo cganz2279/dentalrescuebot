@@ -1081,6 +1081,230 @@ async def get_export_data(current_user: dict = Depends(get_current_user)):
             detail="Failed to get export data"
         )
 
+@router.post("/export-correspondence")
+async def export_correspondence(
+    export_request: CorrespondenceExportRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Export all patient correspondence data with filtering options"""
+    try:
+        practice_id = current_user["practiceId"]
+        role = current_user["role"]
+        
+        if role not in ['practice_admin', 'practice_staff']:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+        
+        # Build date filter
+        date_filter = {}
+        if export_request.start_date:
+            try:
+                start_dt = datetime.fromisoformat(export_request.start_date.replace('Z', '+00:00'))
+                date_filter["$gte"] = start_dt
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid start_date format. Use ISO format (YYYY-MM-DD)"
+                )
+        
+        if export_request.end_date:
+            try:
+                end_dt = datetime.fromisoformat(export_request.end_date.replace('Z', '+00:00'))
+                # Add one day to include the full end date
+                end_dt = end_dt + timedelta(days=1)
+                date_filter["$lt"] = end_dt
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid end_date format. Use ISO format (YYYY-MM-DD)"
+                )
+        
+        # Get all activity logs (correspondence) for this practice
+        activity_query = {"practiceId": practice_id}
+        if date_filter:
+            activity_query["timestamp"] = date_filter
+        
+        activities = await db.activities.find(activity_query).sort("timestamp", -1).to_list(length=None)
+        
+        # Also get procedure assignments with their communication history
+        assignment_query = {"practiceId": practice_id}
+        if date_filter:
+            assignment_query["performedDate"] = date_filter
+        
+        assignments = await db.patientprocedures.find(assignment_query).sort("performedDate", -1).to_list(length=None)
+        
+        # Prepare correspondence data
+        correspondence_data = []
+        
+        # Process activity logs
+        for activity in activities:
+            # Get patient details
+            patient = await db.users.find_one(
+                {"id": activity.get("patientId"), "practiceId": practice_id},
+                {"_id": 0, "firstName": 1, "lastName": 1, "email": 1}
+            )
+            
+            if patient:
+                row = {
+                    "patient_name": f"{patient.get('firstName', '')} {patient.get('lastName', '')}".strip(),
+                    "patient_email": patient.get('email', ''),
+                    "date_sent": activity.get("timestamp", "").replace('T', ' ').replace('Z', ''),
+                    "procedure_name": activity.get("procedureName", ""),
+                    "doctor_name": activity.get("dentistName", ""),
+                    "communication_type": activity.get("activityType", ""),
+                    "status": activity.get("status", ""),
+                    "notes": activity.get("notes", "")
+                }
+                correspondence_data.append(row)
+        
+        # Process procedure assignments for additional correspondence
+        for assignment in assignments:
+            # Get patient details
+            patient = await db.users.find_one(
+                {"id": assignment.get("patientId"), "practiceId": practice_id},
+                {"_id": 0, "firstName": 1, "lastName": 1, "email": 1}
+            )
+            
+            if patient:
+                # Get procedure details
+                procedure = await db.procedures.find_one(
+                    {"id": assignment.get("procedureId")},
+                    {"_id": 0, "name": 1}
+                )
+                
+                procedure_name = procedure.get("name", "") if procedure else assignment.get("procedureName", "")
+                
+                # Create row for procedure assignment (this represents when procedure was sent/delivered)
+                assignment_date = assignment.get("performedDate", "")
+                if isinstance(assignment_date, str):
+                    assignment_date = assignment_date.replace('T', ' ').replace('Z', '')
+                
+                row = {
+                    "patient_name": f"{patient.get('firstName', '')} {patient.get('lastName', '')}".strip(),
+                    "patient_email": patient.get('email', ''),
+                    "date_sent": assignment_date,
+                    "procedure_name": procedure_name,
+                    "doctor_name": assignment.get("dentistName", ""),
+                    "communication_type": "procedure_assigned",
+                    "status": assignment.get("status", "active"),
+                    "notes": assignment.get("practiceNotes", "")
+                }
+                correspondence_data.append(row)
+        
+        # Sort by date (most recent first)
+        correspondence_data.sort(key=lambda x: x["date_sent"], reverse=True)
+        
+        # Generate file based on format
+        if export_request.format.lower() == "excel":
+            return await generate_excel_export(correspondence_data, practice_id)
+        else:
+            return generate_csv_export(correspondence_data, practice_id)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Export correspondence error: {e}")
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to export correspondence data"
+        )
+
+def generate_csv_export(data: List[dict], practice_id: str) -> StreamingResponse:
+    """Generate CSV export file"""
+    output = io.StringIO()
+    
+    if data:
+        writer = csv.DictWriter(output, fieldnames=data[0].keys())
+        writer.writeheader()
+        writer.writerows(data)
+    else:
+        # Empty file with headers
+        writer = csv.DictWriter(output, fieldnames=[
+            "patient_name", "patient_email", "date_sent", "procedure_name", 
+            "doctor_name", "communication_type", "status", "notes"
+        ])
+        writer.writeheader()
+    
+    output.seek(0)
+    
+    # Generate filename with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"correspondence_export_{practice_id}_{timestamp}.csv"
+    
+    def iter_file():
+        yield output.getvalue()
+    
+    return StreamingResponse(
+        iter_file(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+async def generate_excel_export(data: List[dict], practice_id: str) -> StreamingResponse:
+    """Generate Excel export file using openpyxl"""
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill, Alignment
+        
+        # Create workbook and worksheet
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Correspondence Export"
+        
+        if data:
+            # Write headers
+            headers = list(data[0].keys())
+            for col, header in enumerate(headers, 1):
+                cell = ws.cell(row=1, column=col, value=header.replace('_', ' ').title())
+                cell.font = Font(bold=True)
+                cell.fill = PatternFill(start_color="CCCCCC", end_color="CCCCCC", fill_type="solid")
+                cell.alignment = Alignment(horizontal="center")
+            
+            # Write data
+            for row_idx, row_data in enumerate(data, 2):
+                for col_idx, header in enumerate(headers, 1):
+                    ws.cell(row=row_idx, column=col_idx, value=row_data.get(header, ""))
+            
+            # Auto-adjust column widths
+            for column_cells in ws.columns:
+                length = max(len(str(cell.value or "")) for cell in column_cells)
+                ws.column_dimensions[column_cells[0].column_letter].width = min(length + 2, 50)
+        else:
+            # Empty file with headers
+            headers = ["Patient Name", "Patient Email", "Date Sent", "Procedure Name", 
+                      "Doctor Name", "Communication Type", "Status", "Notes"]
+            for col, header in enumerate(headers, 1):
+                cell = ws.cell(row=1, column=col, value=header)
+                cell.font = Font(bold=True)
+                cell.fill = PatternFill(start_color="CCCCCC", end_color="CCCCCC", fill_type="solid")
+        
+        # Save to memory
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+        
+        # Generate filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"correspondence_export_{practice_id}_{timestamp}.xlsx"
+        
+        def iter_file():
+            yield output.getvalue()
+        
+        return StreamingResponse(
+            iter_file(),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+        
+    except ImportError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Excel export requires openpyxl package to be installed"
+        )
+
 @router.post("/log-activity")
 async def log_patient_activity(
     activity_data: dict,
