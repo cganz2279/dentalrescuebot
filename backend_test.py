@@ -19,42 +19,59 @@ TEST_PASSWORD = "password123"
 
 class CorrespondenceExportTester:
     def __init__(self):
-        self.admin_token = None
+        self.session = requests.Session()
+        self.auth_token = None
+        self.practice_id = None
         self.test_results = []
         
-    def log_test(self, test_name, success, details):
+    def log_test(self, test_name, success, details=""):
         """Log test results"""
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}: {details}")
+        print(f"{status}: {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        
         self.test_results.append({
             "test": test_name,
             "success": success,
-            "details": details,
-            "timestamp": datetime.now().isoformat()
+            "details": details
         })
     
-    def admin_login(self):
-        """Authenticate as admin"""
+    def authenticate(self):
+        """Authenticate with the test account"""
+        print("🔐 Authenticating with test account...")
+        
         try:
-            response = requests.post(
-                f"{BACKEND_URL}/api/admin/login",
+            response = self.session.post(
+                f"{BACKEND_URL}/api/auth/login",
                 json={
-                    "email": ADMIN_EMAIL,
-                    "password": ADMIN_PASSWORD
-                }
+                    "email": TEST_EMAIL,
+                    "password": TEST_PASSWORD
+                },
+                headers={"Content-Type": "application/json"}
             )
             
             if response.status_code == 200:
                 data = response.json()
-                self.admin_token = data.get("token")
-                self.log_test("Admin Login", True, f"Successfully authenticated as {ADMIN_EMAIL}")
+                self.auth_token = data.get("token")
+                self.practice_id = data.get("practiceId")
+                
+                self.log_test(
+                    "Authentication", 
+                    True, 
+                    f"Token obtained, Practice ID: {self.practice_id}"
+                )
                 return True
             else:
-                self.log_test("Admin Login", False, f"Login failed: {response.status_code} - {response.text}")
+                self.log_test(
+                    "Authentication", 
+                    False, 
+                    f"Status: {response.status_code}, Response: {response.text}"
+                )
                 return False
                 
         except Exception as e:
-            self.log_test("Admin Login", False, f"Login error: {str(e)}")
+            self.log_test("Authentication", False, f"Exception: {str(e)}")
             return False
     
     def get_admin_headers(self):
