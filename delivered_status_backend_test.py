@@ -243,12 +243,16 @@ class DeliveredStatusTester:
                         active_only_procedures = [proc for proc in recent_procedures if proc.get("status") == "active"]
                         active_count_matches = len(active_only_procedures) == new_active_procedures
                         
+                        # Debug information
+                        delivered_procedures = [proc for proc in recent_procedures if proc.get("status") == "delivered"]
+                        
                         success = count_decreased and status_updated and active_count_matches
                         
                         details = f"Active procedures: {initial_active_procedures} → {new_active_procedures} (expected: {expected_count}). "
                         details += f"Count decreased: {count_decreased}. "
                         details += f"Status updated to delivered: {status_updated}. "
-                        details += f"Active count matches filter: {active_count_matches}"
+                        details += f"Active count matches filter: {active_count_matches}. "
+                        details += f"Recent procedures: {len(recent_procedures)} total, {len(active_only_procedures)} active, {len(delivered_procedures)} delivered"
                         
                         self.log_result("Verify Dashboard Changes", success, details)
                         return success
