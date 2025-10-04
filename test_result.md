@@ -236,7 +236,7 @@ backend:
 
   - task: "SamCart Webhook Integration"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/routes/samcart_webhook.py"
     stuck_count: 0
     priority: "high"
