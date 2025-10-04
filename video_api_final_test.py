@@ -543,15 +543,15 @@ class VideoAPIFinalTester:
         print(f"  ✅ Tutorial videos play correctly in admin panel: {'PASS' if criterion_1 else 'FAIL'}")
         
         # Criterion 2: No more HTML content served instead of videos
-        mime_types_pass = any("MIME Types" in r["test"] and "✅ PASS" in r["status"] for r in self.test_results)
-        routing_pass = any("Routing Workaround" in r["test"] and "✅ PASS" in r["status"] for r in self.test_results)
+        mime_types_pass = any("Videos Served with Proper MIME Types" in r["test"] and "✅ PASS" in r["status"] for r in self.test_results)
+        routing_pass = any("Workaround Bypasses" in r["test"] and "✅ PASS" in r["status"] for r in self.test_results)
         
         criterion_2 = mime_types_pass and routing_pass
         print(f"  ✅ No more HTML content served instead of videos: {'PASS' if criterion_2 else 'FAIL'}")
         
         # Criterion 3: Proper video streaming and seeking functionality
         streaming_pass = any("Streaming Support" in r["test"] and "✅ PASS" in r["status"] for r in self.test_results)
-        functionality_pass = any("Video Streaming Functionality" in r["test"] and "✅ PASS" in r["status"] for r in self.test_results)
+        functionality_pass = any("Video Streaming and Seeking Functionality" in r["test"] and "✅ PASS" in r["status"] for r in self.test_results)
         
         criterion_3 = streaming_pass and functionality_pass
         print(f"  ✅ Proper video streaming and seeking functionality: {'PASS' if criterion_3 else 'FAIL'}")
