@@ -936,7 +936,6 @@ async def reset_password(request: ResetPasswordRequest):
         
         # Determine which collection to search based on reset record
         account_collection = reset_record.get("account_collection", "users")
-        is_samcart_account = reset_record.get("is_samcart_account", False)
         
         # Find user or practice account
         if account_collection == "practices":
