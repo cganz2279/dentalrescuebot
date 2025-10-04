@@ -194,137 +194,24 @@ async def send_welcome_email(practice_info: Dict[str, Any]) -> bool:
         print(f"❌ Error sending welcome email: {e}")
         return False
 
-async def send_welcome_email(practice_info: Dict[str, Any]) -> bool:
-    """Send welcome email to new practice owner"""
+async def log_webhook_event(webhook_data: Dict[str, Any]) -> bool:
+    """Log webhook event to database"""
     try:
-        login_url = f"{FRONTEND_URL}/practice/login"
+        webhook_log = {
+            "webhook_id": webhook_data.get("webhook_id"),
+            "event_type": webhook_data.get("event_type"),
+            "customer_email": webhook_data.get("customer_email"),
+            "order_id": webhook_data.get("order_id"),
+            "status": webhook_data.get("status"),
+            "created_at": datetime.now(timezone.utc),
+            "error_message": webhook_data.get("error_message")
+        }
         
-        # Get practice branding for logo
-        practice_branding = await db.practices.find_one(
-            {"email": practice_info['email']},
-            {"_id": 0, "branding": 1, "name": 1}
-        )
-        
-        logo_html = ""
-        try:
-            if practice_branding and practice_branding.get("branding", {}).get("logo"):
-                logo_data = practice_branding["branding"]["logo"]
-                practice_name = practice_branding.get("name", "Practice")
-                
-                # Validate logo data is not empty or corrupted
-                if logo_data and len(logo_data) > 100:  # Ensure it's not a tiny placeholder
-                    # Ensure logo is in proper data URL format
-                    if not logo_data.startswith('data:image'):
-                        logo_data = f"data:image/png;base64,{logo_data}"
-                    
-                    logo_html = f"""
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <img src="{logo_data}" alt="{practice_name} Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;" />
-                    </div>
-                    """
-                    print(f"✅ Added practice logo to welcome email for {practice_name}")
-                else:
-                    print(f"⚠️ Logo data too small or corrupted for welcome email")
-            else:
-                print(f"ℹ️ No logo available for welcome email")
-        except Exception as logo_error:
-            print(f"❌ Error processing logo for welcome email: {logo_error}")
-            logo_html = ""  # Fallback to no logo
-        
-        # Create welcome email content
-        email_content = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
-            <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                {logo_html}
-                <h1 style="color: #2563eb; margin-bottom: 20px; text-align: center;">Welcome to Dental AfterCare Notes!</h1>
-                
-                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
-                    Dear {practice_info['owner_name']},
-                </p>
-                
-                <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
-                    Congratulations! Your dental practice management account has been successfully created. 
-                    You now have access to our comprehensive aftercare notes system.
-                </p>
-                
-                <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 25px 0;">
-                    <h3 style="color: #1f2937; margin-top: 0;">Your Account Details:</h3>
-                    <p style="margin: 5px 0;"><strong>Practice:</strong> {practice_info['practice_name']}</p>
-                    <p style="margin: 5px 0;"><strong>Email/Username:</strong> {practice_info['email']}</p>
-                    <p style="margin: 5px 0;"><strong>Password:</strong> <code style="background-color: #e5e7eb; padding: 2px 4px; border-radius: 3px;">{practice_info['password']}</code></p>
-                    <p style="margin: 5px 0;"><strong>Trial Period:</strong> 30 days (until {practice_info['trial_end'].strftime('%B %d, %Y')})</p>
-                </div>
-                
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="{login_url}" style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-                        Login to Your Account
-                    </a>
-                </div>
-                
-                <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #f59e0b;">
-                    <h3 style="color: #92400e; margin-top: 0;">🔧 Important Next Steps:</h3>
-                    <ol style="color: #92400e; margin-left: 20px;">
-                        <li style="margin-bottom: 8px;"><strong>Change Your Password:</strong> Go to Practice Settings → Change Password</li>
-                        <li style="margin-bottom: 8px;"><strong>Brand Your Practice:</strong> Upload your logo and customize colors in Practice Settings</li>
-                        <li style="margin-bottom: 8px;"><strong>Complete Your Profile:</strong> Add practice details, contact information, and emergency contacts</li>
-                        <li style="margin-bottom: 8px;"><strong>Watch Tutorials:</strong> Click the "Tutorials" button to learn about all features</li>
-                    </ol>
-                </div>
-                
-                <h3 style="color: #1f2937;">📋 What You Get:</h3>
-                <ul style="color: #374151; line-height: 1.6;">
-                    <li><strong>Professional Aftercare Instructions:</strong> Pre-written, customizable post-op care notes</li>
-                    <li><strong>Email & SMS Delivery:</strong> Send instructions directly to patients</li>
-                    <li><strong>Print Ready PDFs:</strong> Professional branded documents</li>
-                    <li><strong>Patient Management:</strong> Track and manage patient communications</li>
-                    <li><strong>Custom Branding:</strong> Your logo and colors on all materials</li>
-                </ul>
-                
-                <h3 style="color: #1f2937;">💰 Pricing Information:</h3>
-                <ul style="color: #374151; line-height: 1.6;">
-                    <li><strong>Setup:</strong> Free</li>
-                    <li><strong>Trial Period:</strong> 30 days free</li>
-                    <li><strong>Monthly Subscription:</strong> $49.95/month after trial</li>
-                    <li><strong>Upgrades:</strong> Free</li>
-                    <li><strong>Cancellation:</strong> Cancel anytime</li>
-                </ul>
-                
-                <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #10b981;">
-                    <h3 style="color: #047857; margin-top: 0;">📞 Need Help?</h3>
-                    <p style="color: #047857; margin-bottom: 10px;">Our support team is here to help you get started:</p>
-                    <ul style="color: #047857; margin-left: 20px;">
-                        <li>Email: <a href="mailto:support@dentalaftercarenotes.com" style="color: #047857;">support@dentalaftercarenotes.com</a></li>
-                        <li>Watch our tutorial videos in your dashboard</li>
-                        <li>Check our help documentation</li>
-                    </ul>
-                </div>
-                
-                <p style="font-size: 14px; color: #6b7280; text-align: center; margin-top: 30px;">
-                    Thank you for choosing Dental AfterCare Notes!<br>
-                    We're excited to help you provide excellent patient care.
-                </p>
-            </div>
-        </div>
-        """
-        
-        # Send email using existing email service
-        email_data = EmailData(
-            to=[practice_info['email']],
-            subject=f"Welcome to Dental AfterCare Notes - {practice_info['practice_name']}",
-            html_content=email_content
-        )
-        
-        success = await send_email(email_data)
-        
-        if success:
-            print(f"✅ Welcome email sent to {practice_info['email']}")
-        else:
-            print(f"❌ Failed to send welcome email to {practice_info['email']}")
-        
-        return success
+        await db.samcart_webhook_logs.insert_one(webhook_log)
+        return True
         
     except Exception as e:
-        print(f"❌ Error sending welcome email: {e}")
+        print(f"❌ Error logging webhook event: {e}")
         return False
 
 async def send_admin_notification(practice_info: Dict[str, Any]) -> bool:
