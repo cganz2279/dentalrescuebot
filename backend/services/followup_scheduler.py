@@ -304,6 +304,22 @@ class FollowUpScheduler:
                 "status": "failed"
             })
             
+            # Count procedures by sequence status
+            active_procedures = await db.patientprocedures.count_documents({
+                "practiceId": practice_id,
+                "status": "active"
+            })
+            
+            delivered_procedures = await db.patientprocedures.count_documents({
+                "practiceId": practice_id,
+                "status": "delivered"
+            })
+            
+            second_procedures = await db.patientprocedures.count_documents({
+                "practiceId": practice_id,
+                "status": "second"
+            })
+            
             # Get recent follow-up activity
             recent_activity = await db.followup_activity_log.find({
                 "practiceId": practice_id
@@ -315,6 +331,12 @@ class FollowUpScheduler:
                 "failed": failed,
                 "total": scheduled + sent + failed,
                 "success_rate": (sent / (sent + failed) * 100) if (sent + failed) > 0 else 0,
+                "procedure_stats": {
+                    "active": active_procedures,
+                    "delivered": delivered_procedures,
+                    "second": second_procedures,
+                    "total": active_procedures + delivered_procedures + second_procedures
+                },
                 "recent_activity": recent_activity
             }
             
