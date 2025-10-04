@@ -196,7 +196,7 @@ class PracticeLogoEmailTester:
                 decoded_size = 0
                 
             # Check for corrupted 1x1 pixel placeholder (typically very small)
-            is_corrupted = logo_size < 100  # Less than 100 bytes is likely corrupted
+            is_corrupted = logo_size < 200  # Less than 200 bytes is likely corrupted
             
             # Validate logo integrity
             validation_details = {
