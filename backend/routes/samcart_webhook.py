@@ -198,8 +198,8 @@ async def create_practice_from_samcart(samcart_data: Dict[str, Any]) -> Dict[str
                 "productPrice": product.get("price", "0.00")
             },
             
-            # Login credentials
-            "password": password_hash,  # Hashed password for login
+            # Login credentials (store hashed password)
+            "password": password_hash,
             
             # Account settings
             "isActive": True,
