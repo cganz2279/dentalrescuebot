@@ -155,7 +155,7 @@ class FollowUpScheduler:
     async def send_followup_email(self, followup: Dict[str, Any]) -> bool:
         """Send the actual follow-up email"""
         try:
-            # Get practice information for email template
+            # Get practice information for email template (including branding for logo)
             practice = await db.practices.find_one({
                 "id": followup["practiceId"]
             }, {
@@ -163,7 +163,8 @@ class FollowUpScheduler:
                 "name": 1,
                 "phone": 1,
                 "ownerName": 1,
-                "email": 1
+                "email": 1,
+                "branding": 1
             })
             
             if not practice:
