@@ -402,10 +402,8 @@ async def register_practice(request: PracticeRegisterRequest):
                     "zipCode": request.zipCode
                 }
                 
-                email_sent = email_service.send_registration_notification(
-                    registration_data, 
-                    "trial"
-                )
+                # Admin notification disabled for privacy
+                email_sent = True  # Skip admin notifications
                 
                 if not email_sent:
                     print(f"Failed to send email notification for trial registration: {request.email}")
