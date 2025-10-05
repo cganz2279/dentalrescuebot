@@ -272,11 +272,23 @@ async def get_all_practices(
         
         # Add user info for each practice
         for practice in practices:
-            admin_user = await db.users.find_one(
-                {"practiceId": practice["id"], "role": "practice_admin"},
-                {"_id": 0, "password": 0}
-            )
-            practice["admin_user"] = admin_user
+            if practice.get("source") == "samcart":
+                # SamCart practices have embedded user data
+                practice["admin_user"] = {
+                    "firstName": practice.get("ownerName", "").split()[0] if practice.get("ownerName") else "Practice",
+                    "lastName": practice.get("ownerName", "").split()[-1] if practice.get("ownerName") and " " in practice.get("ownerName") else "Owner",
+                    "email": practice.get("email"),
+                    "role": "practice_admin",
+                    "practiceId": practice.get("id"),
+                    "isActive": practice.get("isActive", True)
+                }
+            else:
+                # Regular practices have separate user records
+                admin_user = await db.users.find_one(
+                    {"practiceId": practice["id"], "role": "practice_admin"},
+                    {"_id": 0, "password": 0}
+                )
+                practice["admin_user"] = admin_user
             
             # Get payment transactions
             transactions = await db.payment_transactions.find(
