@@ -549,9 +549,13 @@ const PracticeSettingsPage = () => {
                     <Input
                       name="phone"
                       value={formData.phone}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        const formattedPhone = formatPhoneNumber(e.target.value);
+                        handleInputChange({...e, target: {...e.target, value: formattedPhone, name: 'phone'}});
+                      }}
                       className="pl-10"
                       placeholder="(555) 123-4567"
+                      maxLength={14}
                     />
                   </div>
                 </div>
