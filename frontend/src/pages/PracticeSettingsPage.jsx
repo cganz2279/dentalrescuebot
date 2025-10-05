@@ -317,11 +317,14 @@ const PracticeSettingsPage = () => {
       
       // Only show toast for general errors, not field-specific ones
       if (!hasFieldErrors) {
+        console.log('📢 Showing toast error since no field errors detected');
         toast({
           title: "Error", 
           description: errorMessage,
           variant: "destructive",
         });
+      } else {
+        console.log('🎯 Field errors detected, not showing toast:', newFieldErrors);
       }
       
       // Clear any form error
