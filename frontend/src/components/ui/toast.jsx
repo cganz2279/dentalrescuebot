@@ -69,12 +69,31 @@ const ToastClose = React.forwardRef(({ className, ...props }, ref) => (
 ))
 ToastClose.displayName = ToastPrimitives.Close.displayName
 
-const ToastTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <ToastPrimitives.Title
-    ref={ref}
-    className={cn("text-sm font-semibold [&+div]:text-xs", className)}
-    {...props} />
-))
+const ToastTitle = React.forwardRef(({ className, children, ...props }, ref) => {
+  // Safely convert children to string if it's an error object
+  let safeChildren = children;
+  
+  if (children && typeof children === 'object' && !React.isValidElement(children)) {
+    // Handle error objects
+    if (children.msg) {
+      safeChildren = children.msg;
+    } else if (children.message) {
+      safeChildren = String(children.message);
+    } else {
+      safeChildren = String(children);
+    }
+  }
+  
+  return (
+    <ToastPrimitives.Title
+      ref={ref}
+      className={cn("text-sm font-semibold [&+div]:text-xs", className)}
+      {...props}
+    >
+      {safeChildren}
+    </ToastPrimitives.Title>
+  );
+})
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
 const ToastDescription = React.forwardRef(({ className, children, ...props }, ref) => {
