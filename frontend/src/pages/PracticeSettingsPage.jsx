@@ -894,7 +894,7 @@ const PracticeSettingsPage = () => {
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Email Address *</label>
                       <Input
-                        type="email"
+                        type="text"
                         value={newDentist.email}
                         onChange={(e) => {
                           console.log('Email onChange:', e.target.value);
@@ -904,6 +904,8 @@ const PracticeSettingsPage = () => {
                           console.log('Email onBlur:', e.target.value);
                         }}
                         placeholder="Enter email address"
+                        autoComplete="email"
+                        noValidate
                       />
                     </div>
                     
