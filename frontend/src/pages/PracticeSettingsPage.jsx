@@ -906,8 +906,13 @@ const PracticeSettingsPage = () => {
                         type="text"
                         value={newDentist.email}
                         onChange={(e) => {
-                          console.log('Email onChange:', e.target.value);
-                          setNewDentist({...newDentist, email: e.target.value});
+                          const newEmail = e.target.value;
+                          console.log('Email onChange:', newEmail);
+                          
+                          const updatedDentist = {...newDentist, email: newEmail};
+                          debugLog('Setting newDentist to:', updatedDentist);
+                          
+                          setNewDentist(updatedDentist);
                         }}
                         onBlur={(e) => {
                           console.log('Email onBlur:', e.target.value);
