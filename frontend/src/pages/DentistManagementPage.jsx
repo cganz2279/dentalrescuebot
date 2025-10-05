@@ -128,11 +128,112 @@ const DentistManagementPage = () => {
       setShowAddDentist(false);
       loadDentists(); // Reload the list
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.response?.data?.detail || "Failed to save dentist",
-        variant: "destructive",
+      console.error('🚨 Dentist save error caught:', error);
+      console.error('🚨 Error response data:', error.response?.data);
+      
+      let errorMessage = "Failed to save dentist";
+      let hasFieldErrors = false;
+      const newFieldErrors = {};
+      
+      try {
+        // Handle different error response formats
+        if (error.response?.data) {
+          const errorData = error.response.data;
+          console.log('🔍 Processing error data:', errorData);
+          
+          // Handle Pydantic validation errors (array format)
+          if (Array.isArray(errorData)) {
+            console.log('📝 Array format validation error');
+            errorData.forEach(err => {
+              if (typeof err === 'object' && err.loc && err.msg) {
+                const fieldName = err.loc[err.loc.length - 1]; // Get the field name
+                if (fieldName === 'email') {
+                  newFieldErrors.email = err.msg;
+                  hasFieldErrors = true;
+                } else {
+                  errorMessage = err.msg;
+                }
+              }
+            });
+            if (!hasFieldErrors) {
+              errorMessage = errorData.map(err => 
+                typeof err === 'object' && err.msg ? err.msg : String(err)
+              ).join(', ');
+            }
+          }
+          // Handle FastAPI validation error with detail containing array
+          else if (errorData.detail && Array.isArray(errorData.detail)) {
+            console.log('📝 Detail array format validation error');
+            errorData.detail.forEach(err => {
+              if (typeof err === 'object' && err.loc && err.msg) {
+                const fieldName = err.loc[err.loc.length - 1]; // Get the field name
+                if (fieldName === 'email') {
+                  newFieldErrors.email = err.msg;
+                  hasFieldErrors = true;
+                } else {
+                  errorMessage = err.msg;
+                }
+              }
+            });
+            if (!hasFieldErrors) {
+              errorMessage = errorData.detail.map(err => 
+                typeof err === 'object' && err.msg ? err.msg : String(err)
+              ).join(', ');
+            }
+          }
+          // Handle standard error responses
+          else if (typeof errorData.detail === 'string') {
+            console.log('📝 String detail error');
+            errorMessage = errorData.detail;
+          }
+          // Handle any other object error responses - convert to string
+          else if (typeof errorData === 'object') {
+            console.log('📝 Object error - converting to string');
+            errorMessage = `Validation error: ${JSON.stringify(errorData)}`;
+          }
+          else {
+            console.log('📝 Other error type');
+            errorMessage = String(errorData);
+          }
+        }
+        // Fallback for network errors
+        else if (error.message) {
+          errorMessage = error.message;
+        }
+      } catch (parseError) {
+        console.error('Error parsing error response:', parseError);
+        errorMessage = "An unexpected error occurred";
+      }
+      
+      // Ensure the errorMessage is always a string
+      if (typeof errorMessage !== 'string') {
+        console.warn('⚠️ Error message was not a string:', errorMessage);
+        errorMessage = String(errorMessage);
+      }
+      
+      console.log('✅ Final error processing:', { 
+        hasFieldErrors, 
+        newFieldErrors, 
+        errorMessage,
+        action: newDentist.id ? 'UPDATE' : 'ADD'
       });
+      
+      // Set field-specific errors
+      setFieldErrors(newFieldErrors);
+      console.log('🔧 Set fieldErrors state to:', newFieldErrors);
+      
+      // Only show toast for general errors, not field-specific ones
+      if (!hasFieldErrors) {
+        console.log('📢 Showing toast error since no field errors detected');
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        console.log('🎯 Field errors detected, not showing toast:', newFieldErrors);
+        console.log('🚫 Suppressing toast notification');
+      }
     } finally {
       setSaving(false);
     }
