@@ -896,7 +896,13 @@ const PracticeSettingsPage = () => {
                       <Input
                         type="email"
                         value={newDentist.email}
-                        onChange={(e) => setNewDentist({...newDentist, email: e.target.value})}
+                        onChange={(e) => {
+                          console.log('Email onChange:', e.target.value);
+                          setNewDentist({...newDentist, email: e.target.value});
+                        }}
+                        onBlur={(e) => {
+                          console.log('Email onBlur:', e.target.value);
+                        }}
                         placeholder="Enter email address"
                       />
                     </div>
