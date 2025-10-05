@@ -424,7 +424,9 @@ class EmailService:
                 html_content=html_content
             )
             
-            response = self.sg.send(message)
+            # Create fresh SendGrid client with current API key to avoid 401 errors
+            fresh_sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = fresh_sg.send(message)
             
             if response.status_code in [200, 202]:
                 print(f"✅ Welcome email sent successfully to {admin_email}")
