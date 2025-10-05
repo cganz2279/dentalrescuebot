@@ -24,6 +24,7 @@ const DentistManagementPage = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dentists, setDentists] = useState([]);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [newDentist, setNewDentist] = useState({
     firstName: '',
     lastName: '',
