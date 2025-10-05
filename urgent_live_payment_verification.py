@@ -152,7 +152,8 @@ class UrgentLivePaymentVerification:
             )
             
             if response.status_code == 200:
-                practices = response.json()
+                data = response.json()
+                practices = data.get('practices', [])
                 
                 for practice in practices:
                     if practice.get('email') == self.customer_email:
@@ -231,7 +232,8 @@ class UrgentLivePaymentVerification:
             )
             
             if response.status_code == 200:
-                practices = response.json()
+                data = response.json()
+                practices = data.get('practices', [])
                 
                 for practice in practices:
                     if practice.get('email') == self.customer_email:
