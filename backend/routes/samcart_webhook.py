@@ -337,13 +337,34 @@ async def handle_samcart_webhook(request: Request):
                 }
             )
         
-        elif account_result["status"] == "duplicate":
-            print(f"⚠️ Duplicate account for {customer_email}")
+        elif account_result["status"] == "duplicate_with_email":
+            print(f"📧 Sending welcome email for duplicate payment: {customer_email}")
+            email_success = await send_welcome_email(account_result)
+            
+            if email_success:
+                print(f"✅ Welcome email sent for duplicate payment to {customer_email}")
+            else:
+                print(f"❌ Welcome email failed for duplicate payment to {customer_email}")
+            
             return JSONResponse(
                 status_code=200,
                 content={
                     "webhook_id": webhook_id,
-                    "status": "duplicate",
+                    "status": "duplicate_with_email",
+                    "message": f"Account exists - welcome email sent with new credentials",
+                    "practice_id": account_result.get("practice_id"),
+                    "email": customer_email,
+                    "email_sent": email_success
+                }
+            )
+        
+        elif account_result["status"] == "duplicate":
+            print(f"⚠️ Duplicate account for {customer_email} - no email sent")
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "webhook_id": webhook_id,
+                    "status": "duplicate", 
                     "message": f"Account already exists for {customer_email}",
                     "practice_id": account_result.get("practice_id")
                 }
