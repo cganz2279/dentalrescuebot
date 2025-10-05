@@ -116,10 +116,22 @@ const PracticeSettingsPage = () => {
   };
 
   const handleAddDentist = async () => {
+    // Frontend validation
     if (!newDentist.firstName || !newDentist.lastName || !newDentist.email) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields (First Name, Last Name, Email)",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newDentist.email)) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid email address",
         variant: "destructive",
       });
       return;
