@@ -204,7 +204,8 @@ const PracticeSettingsPage = () => {
       setShowAddDentist(false);
       loadDentists(); // Reload the list
     } catch (error) {
-      console.error('Add dentist error:', error);
+      console.error('🚨 Add dentist error caught:', error);
+      console.error('🚨 Error response data:', error.response?.data);
       
       let errorMessage = "Failed to save dentist";
       
@@ -212,9 +213,11 @@ const PracticeSettingsPage = () => {
         // Handle different error response formats
         if (error.response?.data) {
           const errorData = error.response.data;
+          console.log('🔍 Processing error data:', errorData);
           
           // Handle Pydantic validation errors (array format)
           if (Array.isArray(errorData)) {
+            console.log('📝 Array format validation error');
             errorMessage = errorData.map(err => {
               if (typeof err === 'object' && err.msg) {
                 return err.msg;
@@ -224,6 +227,7 @@ const PracticeSettingsPage = () => {
           }
           // Handle FastAPI validation error with detail containing array
           else if (errorData.detail && Array.isArray(errorData.detail)) {
+            console.log('📝 Detail array format validation error');
             errorMessage = errorData.detail.map(err => {
               if (typeof err === 'object' && err.msg) {
                 return err.msg;
@@ -233,13 +237,16 @@ const PracticeSettingsPage = () => {
           }
           // Handle standard error responses
           else if (typeof errorData.detail === 'string') {
+            console.log('📝 String detail error');
             errorMessage = errorData.detail;
           }
           // Handle any other object error responses - convert to string
           else if (typeof errorData === 'object') {
+            console.log('📝 Object error - converting to string');
             errorMessage = `Validation error: ${JSON.stringify(errorData)}`;
           }
           else {
+            console.log('📝 Other error type');
             errorMessage = String(errorData);
           }
         }
@@ -254,8 +261,11 @@ const PracticeSettingsPage = () => {
       
       // Ensure the errorMessage is always a string
       if (typeof errorMessage !== 'string') {
+        console.warn('⚠️ Error message was not a string:', errorMessage);
         errorMessage = String(errorMessage);
       }
+      
+      console.log('✅ Final error message to display:', errorMessage);
       
       toast({
         title: "Error", 
