@@ -67,28 +67,35 @@ def generate_secure_password() -> str:
 async def create_practice_account(customer_email: str, customer_name: str, order_id: str) -> Dict[str, Any]:
     """Create a new practice account from SamCart payment data"""
     try:
-        # Check if practice already exists
+        # Check if we've already processed this specific order to prevent duplicate emails
+        existing_webhook = await db.samcart_webhook_logs.find_one({
+            "customer_email": customer_email,
+            "order_id": order_id,
+            "status": "success"
+        })
+        
+        if existing_webhook:
+            print(f"⚠️ Order {order_id} already processed for {customer_email} - preventing duplicate email")
+            existing_practice = await db.practices.find_one({"email": customer_email})
+            return {
+                "status": "already_processed",
+                "message": f"Order {order_id} already processed - no duplicate email sent",
+                "practice_id": existing_practice.get("id") if existing_practice else None
+            }
+        
+        # Check if practice already exists (for different orders)
         existing_practice = await db.practices.find_one({"email": customer_email})
         if existing_practice:
-            print(f"⚠️ Practice already exists for {customer_email} - but sending welcome email for duplicate payment")
+            print(f"⚠️ Practice exists for {customer_email} but this is a new order {order_id} - sending welcome email")
             
-            # For duplicate payments, still send welcome email with existing credentials
-            # Generate new temporary password for security
-            temp_password = generate_secure_password()
-            password_hash = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            
-            # Update with new password
-            await db.practices.update_one(
-                {"email": customer_email},
-                {"$set": {"password": password_hash, "updatedAt": datetime.now(timezone.utc).isoformat()}}
-            )
-            
+            # For new orders from existing customers, send welcome email with existing credentials
+            # Don't change password, just use existing account
             return {
-                "status": "duplicate_with_email",
-                "message": f"Account exists - sending welcome email with new credentials",
+                "status": "existing_customer_new_order",
+                "message": f"Existing customer new order - sending welcome email",
                 "practice_id": existing_practice.get("id"),
                 "email": customer_email,
-                "password": temp_password,  # Return new password for welcome email
+                "password": "Please use password reset",  # Don't expose existing password
                 "practice_name": existing_practice.get("name", f"Dr. {customer_name} Dental Practice"),
                 "owner_name": existing_practice.get("ownerName", customer_name),
                 "trial_end": existing_practice.get("subscription", {}).get("trialEndDate", datetime.now(timezone.utc).isoformat())
