@@ -290,16 +290,22 @@ const PracticeSettingsPage = () => {
         errorMessage = String(errorMessage);
       }
       
-      console.log('✅ Final error message to display:', errorMessage);
+      console.log('✅ Final error processing:', { hasFieldErrors, newFieldErrors, errorMessage });
       
-      // Clear any form error and show toast instead
+      // Set field-specific errors
+      setFieldErrors(newFieldErrors);
+      
+      // Only show toast for general errors, not field-specific ones
+      if (!hasFieldErrors) {
+        toast({
+          title: "Error", 
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+      
+      // Clear any form error
       setFormError(null);
-      
-      toast({
-        title: "Error", 
-        description: errorMessage,
-        variant: "destructive",
-      });
     } finally {
       setSaving(false);
     }
