@@ -1022,6 +1022,7 @@ const PracticeSettingsPage = () => {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 };
 
