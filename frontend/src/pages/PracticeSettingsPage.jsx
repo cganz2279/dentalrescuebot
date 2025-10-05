@@ -268,6 +268,9 @@ const PracticeSettingsPage = () => {
       
       console.log('✅ Final error message to display:', errorMessage);
       
+      // Clear any form error and show toast instead
+      setFormError(null);
+      
       toast({
         title: "Error", 
         description: errorMessage,
