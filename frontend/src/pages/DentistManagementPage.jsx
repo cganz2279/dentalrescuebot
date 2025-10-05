@@ -35,6 +35,32 @@ const DentistManagementPage = () => {
   });
   const [showAddDentist, setShowAddDentist] = useState(false);
 
+  // Phone number formatting function
+  const formatPhoneNumber = (value) => {
+    console.log('🔢 Formatting phone number:', value);
+    
+    // Remove all non-numeric characters
+    const phoneNumber = value.replace(/[^\d]/g, '');
+    console.log('📱 Cleaned phone number:', phoneNumber);
+    
+    // Don't format if less than 4 digits
+    if (phoneNumber.length < 4) {
+      console.log('📱 Too short, returning as-is');
+      return phoneNumber;
+    }
+    
+    let formatted;
+    // Format as (123) 123-1234
+    if (phoneNumber.length <= 6) {
+      formatted = `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    } else {
+      formatted = `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    }
+    
+    console.log('📱 Formatted result:', formatted);
+    return formatted;
+  };
+
   useEffect(() => {
     loadDentists();
   }, []);
