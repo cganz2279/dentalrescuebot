@@ -50,6 +50,7 @@ const PracticeSettingsPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   
   const [formData, setFormData] = useState({
