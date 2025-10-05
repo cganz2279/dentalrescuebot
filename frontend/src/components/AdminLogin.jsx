@@ -258,8 +258,8 @@ const AdminDashboard = ({ adminToken }) => {
 
   const loadPractices = async () => {
     try {
-      // Load all practices with a higher limit to ensure we get all accounts
-      const response = await fetch(`${API_BASE}/practices?limit=200`, {
+      // Load all practices with maximum limit to ensure we get all accounts  
+      const response = await fetch(`${API_BASE}/practices?limit=100`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
 
