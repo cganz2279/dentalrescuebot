@@ -344,24 +344,33 @@ async def handle_samcart_webhook(request: Request):
                 }
             )
         
-        elif account_result["status"] == "duplicate_with_email":
-            print(f"📧 Sending welcome email for duplicate payment: {customer_email}")
-            email_success = await send_welcome_email(account_result)
-            
-            if email_success:
-                print(f"✅ Welcome email sent for duplicate payment to {customer_email}")
-            else:
-                print(f"❌ Welcome email failed for duplicate payment to {customer_email}")
-            
+        elif account_result["status"] == "already_processed":
+            print(f"⚠️ Duplicate webhook for order {order_id} - {customer_email}")
             return JSONResponse(
                 status_code=200,
                 content={
                     "webhook_id": webhook_id,
-                    "status": "duplicate_with_email",
-                    "message": f"Account exists - welcome email sent with new credentials",
+                    "status": "already_processed",
+                    "message": f"Order {order_id} already processed - duplicate webhook ignored",
                     "practice_id": account_result.get("practice_id"),
                     "email": customer_email,
-                    "email_sent": email_success
+                    "email_sent": False
+                }
+            )
+        
+        elif account_result["status"] == "existing_customer_new_order":
+            print(f"📧 Existing customer new order - directing to password reset: {customer_email}")
+            # Don't send welcome email for existing customers - direct them to password reset
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "webhook_id": webhook_id,
+                    "status": "existing_customer_new_order", 
+                    "message": f"Existing customer - use password reset for account access",
+                    "practice_id": account_result.get("practice_id"),
+                    "email": customer_email,
+                    "email_sent": False,
+                    "note": "Customer should use password reset at login page"
                 }
             )
         
