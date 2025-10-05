@@ -211,6 +211,9 @@ const PracticeSettingsPage = () => {
       
       let errorMessage = "Failed to save dentist";
       
+      let hasFieldErrors = false;
+      const newFieldErrors = {};
+      
       try {
         // Handle different error response formats
         if (error.response?.data) {
@@ -220,22 +223,42 @@ const PracticeSettingsPage = () => {
           // Handle Pydantic validation errors (array format)
           if (Array.isArray(errorData)) {
             console.log('📝 Array format validation error');
-            errorMessage = errorData.map(err => {
-              if (typeof err === 'object' && err.msg) {
-                return err.msg;
+            errorData.forEach(err => {
+              if (typeof err === 'object' && err.loc && err.msg) {
+                const fieldName = err.loc[err.loc.length - 1]; // Get the field name
+                if (fieldName === 'email') {
+                  newFieldErrors.email = err.msg;
+                  hasFieldErrors = true;
+                } else {
+                  errorMessage = err.msg;
+                }
               }
-              return String(err);
-            }).join(', ');
+            });
+            if (!hasFieldErrors) {
+              errorMessage = errorData.map(err => 
+                typeof err === 'object' && err.msg ? err.msg : String(err)
+              ).join(', ');
+            }
           }
           // Handle FastAPI validation error with detail containing array
           else if (errorData.detail && Array.isArray(errorData.detail)) {
             console.log('📝 Detail array format validation error');
-            errorMessage = errorData.detail.map(err => {
-              if (typeof err === 'object' && err.msg) {
-                return err.msg;
+            errorData.detail.forEach(err => {
+              if (typeof err === 'object' && err.loc && err.msg) {
+                const fieldName = err.loc[err.loc.length - 1]; // Get the field name
+                if (fieldName === 'email') {
+                  newFieldErrors.email = err.msg;
+                  hasFieldErrors = true;
+                } else {
+                  errorMessage = err.msg;
+                }
               }
-              return String(err);
-            }).join(', ');
+            });
+            if (!hasFieldErrors) {
+              errorMessage = errorData.detail.map(err => 
+                typeof err === 'object' && err.msg ? err.msg : String(err)
+              ).join(', ');
+            }
           }
           // Handle standard error responses
           else if (typeof errorData.detail === 'string') {
