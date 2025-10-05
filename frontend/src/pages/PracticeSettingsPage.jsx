@@ -75,6 +75,15 @@ const PracticeSettingsPage = () => {
     licenseNumber: '',
     specialties: []
   });
+
+  // Debug function to safely log objects
+  const debugLog = (message, obj) => {
+    try {
+      console.log(message, JSON.stringify(obj, null, 2));
+    } catch (e) {
+      console.log(message, obj);
+    }
+  };
   const [showAddDentist, setShowAddDentist] = useState(false);
 
   useEffect(() => {
