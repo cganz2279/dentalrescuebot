@@ -258,15 +258,23 @@ const AdminDashboard = ({ adminToken }) => {
 
   const loadPractices = async () => {
     try {
-      // Load all practices with maximum limit to ensure we get all accounts  
-      const response = await fetch(`${API_BASE}/practices?limit=100`, {
-        headers: { 'Authorization': `Bearer ${adminToken}` }
+      // Force cache refresh and load all practices with maximum limit
+      const response = await fetch(`${API_BASE}/practices?limit=100&t=${Date.now()}`, {
+        headers: { 
+          'Authorization': `Bearer ${adminToken}`,
+          'Cache-Control': 'no-cache'
+        }
       });
 
       if (response.ok) {
         const data = await response.json();
+        console.log('🔄 ADMIN PRACTICES LOADED:', {
+          total: data.practices?.length || 0,
+          hasCaryganz: data.practices?.some(p => p.email === 'caryganz@gmail.com'),
+          hasCaryConsulting: data.practices?.some(p => p.email === 'caryganzconsulting@gmail.com')
+        });
         setPractices(data.practices || []);
-        console.log(`Loaded ${data.practices?.length || 0} practices including SamCart customers`);
+        console.log(`✅ Loaded ${data.practices?.length || 0} practices including SamCart customers`);
       }
     } catch (error) {
       console.error('Failed to load practices:', error);
