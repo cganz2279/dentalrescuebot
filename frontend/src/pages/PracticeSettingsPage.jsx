@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import ErrorBoundary from '../components/ErrorBoundary';
+
+// Global error handler for debugging
+window.addEventListener('error', (event) => {
+  if (event.error?.message?.includes('Objects are not valid as a React child')) {
+    console.error('🚨 React Child Object Error Details:', {
+      message: event.error.message,
+      stack: event.error.stack,
+      filename: event.filename,
+      lineno: event.lineno
+    });
+  }
+});
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
