@@ -320,10 +320,16 @@ const PracticeSettingsPage = () => {
         errorMessage = String(errorMessage);
       }
       
-      console.log('✅ Final error processing:', { hasFieldErrors, newFieldErrors, errorMessage });
+      console.log('✅ Final error processing:', { 
+        hasFieldErrors, 
+        newFieldErrors, 
+        errorMessage,
+        action: newDentist.id ? 'UPDATE' : 'ADD'
+      });
       
       // Set field-specific errors
       setFieldErrors(newFieldErrors);
+      console.log('🔧 Set fieldErrors state to:', newFieldErrors);
       
       // Only show toast for general errors, not field-specific ones
       if (!hasFieldErrors) {
@@ -335,6 +341,7 @@ const PracticeSettingsPage = () => {
         });
       } else {
         console.log('🎯 Field errors detected, not showing toast:', newFieldErrors);
+        console.log('🚫 Suppressing toast notification');
       }
       
       // Clear any form error
