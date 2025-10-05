@@ -161,9 +161,31 @@ const PracticeSettingsPage = () => {
       setShowAddDentist(false);
       loadDentists(); // Reload the list
     } catch (error) {
+      console.error('Add dentist error:', error);
+      
+      let errorMessage = "Failed to save dentist";
+      
+      // Handle different error response formats
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        
+        // Handle Pydantic validation errors
+        if (Array.isArray(errorData) && errorData[0]?.msg) {
+          errorMessage = errorData.map(err => err.msg).join(', ');
+        }
+        // Handle standard error responses
+        else if (typeof errorData.detail === 'string') {
+          errorMessage = errorData.detail;
+        }
+        // Handle object error responses
+        else if (typeof errorData === 'object') {
+          errorMessage = JSON.stringify(errorData);
+        }
+      }
+      
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Failed to save dentist",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
