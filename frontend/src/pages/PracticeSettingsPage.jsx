@@ -1056,6 +1056,19 @@ const PracticeSettingsPage = () => {
 
         </div>
       </div>
+      
+      {/* Debug: Check if formError contains validation object */}
+      {formError && (
+        <div className="max-w-4xl mx-auto p-4 bg-red-50 border border-red-200 rounded-md mt-4">
+          <h4 className="text-red-800 font-semibold">Debug - Form Error:</h4>
+          <pre className="text-red-600 text-sm mt-2 whitespace-pre-wrap overflow-auto">
+            {typeof formError === 'object' 
+              ? JSON.stringify(formError, null, 2) 
+              : String(formError)
+            }
+          </pre>
+        </div>
+      )}
     </div>
     </ErrorBoundary>
   );
