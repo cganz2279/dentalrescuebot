@@ -362,9 +362,10 @@ class SamCartFinalFlowTester:
             status = data.get("status", "")
             
             if email_sent and status == "success":
-                # Verify credentials are included in response
-                password = data.get("password", "")
-                practice_id = data.get("practice_id", "")
+                # Verify credentials are included in response (check practice_info object)
+                practice_info = data.get("practice_info", {})
+                password = practice_info.get("password", "")
+                practice_id = practice_info.get("practice_id", "")
                 
                 if password and practice_id:
                     self.log_test(
@@ -377,7 +378,7 @@ class SamCartFinalFlowTester:
                     self.log_test(
                         "Welcome Email Delivery - Credentials",
                         False,
-                        "Email sent but missing credentials in response"
+                        f"Email sent but missing credentials in response. practice_info: {practice_info}"
                     )
                     return False
             else:
