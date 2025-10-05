@@ -97,6 +97,15 @@ const PracticeSettingsPage = () => {
       console.log(message, obj);
     }
   };
+
+  // Monitor all state changes that might cause re-renders
+  useEffect(() => {
+    console.log('🔍 newDentist state changed:', newDentist);
+  }, [newDentist]);
+
+  useEffect(() => {
+    console.log('🔍 dentists state changed:', dentists);
+  }, [dentists]);
   const [showAddDentist, setShowAddDentist] = useState(false);
 
   useEffect(() => {
