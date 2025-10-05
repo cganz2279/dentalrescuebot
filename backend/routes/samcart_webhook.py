@@ -70,11 +70,28 @@ async def create_practice_account(customer_email: str, customer_name: str, order
         # Check if practice already exists
         existing_practice = await db.practices.find_one({"email": customer_email})
         if existing_practice:
-            print(f"⚠️ Practice already exists for {customer_email}")
+            print(f"⚠️ Practice already exists for {customer_email} - but sending welcome email for duplicate payment")
+            
+            # For duplicate payments, still send welcome email with existing credentials
+            # Generate new temporary password for security
+            temp_password = generate_secure_password()
+            password_hash = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            # Update with new password
+            await db.practices.update_one(
+                {"email": customer_email},
+                {"$set": {"password": password_hash, "updatedAt": datetime.now(timezone.utc).isoformat()}}
+            )
+            
             return {
-                "status": "duplicate",
-                "message": f"Account already exists for {customer_email}",
-                "practice_id": existing_practice.get("id")
+                "status": "duplicate_with_email",
+                "message": f"Account exists - sending welcome email with new credentials",
+                "practice_id": existing_practice.get("id"),
+                "email": customer_email,
+                "password": temp_password,  # Return new password for welcome email
+                "practice_name": existing_practice.get("name", f"Dr. {customer_name} Dental Practice"),
+                "owner_name": existing_practice.get("ownerName", customer_name),
+                "trial_end": existing_practice.get("subscription", {}).get("trialEndDate", datetime.now(timezone.utc).isoformat())
             }
         
         # Generate secure credentials
