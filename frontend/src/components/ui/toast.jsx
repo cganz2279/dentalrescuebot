@@ -77,9 +77,37 @@ const ToastTitle = React.forwardRef(({ className, ...props }, ref) => (
 ))
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
-const ToastDescription = React.forwardRef(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description ref={ref} className={cn("text-sm opacity-90", className)} {...props} />
-))
+const ToastDescription = React.forwardRef(({ className, children, ...props }, ref) => {
+  // Safely convert children to string if it's a Pydantic error object
+  let safeChildren = children;
+  
+  if (children && typeof children === 'object' && !React.isValidElement(children)) {
+    // Handle Pydantic validation errors {type, loc, msg, input, ctx}
+    if (children.msg) {
+      safeChildren = children.msg;
+    } else if (children.message) {
+      safeChildren = String(children.message);
+    } else if (Array.isArray(children)) {
+      // Handle array of validation errors
+      safeChildren = children.map(err => 
+        typeof err === 'object' && err.msg ? err.msg : String(err)
+      ).join(', ');
+    } else {
+      // Fallback: convert object to string
+      safeChildren = `Error: ${JSON.stringify(children)}`;
+    }
+  }
+  
+  return (
+    <ToastPrimitives.Description 
+      ref={ref} 
+      className={cn("text-sm opacity-90", className)} 
+      {...props}
+    >
+      {safeChildren}
+    </ToastPrimitives.Description>
+  );
+})
 ToastDescription.displayName = ToastPrimitives.Description.displayName
 
 export { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose, ToastAction };
