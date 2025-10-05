@@ -177,26 +177,57 @@ const PracticeSettingsPage = () => {
       
       let errorMessage = "Failed to save dentist";
       
-      // Handle different error response formats
-      if (error.response?.data) {
-        const errorData = error.response.data;
-        
-        // Handle Pydantic validation errors
-        if (Array.isArray(errorData) && errorData[0]?.msg) {
-          errorMessage = errorData.map(err => err.msg).join(', ');
+      try {
+        // Handle different error response formats
+        if (error.response?.data) {
+          const errorData = error.response.data;
+          
+          // Handle Pydantic validation errors (array format)
+          if (Array.isArray(errorData)) {
+            errorMessage = errorData.map(err => {
+              if (typeof err === 'object' && err.msg) {
+                return err.msg;
+              }
+              return String(err);
+            }).join(', ');
+          }
+          // Handle FastAPI validation error with detail containing array
+          else if (errorData.detail && Array.isArray(errorData.detail)) {
+            errorMessage = errorData.detail.map(err => {
+              if (typeof err === 'object' && err.msg) {
+                return err.msg;
+              }
+              return String(err);
+            }).join(', ');
+          }
+          // Handle standard error responses
+          else if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          }
+          // Handle any other object error responses - convert to string
+          else if (typeof errorData === 'object') {
+            errorMessage = `Validation error: ${JSON.stringify(errorData)}`;
+          }
+          else {
+            errorMessage = String(errorData);
+          }
         }
-        // Handle standard error responses
-        else if (typeof errorData.detail === 'string') {
-          errorMessage = errorData.detail;
+        // Fallback for network errors
+        else if (error.message) {
+          errorMessage = error.message;
         }
-        // Handle object error responses
-        else if (typeof errorData === 'object') {
-          errorMessage = JSON.stringify(errorData);
-        }
+      } catch (parseError) {
+        console.error('Error parsing error response:', parseError);
+        errorMessage = "An unexpected error occurred";
+      }
+      
+      // Ensure the errorMessage is always a string
+      if (typeof errorMessage !== 'string') {
+        errorMessage = String(errorMessage);
       }
       
       toast({
-        title: "Error",
+        title: "Error", 
         description: errorMessage,
         variant: "destructive",
       });
