@@ -258,13 +258,15 @@ const AdminDashboard = ({ adminToken }) => {
 
   const loadPractices = async () => {
     try {
-      const response = await fetch(`${API_BASE}/practices`, {
+      // Load all practices with a higher limit to ensure we get all accounts
+      const response = await fetch(`${API_BASE}/practices?limit=200`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
 
       if (response.ok) {
         const data = await response.json();
         setPractices(data.practices || []);
+        console.log(`Loaded ${data.practices?.length || 0} practices including SamCart customers`);
       }
     } catch (error) {
       console.error('Failed to load practices:', error);
