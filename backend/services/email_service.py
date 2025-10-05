@@ -169,7 +169,7 @@ class EmailService:
                 <div class="section" style="border-left-color: #28a745;">
                     <h2>✅ Payment Verification</h2>
                     <div style="color: #28a745; font-weight: bold;">
-                        <p>✅ Payment has been processed through SamCart</p>
+                        <p>✅ Payment has been processed successfully</p>
                         <p>✅ Practice is immediately active</p>
                         <p>✅ User can access the full library</p>
                     </div>
