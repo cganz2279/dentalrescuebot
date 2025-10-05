@@ -345,7 +345,7 @@ class EmailService:
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="left">
-                    <img src="https://customer-assets.emergentagent.com/job_dental-healing/artifacts/j7ayzg7r_DentalRescueBotWithRoundedText.png" width="160" height="40" alt="The Oncall Bot LLC" style="display:block; height:auto; border:0; max-width:100%; filter: brightness(0) invert(1);" />
+                    <img src="https://customer-assets.emergentagent.com/job_samcart-auth-fix/artifacts/xqx7wou5_ChatGPT%20Image%20Sep%2028%2C%202025%2C%2011_41_56%20PM.png" width="160" height="40" alt="Dental AfterCare Notes" style="display:block; height:auto; border:0; max-width:100%; filter: brightness(0) invert(1);" />
                   </td>
                 </tr>
               </table>
