@@ -322,7 +322,8 @@ class WelcomeEmailVerificationTest:
             if response.status_code == 200:
                 login_result = response.json()
                 token = login_result.get('token')
-                user_id = login_result.get('user_id')
+                user_data = login_result.get('user', {})
+                user_id = user_data.get('id') or login_result.get('user_id')
                 
                 if token and user_id:
                     # Test 3: Verify dashboard access with token
