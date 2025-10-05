@@ -109,12 +109,17 @@ async def create_practice_account(customer_email: str, customer_name: str, order
         # Calculate trial period
         trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_PERIOD_DAYS)
         
-        # Create practice name from customer name
-        if " " in customer_name:
-            first_name, last_name = customer_name.split(" ", 1)
-            practice_name = f"Dr. {last_name} Dental Practice"
+        # Create practice name from customer name with D.D.S.
+        # Check if customer already has DDS/D.D.S. in their name
+        name_upper = customer_name.upper()
+        has_dds = "DDS" in name_upper or "D.D.S." in name_upper or "D.D.S" in name_upper
+        
+        if has_dds:
+            # Use name as-is if they already have DDS
+            practice_name = customer_name
         else:
-            practice_name = f"{customer_name} Dental Practice"
+            # Add D.D.S. to their name
+            practice_name = f"{customer_name} D.D.S."
         
         # Create practice document
         practice_data = {
