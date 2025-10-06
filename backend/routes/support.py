@@ -91,8 +91,6 @@ async def get_support_requests(
 ):
     """Get support requests for the current practice"""
     try:
-        db = await get_database()
-        
         # Get support requests for this practice
         cursor = db.support_requests.find(
             {"practice_id": current_user["practice_id"]}
