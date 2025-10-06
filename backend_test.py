@@ -15,9 +15,9 @@ import time
 from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
 
-# Get backend URL from environment
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://dentiportal.preview.emergentagent.com')
-API_BASE = f"{BACKEND_URL}/api"
+# Get backend URL from frontend environment (where user is accessing)
+FRONTEND_BACKEND_URL = "https://dentist-portal-3.emergent.host"
+API_BASE = f"{FRONTEND_BACKEND_URL}/api"
 
 class ForgotPasswordTester:
     def __init__(self):
