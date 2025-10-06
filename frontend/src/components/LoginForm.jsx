@@ -90,7 +90,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
       setForgotMessage('');
 
       try {
-        const response = await fetch(`https://dentiportal.preview.emergentagent.com/api/auth/forgot-password`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://dentiportal.preview.emergentagent.com'}/api/auth/forgot-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
