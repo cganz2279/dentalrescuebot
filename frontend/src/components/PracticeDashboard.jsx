@@ -29,6 +29,8 @@ import { practiceApi } from '../services/authApi';
 import LoadingSpinner, { LoadingCard, ErrorMessage } from './LoadingSpinner';
 import { useToast } from '../hooks/use-toast';
 import CSVImportModal from './CSVImportModal';
+import SupportModal from './SupportModal';
+import SupportHistory from './SupportHistory';
 import TutorialsModal from './TutorialsModal';
 
 const PracticeDashboard = () => {
