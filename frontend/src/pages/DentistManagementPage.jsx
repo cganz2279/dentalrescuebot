@@ -226,19 +226,12 @@ const DentistManagementPage = () => {
         action: newDentist.id ? 'UPDATE' : 'ADD'
       });
       
-      // Set field-specific errors
-      setFieldErrors(newFieldErrors);
-      console.log('🔧 Set fieldErrors state to:', newFieldErrors);
-      
-      // Force a re-render by updating the state in the next tick
-      setTimeout(() => {
-        console.log('🔍 fieldErrors state after setTimeout:', fieldErrors);
-        setFieldErrors(prevErrors => {
-          console.log('🔄 fieldErrors setState callback, prevErrors:', prevErrors);
-          console.log('🔄 fieldErrors setState callback, newFieldErrors:', newFieldErrors);
-          return {...newFieldErrors};
-        });
-      }, 100);
+      // Set field-specific errors using functional update to avoid closure issues
+      setFieldErrors(prevErrors => {
+        console.log('🔧 Previous fieldErrors state:', prevErrors);
+        console.log('🔧 Setting fieldErrors state to:', newFieldErrors);
+        return {...newFieldErrors};
+      });
       
       // Only show toast for general errors, not field-specific ones
       if (!hasFieldErrors) {
