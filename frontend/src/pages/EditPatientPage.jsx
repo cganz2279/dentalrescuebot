@@ -46,7 +46,7 @@ const EditPatientPage = () => {
         firstName: patient.firstName || '',
         lastName: patient.lastName || '',
         email: patient.email || '',
-        cellphone: patient.cellphone || patient.phone || '', // Handle both old and new field names
+        phone: patient.cellphone || patient.phone || '', // Handle both old and new field names
         dateOfBirth: patient.dateOfBirth ? patient.dateOfBirth.split('T')[0] : '',
         address: {
           street: patient.address?.street || '',
