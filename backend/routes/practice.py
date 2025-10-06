@@ -31,12 +31,7 @@ except Exception as e:
     print(f"Email service not available: {e}")
     EMAIL_SERVICE_AVAILABLE = False
 
-try:
-    from services.sms_service import sms_service
-    SMS_SERVICE_AVAILABLE = True
-except Exception as e:
-    print(f"SMS service not available: {e}")
-    SMS_SERVICE_AVAILABLE = False
+# SMS service removed - no longer available
 
 try:
     from utils.pdf_link_service import pdf_link_service
