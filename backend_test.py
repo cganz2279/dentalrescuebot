@@ -11,6 +11,10 @@ import sys
 from datetime import datetime
 import time
 
+# Load environment variables from backend/.env
+from dotenv import load_dotenv
+load_dotenv('/app/backend/.env')
+
 # Get backend URL from environment
 BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://dentiportal.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
