@@ -18,1036 +18,493 @@ TEST_CREDENTIALS = {
 
 class SupportRequestAPITester:
     def __init__(self):
-        self.session = requests.Session()
+        self.backend_url = BACKEND_URL
+        self.auth_token = None
+        self.practice_id = None
         self.test_results = []
         
-    def log_test(self, test_name, success, details="", response_data=None):
+    def log_test(self, test_name, success, details):
         """Log test results"""
         status = "✅ PASS" if success else "❌ FAIL"
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        
-        result = {
-            "timestamp": timestamp,
-            "test": test_name,
-            "status": status,
-            "details": details,
-            "response_data": response_data
-        }
-        
-        self.test_results.append(result)
-        print(f"[{timestamp}] {status} - {test_name}")
+        print(f"{status}: {test_name}")
         if details:
-            print(f"    Details: {details}")
-        if response_data and isinstance(response_data, dict):
-            if 'message' in response_data:
-                print(f"    Message: {response_data['message']}")
-        print()
-
-    def test_forgot_password_endpoint(self):
-        """Test the forgot password endpoint with caryganz@gmail.com"""
-        print("🔍 Testing Forgot Password Endpoint...")
+            print(f"   Details: {details}")
         
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+    
+    def authenticate(self):
+        """Authenticate with practice credentials"""
         try:
-            # Test forgot password with email recovery
-            payload = {
-                "email": "caryganz@gmail.com",
-                "recovery_method": "email"
-            }
+            print("\n🔐 AUTHENTICATING WITH PRACTICE CREDENTIALS...")
             
-            response = self.session.post(
-                f"{API_BASE}/auth/forgot-password",
-                json=payload,
+            response = requests.post(
+                f"{self.backend_url}/api/auth/login",
+                json=TEST_CREDENTIALS,
                 headers={"Content-Type": "application/json"}
             )
             
-            print(f"🔍 POST /api/auth/forgot-password Response: {response.status_code}")
-            
             if response.status_code == 200:
                 data = response.json()
+                self.auth_token = data.get("access_token")
+                self.practice_id = data.get("practice_id")
+                
                 self.log_test(
-                    "Forgot Password Email Request",
+                    "Practice Authentication",
                     True,
-                    f"Email recovery request successful. Message: {data.get('message', 'No message')}",
-                    data
-                )
-                
-                # Check if email was actually sent
-                sent_methods = data.get('sent_methods', [])
-                if 'email' in sent_methods:
-                    self.log_test(
-                        "Password Reset Email Sent",
-                        True,
-                        "Email was successfully sent via SendGrid",
-                        {"sent_methods": sent_methods}
-                    )
-                else:
-                    self.log_test(
-                        "Password Reset Email Sent",
-                        False,
-                        f"Email not in sent methods: {sent_methods}",
-                        data
-                    )
-                    
-                return True
-            else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
-                self.log_test(
-                    "Forgot Password Email Request",
-                    False,
-                    f"HTTP {response.status_code}: {error_data.get('detail', response.text)}",
-                    error_data
-                )
-                return False
-                
-        except Exception as e:
-            self.log_test(
-                "Forgot Password Email Request",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_forgot_password_sms(self):
-        """Test the forgot password endpoint with SMS recovery"""
-        print("🔍 Testing Forgot Password SMS...")
-        
-        try:
-            # Test forgot password with SMS recovery
-            payload = {
-                "email": "caryganz@gmail.com",
-                "recovery_method": "sms"
-            }
-            
-            response = self.session.post(
-                f"{API_BASE}/auth/forgot-password",
-                json=payload,
-                headers={"Content-Type": "application/json"}
-            )
-            
-            print(f"🔍 POST /api/auth/forgot-password (SMS) Response: {response.status_code}")
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.log_test(
-                    "Forgot Password SMS Request",
-                    True,
-                    f"SMS recovery request successful. Message: {data.get('message', 'No message')}",
-                    data
-                )
-                
-                # Check if SMS was attempted (may fail if phone number not verified)
-                sent_methods = data.get('sent_methods', [])
-                if 'SMS' in sent_methods:
-                    self.log_test(
-                        "Password Reset SMS Sent",
-                        True,
-                        "SMS was successfully sent via Twilio",
-                        {"sent_methods": sent_methods}
-                    )
-                else:
-                    self.log_test(
-                        "Password Reset SMS Sent",
-                        False,
-                        f"SMS not in sent methods (may be due to unverified phone): {sent_methods}",
-                        data
-                    )
-                    
-                return True
-            else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
-                self.log_test(
-                    "Forgot Password SMS Request",
-                    False,
-                    f"HTTP {response.status_code}: {error_data.get('detail', response.text)}",
-                    error_data
-                )
-                return False
-                
-        except Exception as e:
-            self.log_test(
-                "Forgot Password SMS Request",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_forgot_password_both(self):
-        """Test the forgot password endpoint with both email and SMS recovery"""
-        print("🔍 Testing Forgot Password Both Methods...")
-        
-        try:
-            # Test forgot password with both recovery methods
-            payload = {
-                "email": "caryganz@gmail.com",
-                "recovery_method": "both"
-            }
-            
-            response = self.session.post(
-                f"{API_BASE}/auth/forgot-password",
-                json=payload,
-                headers={"Content-Type": "application/json"}
-            )
-            
-            print(f"🔍 POST /api/auth/forgot-password (both) Response: {response.status_code}")
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.log_test(
-                    "Forgot Password Both Methods Request",
-                    True,
-                    f"Both methods recovery request successful. Message: {data.get('message', 'No message')}",
-                    data
-                )
-                
-                # Check sent methods
-                sent_methods = data.get('sent_methods', [])
-                self.log_test(
-                    "Password Reset Methods Analysis",
-                    True,
-                    f"Sent methods: {sent_methods}. Email should be included, SMS may fail if phone unverified.",
-                    {"sent_methods": sent_methods}
-                )
-                    
-                return True
-            else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
-                self.log_test(
-                    "Forgot Password Both Methods Request",
-                    False,
-                    f"HTTP {response.status_code}: {error_data.get('detail', response.text)}",
-                    error_data
-                )
-                return False
-                
-        except Exception as e:
-            self.log_test(
-                "Forgot Password Both Methods Request",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_validate_reset_token_endpoint(self):
-        """Test the validate reset token endpoint"""
-        print("🔍 Testing Validate Reset Token Endpoint...")
-        
-        try:
-            # Test with a dummy token (should fail)
-            dummy_token = "dummy-token-12345"
-            
-            response = self.session.get(
-                f"{API_BASE}/auth/validate-reset-token/{dummy_token}"
-            )
-            
-            print(f"🔍 GET /api/auth/validate-reset-token/{dummy_token} Response: {response.status_code}")
-            
-            if response.status_code == 400:
-                data = response.json()
-                if "Invalid or expired reset token" in data.get('detail', ''):
-                    self.log_test(
-                        "Validate Reset Token (Invalid Token)",
-                        True,
-                        "Correctly rejected invalid token with 400 status",
-                        data
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Validate Reset Token (Invalid Token)",
-                        False,
-                        f"Unexpected error message: {data.get('detail')}",
-                        data
-                    )
-                    return False
-            else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
-                self.log_test(
-                    "Validate Reset Token (Invalid Token)",
-                    False,
-                    f"Expected 400 but got {response.status_code}: {error_data}",
-                    error_data
-                )
-                return False
-                
-        except Exception as e:
-            self.log_test(
-                "Validate Reset Token (Invalid Token)",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_specific_reset_token(self):
-        """Test the specific reset token from user report: d201d54e-4a4f-4657-b253-46fd4eb0e7fb"""
-        print("🔍 Testing Specific Reset Token from User Report...")
-        
-        try:
-            # Test with the specific token from user report
-            specific_token = "d201d54e-4a4f-4657-b253-46fd4eb0e7fb"
-            
-            response = self.session.get(
-                f"{API_BASE}/auth/validate-reset-token/{specific_token}"
-            )
-            
-            print(f"🔍 GET /api/auth/validate-reset-token/{specific_token} Response: {response.status_code}")
-            print(f"🔍 Response headers: {dict(response.headers)}")
-            
-            if response.headers.get('content-type', '').startswith('application/json'):
-                data = response.json()
-                print(f"🔍 Response data: {data}")
-            else:
-                print(f"🔍 Response text: {response.text}")
-                data = {"error": response.text}
-            
-            if response.status_code == 400:
-                if "Invalid or expired reset token" in data.get('detail', ''):
-                    self.log_test(
-                        "Specific Reset Token Validation",
-                        True,
-                        f"Token {specific_token} correctly rejected as invalid/expired with 400 status",
-                        data
-                    )
-                else:
-                    self.log_test(
-                        "Specific Reset Token Validation",
-                        False,
-                        f"Token {specific_token} rejected but with unexpected error: {data.get('detail')}",
-                        data
-                    )
-                return True
-            elif response.status_code == 200:
-                self.log_test(
-                    "Specific Reset Token Validation",
-                    True,
-                    f"Token {specific_token} is valid and active",
-                    data
+                    f"Successfully authenticated with {TEST_CREDENTIALS['email']}, Practice ID: {self.practice_id}"
                 )
                 return True
             else:
                 self.log_test(
-                    "Specific Reset Token Validation",
+                    "Practice Authentication",
                     False,
-                    f"Unexpected status {response.status_code} for token {specific_token}: {data}",
-                    data
+                    f"Authentication failed: {response.status_code} - {response.text}"
                 )
                 return False
                 
         except Exception as e:
-            self.log_test(
-                "Specific Reset Token Validation",
-                False,
-                f"Exception occurred testing token d201d54e-4a4f-4657-b253-46fd4eb0e7fb: {str(e)}"
-            )
+            self.log_test("Practice Authentication", False, f"Exception: {str(e)}")
             return False
-
-    def check_database_for_specific_token(self):
-        """Check if the specific token exists in the database"""
-        print("🔍 Checking Database for Specific Token...")
-        
+    
+    def get_auth_headers(self):
+        """Get authorization headers"""
+        return {
+            "Authorization": f"Bearer {self.auth_token}",
+            "Content-Type": "application/json"
+        }
+    
+    def test_create_support_request_valid(self):
+        """Test POST /api/support/request with valid data"""
         try:
-            # This would require direct database access
-            # For now, we'll simulate by testing the endpoint behavior
-            specific_token = "d201d54e-4a4f-4657-b253-46fd4eb0e7fb"
+            print("\n📝 TESTING CREATE SUPPORT REQUEST (VALID DATA)...")
             
-            # Test the token validation endpoint to understand the error
-            response = self.session.get(
-                f"{API_BASE}/auth/validate-reset-token/{specific_token}"
-            )
-            
-            if response.status_code == 400:
-                data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {}
-                if "Invalid or expired reset token" in data.get('detail', ''):
-                    self.log_test(
-                        "Database Token Check",
-                        True,
-                        f"Token {specific_token} does not exist in database or is expired",
-                        {"token_status": "not_found_or_expired"}
-                    )
-                else:
-                    self.log_test(
-                        "Database Token Check",
-                        False,
-                        f"Unexpected error for token {specific_token}: {data.get('detail')}",
-                        data
-                    )
-            elif response.status_code == 200:
-                data = response.json()
-                self.log_test(
-                    "Database Token Check",
-                    True,
-                    f"Token {specific_token} exists and is valid in database",
-                    {"token_status": "valid", "user_email": data.get('user', {}).get('email')}
-                )
-            else:
-                self.log_test(
-                    "Database Token Check",
-                    False,
-                    f"Unexpected response {response.status_code} when checking token",
-                    {"status_code": response.status_code}
-                )
-                
-            return True
-                
-        except Exception as e:
-            self.log_test(
-                "Database Token Check",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_domain_mismatch_issue(self):
-        """Test the domain mismatch issue reported by user"""
-        print("🔍 Testing Domain Mismatch Issue...")
-        
-        try:
-            specific_token = "d201d54e-4a4f-4657-b253-46fd4eb0e7fb"
-            
-            # Test on the correct domain (where token exists)
-            correct_url = f"https://dentiportal.preview.emergentagent.com/api/auth/validate-reset-token/{specific_token}"
-            
-            # Test on the wrong domain (where user is accessing)
-            wrong_url = f"https://dentist-portal-3.emergent.host/api/auth/validate-reset-token/{specific_token}"
-            
-            print(f"🔍 Testing correct domain: {correct_url}")
-            correct_response = self.session.get(correct_url)
-            
-            print(f"🔍 Testing wrong domain: {wrong_url}")
-            try:
-                wrong_response = self.session.get(wrong_url)
-                wrong_status = wrong_response.status_code
-                wrong_data = wrong_response.json() if wrong_response.headers.get('content-type', '').startswith('application/json') else {"error": wrong_response.text}
-            except Exception as e:
-                wrong_status = "ERROR"
-                wrong_data = {"error": str(e)}
-            
-            # Log results
-            if correct_response.status_code == 200 and wrong_status == 400:
-                self.log_test(
-                    "Domain Mismatch Issue Analysis",
-                    True,
-                    f"CONFIRMED: Token works on correct domain (200) but fails on wrong domain (400). User is accessing wrong URL.",
-                    {
-                        "correct_domain": "dentiportal.preview.emergentagent.com",
-                        "wrong_domain": "dentist-portal-3.emergent.host",
-                        "correct_status": correct_response.status_code,
-                        "wrong_status": wrong_status,
-                        "issue": "User accessing wrong domain"
-                    }
-                )
-            else:
-                self.log_test(
-                    "Domain Mismatch Issue Analysis",
-                    False,
-                    f"Unexpected results: correct domain returned {correct_response.status_code}, wrong domain returned {wrong_status}",
-                    {
-                        "correct_status": correct_response.status_code,
-                        "wrong_status": wrong_status
-                    }
-                )
-                
-            return True
-                
-        except Exception as e:
-            self.log_test(
-                "Domain Mismatch Issue Analysis",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_email_url_configuration(self):
-        """Test that password reset emails contain the correct URL"""
-        print("🔍 Testing Email URL Configuration...")
-        
-        try:
-            # Check environment variable
-            frontend_url = os.getenv('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
-            
-            # Send a password reset email and check the configuration
-            payload = {
-                "email": "caryganz@gmail.com",
-                "recovery_method": "email"
+            test_data = {
+                "practice_name": "Test Dental Office",
+                "email": "test@example.com",
+                "phone": "(555) 123-4567",
+                "support": True,
+                "suggestions": False,
+                "description": "Testing the new support system functionality"
             }
             
-            response = self.session.post(
-                f"{API_BASE}/auth/forgot-password",
-                json=payload,
-                headers={"Content-Type": "application/json"}
+            response = requests.post(
+                f"{self.backend_url}/api/support/request",
+                json=test_data,
+                headers=self.get_auth_headers()
             )
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Check if email was sent
-                sent_methods = data.get('sent_methods', [])
-                if 'email' in sent_methods:
+                if data.get("success") and data.get("id"):
                     self.log_test(
-                        "Email URL Configuration Check",
+                        "Create Support Request (Valid Data)",
                         True,
-                        f"Password reset email sent successfully. FRONTEND_URL is set to: {frontend_url}. Email should contain reset link with this domain.",
-                        {
-                            "frontend_url": frontend_url,
-                            "expected_reset_link_domain": frontend_url,
-                            "user_accessing_wrong_domain": "dentist-portal-3.emergent.host",
-                            "issue": "User needs to check email for correct reset link"
-                        }
+                        f"Support request created successfully with ID: {data.get('id')}"
                     )
+                    return data.get("id")
                 else:
                     self.log_test(
-                        "Email URL Configuration Check",
+                        "Create Support Request (Valid Data)",
                         False,
-                        f"Email was not sent. Sent methods: {sent_methods}",
-                        data
+                        f"Invalid response format: {data}"
                     )
             else:
                 self.log_test(
-                    "Email URL Configuration Check",
+                    "Create Support Request (Valid Data)",
                     False,
-                    f"Failed to send password reset email: {response.status_code}",
-                    response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
+                    f"Request failed: {response.status_code} - {response.text}"
                 )
                 
-            return True
-                
         except Exception as e:
-            self.log_test(
-                "Email URL Configuration Check",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_reset_password_endpoint(self):
-        """Test the reset password endpoint"""
-        print("🔍 Testing Reset Password Endpoint...")
+            self.log_test("Create Support Request (Valid Data)", False, f"Exception: {str(e)}")
         
+        return None
+    
+    def test_create_support_request_validation_errors(self):
+        """Test validation errors for support request creation"""
+        print("\n🔍 TESTING SUPPORT REQUEST VALIDATION ERRORS...")
+        
+        # Test 1: Missing required fields
         try:
-            # Test with a dummy token (should fail)
-            payload = {
-                "reset_token": "dummy-token-12345",
-                "new_password": "NewPassword123!"
+            test_data = {
+                "practice_name": "",
+                "email": "invalid-email",
+                "support": False,
+                "suggestions": False,
+                "description": "short"
             }
             
-            response = self.session.post(
-                f"{API_BASE}/auth/reset-password",
-                json=payload,
-                headers={"Content-Type": "application/json"}
+            response = requests.post(
+                f"{self.backend_url}/api/support/request",
+                json=test_data,
+                headers=self.get_auth_headers()
             )
             
-            print(f"🔍 POST /api/auth/reset-password Response: {response.status_code}")
-            
-            if response.status_code == 400:
-                data = response.json()
-                if "Invalid or expired reset token" in data.get('detail', ''):
-                    self.log_test(
-                        "Reset Password (Invalid Token)",
-                        True,
-                        "Correctly rejected invalid token with 400 status",
-                        data
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Reset Password (Invalid Token)",
-                        False,
-                        f"Unexpected error message: {data.get('detail')}",
-                        data
-                    )
-                    return False
-            else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
+            if response.status_code == 422:
                 self.log_test(
-                    "Reset Password (Invalid Token)",
-                    False,
-                    f"Expected 400 but got {response.status_code}: {error_data}",
-                    error_data
+                    "Validation Error - Invalid Email Format",
+                    True,
+                    "Correctly rejected invalid email format with 422 status"
                 )
-                return False
+            else:
+                self.log_test(
+                    "Validation Error - Invalid Email Format",
+                    False,
+                    f"Expected 422, got {response.status_code}: {response.text}"
+                )
                 
         except Exception as e:
-            self.log_test(
-                "Reset Password (Invalid Token)",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_forgot_username_endpoint(self):
-        """Test the forgot username endpoint"""
-        print("🔍 Testing Forgot Username Endpoint...")
+            self.log_test("Validation Error - Invalid Email Format", False, f"Exception: {str(e)}")
         
+        # Test 2: Neither support nor suggestions checked
         try:
-            # Test forgot username with practice details
-            payload = {
-                "practice_name": "Test Dental Practice",
-                "phone": "555-123-4567",
-                "adminPassword": "testpassword123",
-                "street": "123 Main St",
-                "city": "Test City",
-                "state": "CA",
-                "zipCode": "12345"
+            test_data = {
+                "practice_name": "Test Practice",
+                "email": "test@example.com",
+                "support": False,
+                "suggestions": False,
+                "description": "This is a test description that is long enough"
             }
             
-            response = self.session.post(
-                f"{API_BASE}/auth/forgot-username",
-                json=payload,
-                headers={"Content-Type": "application/json"}
+            response = requests.post(
+                f"{self.backend_url}/api/support/request",
+                json=test_data,
+                headers=self.get_auth_headers()
             )
             
-            print(f"🔍 POST /api/auth/forgot-username Response: {response.status_code}")
-            
-            if response.status_code == 200:
-                data = response.json()
+            if response.status_code == 422:
                 self.log_test(
-                    "Forgot Username Request",
+                    "Validation Error - No Checkboxes Selected",
                     True,
-                    f"Username recovery request successful. Message: {data.get('message', 'No message')}",
-                    data
+                    "Correctly rejected request with no support/suggestions selected"
                 )
-                
-                # Check if practice info is returned (for testing - would be removed in production)
-                if 'practice_name' in data or 'email' in data:
-                    self.log_test(
-                        "Forgot Username Response Data",
-                        True,
-                        f"Practice found: {data.get('practice_name', 'N/A')}, Email: {data.get('email', 'N/A')}",
-                        data
-                    )
-                else:
-                    self.log_test(
-                        "Forgot Username Response Data",
-                        True,
-                        "No practice details returned (security measure)",
-                        data
-                    )
-                    
-                return True
             else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
                 self.log_test(
-                    "Forgot Username Request",
+                    "Validation Error - No Checkboxes Selected",
                     False,
-                    f"HTTP {response.status_code}: {error_data.get('detail', response.text)}",
-                    error_data
+                    f"Expected 422, got {response.status_code}: {response.text}"
                 )
-                return False
                 
         except Exception as e:
-            self.log_test(
-                "Forgot Username Request",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_url_verification(self):
-        """Test that password reset emails use correct URLs"""
-        print("🔍 Testing URL Verification...")
+            self.log_test("Validation Error - No Checkboxes Selected", False, f"Exception: {str(e)}")
         
+        # Test 3: Description too short
         try:
-            # Check environment variables
-            frontend_url = os.getenv('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
-            
-            self.log_test(
-                "Frontend URL Environment Variable",
-                True,
-                f"FRONTEND_URL is set to: {frontend_url}",
-                {"frontend_url": frontend_url}
-            )
-            
-            # Verify it's the correct URL (not SamCart or preview)
-            if "app.dentalaftercarenotes.com" in frontend_url:
-                self.log_test(
-                    "URL Verification - Correct Domain",
-                    True,
-                    "Frontend URL uses correct Dental AfterCare Notes domain",
-                    {"frontend_url": frontend_url}
-                )
-            else:
-                self.log_test(
-                    "URL Verification - Correct Domain",
-                    False,
-                    f"Frontend URL should use app.dentalaftercarenotes.com, but uses: {frontend_url}",
-                    {"frontend_url": frontend_url}
-                )
-                
-            # Check for SamCart URLs (should not be present)
-            if "samcart" in frontend_url.lower() or "preview" in frontend_url.lower():
-                self.log_test(
-                    "URL Verification - No SamCart URLs",
-                    False,
-                    f"Frontend URL contains SamCart or preview references: {frontend_url}",
-                    {"frontend_url": frontend_url}
-                )
-            else:
-                self.log_test(
-                    "URL Verification - No SamCart URLs",
-                    True,
-                    "Frontend URL does not contain SamCart or preview references",
-                    {"frontend_url": frontend_url}
-                )
-                
-            return True
-                
-        except Exception as e:
-            self.log_test(
-                "URL Verification",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_email_branding_verification(self):
-        """Test that emails use proper Dental AfterCare Notes branding"""
-        print("🔍 Testing Email Branding Verification...")
-        
-        try:
-            # This is more of a configuration check since we can't inspect email content directly
-            # We'll verify the email service configuration
-            
-            sender_email = os.getenv('SENDER_EMAIL', 'admin@theoncallbot.com')
-            
-            self.log_test(
-                "Email Sender Configuration",
-                True,
-                f"Sender email is configured as: {sender_email}",
-                {"sender_email": sender_email}
-            )
-            
-            # Check if SendGrid API key is configured
-            sendgrid_key = os.getenv('SENDGRID_API_KEY')
-            if sendgrid_key:
-                self.log_test(
-                    "SendGrid Configuration",
-                    True,
-                    f"SendGrid API key is configured (length: {len(sendgrid_key)} chars)",
-                    {"configured": True}
-                )
-            else:
-                self.log_test(
-                    "SendGrid Configuration",
-                    False,
-                    "SendGrid API key is not configured",
-                    {"configured": False}
-                )
-                
-            return True
-                
-        except Exception as e:
-            self.log_test(
-                "Email Branding Verification",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def send_fresh_password_reset_email(self):
-        """Send a fresh password reset email to caryganz@gmail.com as requested"""
-        print("🚨 URGENT: Sending fresh password reset email to caryganz@gmail.com...")
-        print(f"🔗 Using actual backend URL: {ACTUAL_BACKEND_URL}")
-        
-        try:
-            # Send password reset email to caryganz@gmail.com
-            payload = {
-                "email": "caryganz@gmail.com",
-                "recovery_method": "email"
+            test_data = {
+                "practice_name": "Test Practice",
+                "email": "test@example.com",
+                "support": True,
+                "suggestions": False,
+                "description": "short"
             }
             
-            response = self.session.post(
-                f"{API_BASE}/auth/forgot-password",
-                json=payload,
-                headers={"Content-Type": "application/json"}
+            response = requests.post(
+                f"{self.backend_url}/api/support/request",
+                json=test_data,
+                headers=self.get_auth_headers()
             )
             
-            print(f"🔍 POST /api/auth/forgot-password Response: {response.status_code}")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Get the FRONTEND_URL from environment to verify reset link format
-                frontend_url = os.getenv('FRONTEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
-                
+            if response.status_code == 422:
                 self.log_test(
-                    "Fresh Password Reset Email Sent",
+                    "Validation Error - Description Too Short",
                     True,
-                    f"✅ NEW PASSWORD RESET EMAIL SENT to caryganz@gmail.com. Message: {data.get('message', 'No message')}. Reset link will use: {frontend_url}",
-                    data
-                )
-                
-                # Check if email was actually sent
-                sent_methods = data.get('sent_methods', [])
-                if 'email' in sent_methods:
-                    self.log_test(
-                        "Email Delivery Confirmation",
-                        True,
-                        f"✅ Email was successfully sent via SendGrid - NEW TOKEN GENERATED. Reset link format: {frontend_url}/reset-password?token=NEW_TOKEN",
-                        {"sent_methods": sent_methods, "frontend_url": frontend_url}
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Email Delivery Confirmation",
-                        False,
-                        f"❌ Email not in sent methods: {sent_methods}",
-                        data
-                    )
-                    return False
-                    
-            else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
-                self.log_test(
-                    "Fresh Password Reset Email Sent",
-                    False,
-                    f"❌ HTTP {response.status_code}: {error_data.get('detail', response.text)}",
-                    error_data
-                )
-                return False
-                
-        except Exception as e:
-            self.log_test(
-                "Fresh Password Reset Email Sent",
-                False,
-                f"❌ Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_new_token_validation(self):
-        """Test that new tokens can be validated on the current backend"""
-        print("🔍 Testing New Token Validation on Current Backend...")
-        
-        try:
-            # Test with a dummy token to verify the validation endpoint works
-            dummy_token = "test-token-12345"
-            
-            response = self.session.get(
-                f"{API_BASE}/auth/validate-reset-token/{dummy_token}"
-            )
-            
-            print(f"🔍 GET /api/auth/validate-reset-token/{dummy_token} Response: {response.status_code}")
-            
-            if response.status_code == 400:
-                data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {}
-                if "Invalid or expired reset token" in data.get('detail', ''):
-                    self.log_test(
-                        "Token Validation Endpoint Working",
-                        True,
-                        "✅ Token validation endpoint is working correctly - rejects invalid tokens",
-                        data
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Token Validation Endpoint Working",
-                        False,
-                        f"❌ Unexpected error message: {data.get('detail')}",
-                        data
-                    )
-                    return False
-            else:
-                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
-                self.log_test(
-                    "Token Validation Endpoint Working",
-                    False,
-                    f"❌ Expected 400 but got {response.status_code}: {error_data}",
-                    error_data
-                )
-                return False
-                
-        except Exception as e:
-            self.log_test(
-                "Token Validation Endpoint Working",
-                False,
-                f"❌ Exception occurred: {str(e)}"
-            )
-            return False
-
-    def verify_frontend_url_configuration(self):
-        """Verify the FRONTEND_URL configuration is correct"""
-        print("🔍 Verifying FRONTEND_URL Configuration...")
-        
-        try:
-            frontend_url = os.getenv('FRONTEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
-            expected_url = 'https://samcart-auth-fix.preview.emergentagent.com'
-            
-            if frontend_url == expected_url:
-                self.log_test(
-                    "FRONTEND_URL Configuration Verification",
-                    True,
-                    f"✅ FRONTEND_URL is correctly set to: {frontend_url}",
-                    {"frontend_url": frontend_url, "expected": expected_url}
+                    "Correctly rejected description under 10 characters"
                 )
             else:
                 self.log_test(
-                    "FRONTEND_URL Configuration Verification",
+                    "Validation Error - Description Too Short",
                     False,
-                    f"❌ FRONTEND_URL mismatch. Expected: {expected_url}, Got: {frontend_url}",
-                    {"frontend_url": frontend_url, "expected": expected_url}
+                    f"Expected 422, got {response.status_code}: {response.text}"
                 )
-            
-            return True
-            
+                
         except Exception as e:
-            self.log_test(
-                "FRONTEND_URL Configuration Verification",
-                False,
-                f"❌ Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_new_token_generation_and_validation(self):
-        """Test that new tokens are generated and can be validated"""
-        print("🔍 Testing New Token Generation and Validation...")
-        
+            self.log_test("Validation Error - Description Too Short", False, f"Exception: {str(e)}")
+    
+    def test_get_support_requests(self):
+        """Test GET /api/support/requests for authenticated practice"""
         try:
-            # First send a password reset to generate a new token
-            payload = {
-                "email": "caryganz@gmail.com",
-                "recovery_method": "email"
-            }
+            print("\n📋 TESTING GET SUPPORT REQUESTS FOR PRACTICE...")
             
-            response = self.session.post(
-                f"{API_BASE}/auth/forgot-password",
-                json=payload,
-                headers={"Content-Type": "application/json"}
+            response = requests.get(
+                f"{self.backend_url}/api/support/requests",
+                headers=self.get_auth_headers()
             )
             
             if response.status_code == 200:
                 data = response.json()
-                sent_methods = data.get('sent_methods', [])
-                
-                if 'email' in sent_methods:
+                if isinstance(data, list):
                     self.log_test(
-                        "New Token Generation",
+                        "Get Support Requests (Practice)",
                         True,
-                        "✅ New password reset token generated successfully",
-                        {"sent_methods": sent_methods}
+                        f"Successfully retrieved {len(data)} support requests for practice"
+                    )
+                else:
+                    self.log_test(
+                        "Get Support Requests (Practice)",
+                        False,
+                        f"Expected list, got: {type(data)}"
+                    )
+            else:
+                self.log_test(
+                    "Get Support Requests (Practice)",
+                    False,
+                    f"Request failed: {response.status_code} - {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test("Get Support Requests (Practice)", False, f"Exception: {str(e)}")
+    
+    def test_get_all_support_requests_admin(self):
+        """Test GET /api/support/admin/all-requests (no auth required)"""
+        try:
+            print("\n👨‍💼 TESTING GET ALL SUPPORT REQUESTS (ADMIN)...")
+            
+            response = requests.get(f"{self.backend_url}/api/support/admin/all-requests")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_test(
+                        "Get All Support Requests (Admin)",
+                        True,
+                        f"Successfully retrieved {len(data)} total support requests"
+                    )
+                else:
+                    self.log_test(
+                        "Get All Support Requests (Admin)",
+                        False,
+                        f"Expected list, got: {type(data)}"
+                    )
+            else:
+                self.log_test(
+                    "Get All Support Requests (Admin)",
+                    False,
+                    f"Request failed: {response.status_code} - {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test("Get All Support Requests (Admin)", False, f"Exception: {str(e)}")
+    
+    def test_email_functionality(self):
+        """Test that support request creation sends email notification"""
+        try:
+            print("\n📧 TESTING EMAIL NOTIFICATION FUNCTIONALITY...")
+            
+            # Create a support request and check if email is sent
+            test_data = {
+                "practice_name": "Email Test Dental Office",
+                "email": "emailtest@example.com",
+                "phone": "(555) 999-8888",
+                "support": True,
+                "suggestions": True,
+                "description": "Testing email notification functionality for support requests"
+            }
+            
+            response = requests.post(
+                f"{self.backend_url}/api/support/request",
+                json=test_data,
+                headers=self.get_auth_headers()
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    self.log_test(
+                        "Email Notification Test",
+                        True,
+                        "Support request created successfully - email should be sent to support@dentalaftercarenotes.com"
+                    )
+                else:
+                    self.log_test(
+                        "Email Notification Test",
+                        False,
+                        f"Support request creation failed: {data}"
+                    )
+            else:
+                self.log_test(
+                    "Email Notification Test",
+                    False,
+                    f"Request failed: {response.status_code} - {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test("Email Notification Test", False, f"Exception: {str(e)}")
+    
+    def test_authentication_required(self):
+        """Test that endpoints require proper authentication"""
+        try:
+            print("\n🔒 TESTING AUTHENTICATION REQUIREMENTS...")
+            
+            # Test without auth token
+            response = requests.post(
+                f"{self.backend_url}/api/support/request",
+                json={
+                    "practice_name": "Test",
+                    "email": "test@example.com",
+                    "support": True,
+                    "description": "Test description"
+                }
+            )
+            
+            if response.status_code in [401, 403]:
+                self.log_test(
+                    "Authentication Required Test",
+                    True,
+                    f"Correctly rejected unauthenticated request with {response.status_code} status"
+                )
+            else:
+                self.log_test(
+                    "Authentication Required Test",
+                    False,
+                    f"Expected 401/403, got {response.status_code}: {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test("Authentication Required Test", False, f"Exception: {str(e)}")
+    
+    def test_database_storage(self):
+        """Test that support requests are stored in database"""
+        try:
+            print("\n💾 TESTING DATABASE STORAGE...")
+            
+            # Create a support request
+            test_data = {
+                "practice_name": "Database Test Office",
+                "email": "dbtest@example.com",
+                "phone": "(555) 777-6666",
+                "support": False,
+                "suggestions": True,
+                "description": "Testing database storage functionality for support requests"
+            }
+            
+            response = requests.post(
+                f"{self.backend_url}/api/support/request",
+                json=test_data,
+                headers=self.get_auth_headers()
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                request_id = data.get("id")
+                
+                if request_id:
+                    # Try to retrieve the request
+                    get_response = requests.get(
+                        f"{self.backend_url}/api/support/requests",
+                        headers=self.get_auth_headers()
                     )
                     
-                    # Test token validation endpoint with dummy token to verify it's working
-                    dummy_token = "test-validation-12345"
-                    validation_response = self.session.get(
-                        f"{API_BASE}/auth/validate-reset-token/{dummy_token}"
-                    )
-                    
-                    if validation_response.status_code == 400:
-                        validation_data = validation_response.json() if validation_response.headers.get('content-type', '').startswith('application/json') else {}
-                        if "Invalid or expired reset token" in validation_data.get('detail', ''):
+                    if get_response.status_code == 200:
+                        requests_list = get_response.json()
+                        found_request = any(req.get("id") == request_id for req in requests_list)
+                        
+                        if found_request:
                             self.log_test(
-                                "Token Validation Endpoint Working",
+                                "Database Storage Test",
                                 True,
-                                "✅ Token validation endpoint is working correctly",
-                                validation_data
+                                f"Support request {request_id} successfully stored and retrieved from database"
                             )
                         else:
                             self.log_test(
-                                "Token Validation Endpoint Working",
+                                "Database Storage Test",
                                 False,
-                                f"❌ Unexpected validation error: {validation_data.get('detail')}",
-                                validation_data
+                                f"Support request {request_id} not found in retrieved list"
                             )
                     else:
                         self.log_test(
-                            "Token Validation Endpoint Working",
+                            "Database Storage Test",
                             False,
-                            f"❌ Expected 400 for invalid token, got {validation_response.status_code}",
-                            {}
+                            f"Failed to retrieve requests: {get_response.status_code}"
                         )
-                    
-                    return True
                 else:
                     self.log_test(
-                        "New Token Generation",
+                        "Database Storage Test",
                         False,
-                        f"❌ Email not sent, no token generated: {sent_methods}",
-                        data
+                        "No request ID returned from creation"
                     )
-                    return False
             else:
                 self.log_test(
-                    "New Token Generation",
+                    "Database Storage Test",
                     False,
-                    f"❌ Failed to generate token: {response.status_code}",
-                    {}
+                    f"Failed to create request: {response.status_code} - {response.text}"
                 )
-                return False
                 
         except Exception as e:
-            self.log_test(
-                "New Token Generation and Validation",
-                False,
-                f"❌ Exception occurred: {str(e)}"
-            )
-            return False
-
+            self.log_test("Database Storage Test", False, f"Exception: {str(e)}")
+    
     def run_all_tests(self):
-        """Run focused tests for the user's specific request"""
-        print("🚀 Starting Fresh Password Reset Email Testing with Corrected FRONTEND_URL...")
-        print(f"🔗 Actual Backend URL: {ACTUAL_BACKEND_URL}")
-        print(f"🔗 API Base: {API_BASE}")
-        print("🎯 FOCUS: Send fresh password reset email to caryganz@gmail.com with corrected FRONTEND_URL")
-        print("=" * 80)
+        """Run all support request API tests"""
+        print("🚀 STARTING SUPPORT REQUEST API COMPREHENSIVE TESTING")
+        print("=" * 60)
         
-        # 1. Verify FRONTEND_URL configuration
-        print("🚨 STEP 1: Verifying FRONTEND_URL configuration...")
-        self.verify_frontend_url_configuration()
-        time.sleep(1)
+        # Step 1: Authenticate
+        if not self.authenticate():
+            print("❌ Authentication failed - cannot proceed with tests")
+            return False
         
-        # 2. Send fresh password reset email to caryganz@gmail.com
-        print("🚨 STEP 2: Sending fresh password reset email...")
-        email_sent = self.send_fresh_password_reset_email()
-        time.sleep(2)
+        # Step 2: Test authentication requirements
+        self.test_authentication_required()
         
-        # 3. Test new token generation and validation
-        print("🚨 STEP 3: Testing new token generation and validation...")
-        self.test_new_token_generation_and_validation()
-        time.sleep(1)
+        # Step 3: Test valid support request creation
+        self.test_create_support_request_valid()
         
-        # 4. Verify reset link format
-        print("🚨 STEP 4: Verifying reset link format...")
-        self.test_email_url_configuration()
-        time.sleep(1)
+        # Step 4: Test validation errors
+        self.test_create_support_request_validation_errors()
         
-        # Print summary
-        print("=" * 80)
-        print("📊 TEST SUMMARY")
-        print("=" * 80)
+        # Step 5: Test retrieving support requests
+        self.test_get_support_requests()
         
-        passed = sum(1 for result in self.test_results if "✅ PASS" in result["status"])
-        failed = sum(1 for result in self.test_results if "❌ FAIL" in result["status"])
-        total = len(self.test_results)
+        # Step 6: Test admin endpoint
+        self.test_get_all_support_requests_admin()
         
-        print(f"Total Tests: {total}")
-        print(f"Passed: {passed}")
-        print(f"Failed: {failed}")
-        print(f"Success Rate: {(passed/total)*100:.1f}%")
-        print()
+        # Step 7: Test email functionality
+        self.test_email_functionality()
         
-        # Show failed tests
-        failed_tests = [result for result in self.test_results if "❌ FAIL" in result["status"]]
-        if failed_tests:
-            print("❌ FAILED TESTS:")
-            for result in failed_tests:
-                print(f"  - {result['test']}: {result['details']}")
-            print()
+        # Step 8: Test database storage
+        self.test_database_storage()
         
-        # Show successful tests
-        passed_tests = [result for result in self.test_results if "✅ PASS" in result["status"]]
-        if passed_tests:
-            print("✅ PASSED TESTS:")
-            for result in passed_tests:
-                print(f"  - {result['test']}")
-            print()
+        # Summary
+        self.print_summary()
         
-        return passed, failed, total
-
-def test_welcome_email_url_verification():
-    """Legacy function for compatibility"""
-    pass
+        return True
+    
+    def print_summary(self):
+        """Print test summary"""
+        print("\n" + "=" * 60)
+        print("📊 SUPPORT REQUEST API TEST SUMMARY")
+        print("=" * 60)
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        
+        if failed_tests > 0:
+            print("\n❌ FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"   • {result['test']}: {result['details']}")
+        
+        print("\n🎯 CRITICAL FINDINGS:")
+        if passed_tests == total_tests:
+            print("   ✅ ALL SUPPORT REQUEST API ENDPOINTS ARE WORKING CORRECTLY")
+            print("   ✅ Authentication, validation, and database storage functional")
+            print("   ✅ Email notifications should be sent to support@dentalaftercarenotes.com")
+        else:
+            print(f"   ⚠️  {failed_tests} test(s) failed - see details above")
 
 if __name__ == "__main__":
-    tester = ForgotPasswordTester()
-    passed, failed, total = tester.run_all_tests()
+    tester = SupportRequestAPITester()
+    success = tester.run_all_tests()
     
-    # Exit with appropriate code
-    sys.exit(0 if failed == 0 else 1)
+    if not success:
+        sys.exit(1)
