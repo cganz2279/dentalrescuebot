@@ -47,140 +47,15 @@ class DentistManagementTester:
             print(f"❌ {test_name}: {details}")
     
     def authenticate(self):
-        """Test webhook with real SamCart payload structure"""
-        print("\n🔍 Testing Real SamCart Webhook Structure...")
-        
-        # Real SamCart webhook payload structure based on web research
-        real_samcart_payload = {
-            "type": "Order",  # Real SamCart event type
-            "customer": {
-                "email": "test.customer@example.com",
-                "first_name": "John",
-                "last_name": "Doe",
-                "phone": "+1234567890"
-            },
-            "order": {
-                "id": "22677999",
-                "total": 49.95,
-                "currency": "USD",
-                "status": "completed"
-            },
-            "products": [
-                {
-                    "id": "dental_aftercare_monthly",
-                    "name": "Dental Aftercare Notes - Monthly",
-                    "price": 49.95,
-                    "transaction_id": "txn_12345"
-                }
-            ],
-            "created_at": datetime.now().isoformat()
-        }
+        """Authenticate with practice credentials"""
+        print("\n🔐 Authenticating with practice credentials...")
         
         try:
             response = requests.post(
-                f"{API_BASE}/webhook/samcart",
-                json=real_samcart_payload,
-                headers={"Content-Type": "application/json"},
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("status") == "success":
-                    self.log_test(
-                        "Real SamCart Webhook Structure",
-                        True,
-                        f"Account created successfully for {real_samcart_payload['customer']['email']}"
-                    )
-                    return data
-                elif data.get("status") == "duplicate":
-                    self.log_test(
-                        "Real SamCart Webhook Structure",
-                        True,
-                        f"Duplicate account detected (expected behavior)"
-                    )
-                    return data
-                else:
-                    self.log_test(
-                        "Real SamCart Webhook Structure",
-                        False,
-                        f"Unexpected status: {data.get('status')}"
-                    )
-            else:
-                self.log_test(
-                    "Real SamCart Webhook Structure",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
-        except Exception as e:
-            self.log_test(
-                "Real SamCart Webhook Structure",
-                False,
-                f"Request failed: {str(e)}"
-            )
-        
-        return None
-    
-    def test_email_system_functionality(self):
-        """Test email system with real customer email"""
-        print("\n📧 Testing Email System Functionality...")
-        
-        # Test with a real-looking email
-        test_email = f"cary.test.{int(time.time())}@gmail.com"
-        
-        try:
-            response = requests.post(
-                f"{API_BASE}/webhook/samcart/test",
-                params={"test_email": test_email},
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("status") == "success" and data.get("email_sent"):
-                    self.log_test(
-                        "Email System Functionality",
-                        True,
-                        f"Welcome email sent successfully to {test_email}"
-                    )
-                    return data
-                else:
-                    self.log_test(
-                        "Email System Functionality",
-                        False,
-                        f"Email not sent: {data.get('message', 'Unknown error')}"
-                    )
-            else:
-                self.log_test(
-                    "Email System Functionality",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
-        except Exception as e:
-            self.log_test(
-                "Email System Functionality",
-                False,
-                f"Request failed: {str(e)}"
-            )
-        
-        return None
-    
-    def test_password_reset_for_samcart_customers(self):
-        """Test password reset system for SamCart customers"""
-        print("\n🔐 Testing Password Reset for SamCart Customers...")
-        
-        # Use the customer email from previous test
-        test_email = "test.customer@example.com"
-        
-        try:
-            # Test forgot password endpoint
-            response = requests.post(
-                f"{API_BASE}/auth/forgot-password",
+                f"{API_BASE}/auth/login",
                 json={
-                    "email": test_email,
-                    "recovery_method": "email"
+                    "email": TEST_EMAIL,
+                    "password": TEST_PASSWORD
                 },
                 headers={"Content-Type": "application/json"},
                 timeout=30
@@ -188,270 +63,454 @@ class DentistManagementTester:
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("success") and "email" in data.get("sent_methods", []):
+                if data.get("success") and data.get("token"):
+                    self.auth_token = data["token"]
+                    self.practice_id = data.get("user", {}).get("practiceId")
                     self.log_test(
-                        "Password Reset for SamCart Customers",
+                        "Practice Authentication",
                         True,
-                        f"Password reset email sent successfully to {test_email}"
+                        f"Successfully authenticated with practice ID: {self.practice_id}"
                     )
                     return True
                 else:
                     self.log_test(
-                        "Password Reset for SamCart Customers",
+                        "Practice Authentication",
                         False,
-                        f"Password reset failed: {data.get('message', 'Unknown error')}"
+                        f"Login succeeded but missing token or success flag: {data}"
                     )
             else:
                 self.log_test(
-                    "Password Reset for SamCart Customers",
+                    "Practice Authentication",
                     False,
                     f"HTTP {response.status_code}: {response.text}"
                 )
                 
         except Exception as e:
             self.log_test(
-                "Password Reset for SamCart Customers",
+                "Practice Authentication",
                 False,
                 f"Request failed: {str(e)}"
             )
         
         return False
     
-    def test_account_creation_with_real_payload(self):
-        """Test account creation with real SamCart payload structure"""
-        print("\n👤 Testing Account Creation with Real Payload...")
+    def test_get_dentists(self):
+        """Test GET /api/practice/dentists - Retrieve list of dentists"""
+        print("\n📋 Testing GET /api/practice/dentists...")
         
-        # Create unique test customer
-        timestamp = int(time.time())
-        test_customer = {
-            "email": f"real.customer.{timestamp}@example.com",
-            "first_name": "Dr. Sarah",
-            "last_name": "Johnson",
-            "practice_name": "Johnson Dental Practice"
-        }
-        
-        # Real SamCart payload structure
-        payload = {
-            "type": "ProductPurchased",  # Alternative event type
-            "customer": {
-                "email": test_customer["email"],
-                "first_name": test_customer["first_name"],
-                "last_name": test_customer["last_name"]
-            },
-            "order": {
-                "id": f"ORD_{timestamp}",
-                "total": 49.95,
-                "status": "completed"
-            },
-            "products": [
-                {
-                    "name": "Dental Aftercare Notes",
-                    "price": 49.95
-                }
-            ]
-        }
+        if not self.auth_token:
+            self.log_test("GET Dentists List", False, "No authentication token available")
+            return False
         
         try:
-            response = requests.post(
-                f"{API_BASE}/webhook/samcart",
-                json=payload,
-                headers={"Content-Type": "application/json"},
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("status") == "success":
-                    # Verify account was created by testing login
-                    practice_id = data.get("practice_id")
-                    if practice_id:
-                        self.log_test(
-                            "Account Creation with Real Payload",
-                            True,
-                            f"Account created successfully with ID: {practice_id}"
-                        )
-                        return data
-                    else:
-                        self.log_test(
-                            "Account Creation with Real Payload",
-                            False,
-                            "Account creation succeeded but no practice ID returned"
-                        )
-                else:
-                    self.log_test(
-                        "Account Creation with Real Payload",
-                        False,
-                        f"Account creation failed: {data.get('message', 'Unknown error')}"
-                    )
-            else:
-                self.log_test(
-                    "Account Creation with Real Payload",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}"
-                )
-                
-        except Exception as e:
-            self.log_test(
-                "Account Creation with Real Payload",
-                False,
-                f"Request failed: {str(e)}"
-            )
-        
-        return None
-    
-    def test_admin_system_integration(self):
-        """Test if SamCart accounts appear in admin system"""
-        print("\n🔧 Testing Admin System Integration...")
-        
-        # First, authenticate as admin
-        admin_credentials = {
-            "email": "cganz@admin.com",
-            "password": "Dentist1#"
-        }
-        
-        try:
-            # Admin login
-            login_response = requests.post(
-                f"{API_BASE}/admin/login",
-                json=admin_credentials,
-                headers={"Content-Type": "application/json"},
-                timeout=30
-            )
-            
-            if login_response.status_code != 200:
-                self.log_test(
-                    "Admin System Integration",
-                    False,
-                    f"Admin login failed: HTTP {login_response.status_code}"
-                )
-                return False
-            
-            admin_data = login_response.json()
-            admin_token = admin_data.get("token")
-            
-            if not admin_token:
-                self.log_test(
-                    "Admin System Integration",
-                    False,
-                    "Admin login succeeded but no token returned"
-                )
-                return False
-            
-            # Get practices list
-            practices_response = requests.get(
-                f"{API_BASE}/admin/practices",
+            response = requests.get(
+                f"{API_BASE}/practice/dentists",
                 headers={
-                    "Authorization": f"Bearer {admin_token}",
+                    "Authorization": f"Bearer {self.auth_token}",
                     "Content-Type": "application/json"
                 },
                 timeout=30
             )
             
-            if practices_response.status_code == 200:
-                practices_data = practices_response.json()
-                practices = practices_data.get("practices", [])
-                
-                # Look for SamCart practices
-                samcart_practices = [p for p in practices if p.get("source") == "samcart"]
-                
-                if samcart_practices:
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "data" in data:
+                    dentists = data["data"]
                     self.log_test(
-                        "Admin System Integration",
+                        "GET Dentists List",
                         True,
-                        f"Found {len(samcart_practices)} SamCart practices in admin system"
+                        f"Successfully retrieved {len(dentists)} dentists"
                     )
-                    return True
+                    return data
                 else:
                     self.log_test(
-                        "Admin System Integration",
+                        "GET Dentists List",
                         False,
-                        f"No SamCart practices found in admin system (total practices: {len(practices)})"
+                        f"Response missing success flag or data: {data}"
                     )
             else:
                 self.log_test(
-                    "Admin System Integration",
+                    "GET Dentists List",
                     False,
-                    f"Failed to get practices list: HTTP {practices_response.status_code}"
+                    f"HTTP {response.status_code}: {response.text}"
                 )
                 
         except Exception as e:
             self.log_test(
-                "Admin System Integration",
+                "GET Dentists List",
                 False,
                 f"Request failed: {str(e)}"
             )
         
         return False
     
-    def test_webhook_logs_and_stats(self):
-        """Test webhook logging and statistics"""
-        print("\n📊 Testing Webhook Logs and Statistics...")
+    def test_add_dentist_valid(self):
+        """Test POST /api/practice/dentists with valid data"""
+        print("\n➕ Testing POST /api/practice/dentists with valid data...")
+        
+        if not self.auth_token:
+            self.log_test("Add Dentist (Valid)", False, "No authentication token available")
+            return False
+        
+        # Create test dentist with valid email
+        test_dentist = {
+            "firstName": "Dr. Sarah",
+            "lastName": "Johnson",
+            "email": f"sarah.johnson.{int(time.time())}@dentalpractice.com",
+            "phone": "(555) 123-4567",
+            "licenseNumber": "DDS12345",
+            "specialties": ["General Dentistry", "Cosmetic Dentistry"]
+        }
         
         try:
-            # Test webhook logs
-            logs_response = requests.get(
-                f"{API_BASE}/webhook/samcart/logs",
+            response = requests.post(
+                f"{API_BASE}/practice/dentists",
+                json=test_dentist,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                },
                 timeout=30
             )
             
-            if logs_response.status_code == 200:
-                logs_data = logs_response.json()
-                logs = logs_data.get("logs", [])
-                
-                # Test webhook stats
-                stats_response = requests.get(
-                    f"{API_BASE}/webhook/samcart/stats",
-                    timeout=30
-                )
-                
-                if stats_response.status_code == 200:
-                    stats_data = stats_response.json()
-                    total_webhooks = stats_data.get("total_webhooks", 0)
-                    success_rate = stats_data.get("success_rate", 0)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and data.get("data"):
+                    dentist_data = data["data"]
+                    dentist_id = dentist_data.get("id")
+                    if dentist_id:
+                        self.created_dentist_ids.append(dentist_id)
                     
                     self.log_test(
-                        "Webhook Logs and Statistics",
+                        "Add Dentist (Valid)",
                         True,
-                        f"Logs: {len(logs)} entries, Stats: {total_webhooks} total webhooks, {success_rate}% success rate"
+                        f"Successfully added dentist: {dentist_data.get('firstName')} {dentist_data.get('lastName')} (ID: {dentist_id})"
                     )
-                    return True
+                    return dentist_data
                 else:
                     self.log_test(
-                        "Webhook Logs and Statistics",
+                        "Add Dentist (Valid)",
                         False,
-                        f"Stats endpoint failed: HTTP {stats_response.status_code}"
+                        f"Response missing success flag or data: {data}"
                     )
             else:
                 self.log_test(
-                    "Webhook Logs and Statistics",
+                    "Add Dentist (Valid)",
                     False,
-                    f"Logs endpoint failed: HTTP {logs_response.status_code}"
+                    f"HTTP {response.status_code}: {response.text}"
                 )
                 
         except Exception as e:
             self.log_test(
-                "Webhook Logs and Statistics",
+                "Add Dentist (Valid)",
                 False,
                 f"Request failed: {str(e)}"
             )
         
         return False
     
-    def test_caryganz_customer_scenario(self):
-        """Test the specific customer scenario mentioned in the review"""
-        print("\n🎯 Testing caryganz@gmail.com Customer Scenario...")
+    def test_add_dentist_invalid_email(self):
+        """Test POST /api/practice/dentists with invalid email format"""
+        print("\n❌ Testing POST /api/practice/dentists with invalid email...")
         
-        customer_email = "caryganz@gmail.com"
+        if not self.auth_token:
+            self.log_test("Add Dentist (Invalid Email)", False, "No authentication token available")
+            return False
+        
+        # Create test dentist with invalid email
+        test_dentist = {
+            "firstName": "Dr. John",
+            "lastName": "Smith",
+            "email": "invalid-email-format",  # Invalid email format
+            "phone": "(555) 987-6543",
+            "licenseNumber": "DDS67890",
+            "specialties": ["Orthodontics"]
+        }
         
         try:
-            # Test password reset for this specific customer
             response = requests.post(
-                f"{API_BASE}/auth/forgot-password",
-                json={
-                    "email": customer_email,
-                    "recovery_method": "email"
+                f"{API_BASE}/practice/dentists",
+                json=test_dentist,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
                 },
-                headers={"Content-Type": "application/json"},
+                timeout=30
+            )
+            
+            # Should return 422 for validation error
+            if response.status_code == 422:
+                data = response.json()
+                # Check if it's a Pydantic validation error
+                if "detail" in data and isinstance(data["detail"], list):
+                    validation_errors = data["detail"]
+                    email_error = any(
+                        error.get("loc") == ["email"] and "email" in error.get("msg", "").lower()
+                        for error in validation_errors
+                    )
+                    if email_error:
+                        self.log_test(
+                            "Add Dentist (Invalid Email)",
+                            True,
+                            f"Correctly rejected invalid email with Pydantic validation error: {validation_errors}"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "Add Dentist (Invalid Email)",
+                            False,
+                            f"Validation error but not for email field: {validation_errors}"
+                        )
+                else:
+                    self.log_test(
+                        "Add Dentist (Invalid Email)",
+                        False,
+                        f"422 status but unexpected error format: {data}"
+                    )
+            else:
+                self.log_test(
+                    "Add Dentist (Invalid Email)",
+                    False,
+                    f"Expected 422 validation error, got HTTP {response.status_code}: {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test(
+                "Add Dentist (Invalid Email)",
+                False,
+                f"Request failed: {str(e)}"
+            )
+        
+        return False
+    
+    def test_add_dentist_missing_required_fields(self):
+        """Test POST /api/practice/dentists with missing required fields"""
+        print("\n❌ Testing POST /api/practice/dentists with missing required fields...")
+        
+        if not self.auth_token:
+            self.log_test("Add Dentist (Missing Fields)", False, "No authentication token available")
+            return False
+        
+        # Create test dentist with missing required fields
+        test_dentist = {
+            "firstName": "Dr. Jane",
+            # Missing lastName and email (required fields)
+            "phone": "(555) 111-2222",
+            "licenseNumber": "DDS11111"
+        }
+        
+        try:
+            response = requests.post(
+                f"{API_BASE}/practice/dentists",
+                json=test_dentist,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                },
+                timeout=30
+            )
+            
+            # Should return 422 for validation error
+            if response.status_code == 422:
+                data = response.json()
+                if "detail" in data and isinstance(data["detail"], list):
+                    validation_errors = data["detail"]
+                    # Check for missing required fields
+                    missing_fields = [error.get("loc", [])[-1] for error in validation_errors if error.get("type") == "missing"]
+                    if "lastName" in missing_fields and "email" in missing_fields:
+                        self.log_test(
+                            "Add Dentist (Missing Fields)",
+                            True,
+                            f"Correctly rejected missing required fields: {missing_fields}"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "Add Dentist (Missing Fields)",
+                            False,
+                            f"Validation error but not for expected missing fields: {validation_errors}"
+                        )
+                else:
+                    self.log_test(
+                        "Add Dentist (Missing Fields)",
+                        False,
+                        f"422 status but unexpected error format: {data}"
+                    )
+            else:
+                self.log_test(
+                    "Add Dentist (Missing Fields)",
+                    False,
+                    f"Expected 422 validation error, got HTTP {response.status_code}: {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test(
+                "Add Dentist (Missing Fields)",
+                False,
+                f"Request failed: {str(e)}"
+            )
+        
+        return False
+    
+    def test_update_dentist(self):
+        """Test PUT /api/practice/dentists/{dentist_id} - Update existing dentist"""
+        print("\n✏️ Testing PUT /api/practice/dentists/{dentist_id}...")
+        
+        if not self.auth_token:
+            self.log_test("Update Dentist", False, "No authentication token available")
+            return False
+        
+        if not self.created_dentist_ids:
+            self.log_test("Update Dentist", False, "No dentist available to update")
+            return False
+        
+        dentist_id = self.created_dentist_ids[0]
+        
+        # Update dentist data
+        update_data = {
+            "firstName": "Dr. Sarah Updated",
+            "phone": "(555) 999-8888",
+            "specialties": ["General Dentistry", "Cosmetic Dentistry", "Endodontics"]
+        }
+        
+        try:
+            response = requests.put(
+                f"{API_BASE}/practice/dentists/{dentist_id}",
+                json=update_data,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                },
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and data.get("data"):
+                    updated_dentist = data["data"]
+                    self.log_test(
+                        "Update Dentist",
+                        True,
+                        f"Successfully updated dentist: {updated_dentist.get('firstName')} {updated_dentist.get('lastName')}"
+                    )
+                    return updated_dentist
+                else:
+                    self.log_test(
+                        "Update Dentist",
+                        False,
+                        f"Response missing success flag or data: {data}"
+                    )
+            else:
+                self.log_test(
+                    "Update Dentist",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test(
+                "Update Dentist",
+                False,
+                f"Request failed: {str(e)}"
+            )
+        
+        return False
+    
+    def test_update_dentist_invalid_email(self):
+        """Test PUT /api/practice/dentists/{dentist_id} with invalid email"""
+        print("\n❌ Testing PUT /api/practice/dentists/{dentist_id} with invalid email...")
+        
+        if not self.auth_token:
+            self.log_test("Update Dentist (Invalid Email)", False, "No authentication token available")
+            return False
+        
+        if not self.created_dentist_ids:
+            self.log_test("Update Dentist (Invalid Email)", False, "No dentist available to update")
+            return False
+        
+        dentist_id = self.created_dentist_ids[0]
+        
+        # Update with invalid email
+        update_data = {
+            "email": "invalid-email-format-update"  # Invalid email format
+        }
+        
+        try:
+            response = requests.put(
+                f"{API_BASE}/practice/dentists/{dentist_id}",
+                json=update_data,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                },
+                timeout=30
+            )
+            
+            # Should return 422 for validation error
+            if response.status_code == 422:
+                data = response.json()
+                if "detail" in data and isinstance(data["detail"], list):
+                    validation_errors = data["detail"]
+                    email_error = any(
+                        error.get("loc") == ["email"] and "email" in error.get("msg", "").lower()
+                        for error in validation_errors
+                    )
+                    if email_error:
+                        self.log_test(
+                            "Update Dentist (Invalid Email)",
+                            True,
+                            f"Correctly rejected invalid email update with Pydantic validation error"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "Update Dentist (Invalid Email)",
+                            False,
+                            f"Validation error but not for email field: {validation_errors}"
+                        )
+                else:
+                    self.log_test(
+                        "Update Dentist (Invalid Email)",
+                        False,
+                        f"422 status but unexpected error format: {data}"
+                    )
+            else:
+                self.log_test(
+                    "Update Dentist (Invalid Email)",
+                    False,
+                    f"Expected 422 validation error, got HTTP {response.status_code}: {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test(
+                "Update Dentist (Invalid Email)",
+                False,
+                f"Request failed: {str(e)}"
+            )
+        
+        return False
+    
+    def test_delete_dentist(self):
+        """Test DELETE /api/practice/dentists/{dentist_id} - Remove dentist"""
+        print("\n🗑️ Testing DELETE /api/practice/dentists/{dentist_id}...")
+        
+        if not self.auth_token:
+            self.log_test("Delete Dentist", False, "No authentication token available")
+            return False
+        
+        if not self.created_dentist_ids:
+            self.log_test("Delete Dentist", False, "No dentist available to delete")
+            return False
+        
+        dentist_id = self.created_dentist_ids[0]
+        
+        try:
+            response = requests.delete(
+                f"{API_BASE}/practice/dentists/{dentist_id}",
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                },
                 timeout=30
             )
             
@@ -459,141 +518,193 @@ class DentistManagementTester:
                 data = response.json()
                 if data.get("success"):
                     self.log_test(
-                        "caryganz@gmail.com Customer Scenario",
+                        "Delete Dentist",
                         True,
-                        f"Password reset available for {customer_email}"
+                        f"Successfully removed dentist with ID: {dentist_id}"
                     )
-                    
-                    # Also test if account exists by checking webhook test endpoint
-                    test_response = requests.post(
-                        f"{API_BASE}/webhook/samcart/test",
-                        params={"test_email": customer_email},
-                        timeout=30
-                    )
-                    
-                    if test_response.status_code == 200:
-                        test_data = test_response.json()
-                        if test_data.get("status") == "duplicate":
-                            self.log_test(
-                                "caryganz@gmail.com Account Exists",
-                                True,
-                                f"Account confirmed to exist for {customer_email}"
-                            )
-                        else:
-                            self.log_test(
-                                "caryganz@gmail.com Account Exists",
-                                False,
-                                f"Account status unclear: {test_data.get('status')}"
-                            )
-                    
+                    # Remove from our tracking list
+                    self.created_dentist_ids.remove(dentist_id)
                     return True
                 else:
                     self.log_test(
-                        "caryganz@gmail.com Customer Scenario",
+                        "Delete Dentist",
                         False,
-                        f"Password reset failed: {data.get('message')}"
+                        f"Response missing success flag: {data}"
                     )
             else:
                 self.log_test(
-                    "caryganz@gmail.com Customer Scenario",
+                    "Delete Dentist",
                     False,
                     f"HTTP {response.status_code}: {response.text}"
                 )
                 
         except Exception as e:
             self.log_test(
-                "caryganz@gmail.com Customer Scenario",
+                "Delete Dentist",
                 False,
                 f"Request failed: {str(e)}"
             )
         
         return False
     
-    def test_event_type_processing(self):
-        """Test that all SamCart event types are now processed"""
-        print("\n🔄 Testing Event Type Processing...")
+    def test_delete_nonexistent_dentist(self):
+        """Test DELETE /api/practice/dentists/{dentist_id} with non-existent ID"""
+        print("\n❌ Testing DELETE /api/practice/dentists/{dentist_id} with non-existent ID...")
         
-        event_types_to_test = [
-            "Order",
-            "ProductPurchased", 
-            "OrderCompleted",
-            "Order.Completed",
-            "unknown_event_type"  # Should now be processed instead of ignored
+        if not self.auth_token:
+            self.log_test("Delete Non-existent Dentist", False, "No authentication token available")
+            return False
+        
+        # Use a non-existent dentist ID
+        fake_dentist_id = str(uuid.uuid4())
+        
+        try:
+            response = requests.delete(
+                f"{API_BASE}/practice/dentists/{fake_dentist_id}",
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                },
+                timeout=30
+            )
+            
+            # Should return 404 for not found
+            if response.status_code == 404:
+                data = response.json()
+                if "detail" in data and "not found" in data["detail"].lower():
+                    self.log_test(
+                        "Delete Non-existent Dentist",
+                        True,
+                        f"Correctly returned 404 for non-existent dentist ID"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Delete Non-existent Dentist",
+                        False,
+                        f"404 status but unexpected error message: {data}"
+                    )
+            else:
+                self.log_test(
+                    "Delete Non-existent Dentist",
+                    False,
+                    f"Expected 404 not found, got HTTP {response.status_code}: {response.text}"
+                )
+                
+        except Exception as e:
+            self.log_test(
+                "Delete Non-existent Dentist",
+                False,
+                f"Request failed: {str(e)}"
+            )
+        
+        return False
+    
+    def test_unauthorized_access(self):
+        """Test dentist endpoints without authentication"""
+        print("\n🔒 Testing dentist endpoints without authentication...")
+        
+        endpoints_to_test = [
+            ("GET", f"{API_BASE}/practice/dentists"),
+            ("POST", f"{API_BASE}/practice/dentists"),
+            ("PUT", f"{API_BASE}/practice/dentists/test-id"),
+            ("DELETE", f"{API_BASE}/practice/dentists/test-id")
         ]
         
         success_count = 0
         
-        for event_type in event_types_to_test:
-            test_email = f"event.test.{event_type.lower().replace('.', '_')}@example.com"
-            
-            payload = {
-                "type": event_type,
-                "customer": {
-                    "email": test_email,
-                    "first_name": "Event",
-                    "last_name": "Tester"
-                },
-                "order": {
-                    "id": f"TEST_{int(time.time())}_{event_type}",
-                    "total": 49.95
-                }
-            }
-            
+        for method, url in endpoints_to_test:
             try:
-                response = requests.post(
-                    f"{API_BASE}/webhook/samcart",
-                    json=payload,
-                    headers={"Content-Type": "application/json"},
-                    timeout=30
-                )
+                if method == "GET":
+                    response = requests.get(url, timeout=30)
+                elif method == "POST":
+                    response = requests.post(url, json={}, timeout=30)
+                elif method == "PUT":
+                    response = requests.put(url, json={}, timeout=30)
+                elif method == "DELETE":
+                    response = requests.delete(url, timeout=30)
                 
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get("status") in ["success", "duplicate"]:
-                        success_count += 1
-                        print(f"  ✅ Event type '{event_type}' processed successfully")
-                    else:
-                        print(f"  ❌ Event type '{event_type}' failed: {data.get('message')}")
+                # Should return 401 or 403 for unauthorized access
+                if response.status_code in [401, 403]:
+                    success_count += 1
+                    print(f"  ✅ {method} endpoint correctly rejected unauthorized access (HTTP {response.status_code})")
                 else:
-                    print(f"  ❌ Event type '{event_type}' failed: HTTP {response.status_code}")
+                    print(f"  ❌ {method} endpoint should reject unauthorized access, got HTTP {response.status_code}")
                     
             except Exception as e:
-                print(f"  ❌ Event type '{event_type}' failed: {str(e)}")
+                print(f"  ❌ {method} endpoint test failed: {str(e)}")
         
-        if success_count >= 4:  # At least 4 out of 5 should work
+        if success_count == len(endpoints_to_test):
             self.log_test(
-                "Event Type Processing",
+                "Unauthorized Access Protection",
                 True,
-                f"Successfully processed {success_count}/{len(event_types_to_test)} event types"
+                f"All {len(endpoints_to_test)} endpoints correctly reject unauthorized access"
             )
             return True
         else:
             self.log_test(
-                "Event Type Processing",
+                "Unauthorized Access Protection",
                 False,
-                f"Only processed {success_count}/{len(event_types_to_test)} event types successfully"
+                f"Only {success_count}/{len(endpoints_to_test)} endpoints properly reject unauthorized access"
             )
             return False
     
+    def cleanup_created_dentists(self):
+        """Clean up any remaining created dentists"""
+        print("\n🧹 Cleaning up created dentists...")
+        
+        if not self.auth_token or not self.created_dentist_ids:
+            return
+        
+        for dentist_id in self.created_dentist_ids[:]:  # Copy list to avoid modification during iteration
+            try:
+                response = requests.delete(
+                    f"{API_BASE}/practice/dentists/{dentist_id}",
+                    headers={
+                        "Authorization": f"Bearer {self.auth_token}",
+                        "Content-Type": "application/json"
+                    },
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    print(f"  ✅ Cleaned up dentist ID: {dentist_id}")
+                    self.created_dentist_ids.remove(dentist_id)
+                else:
+                    print(f"  ⚠️ Failed to clean up dentist ID: {dentist_id} (HTTP {response.status_code})")
+                    
+            except Exception as e:
+                print(f"  ❌ Error cleaning up dentist ID {dentist_id}: {str(e)}")
+    
     def run_all_tests(self):
-        """Run all SamCart webhook integration tests"""
-        print("🚀 Starting CRITICAL SamCart Webhook Integration Testing...")
+        """Run all dentist management API tests"""
+        print("🚀 Starting Dentist Management API Testing...")
         print(f"Backend URL: {BACKEND_URL}")
+        print(f"Test Credentials: {TEST_EMAIL}")
         print("=" * 80)
         
+        # Authenticate first
+        if not self.authenticate():
+            print("❌ Authentication failed - cannot proceed with tests")
+            return False
+        
         # Run all tests
-        self.test_real_samcart_webhook_structure()
-        self.test_email_system_functionality()
-        self.test_password_reset_for_samcart_customers()
-        self.test_account_creation_with_real_payload()
-        self.test_admin_system_integration()
-        self.test_webhook_logs_and_stats()
-        self.test_caryganz_customer_scenario()
-        self.test_event_type_processing()
+        self.test_get_dentists()
+        self.test_add_dentist_valid()
+        self.test_add_dentist_invalid_email()
+        self.test_add_dentist_missing_required_fields()
+        self.test_update_dentist()
+        self.test_update_dentist_invalid_email()
+        self.test_delete_dentist()
+        self.test_delete_nonexistent_dentist()
+        self.test_unauthorized_access()
+        
+        # Clean up
+        self.cleanup_created_dentists()
         
         # Print summary
         print("\n" + "=" * 80)
-        print("🎯 SAMCART WEBHOOK INTEGRATION TEST SUMMARY")
+        print("🎯 DENTIST MANAGEMENT API TEST SUMMARY")
         print("=" * 80)
         
         total_tests = len(self.test_results)
@@ -618,10 +729,12 @@ class DentistManagementTester:
         
         # Critical assessment
         critical_tests = [
-            "Real SamCart Webhook Structure",
-            "Email System Functionality", 
-            "Password Reset for SamCart Customers",
-            "Account Creation with Real Payload"
+            "Practice Authentication",
+            "GET Dentists List",
+            "Add Dentist (Valid)",
+            "Add Dentist (Invalid Email)",
+            "Update Dentist",
+            "Delete Dentist"
         ]
         
         critical_failures = [test for test in self.failed_tests if test in critical_tests]
@@ -630,15 +743,15 @@ class DentistManagementTester:
             print(f"\n🚨 CRITICAL FAILURES DETECTED:")
             for test in critical_failures:
                 print(f"  - {test}")
-            print("\n❌ SAMCART INTEGRATION NOT READY FOR PRODUCTION")
+            print("\n❌ DENTIST MANAGEMENT API NOT READY")
         else:
             print(f"\n🎉 ALL CRITICAL TESTS PASSED")
-            print("✅ SAMCART INTEGRATION READY FOR PRODUCTION")
+            print("✅ DENTIST MANAGEMENT API READY FOR FRONTEND INTEGRATION")
         
         return success_rate >= 75 and len(critical_failures) == 0
 
 if __name__ == "__main__":
-    tester = SamCartWebhookTester()
+    tester = DentistManagementTester()
     success = tester.run_all_tests()
     
     # Exit with appropriate code
