@@ -22,6 +22,7 @@ from routes.public import router as public_router
 from routes.tutorials import router as tutorials_router
 from routes.samcart_webhook import router as samcart_webhook_router
 from routes.video_api import router as video_api_router
+from routes.support import router as support_router
 from services.followup_scheduler import start_followup_scheduler
 
 
