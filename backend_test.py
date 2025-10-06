@@ -760,6 +760,14 @@ class ForgotPasswordTester:
         self.check_database_for_specific_token()
         time.sleep(1)
         
+        # Test the domain mismatch issue
+        print("🚨 URGENT: Testing domain mismatch issue...")
+        self.test_domain_mismatch_issue()
+        time.sleep(1)
+        
+        self.test_email_url_configuration()
+        time.sleep(1)
+        
         # Test forgot password functionality
         self.test_forgot_password_endpoint()
         time.sleep(1)  # Brief pause between tests
