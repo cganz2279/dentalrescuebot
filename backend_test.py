@@ -6,6 +6,10 @@ import os
 import sys
 from datetime import datetime
 import asyncio
+from dotenv import load_dotenv
+
+# Load environment variables from backend/.env
+load_dotenv('/app/backend/.env')
 
 # Add the backend directory to Python path
 sys.path.append('/app/backend')
