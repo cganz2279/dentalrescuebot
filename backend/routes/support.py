@@ -56,8 +56,6 @@ async def create_support_request(
 ):
     """Create a new support request"""
     try:
-        db = await get_database()
-        
         # Create support request document
         support_doc = {
             "id": str(uuid.uuid4()),
