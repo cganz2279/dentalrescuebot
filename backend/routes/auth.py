@@ -888,40 +888,9 @@ async def forgot_password(request: ForgotPasswordRequest):
             except Exception as e:
                 print(f"Email sending failed: {e}")
         
-        # Send SMS if requested and user has phone number
+        # SMS removed - only email recovery available now
         if recovery_method in ["sms", "both"]:
-            try:
-                # Get user's phone number from practice or user profile
-                practice = await db.practices.find_one({"id": user.get("practiceId")})
-                phone_number = user.get("phone") or (practice and practice.get("phone"))
-                
-                if phone_number:
-                    from twilio.rest import Client
-                    
-                    twilio_sid = os.getenv('TWILIO_ACCOUNT_SID')
-                    twilio_token = os.getenv('TWILIO_AUTH_TOKEN')
-                    twilio_phone = os.getenv('TWILIO_PHONE_NUMBER')
-                    
-                    if twilio_sid and twilio_token and twilio_phone:
-                        client = Client(twilio_sid, twilio_token)
-                        
-                        sms_message = f"Password reset for your dental practice account. Click here to reset: {reset_link} (expires in 1 hour)"
-                        
-                        message = client.messages.create(
-                            body=sms_message,
-                            from_=twilio_phone,
-                            to=phone_number
-                        )
-                        
-                        if message.sid:
-                            sent_methods.append("SMS")
-                    else:
-                        print("Twilio configuration missing")
-                else:
-                    print(f"No phone number found for user {email}")
-                    
-            except Exception as e:
-                print(f"SMS sending failed: {e}")
+            print("SMS recovery method requested but SMS service has been removed - using email only")
         
         # Determine response message
         if sent_methods:
