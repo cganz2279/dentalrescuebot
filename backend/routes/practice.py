@@ -88,7 +88,7 @@ class PatientUpdate(BaseModel):
     firstName: Optional[str] = None
     lastName: Optional[str] = None
     email: Optional[EmailStr] = None
-    cellphone: Optional[str] = None  # Changed from phone to cellphone
+    phone: Optional[str] = None  # Changed back to phone
     dateOfBirth: Optional[str] = None
     address: Optional[dict] = None
     emergencyContact: Optional[dict] = None
