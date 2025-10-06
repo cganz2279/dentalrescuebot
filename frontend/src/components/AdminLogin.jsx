@@ -2009,6 +2009,10 @@ const AdminDashboard = ({ adminToken }) => {
             </Card>
           </CustomTabsContent>
 
+          <CustomTabsContent value="support" activeTab={activeTab} className="space-y-6">
+            <AdminSupport />
+          </CustomTabsContent>
+
           <CustomTabsContent value="system" activeTab={activeTab} className="space-y-6">
             <Card>
               <CardHeader>
