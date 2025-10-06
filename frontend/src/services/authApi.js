@@ -245,10 +245,7 @@ export const practiceApi = {
     return response.data;
   },
 
-  smsPDF: async (smsData) => {
-    const response = await practiceAxios.post('/api/practice/sms-pdf', smsData);
-    return response.data;
-  },
+  // smsPDF method removed - SMS functionality no longer available
 
   getExportActivities: async (queryParams = '') => {
     const response = await practiceAxios.get(`/api/practice/export-activities?${queryParams}`);
