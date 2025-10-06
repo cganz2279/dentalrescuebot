@@ -139,11 +139,6 @@ function App() {
               <PracticeSettingsPage />
             </AuthProvider>
           } />
-          <Route path="/dentist-management" element={
-            <AuthProvider>
-              <DentistManagementPage />
-            </AuthProvider>
-          } />
           <Route path="/add-patient" element={
             <AuthProvider>
               <AddPatientPage />
