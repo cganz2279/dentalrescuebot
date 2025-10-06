@@ -118,8 +118,11 @@ function App() {
           {/* Admin Route - Must be EXACT path, not wildcard */}
           <Route path="/admin" element={<AdminLogin />} />
           
-          {/* Password Reset Route */}
+          {/* Password Reset Route - No Auth Required */}
           <Route path="/reset-password" element={<PasswordReset />} />
+          
+          {/* Testing route to verify password reset works */}
+          <Route path="/test-reset" element={<PasswordReset />} />
           
           {/* Practice Login Route - For individual practices */}
           <Route path="/practice-portal" element={
