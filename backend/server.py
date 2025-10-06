@@ -505,7 +505,7 @@ app.add_middleware(
     allow_origins=[
         "*",
         "https://samcart-auth-fix.preview.static.emergentagent.com",
-        "https://samcart-auth-fix.preview.emergentagent.com",
+        "https://dentiportal.preview.emergentagent.com",
         "http://localhost:3000",
         "https://localhost:3000"
     ],
