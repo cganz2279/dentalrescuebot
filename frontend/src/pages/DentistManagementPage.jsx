@@ -226,6 +226,16 @@ const DentistManagementPage = () => {
       setFieldErrors(newFieldErrors);
       console.log('🔧 Set fieldErrors state to:', newFieldErrors);
       
+      // Force a re-render by updating the state in the next tick
+      setTimeout(() => {
+        console.log('🔍 fieldErrors state after setTimeout:', fieldErrors);
+        setFieldErrors(prevErrors => {
+          console.log('🔄 fieldErrors setState callback, prevErrors:', prevErrors);
+          console.log('🔄 fieldErrors setState callback, newFieldErrors:', newFieldErrors);
+          return {...newFieldErrors};
+        });
+      }, 100);
+      
       // Only show toast for general errors, not field-specific ones
       if (!hasFieldErrors) {
         console.log('📢 Showing toast error since no field errors detected');
