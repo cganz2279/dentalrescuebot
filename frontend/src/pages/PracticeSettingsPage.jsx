@@ -188,11 +188,7 @@ const PracticeSettingsPage = () => {
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newDentist.email)) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter a valid email address",
-        variant: "destructive",
-      });
+      setFieldErrors({email: "Please enter a valid email address"});
       return;
     }
 
