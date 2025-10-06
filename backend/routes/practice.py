@@ -1514,7 +1514,7 @@ async def import_patients_csv(
                 first_name = row.get('firstName', '').strip()
                 last_name = row.get('lastName', '').strip()
                 email = row.get('email', '').strip().lower()
-                cellphone = row.get('cellphone', '').strip()
+                phone = row.get('phone', '').strip()
                 primary_dentist = row.get('primaryDentist', '').strip()
                 
                 # Validate required fields
