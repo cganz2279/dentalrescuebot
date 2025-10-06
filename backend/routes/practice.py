@@ -2866,107 +2866,11 @@ async def sms_pdf_to_patient(
     sms_request: SMSPDFRequest,
     current_user: dict = Depends(get_current_user)
 ):
-    """Send SMS with secure PDF link to patient"""
-    try:
-        practice_id = current_user["practiceId"]
-        role = current_user["role"]
-        
-        if role not in ['practice_admin', 'practice_staff']:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access denied"
-            )
-        
-        # Check if SMS service is available
-        if not SMS_SERVICE_AVAILABLE:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="SMS service not available"
-            )
-        
-        if not PDF_LINK_SERVICE_AVAILABLE:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="PDF link service not available"
-            )
-        
-        # Get practice information
-        practice = await db.practices.find_one(
-            {"id": practice_id},
-            {"_id": 0, "name": 1, "phone": 1, "emergencyContact": 1, "officeHours": 1}
-        )
-        
-        if not practice:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Practice not found"
-            )
-        
-        # Validate phone number format
-        phone_validation = sms_service.validate_phone_number(sms_request.patientCellphone)
-        if not phone_validation['valid']:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid phone number: {phone_validation['error']}"
-            )
-        
-        # Generate secure PDF link
-        secure_link = pdf_link_service.generate_secure_link(
-            assignment_id=sms_request.assignmentId or str(uuid.uuid4()),
-            patient_id="unknown",  # We don't have patient ID in the SMS request
-            practice_id=practice_id,
-            procedure_name=sms_request.procedureName
-        )
-        
-        # Extract patient name from cellphone (you might want to get this from the request)
-        # For now, we'll use a generic greeting
-        patient_name = "Patient"  # This could be enhanced to look up patient by phone
-        
-        # Send SMS with secure link
-        sms_result = sms_service.send_pdf_link_sms(
-            patient_cellphone=phone_validation['formatted'],
-            patient_name=patient_name,
-            procedure_name=sms_request.procedureName,
-            practice_name=practice.get('name', 'Your Dental Practice'),
-            pdf_link=secure_link
-        )
-        
-        if not sms_result['success']:
-            # Handle specific Twilio trial account errors more gracefully
-            error_msg = sms_result.get('error', 'Unknown error')
-            
-            # Check for Twilio trial account restrictions
-            if 'Unable to create record' in error_msg or '21211' in error_msg or 'trial account' in error_msg.lower():
-                # This is likely a trial account limitation - return a user-friendly message
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"SMS could not be sent to {phone_validation['formatted']}. This appears to be a Twilio trial account limitation. The secure PDF link has been generated: {secure_link}"
-                )
-            else:
-                # Other SMS errors
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Failed to send SMS: {error_msg}"
-                )
-        
-        return {
-            "success": True,
-            "message": f"PDF link for {sms_request.procedureName} sent successfully to {phone_validation['formatted']}",
-            "patientCellphone": phone_validation['formatted'],
-            "procedureName": sms_request.procedureName,
-            "secureLink": secure_link,
-            "messageSid": sms_result.get('message_sid'),
-            "smsContent": sms_result.get('sms_content')
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"SMS PDF error: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to send SMS with PDF link"
-        )
+    """SMS service has been removed - no longer available"""
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="SMS service has been removed and is no longer available"
+    )
 
 @router.get("/followup-stats")
 async def get_followup_email_stats(current_user: dict = Depends(get_current_user)):
