@@ -82,6 +82,8 @@ const LoginForm = ({ onSwitchToRegister }) => {
     const [forgotLoading, setForgotLoading] = useState(false);
     const [forgotMessage, setForgotMessage] = useState('');
 
+    console.log('🔍 ForgotPasswordModal render - showForgotPassword:', showForgotPassword);
+
     const handleForgotPassword = async (e) => {
       e.preventDefault();
       setForgotLoading(true);
