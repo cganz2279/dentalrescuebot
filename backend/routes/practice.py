@@ -336,7 +336,7 @@ async def get_practice_dashboard(current_user: dict = Depends(get_current_user))
                 "firstName": 1,
                 "lastName": 1,
                 "email": 1,
-                "cellphone": 1,  # Include cellphone field for SMS functionality
+                "phone": 1,  # Include phone field
                 "createdAt": 1,
                 "lastLoginAt": 1,
                 "isActive": 1,
