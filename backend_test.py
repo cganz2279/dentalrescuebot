@@ -986,7 +986,7 @@ class ForgotPasswordTester:
     def run_all_tests(self):
         """Run focused tests for the user's specific request"""
         print("🚀 Starting Fresh Password Reset Email Testing with Corrected FRONTEND_URL...")
-        print(f"🔗 Corrected Backend URL: {CORRECTED_BACKEND_URL}")
+        print(f"🔗 Actual Backend URL: {ACTUAL_BACKEND_URL}")
         print(f"🔗 API Base: {API_BASE}")
         print("🎯 FOCUS: Send fresh password reset email to caryganz@gmail.com with corrected FRONTEND_URL")
         print("=" * 80)
