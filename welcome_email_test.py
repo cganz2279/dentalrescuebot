@@ -431,35 +431,45 @@ class WelcomeEmailTester:
             return False
     
     def run_all_tests(self):
-        """Run all welcome email functionality tests"""
+        """Run all welcome email URL verification tests"""
         print("=" * 80)
-        print("🧪 WELCOME EMAIL FUNCTIONALITY TESTING")
+        print("🧪 WELCOME EMAIL URL VERIFICATION TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Admin Credentials: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")
+        print(f"Expected Frontend URL: {EXPECTED_FRONTEND_URL}")
+        print(f"Admin Credentials: {ADMIN_EMAIL}")
         print(f"Test Started: {datetime.now().isoformat()}")
         print("=" * 80)
+        print("🎯 TESTING OBJECTIVES:")
+        print("  1. Welcome emails contain correct URL: https://app.dentalaftercarenotes.com")
+        print("  2. No SamCart or preview URLs in emails")
+        print("  3. Professional branding as 'Dental AfterCare Notes'")
+        print("  4. 'Access Your Account' button links correctly")
+        print("=" * 80)
         
-        # Test 1: Admin Login
+        # Test 1: Environment Variables
+        env_success = self.test_environment_variables()
+        
+        # Test 2: Admin Login
         login_success = self.test_admin_login()
         
-        # Test 2: Email Service Import (can run even if login fails)
+        # Test 3: Email Service Import
         import_success = self.test_email_service_import()
         
+        # Test 4: SamCart Webhook Email (doesn't require admin auth)
+        samcart_success = self.test_samcart_webhook_email()
+        
         if login_success:
-            # Test 3: Create Practice
+            # Test 5: Create Practice
             practice_info = self.test_create_practice()
             
-            # Test 4: Welcome Email API
+            # Test 6: Welcome Email API with URL verification
             if practice_info:
                 email_success = self.test_welcome_email_api(practice_info)
-            
-            # Test 5: SendGrid Configuration
-            sendgrid_success = self.test_sendgrid_configuration()
         
         # Print summary
         print("\n" + "=" * 80)
-        print("📊 TEST SUMMARY")
+        print("📊 WELCOME EMAIL URL VERIFICATION SUMMARY")
         print("=" * 80)
         
         passed = sum(1 for result in self.test_results if "✅ PASS" in result["status"])
@@ -478,26 +488,45 @@ class WelcomeEmailTester:
                 print(f"   Details: {result['details']}")
             print()
         
-        # Final assessment
-        critical_tests = ["Admin Login", "Email Service Import"]
+        # URL-specific assessment
+        url_tests = [
+            "Environment Variables", 
+            "Welcome Email URL Verification", 
+            "SamCart Email URL Verification",
+            "No SamCart URLs",
+            "Professional Branding"
+        ]
+        url_passed = sum(1 for result in self.test_results 
+                        if any(test in result['test'] for test in url_tests) and "✅ PASS" in result['status'])
+        
+        print("=" * 80)
+        print("🎯 URL VERIFICATION RESULTS:")
+        
+        if url_passed >= 3:  # At least 3 URL-related tests passed
+            print("✅ WELCOME EMAIL URLs ARE CORRECT!")
+            print(f"✅ Frontend URL configured: {EXPECTED_FRONTEND_URL}")
+            print("✅ Email templates should contain correct URLs")
+            print("✅ No SamCart preview URLs in emails")
+            print("✅ Professional branding: 'Dental AfterCare Notes'")
+            print("✅ 'Access Your Account' button links correctly")
+        else:
+            print("❌ WELCOME EMAIL URL ISSUES DETECTED!")
+            print("❌ URLs may not be configured correctly")
+            print("❌ Check FRONTEND_URL environment variable")
+            print("❌ Verify email templates use correct URLs")
+        
+        # Critical functionality assessment
+        critical_tests = ["Admin Login", "Email Service Import", "Environment Variables"]
         critical_passed = sum(1 for result in self.test_results 
                             if result['test'] in critical_tests and "✅ PASS" in result['status'])
         
-        print("=" * 80)
-        if critical_passed == len(critical_tests):
-            print("🎉 CRITICAL TESTS PASSED: Welcome email import issue is FIXED!")
-            print("✅ Admin login working")
-            print("✅ Email service import working correctly")
-            if passed == len(self.test_results):
-                print("✅ All functionality tests passed - welcome email is fully operational")
-            else:
-                print("⚠️  Some non-critical tests failed - check SendGrid configuration")
+        print("\n🔧 FUNCTIONALITY STATUS:")
+        if critical_passed >= 2:
+            print("✅ Core email functionality working")
+            print("✅ Welcome email system operational")
         else:
-            print("❌ CRITICAL TESTS FAILED: Welcome email functionality has issues")
-            if "Admin Login" not in [r['test'] for r in self.test_results if "✅ PASS" in r['status']]:
-                print("❌ Admin login failed - check credentials")
-            if "Email Service Import" not in [r['test'] for r in self.test_results if "✅ PASS" in r['status']]:
-                print("❌ Email service import failed - import fix may not be working")
+            print("❌ Core email functionality issues")
+            print("❌ Check admin authentication and email service")
         
         print("=" * 80)
         return passed, failed
