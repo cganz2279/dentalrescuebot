@@ -25,7 +25,9 @@ import {
   Plus,
   BookOpen,
   Stethoscope,
-  Mail
+  Mail,
+  HelpCircle,
+  MessageCircle
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import TutorialManagement from './TutorialManagement';
