@@ -107,8 +107,6 @@ async def get_support_requests(
 async def get_all_support_requests():
     """Get all support requests for admin panel (no auth required for admin)"""
     try:
-        db = await get_database()
-        
         # Get all support requests
         cursor = db.support_requests.find({}).sort("created_at", -1)
         requests = await cursor.to_list(length=1000)
