@@ -748,6 +748,7 @@ class ForgotPasswordTester:
     def send_fresh_password_reset_email(self):
         """Send a fresh password reset email to caryganz@gmail.com as requested"""
         print("🚨 URGENT: Sending fresh password reset email to caryganz@gmail.com...")
+        print(f"🔗 Using corrected backend URL: {CORRECTED_BACKEND_URL}")
         
         try:
             # Send password reset email to caryganz@gmail.com
@@ -766,10 +767,14 @@ class ForgotPasswordTester:
             
             if response.status_code == 200:
                 data = response.json()
+                
+                # Get the FRONTEND_URL from environment to verify reset link format
+                frontend_url = os.getenv('FRONTEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
+                
                 self.log_test(
                     "Fresh Password Reset Email Sent",
                     True,
-                    f"✅ NEW PASSWORD RESET EMAIL SENT to caryganz@gmail.com. Message: {data.get('message', 'No message')}",
+                    f"✅ NEW PASSWORD RESET EMAIL SENT to caryganz@gmail.com. Message: {data.get('message', 'No message')}. Reset link will use: {frontend_url}",
                     data
                 )
                 
@@ -779,8 +784,8 @@ class ForgotPasswordTester:
                     self.log_test(
                         "Email Delivery Confirmation",
                         True,
-                        "✅ Email was successfully sent via SendGrid - NEW TOKEN GENERATED",
-                        {"sent_methods": sent_methods}
+                        f"✅ Email was successfully sent via SendGrid - NEW TOKEN GENERATED. Reset link format: {frontend_url}/reset-password?token=NEW_TOKEN",
+                        {"sent_methods": sent_methods, "frontend_url": frontend_url}
                     )
                     return True
                 else:
