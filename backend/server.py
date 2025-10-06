@@ -499,6 +499,7 @@ app.include_router(public_router)
 app.include_router(tutorials_router)
 app.include_router(samcart_webhook_router)
 app.include_router(video_api_router)
+app.include_router(support_router)
 
 app.add_middleware(
     CORSMiddleware,
