@@ -1315,15 +1315,7 @@ const PracticeDashboard = () => {
                           >
                             Email
                           </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleSMSPDF(procedure.id)}
-                            className="text-xs px-2 py-1 h-7 bg-green-50 text-green-700 hover:bg-green-100"
-                          >
-                            Text
-                          </Button>
-                          {/* Mark Delivered button removed - status changes automatically when Print/Email/SMS is used */}
+                          {/* Text/SMS button removed - SMS functionality no longer available */}
                         </div>
                       </div>
                     </div>
