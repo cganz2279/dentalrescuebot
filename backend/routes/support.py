@@ -177,7 +177,7 @@ async def send_support_email(support_doc: dict):
                 <div style="background-color: white; padding: 20px; border-radius: 8px;">
                     <h3 style="margin-top: 0; color: #374151;">Description</h3>
                     <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; border-left: 4px solid #2563eb;">
-                        {support_doc['description'].replace('\n', '<br>')}
+                        {support_doc['description'].replace(chr(10), '<br>')}
                     </div>
                 </div>
                 
