@@ -625,10 +625,18 @@ class ForgotPasswordTester:
 
     def run_all_tests(self):
         """Run all forgot password and username tests"""
-        print("🚀 Starting Forgot Password and Username Testing...")
+        print("🚀 Starting Password Reset Token Validation Testing...")
         print(f"🔗 Backend URL: {BACKEND_URL}")
         print(f"🔗 API Base: {API_BASE}")
         print("=" * 80)
+        
+        # URGENT: Test the specific token from user report first
+        print("🚨 URGENT: Testing specific token from user report...")
+        self.test_specific_reset_token()
+        time.sleep(1)
+        
+        self.check_database_for_specific_token()
+        time.sleep(1)
         
         # Test forgot password functionality
         self.test_forgot_password_endpoint()
