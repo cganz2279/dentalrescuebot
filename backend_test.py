@@ -50,8 +50,10 @@ class SupportRequestAPITester:
             
             if response.status_code == 200:
                 data = response.json()
-                self.auth_token = data.get("access_token")
-                self.practice_id = data.get("practice_id")
+                self.auth_token = data.get("token")
+                # Extract practice_id from user data
+                user_data = data.get("user", {})
+                self.practice_id = user_data.get("practiceId")
                 
                 self.log_test(
                     "Practice Authentication",
