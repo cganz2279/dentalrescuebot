@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for Fresh Password Reset Email with Corrected FRONTEND_URL
-Testing the password recovery system with updated configuration as requested.
+Support Request API Testing Script
+Tests the newly implemented Support Request API endpoints as requested in review.
 """
 
 import requests
 import json
-import os
 import sys
 from datetime import datetime
-import time
 
-# Load environment variables from backend/.env
-from dotenv import load_dotenv
-load_dotenv('/app/backend/.env')
+# Configuration
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
+TEST_CREDENTIALS = {
+    "email": "cganz2279@gmail.com",
+    "password": "password123"
+}
 
-# Use the actual backend URL from frontend configuration
-ACTUAL_BACKEND_URL = "https://dentist-portal-3.emergent.host"
-API_BASE = f"{ACTUAL_BACKEND_URL}/api"
-
-class ForgotPasswordTester:
+class SupportRequestAPITester:
     def __init__(self):
         self.session = requests.Session()
         self.test_results = []
