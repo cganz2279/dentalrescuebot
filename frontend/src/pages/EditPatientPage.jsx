@@ -92,7 +92,7 @@ const EditPatientPage = () => {
       if (!patientData.firstName || !patientData.lastName || !patientData.email || !patientData.phone) {
         toast({
           title: "Validation Error",
-          description: "First name, last name, email, and cellphone number are required.",
+          description: "First name, last name, email, and phone number are required.",
           variant: "destructive",
         });
         return;
