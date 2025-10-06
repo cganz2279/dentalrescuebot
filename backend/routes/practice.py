@@ -1527,8 +1527,8 @@ async def import_patients_csv(
                     errors.append("email is required")
                 elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
                     errors.append("email format is invalid")
-                if not cellphone:
-                    errors.append("cellphone is required")
+                if not phone:
+                    errors.append("phone is required")
                 
                 if errors:
                     failed_imports.append({
