@@ -59,7 +59,7 @@ async def create_support_request(
         # Create support request document
         support_doc = {
             "id": str(uuid.uuid4()),
-            "practice_id": current_user["practice_id"],
+            "practice_id": current_user["user"]["practiceId"],
             "practice_name": request.practice_name,
             "email": request.email,
             "phone": request.phone,
