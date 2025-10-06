@@ -1482,8 +1482,15 @@ const PracticeDashboard = () => {
           </Card>
         </div>
 
-        {/* Trial Notice */}
-        {dashboardData?.stats?.subscriptionStatus === 'trial' && (
+        {/* Support History Section */}
+        {currentView === 'support' && (
+          <div className="mt-8">
+            <SupportHistory />
+          </div>
+        )}
+
+        {/* Trial Notice - only show on dashboard view */}
+        {currentView === 'dashboard' && dashboardData?.stats?.subscriptionStatus === 'trial' && (
           <Card className="mt-8 border-blue-200 bg-blue-50">
             <CardContent className="pt-6">
               <div className="flex items-center">
@@ -1502,6 +1509,13 @@ const PracticeDashboard = () => {
           </Card>
         )}
       </div>
+      
+      {/* Support Modal */}
+      <SupportModal
+        isOpen={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
+        practiceData={practice}
+      />
     </div>
   );
 };
