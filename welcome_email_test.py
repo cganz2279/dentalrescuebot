@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Welcome Email Functionality Testing Script
-Testing the fix for import issue in admin.py line 504
+WELCOME EMAIL URL VERIFICATION TESTING
+Testing welcome email functionality to ensure correct URLs are used:
+- https://app.dentalaftercarenotes.com (not SamCart URLs)
+- Professional branding as "Dental AfterCare Notes"
+- Correct login links in welcome emails
 """
 
 import requests
@@ -14,6 +17,7 @@ from datetime import datetime
 BACKEND_URL = "https://dentiportal.preview.emergentagent.com/api"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"
+EXPECTED_FRONTEND_URL = "https://app.dentalaftercarenotes.com"
 
 class WelcomeEmailTester:
     def __init__(self):
