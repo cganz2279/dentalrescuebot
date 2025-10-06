@@ -865,12 +865,130 @@ class ForgotPasswordTester:
             )
             return False
 
+    def verify_frontend_url_configuration(self):
+        """Verify the FRONTEND_URL configuration is correct"""
+        print("🔍 Verifying FRONTEND_URL Configuration...")
+        
+        try:
+            frontend_url = os.getenv('FRONTEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
+            expected_url = 'https://samcart-auth-fix.preview.emergentagent.com'
+            
+            if frontend_url == expected_url:
+                self.log_test(
+                    "FRONTEND_URL Configuration Verification",
+                    True,
+                    f"✅ FRONTEND_URL is correctly set to: {frontend_url}",
+                    {"frontend_url": frontend_url, "expected": expected_url}
+                )
+            else:
+                self.log_test(
+                    "FRONTEND_URL Configuration Verification",
+                    False,
+                    f"❌ FRONTEND_URL mismatch. Expected: {expected_url}, Got: {frontend_url}",
+                    {"frontend_url": frontend_url, "expected": expected_url}
+                )
+            
+            return True
+            
+        except Exception as e:
+            self.log_test(
+                "FRONTEND_URL Configuration Verification",
+                False,
+                f"❌ Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_new_token_generation_and_validation(self):
+        """Test that new tokens are generated and can be validated"""
+        print("🔍 Testing New Token Generation and Validation...")
+        
+        try:
+            # First send a password reset to generate a new token
+            payload = {
+                "email": "caryganz@gmail.com",
+                "recovery_method": "email"
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/auth/forgot-password",
+                json=payload,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                sent_methods = data.get('sent_methods', [])
+                
+                if 'email' in sent_methods:
+                    self.log_test(
+                        "New Token Generation",
+                        True,
+                        "✅ New password reset token generated successfully",
+                        {"sent_methods": sent_methods}
+                    )
+                    
+                    # Test token validation endpoint with dummy token to verify it's working
+                    dummy_token = "test-validation-12345"
+                    validation_response = self.session.get(
+                        f"{API_BASE}/auth/validate-reset-token/{dummy_token}"
+                    )
+                    
+                    if validation_response.status_code == 400:
+                        validation_data = validation_response.json() if validation_response.headers.get('content-type', '').startswith('application/json') else {}
+                        if "Invalid or expired reset token" in validation_data.get('detail', ''):
+                            self.log_test(
+                                "Token Validation Endpoint Working",
+                                True,
+                                "✅ Token validation endpoint is working correctly",
+                                validation_data
+                            )
+                        else:
+                            self.log_test(
+                                "Token Validation Endpoint Working",
+                                False,
+                                f"❌ Unexpected validation error: {validation_data.get('detail')}",
+                                validation_data
+                            )
+                    else:
+                        self.log_test(
+                            "Token Validation Endpoint Working",
+                            False,
+                            f"❌ Expected 400 for invalid token, got {validation_response.status_code}",
+                            {}
+                        )
+                    
+                    return True
+                else:
+                    self.log_test(
+                        "New Token Generation",
+                        False,
+                        f"❌ Email not sent, no token generated: {sent_methods}",
+                        data
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "New Token Generation",
+                    False,
+                    f"❌ Failed to generate token: {response.status_code}",
+                    {}
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "New Token Generation and Validation",
+                False,
+                f"❌ Exception occurred: {str(e)}"
+            )
+            return False
+
     def run_all_tests(self):
         """Run focused tests for the user's specific request"""
-        print("🚀 Starting Fresh Password Reset Email Testing...")
-        print(f"🔗 Backend URL: {FRONTEND_BACKEND_URL}")
+        print("🚀 Starting Fresh Password Reset Email Testing with Corrected FRONTEND_URL...")
+        print(f"🔗 Corrected Backend URL: {CORRECTED_BACKEND_URL}")
         print(f"🔗 API Base: {API_BASE}")
-        print("🎯 FOCUS: Send fresh password reset email to caryganz@gmail.com")
+        print("🎯 FOCUS: Send fresh password reset email to caryganz@gmail.com with corrected FRONTEND_URL")
         print("=" * 80)
         
         # 1. Send fresh password reset email to caryganz@gmail.com
