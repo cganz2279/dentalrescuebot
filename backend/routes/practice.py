@@ -1474,7 +1474,7 @@ async def import_patients_csv(
         csv_reader = csv.DictReader(StringIO(csv_content))
         
         # Expected headers
-        required_headers = ['firstName', 'lastName', 'email', 'cellphone']
+        required_headers = ['firstName', 'lastName', 'email', 'phone']
         optional_headers = ['primaryDentist']
         all_expected_headers = required_headers + optional_headers
         
