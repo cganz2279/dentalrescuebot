@@ -1014,7 +1014,7 @@ const PracticeDashboard = () => {
             Practice Settings
           </Button>
           <Button 
-            onClick={() => navigate('/dentist-management')}
+            onClick={() => navigate('/practice-settings')}
             className="bg-indigo-600 hover:bg-indigo-700 text-white h-20 flex flex-col"
           >
             <Users className="h-6 w-6 mb-2" />
