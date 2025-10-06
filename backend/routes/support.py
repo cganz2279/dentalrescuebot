@@ -7,7 +7,7 @@ import os
 from database import db
 from routes.auth import get_current_user
 
-router = APIRouter(prefix="/support", tags=["support"])
+router = APIRouter(prefix="/api/support", tags=["support"])
 
 class SupportRequest(BaseModel):
     practice_name: str
