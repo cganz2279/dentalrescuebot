@@ -278,13 +278,17 @@ const PracticeSettingsPage = () => {
           else if (errorData.detail && Array.isArray(errorData.detail)) {
             console.log('📝 Detail array format validation error');
             errorData.detail.forEach(err => {
+              console.log('🔍 Processing detail error:', err);
               if (typeof err === 'object' && err.loc && err.msg) {
                 const fieldName = err.loc[err.loc.length - 1]; // Get the field name
+                console.log('🎯 Detail field name detected:', fieldName);
                 if (fieldName === 'email') {
                   newFieldErrors.email = err.msg;
                   hasFieldErrors = true;
+                  console.log('✅ Detail email field error set:', err.msg);
                 } else {
                   errorMessage = err.msg;
+                  console.log('📋 Detail general error message set:', err.msg);
                 }
               }
             });
