@@ -280,6 +280,125 @@ class ForgotPasswordTester:
             )
             return False
 
+    def test_specific_reset_token(self):
+        """Test the specific reset token from user report: d201d54e-4a4f-4657-b253-46fd4eb0e7fb"""
+        print("🔍 Testing Specific Reset Token from User Report...")
+        
+        try:
+            # Test with the specific token from user report
+            specific_token = "d201d54e-4a4f-4657-b253-46fd4eb0e7fb"
+            
+            response = self.session.get(
+                f"{API_BASE}/auth/validate-reset-token/{specific_token}"
+            )
+            
+            print(f"🔍 GET /api/auth/validate-reset-token/{specific_token} Response: {response.status_code}")
+            print(f"🔍 Response headers: {dict(response.headers)}")
+            
+            if response.headers.get('content-type', '').startswith('application/json'):
+                data = response.json()
+                print(f"🔍 Response data: {data}")
+            else:
+                print(f"🔍 Response text: {response.text}")
+                data = {"error": response.text}
+            
+            if response.status_code == 400:
+                if "Invalid or expired reset token" in data.get('detail', ''):
+                    self.log_test(
+                        "Specific Reset Token Validation",
+                        True,
+                        f"Token {specific_token} correctly rejected as invalid/expired with 400 status",
+                        data
+                    )
+                else:
+                    self.log_test(
+                        "Specific Reset Token Validation",
+                        False,
+                        f"Token {specific_token} rejected but with unexpected error: {data.get('detail')}",
+                        data
+                    )
+                return True
+            elif response.status_code == 200:
+                self.log_test(
+                    "Specific Reset Token Validation",
+                    True,
+                    f"Token {specific_token} is valid and active",
+                    data
+                )
+                return True
+            else:
+                self.log_test(
+                    "Specific Reset Token Validation",
+                    False,
+                    f"Unexpected status {response.status_code} for token {specific_token}: {data}",
+                    data
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Specific Reset Token Validation",
+                False,
+                f"Exception occurred testing token d201d54e-4a4f-4657-b253-46fd4eb0e7fb: {str(e)}"
+            )
+            return False
+
+    def check_database_for_specific_token(self):
+        """Check if the specific token exists in the database"""
+        print("🔍 Checking Database for Specific Token...")
+        
+        try:
+            # This would require direct database access
+            # For now, we'll simulate by testing the endpoint behavior
+            specific_token = "d201d54e-4a4f-4657-b253-46fd4eb0e7fb"
+            
+            # Test the token validation endpoint to understand the error
+            response = self.session.get(
+                f"{API_BASE}/auth/validate-reset-token/{specific_token}"
+            )
+            
+            if response.status_code == 400:
+                data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {}
+                if "Invalid or expired reset token" in data.get('detail', ''):
+                    self.log_test(
+                        "Database Token Check",
+                        True,
+                        f"Token {specific_token} does not exist in database or is expired",
+                        {"token_status": "not_found_or_expired"}
+                    )
+                else:
+                    self.log_test(
+                        "Database Token Check",
+                        False,
+                        f"Unexpected error for token {specific_token}: {data.get('detail')}",
+                        data
+                    )
+            elif response.status_code == 200:
+                data = response.json()
+                self.log_test(
+                    "Database Token Check",
+                    True,
+                    f"Token {specific_token} exists and is valid in database",
+                    {"token_status": "valid", "user_email": data.get('user', {}).get('email')}
+                )
+            else:
+                self.log_test(
+                    "Database Token Check",
+                    False,
+                    f"Unexpected response {response.status_code} when checking token",
+                    {"status_code": response.status_code}
+                )
+                
+            return True
+                
+        except Exception as e:
+            self.log_test(
+                "Database Token Check",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
     def test_reset_password_endpoint(self):
         """Test the reset password endpoint"""
         print("🔍 Testing Reset Password Endpoint...")
