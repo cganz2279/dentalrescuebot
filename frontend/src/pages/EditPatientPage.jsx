@@ -20,7 +20,7 @@ const EditPatientPage = () => {
     firstName: '',
     lastName: '',
     email: '',
-    cellphone: '',
+    phone: '',
     dateOfBirth: '',
     address: {
       street: '',
