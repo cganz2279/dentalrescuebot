@@ -196,10 +196,10 @@ const EditPatientPage = () => {
               <div>
                 <Label htmlFor="phone">Phone Number *</Label>
                 <Input
-                  id="cellphone"
+                  id="phone"
                   type="tel"
-                  value={patientData.cellphone}
-                  onChange={(e) => handleInputChange('cellphone', e.target.value)}
+                  value={patientData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="(555) 123-4567"
                   required
                 />
