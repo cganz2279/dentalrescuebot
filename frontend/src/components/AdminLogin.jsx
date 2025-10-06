@@ -30,6 +30,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
+import { adminApi } from '../services/authApi';
 import TutorialManagement from './TutorialManagement';
 
 // Error Boundary to catch React errors
