@@ -748,7 +748,7 @@ class ForgotPasswordTester:
     def send_fresh_password_reset_email(self):
         """Send a fresh password reset email to caryganz@gmail.com as requested"""
         print("🚨 URGENT: Sending fresh password reset email to caryganz@gmail.com...")
-        print(f"🔗 Using corrected backend URL: {CORRECTED_BACKEND_URL}")
+        print(f"🔗 Using actual backend URL: {ACTUAL_BACKEND_URL}")
         
         try:
             # Send password reset email to caryganz@gmail.com
