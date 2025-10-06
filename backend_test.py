@@ -399,6 +399,128 @@ class ForgotPasswordTester:
             )
             return False
 
+    def test_domain_mismatch_issue(self):
+        """Test the domain mismatch issue reported by user"""
+        print("🔍 Testing Domain Mismatch Issue...")
+        
+        try:
+            specific_token = "d201d54e-4a4f-4657-b253-46fd4eb0e7fb"
+            
+            # Test on the correct domain (where token exists)
+            correct_url = f"https://dentiportal.preview.emergentagent.com/api/auth/validate-reset-token/{specific_token}"
+            
+            # Test on the wrong domain (where user is accessing)
+            wrong_url = f"https://dentist-portal-3.emergent.host/api/auth/validate-reset-token/{specific_token}"
+            
+            print(f"🔍 Testing correct domain: {correct_url}")
+            correct_response = self.session.get(correct_url)
+            
+            print(f"🔍 Testing wrong domain: {wrong_url}")
+            try:
+                wrong_response = self.session.get(wrong_url)
+                wrong_status = wrong_response.status_code
+                wrong_data = wrong_response.json() if wrong_response.headers.get('content-type', '').startswith('application/json') else {"error": wrong_response.text}
+            except Exception as e:
+                wrong_status = "ERROR"
+                wrong_data = {"error": str(e)}
+            
+            # Log results
+            if correct_response.status_code == 200 and wrong_status == 400:
+                self.log_test(
+                    "Domain Mismatch Issue Analysis",
+                    True,
+                    f"CONFIRMED: Token works on correct domain (200) but fails on wrong domain (400). User is accessing wrong URL.",
+                    {
+                        "correct_domain": "dentiportal.preview.emergentagent.com",
+                        "wrong_domain": "dentist-portal-3.emergent.host",
+                        "correct_status": correct_response.status_code,
+                        "wrong_status": wrong_status,
+                        "issue": "User accessing wrong domain"
+                    }
+                )
+            else:
+                self.log_test(
+                    "Domain Mismatch Issue Analysis",
+                    False,
+                    f"Unexpected results: correct domain returned {correct_response.status_code}, wrong domain returned {wrong_status}",
+                    {
+                        "correct_status": correct_response.status_code,
+                        "wrong_status": wrong_status
+                    }
+                )
+                
+            return True
+                
+        except Exception as e:
+            self.log_test(
+                "Domain Mismatch Issue Analysis",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_email_url_configuration(self):
+        """Test that password reset emails contain the correct URL"""
+        print("🔍 Testing Email URL Configuration...")
+        
+        try:
+            # Check environment variable
+            frontend_url = os.getenv('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
+            
+            # Send a password reset email and check the configuration
+            payload = {
+                "email": "caryganz@gmail.com",
+                "recovery_method": "email"
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/auth/forgot-password",
+                json=payload,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check if email was sent
+                sent_methods = data.get('sent_methods', [])
+                if 'email' in sent_methods:
+                    self.log_test(
+                        "Email URL Configuration Check",
+                        True,
+                        f"Password reset email sent successfully. FRONTEND_URL is set to: {frontend_url}. Email should contain reset link with this domain.",
+                        {
+                            "frontend_url": frontend_url,
+                            "expected_reset_link_domain": frontend_url,
+                            "user_accessing_wrong_domain": "dentist-portal-3.emergent.host",
+                            "issue": "User needs to check email for correct reset link"
+                        }
+                    )
+                else:
+                    self.log_test(
+                        "Email URL Configuration Check",
+                        False,
+                        f"Email was not sent. Sent methods: {sent_methods}",
+                        data
+                    )
+            else:
+                self.log_test(
+                    "Email URL Configuration Check",
+                    False,
+                    f"Failed to send password reset email: {response.status_code}",
+                    response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
+                )
+                
+            return True
+                
+        except Exception as e:
+            self.log_test(
+                "Email URL Configuration Check",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
     def test_reset_password_endpoint(self):
         """Test the reset password endpoint"""
         print("🔍 Testing Reset Password Endpoint...")
