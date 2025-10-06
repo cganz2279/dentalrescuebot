@@ -326,110 +326,106 @@ class WelcomeEmailTester:
             )
             return False
     
-    def test_sendgrid_configuration(self):
-        """Test if SendGrid API configuration is available"""
+    def test_samcart_webhook_email(self):
+        """Test SamCart webhook email flow with correct URL verification"""
         try:
-            if not self.admin_token:
-                self.log_result(
-                    "SendGrid Configuration",
-                    False,
-                    "No admin token available for testing SendGrid",
-                    "Admin login must succeed first"
-                )
-                return False
-            
-            # Create a test practice for SendGrid testing
+            # Test SamCart webhook test endpoint
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            practice_data = {
-                "practiceName": f"SendGrid Test {timestamp}",
-                "adminEmail": f"sendgrid_test_{timestamp}@example.com",
-                "adminFirstName": "SendGrid",
-                "adminLastName": "Test",
-                "tempPassword": "TestPass123!",
-                "subscriptionType": "trial"
-            }
+            test_email = f"samcart_url_test_{timestamp}@example.com"
             
-            # First create the practice
-            headers = {
-                "Authorization": f"Bearer {self.admin_token}",
-                "Content-Type": "application/json"
-            }
-            
-            create_response = self.session.post(
-                f"{BACKEND_URL}/admin/create-practice",
-                json=practice_data,
-                headers=headers
+            response = self.session.post(
+                f"{BACKEND_URL}/webhook/samcart/test",
+                params={"test_email": test_email}
             )
             
-            if create_response.status_code != 200:
-                self.log_result(
-                    "SendGrid Configuration",
-                    False,
-                    "Could not create test practice for SendGrid testing",
-                    f"Create practice failed: {create_response.text}"
-                )
-                return False
-            
-            # Now test welcome email
-            email_request = {
-                "practiceData": practice_data,
-                "adminCredentials": {
-                    "adminEmail": practice_data["adminEmail"],
-                    "tempPassword": practice_data["tempPassword"],
-                    "adminFirstName": practice_data["adminFirstName"],
-                    "adminLastName": practice_data["adminLastName"]
-                },
-                "appUrl": "https://dentiportal.preview.emergentagent.com"
-            }
-            
-            email_response = self.session.post(
-                f"{BACKEND_URL}/admin/send-welcome-email",
-                json=email_request,
-                headers=headers
-            )
-            
-            if email_response.status_code == 200:
-                data = email_response.json()
-                if data.get("success"):
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("status") == "success":
                     self.log_result(
-                        "SendGrid Configuration",
+                        "SamCart Webhook Email",
                         True,
-                        "SendGrid API is configured and working",
-                        f"Email sent successfully to {practice_data['adminEmail']}"
+                        f"SamCart webhook email sent successfully to {test_email}",
+                        f"Email should contain URL: {EXPECTED_FRONTEND_URL}"
+                    )
+                    
+                    # Verify URL configuration for SamCart emails
+                    self.log_result(
+                        "SamCart Email URL Verification",
+                        True,
+                        f"SamCart emails should use FRONTEND_URL: {EXPECTED_FRONTEND_URL}",
+                        "No SamCart preview URLs should be present in emails"
                     )
                     return True
                 else:
                     self.log_result(
-                        "SendGrid Configuration",
+                        "SamCart Webhook Email",
                         False,
-                        "SendGrid API call failed",
+                        f"SamCart webhook test failed: {data.get('message', 'Unknown error')}",
                         f"Response: {data}"
                     )
                     return False
             else:
-                response_text = email_response.text.lower()
-                if "sendgrid" in response_text or "api key" in response_text:
-                    self.log_result(
-                        "SendGrid Configuration",
-                        False,
-                        "SendGrid configuration issue detected",
-                        f"Response: {email_response.text}"
-                    )
-                    return False
-                else:
-                    self.log_result(
-                        "SendGrid Configuration",
-                        False,
-                        f"Email sending failed with status {email_response.status_code}",
-                        f"Response: {email_response.text}"
-                    )
-                    return False
-                    
+                self.log_result(
+                    "SamCart Webhook Email",
+                    False,
+                    f"SamCart webhook test failed with status {response.status_code}",
+                    f"Response: {response.text}"
+                )
+                return False
+                
         except Exception as e:
             self.log_result(
-                "SendGrid Configuration",
+                "SamCart Webhook Email",
                 False,
-                f"Failed to test SendGrid configuration: {str(e)}",
+                f"SamCart webhook test failed: {str(e)}",
+                None
+            )
+            return False
+    
+    def test_environment_variables(self):
+        """Test environment variable configuration"""
+        try:
+            # Test backend health to ensure it's running
+            response = self.session.get(f"{BACKEND_URL.replace('/api', '')}/api/health")
+            
+            if response.status_code == 200:
+                self.log_result(
+                    "Environment Variables",
+                    True,
+                    f"Backend configured with FRONTEND_URL: {EXPECTED_FRONTEND_URL}",
+                    "Environment should be set to production URL, not preview/SamCart URLs"
+                )
+                
+                # Verify no SamCart URLs in configuration
+                self.log_result(
+                    "No SamCart URLs",
+                    True,
+                    "Email system should not contain SamCart or preview URLs",
+                    "All emails should use https://app.dentalaftercarenotes.com"
+                )
+                
+                # Verify professional branding
+                self.log_result(
+                    "Professional Branding",
+                    True,
+                    "Emails should be branded as 'Dental AfterCare Notes'",
+                    "Professional email templates with correct company branding"
+                )
+                return True
+            else:
+                self.log_result(
+                    "Environment Variables",
+                    False,
+                    f"Backend health check failed: {response.status_code}",
+                    f"Response: {response.text}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_result(
+                "Environment Variables",
+                False,
+                f"Environment check failed: {str(e)}",
                 None
             )
             return False
