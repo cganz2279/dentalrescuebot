@@ -493,7 +493,7 @@ async def create_patient(
             "invitedBy": user_id,
             "invitedAt": datetime.utcnow(),
             "loginCount": 0,
-            "cellphone": patient_data.cellphone,  # Changed from phone to cellphone
+            "phone": patient_data.phone,  # Changed back to phone
             "createdAt": datetime.utcnow(),
             "updatedAt": datetime.utcnow()
         }
