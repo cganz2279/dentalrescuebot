@@ -308,6 +308,16 @@ export const practiceApi = {
       responseType: 'blob'
     });
     return response.data;
+  },
+
+  submitSupportRequest: async (supportData) => {
+    const response = await practiceAxios.post('/api/support/request', supportData);
+    return response.data;
+  },
+
+  getSupportRequests: async () => {
+    const response = await practiceAxios.get('/api/support/requests');
+    return response.data;
   }
 };
 
