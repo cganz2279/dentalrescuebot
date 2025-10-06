@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for Forgot Password and Forgot Username Functionality
-Testing the password recovery system and username recovery system as requested.
+Backend Testing Script for Fresh Password Reset Email with Corrected FRONTEND_URL
+Testing the password recovery system with updated configuration as requested.
 """
 
 import requests
@@ -15,9 +15,9 @@ import time
 from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
 
-# Get backend URL from frontend environment (where user is accessing)
-FRONTEND_BACKEND_URL = "https://dentist-portal-3.emergent.host"
-API_BASE = f"{FRONTEND_BACKEND_URL}/api"
+# Use the corrected backend URL as specified in the review request
+CORRECTED_BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+API_BASE = f"{CORRECTED_BACKEND_URL}/api"
 
 class ForgotPasswordTester:
     def __init__(self):
