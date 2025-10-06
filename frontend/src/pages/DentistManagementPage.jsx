@@ -65,6 +65,10 @@ const DentistManagementPage = () => {
     loadDentists();
   }, []);
 
+  useEffect(() => {
+    console.log('🔍 fieldErrors state changed:', fieldErrors);
+  }, [fieldErrors]);
+
   const loadDentists = async () => {
     setLoading(true);
     try {
