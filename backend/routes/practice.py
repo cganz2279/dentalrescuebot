@@ -2859,7 +2859,7 @@ async def email_pdf_to_patient(
 
 @router.post("/sms-pdf")
 async def sms_pdf_to_patient(
-    sms_request: SMSPDFRequest,
+    sms_request: dict,
     current_user: dict = Depends(get_current_user)
 ):
     """SMS service has been removed - no longer available"""
