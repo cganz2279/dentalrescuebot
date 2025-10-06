@@ -144,11 +144,7 @@ class EmailPDFRequest(BaseModel):
     procedureName: str
     assignmentId: Optional[str] = None
 
-class SMSPDFRequest(BaseModel):
-    patientCellphone: str
-    procedureId: str
-    procedureName: str
-    assignmentId: Optional[str] = None
+# SMSPDFRequest model removed - SMS service no longer available
 
 # Practice-Specific Procedure Override Models  
 class ProcedureCustomization(BaseModel):
