@@ -93,7 +93,7 @@ async def get_support_requests(
     try:
         # Get support requests for this practice
         cursor = db.support_requests.find(
-            {"practice_id": current_user["practice_id"]}
+            {"practice_id": current_user["user"]["practiceId"]}
         ).sort("created_at", -1)
         
         requests = await cursor.to_list(length=100)
