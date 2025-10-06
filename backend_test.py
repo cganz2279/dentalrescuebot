@@ -25,6 +25,9 @@ class DentistManagementTester:
         self.test_results = []
         self.failed_tests = []
         self.passed_tests = []
+        self.auth_token = None
+        self.practice_id = None
+        self.created_dentist_ids = []
         
     def log_test(self, test_name, success, details=""):
         """Log test results"""
