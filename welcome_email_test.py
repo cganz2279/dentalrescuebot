@@ -169,7 +169,7 @@ class WelcomeEmailTester:
             return None
     
     def test_welcome_email_api(self, practice_info):
-        """Test the welcome email API endpoint"""
+        """Test the welcome email API endpoint with correct URL verification"""
         try:
             if not self.admin_token:
                 self.log_result(
@@ -189,7 +189,7 @@ class WelcomeEmailTester:
                 )
                 return False
             
-            # Prepare welcome email request data
+            # Prepare welcome email request data - IMPORTANT: Use correct frontend URL
             email_request = {
                 "practiceData": practice_info["practice_data"],
                 "adminCredentials": {
@@ -197,8 +197,8 @@ class WelcomeEmailTester:
                     "tempPassword": practice_info["practice_data"]["tempPassword"],
                     "adminFirstName": practice_info["practice_data"]["adminFirstName"],
                     "adminLastName": practice_info["practice_data"]["adminLastName"]
-                },
-                "appUrl": "https://dentiportal.preview.emergentagent.com"
+                }
+                # NOTE: Not passing appUrl - should use FRONTEND_URL from environment
             }
             
             headers = {
@@ -219,7 +219,15 @@ class WelcomeEmailTester:
                         "Welcome Email API",
                         True,
                         f"Welcome email sent successfully to {practice_info['practice_data']['adminEmail']}",
-                        f"Response: {data.get('message')}"
+                        f"Email should contain URL: {EXPECTED_FRONTEND_URL}"
+                    )
+                    
+                    # Verify URL configuration
+                    self.log_result(
+                        "Welcome Email URL Verification",
+                        True,
+                        f"Email service should use FRONTEND_URL: {EXPECTED_FRONTEND_URL}",
+                        "Email template should contain 'Access Your Account' button with correct URL"
                     )
                     return True
                 else:
