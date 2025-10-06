@@ -58,6 +58,8 @@ const PracticeDashboard = () => {
   const [followUpStats, setFollowUpStats] = useState(null);
   const [showFollowUpStats, setShowFollowUpStats] = useState(false);
   const [showCSVImportModal, setShowCSVImportModal] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [currentView, setCurrentView] = useState('dashboard'); // dashboard, support
   const [showTutorialsModal, setShowTutorialsModal] = useState(false);
 
   const handleExportData = () => {
