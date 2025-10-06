@@ -364,6 +364,18 @@ backend:
           agent: "testing"
           comment: "✅ 30-DAY TRIAL PERIOD COMPREHENSIVE TESTING COMPLETED - FEATURE WORKING CORRECTLY: Conducted thorough testing of 30-day trial period implementation. (1) ✅ PRACTICE REGISTRATION TRIAL: Practice registration via /api/auth/register-practice successfully creates 30-day trial period, tested with 29-day remaining confirming proper implementation and trial end date calculation. (2) ✅ ADMIN CREATE PRACTICE TRIAL: Admin create practice endpoint working with trial subscription type, backend code properly configured for 30-day trial periods in admin.py. (3) ✅ TRIAL PERIOD VERIFICATION: Trial periods correctly set to 30 days from registration date, proper database storage of trial end dates, and subscription status management. (4) ✅ BACKEND IMPLEMENTATION CONFIRMED: Code analysis confirms 30-day trial period is properly implemented in both user registration and admin practice creation flows, replacing previous 15-day trial period as requested. All trial functionality is working correctly and ready for production use."
 
+  - task: "Fresh Password Reset Email Generation and Token Testing"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "🚨 FRESH PASSWORD RESET EMAIL SUCCESSFULLY SENT - DATABASE MISMATCH CONFIRMED: Conducted comprehensive testing as specifically requested to send fresh password reset email to caryganz@gmail.com and test new token validation. (1) ✅ FRESH EMAIL SENT SUCCESSFULLY: Successfully sent new password reset email to caryganz@gmail.com using POST /api/auth/forgot-password. Backend logs confirm 'Password reset token generated for caryganz@gmail.com in practices collection' and 'Password reset email sent successfully to caryganz@gmail.com'. (2) ✅ NEW TOKEN GENERATED: New password reset token 363b4824-6de7-4a51-a002-310c04f5f41e generated and stored in current backend database. Token created at 2025-10-06 01:47:21.465000 with 1-hour expiry (expires 2025-10-06 02:47:21.465000). (3) ✅ TOKEN VALIDATION CONFIRMED: New token validates successfully on correct backend (dentiportal.preview.emergentagent.com) returning 200 status with user details: email 'caryganz@gmail.com', firstName 'Practice', lastName 'Admin'. (4) ❌ DATABASE MISMATCH ISSUE CONFIRMED: New token fails validation on wrong backend (dentist-portal-3.emergent.host) returning 400 'Invalid or expired reset token' error. This confirms the database mismatch issue - tokens are stored in one database but user is accessing different backend instance. (5) ✅ EMAIL CONFIGURATION VERIFIED: FRONTEND_URL correctly set to https://app.dentalaftercarenotes.com. Password reset emails contain correct reset link domain, not the wrong domain user is accessing. (6) 🎯 CRITICAL FINDINGS: The issue is NOT with token generation or email sending - both work perfectly. The problem is user accessing wrong backend URL (dentist-portal-3.emergent.host) instead of correct URL where tokens are validated. User needs to check their email for correct reset link with proper domain (https://app.dentalaftercarenotes.com/reset-password?token=363b4824-6de7-4a51-a002-310c04f5f41e). The fresh token 363b4824-6de7-4a51-a002-310c04f5f41e is valid and ready for use on the correct backend."
+
   - task: "Welcome Email URL Verification"
     implemented: true
     working: true
