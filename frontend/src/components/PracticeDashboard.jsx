@@ -21,7 +21,8 @@ import {
   User,
   Upload,
   BookOpen,
-  CheckCircle
+  CheckCircle,
+  HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { practiceApi } from '../services/authApi';
