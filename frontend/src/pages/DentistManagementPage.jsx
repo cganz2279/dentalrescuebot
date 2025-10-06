@@ -377,8 +377,12 @@ const DentistManagementPage = () => {
                   <label className="text-sm font-medium text-gray-700">Phone Number</label>
                   <Input
                     value={newDentist.phone}
-                    onChange={(e) => setNewDentist({...newDentist, phone: e.target.value})}
+                    onChange={(e) => {
+                      const formattedPhone = formatPhoneNumber(e.target.value);
+                      setNewDentist({...newDentist, phone: formattedPhone});
+                    }}
                     placeholder="(555) 123-4567"
+                    maxLength={14}
                   />
                 </div>
                 
