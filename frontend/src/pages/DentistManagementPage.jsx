@@ -125,6 +125,10 @@ const DentistManagementPage = () => {
         licenseNumber: '',
         specialties: []
       });
+      
+      // Clear any field errors on successful submission
+      setFieldErrors({});
+      
       setShowAddDentist(false);
       loadDentists(); // Reload the list
     } catch (error) {
