@@ -15,9 +15,9 @@ import time
 from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
 
-# Use the corrected backend URL as specified in the review request
-CORRECTED_BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
-API_BASE = f"{CORRECTED_BACKEND_URL}/api"
+# Use the actual backend URL from frontend configuration
+ACTUAL_BACKEND_URL = "https://dentist-portal-3.emergent.host"
+API_BASE = f"{ACTUAL_BACKEND_URL}/api"
 
 class ForgotPasswordTester:
     def __init__(self):
