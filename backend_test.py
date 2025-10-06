@@ -991,23 +991,23 @@ class ForgotPasswordTester:
         print("🎯 FOCUS: Send fresh password reset email to caryganz@gmail.com with corrected FRONTEND_URL")
         print("=" * 80)
         
-        # 1. Send fresh password reset email to caryganz@gmail.com
-        print("🚨 STEP 1: Sending fresh password reset email...")
+        # 1. Verify FRONTEND_URL configuration
+        print("🚨 STEP 1: Verifying FRONTEND_URL configuration...")
+        self.verify_frontend_url_configuration()
+        time.sleep(1)
+        
+        # 2. Send fresh password reset email to caryganz@gmail.com
+        print("🚨 STEP 2: Sending fresh password reset email...")
         email_sent = self.send_fresh_password_reset_email()
         time.sleep(2)
         
-        # 2. Test that token validation endpoint is working
-        print("🚨 STEP 2: Testing token validation endpoint...")
-        self.test_new_token_validation()
+        # 3. Test new token generation and validation
+        print("🚨 STEP 3: Testing new token generation and validation...")
+        self.test_new_token_generation_and_validation()
         time.sleep(1)
         
-        # 3. Test the old token to show the difference
-        print("🚨 STEP 3: Testing old token for comparison...")
-        self.test_specific_reset_token()
-        time.sleep(1)
-        
-        # 4. Verify email configuration
-        print("🚨 STEP 4: Verifying email configuration...")
+        # 4. Verify reset link format
+        print("🚨 STEP 4: Verifying reset link format...")
         self.test_email_url_configuration()
         time.sleep(1)
         
