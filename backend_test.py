@@ -452,7 +452,7 @@ class DentistManagementTester:
                 if "detail" in data and isinstance(data["detail"], list):
                     validation_errors = data["detail"]
                     email_error = any(
-                        error.get("loc") == ["email"] and "email" in error.get("msg", "").lower()
+                        ("email" in error.get("loc", []) and "email" in error.get("msg", "").lower())
                         for error in validation_errors
                     )
                     if email_error:
