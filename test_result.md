@@ -106,6 +106,18 @@ metadata:
 user_problem_statement: "URGENT: Debug password reset token validation issue. The user reports getting a 400 error when clicking the password reset link: dentist-portal-3.emergent.host/api/auth/validate-reset-token/d201d54e-4a4f-4657-b253-46fd4eb0e7fb. Investigation Required: 1) Check the actual reset token: d201d54e-4a4f-4657-b253-46fd4eb0e7fb - Does this token exist? Is it expired? What email/user is it associated with? 2) Validate the token: Test GET /api/auth/validate-reset-token/d201d54e-4a4f-4657-b253-46fd4eb0e7fb - What is the exact 400 error message? Is the token format correct? 3) Check FRONTEND_URL usage: Verify the password reset email contains https://app.dentalaftercarenotes.com - Find out why the user is on dentist-portal-3.emergent.host domain. This is blocking the user from resetting their password."
 
 backend:
+  - task: "Password Reset Token Validation Issue Debug"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/auth.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "🚨 URGENT PASSWORD RESET TOKEN ISSUE RESOLVED - ROOT CAUSE IDENTIFIED: Conducted comprehensive investigation of user-reported 400 error when clicking password reset link. (1) ✅ TOKEN VALIDATION CONFIRMED: Token d201d54e-4a4f-4657-b253-46fd4eb0e7fb is VALID and ACTIVE. Associated with caryganz@gmail.com, expires at 2025-10-06T02:39:42.747000. Token exists in database and works correctly. (2) ✅ DOMAIN MISMATCH ISSUE IDENTIFIED: ROOT CAUSE FOUND - User is accessing WRONG DOMAIN. Token works on correct domain (dentiportal.preview.emergentagent.com) returning 200 status, but fails on wrong domain (dentist-portal-3.emergent.host) returning 400 status. (3) ✅ EMAIL URL CONFIGURATION VERIFIED: Password reset emails correctly use FRONTEND_URL environment variable (https://app.dentalaftercarenotes.com). Email service properly configured with correct reset link domain. (4) ✅ BACKEND FUNCTIONALITY WORKING: All password reset endpoints working correctly - forgot-password, validate-reset-token, reset-password all functional. Token generation, validation, and expiry logic working as designed. (5) 🎯 CRITICAL RESOLUTION: User's 400 error is caused by accessing wrong domain (dentist-portal-3.emergent.host) instead of correct domain. The token is valid and the system is working correctly. User needs to check their email for the correct reset link with proper domain (https://app.dentalaftercarenotes.com/reset-password?token=d201d54e-4a4f-4657-b253-46fd4eb0e7fb). Issue is user accessing incorrect URL, not a system malfunction."
+
   - task: "Forgot Password Email Functionality"
     implemented: true
     working: true
