@@ -6,6 +6,7 @@ from sendgrid.helpers.mail.file_type import FileType
 from sendgrid.helpers.mail.disposition import Disposition
 import os
 import base64
+import traceback
 from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
