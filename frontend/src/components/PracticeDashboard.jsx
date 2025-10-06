@@ -1483,6 +1483,8 @@ const PracticeDashboard = () => {
             </CardContent>
           </Card>
         </div>
+          </>
+        )}
 
         {/* Support History Section */}
         {currentView === 'support' && (
