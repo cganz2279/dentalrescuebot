@@ -1065,6 +1065,23 @@ const PracticeDashboard = () => {
             <span className="font-medium">Follow-up Stats</span>
             <span className="text-xs text-gray-600">{showFollowUpStats ? 'Hide Stats' : 'View Stats'}</span>
           </Button>
+          <Button 
+            onClick={() => setShowSupportModal(true)}
+            className="bg-orange-600 hover:bg-orange-700 text-white h-20 flex flex-col"
+          >
+            <HelpCircle className="h-6 w-6 mb-2" />
+            <span className="font-medium">Get Help</span>
+            <span className="text-xs opacity-90">Support & Suggestions</span>
+          </Button>
+          <Button 
+            onClick={() => setCurrentView(currentView === 'support' ? 'dashboard' : 'support')}
+            variant="outline"
+            className="h-20 flex flex-col"
+          >
+            <FileText className="h-6 w-6 mb-2" />
+            <span className="font-medium">Support History</span>
+            <span className="text-xs text-gray-600">{currentView === 'support' ? 'Back to Dashboard' : 'View Requests'}</span>
+          </Button>
         </div>
 
         {/* Follow-up Stats Section */}
