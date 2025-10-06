@@ -26,7 +26,7 @@ except:
     pass
 
 if not backend_url:
-    backend_url = "https://samcart-auth-fix.preview.emergentagent.com"
+    backend_url = "https://dentiportal.preview.emergentagent.com"
 
 print(f"🔗 Using backend URL: {backend_url}")
 
@@ -243,7 +243,7 @@ def test_samcart_webhook_verification():
             print("   • Integration is working - ready for real payment testing")
             print("   • Monitor webhook logs for any payment attempts")
         else:
-            print("   • Verify SamCart webhook URL: https://samcart-auth-fix.preview.emergentagent.com/api/webhook/samcart")
+            print("   • Verify SamCart webhook URL: https://dentiportal.preview.emergentagent.com/api/webhook/samcart")
             print("   • Check SamCart dashboard webhook configuration")
             print("   • Test with a real payment attempt")
             print("   • Verify webhook is enabled for ProductPurchased events")

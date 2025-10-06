@@ -117,7 +117,7 @@ async def create_sample_practices():
     print("1. dr.johnson@smiledentalclinic.com / dental123")
     print("2. dr.chen@familydentalcare.com / dental456") 
     print("3. test@test.com / test123")
-    print("\n🌐 Try logging in at: https://samcart-auth-fix.preview.emergentagent.com")
+    print("\n🌐 Try logging in at: https://dentiportal.preview.emergentagent.com")
     
     client.close()
 

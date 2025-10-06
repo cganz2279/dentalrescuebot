@@ -3,7 +3,7 @@ import requests
 import json
 
 # Test authentication and logo data
-url = "https://samcart-auth-fix.preview.emergentagent.com"
+url = "https://dentiportal.preview.emergentagent.com"
 auth_data = {"email": "cganz2279@gmail.com", "password": "password123"}
 
 print("Testing authentication...")

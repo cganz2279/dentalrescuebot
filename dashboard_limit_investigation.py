@@ -11,7 +11,7 @@ import json
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configuration
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

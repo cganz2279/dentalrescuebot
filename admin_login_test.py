@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com/api"
 
 # Admin credentials from the review request
 ADMIN_CREDENTIALS = {

@@ -76,7 +76,7 @@ async def create_dr_ganz_account():
     print("\n📝 Your Login Credentials:")
     print("Email: cganz2279@gmail.com")
     print("Password: password123")
-    print("\n🌐 Login at: https://samcart-auth-fix.preview.emergentagent.com")
+    print("\n🌐 Login at: https://dentiportal.preview.emergentagent.com")
     
     client.close()
 

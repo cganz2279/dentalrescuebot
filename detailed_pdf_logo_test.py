@@ -9,7 +9,7 @@ import base64
 from io import BytesIO
 
 # Configuration
-BASE_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
+BASE_URL = "https://dentiportal.preview.emergentagent.com/api"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

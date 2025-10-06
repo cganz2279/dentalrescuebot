@@ -11,8 +11,8 @@ from datetime import datetime
 import time
 
 # Configuration
-FRONTEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+FRONTEND_URL = "https://dentiportal.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 TEST_EMAIL = "cganz2279@gmail.com"
 TEST_PASSWORD = "password123"
 

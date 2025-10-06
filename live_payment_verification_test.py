@@ -21,7 +21,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 
 def print_header(title):
     print(f"\n{'='*60}")

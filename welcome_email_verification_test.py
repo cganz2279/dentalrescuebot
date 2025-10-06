@@ -30,7 +30,7 @@ import os
 import sys
 
 # Configuration
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dentiportal.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 class WelcomeEmailVerificationTest:

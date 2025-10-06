@@ -13,7 +13,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 
 def print_header(title):
     print(f"\n{'='*60}")
@@ -235,7 +235,7 @@ def main():
         print_info("✅ Welcome emails are being sent")
         print_info("✅ Customers can access their accounts")
         print_info("✅ Password reset system working")
-        print_info("\n🔗 Customer Login URL: https://samcart-auth-fix.preview.emergentagent.com/login")
+        print_info("\n🔗 Customer Login URL: https://dentiportal.preview.emergentagent.com/login")
     else:
         print_error("🚨 LIVE PAYMENT FLOW: PARTIAL ISSUES")
         print_info("Issues detected:")

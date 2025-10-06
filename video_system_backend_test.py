@@ -24,7 +24,7 @@ import tempfile
 import io
 
 # Configuration
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 ADMIN_CREDENTIALS = {
     "email": "cganz@admin.com",
     "password": "Dentist1#"

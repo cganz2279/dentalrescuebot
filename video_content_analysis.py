@@ -8,7 +8,7 @@ import os
 import sys
 from pathlib import Path
 
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 
 def analyze_video_files():
     """Analyze the actual video files to understand why they don't play"""

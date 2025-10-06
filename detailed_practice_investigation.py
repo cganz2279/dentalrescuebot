@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend configuration
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com/api"
 
 def authenticate():
     """Get JWT token for authenticated requests"""

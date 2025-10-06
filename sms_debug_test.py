@@ -8,7 +8,7 @@ from datetime import datetime
 import time
 
 # Get backend URL from environment
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://dentiportal.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 print(f"🔍 SMS FUNCTIONALITY DEBUG TESTING")

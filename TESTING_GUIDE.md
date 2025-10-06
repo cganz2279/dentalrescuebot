@@ -25,7 +25,7 @@ Your application is now **LOCKED AND STABLE** for testing. Here's what's confirm
 ## 🧪 TESTING CHECKLIST
 
 ### 📱 MAIN APPLICATION TESTING
-**URL**: `https://samcart-auth-fix.preview.emergentagent.com/`
+**URL**: `https://dentiportal.preview.emergentagent.com/`
 **Login**: `cganz2279@gmail.com` / `password123`
 
 #### ✅ Dashboard & Navigation
@@ -64,7 +64,7 @@ Your application is now **LOCKED AND STABLE** for testing. Here's what's confirm
 - [ ] Assignment creation successful
 
 ### 🔧 ADMIN DASHBOARD TESTING  
-**URL**: `https://samcart-auth-fix.preview.emergentagent.com/admin`
+**URL**: `https://dentiportal.preview.emergentagent.com/admin`
 **Login**: `cganz@admin.com` / `Dentist1#`
 
 #### ✅ Admin Navigation

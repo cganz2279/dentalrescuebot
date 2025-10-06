@@ -10,9 +10,9 @@
 ### **Main Application URLs**
 | Service | URL | Purpose |
 |---------|-----|---------|
-| **Main App** | `https://samcart-auth-fix.preview.emergentagent.com` | Primary dental practice application |
-| **Admin Console** | `https://samcart-auth-fix.preview.emergentagent.com/admin` | Full admin management interface |
-| **HTML Admin Dashboard** | `https://samcart-auth-fix.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
+| **Main App** | `https://dentiportal.preview.emergentagent.com` | Primary dental practice application |
+| **Admin Console** | `https://dentiportal.preview.emergentagent.com/admin` | Full admin management interface |
+| **HTML Admin Dashboard** | `https://dentiportal.preview.emergentagent.com/api/admin/dashboard-html` | Advanced admin dashboard (backup) |
 
 ### **WordPress Integration URLs**
 | Page | URL | Purpose |
@@ -83,7 +83,7 @@
 ## 🛠 **System Management**
 
 ### **Backend API Endpoints**
-- **Base URL:** `https://samcart-auth-fix.preview.emergentagent.com/api`
+- **Base URL:** `https://dentiportal.preview.emergentagent.com/api`
 - **Admin Login:** `POST /admin/login`
 - **Practice Management:** `GET /admin/practices`
 - **Procedure Requests:** `GET /admin/procedure-requests`

@@ -26,7 +26,7 @@ if frontend_env_path.exists():
                 BACKEND_URL = line.split('=', 1)[1].strip()
                 break
 else:
-    BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+    BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 
 API_BASE = f"{BACKEND_URL}/api"
 

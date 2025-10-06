@@ -15,7 +15,7 @@ import os
 import sys
 
 # Test configuration
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 TARGET_EMAIL = "caryganzconsulting@gmail.com"
 ADMIN_CREDENTIALS = {
     "email": "cganz@admin.com",

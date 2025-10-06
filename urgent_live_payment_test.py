@@ -16,7 +16,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 
 def print_header(title):
     print(f"\n{'='*60}")
@@ -346,7 +346,7 @@ def main():
     if overall_success and sendgrid_ok:
         print_success("🎉 LIVE PAYMENT PROCESSING: SUCCESS")
         print_info("Complete payment flow working for real customers!")
-        print_info("Customers can login at: https://samcart-auth-fix.preview.emergentagent.com/login")
+        print_info("Customers can login at: https://dentiportal.preview.emergentagent.com/login")
         print_info("Password reset available if needed")
     else:
         print_error("🚨 LIVE PAYMENT PROCESSING: ISSUES DETECTED")
@@ -367,7 +367,7 @@ def main():
     for email in results.keys():
         if results[email]["account"]:
             print_success(f"Customer {email} can:")
-            print_info(f"  1. Visit: https://samcart-auth-fix.preview.emergentagent.com/login")
+            print_info(f"  1. Visit: https://dentiportal.preview.emergentagent.com/login")
             print_info(f"  2. Use password reset if needed")
             print_info(f"  3. Check email for welcome message and credentials")
 

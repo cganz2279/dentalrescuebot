@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 CUSTOMER_EMAIL = "cganz2279@gmail.com"
 ADMIN_EMAIL = "cganz@admin.com"
 ADMIN_PASSWORD = "Dentist1#"

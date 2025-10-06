@@ -442,7 +442,7 @@ async def get_practice_notes_login():
             content = practice_login_path.read_text()
             # Update API URLs to use current environment
             content = content.replace(
-                'https://samcart-auth-fix.preview.emergentagent.com',
+                'https://dentiportal.preview.emergentagent.com',
                 os.environ.get('FRONTEND_URL', 'https://app.dentalaftercarenotes.com')
             )
             return content

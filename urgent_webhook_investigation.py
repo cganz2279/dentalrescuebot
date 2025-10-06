@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
 
 # Configuration
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://samcart-auth-fix.preview.emergentagent.com')
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://dentiportal.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 class UrgentWebhookInvestigator:
@@ -463,7 +463,7 @@ class UrgentWebhookInvestigator:
             print("   Check the issues above and resolve them first.")
         
         print("\n🔧 IMMEDIATE ACTIONS REQUIRED:")
-        print("1. Verify SamCart webhook URL: https://samcart-auth-fix.preview.emergentagent.com/api/webhook/samcart")
+        print("1. Verify SamCart webhook URL: https://dentiportal.preview.emergentagent.com/api/webhook/samcart")
         print("2. Check SamCart dashboard webhook configuration")
         print("3. Test webhook delivery from SamCart admin panel")
         print("4. Manually create account for customer if needed")

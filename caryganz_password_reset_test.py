@@ -11,7 +11,7 @@ import sys
 import time
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://samcart-auth-fix.preview.emergentagent.com"
+BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 
 def test_password_reset():
     """Test password reset functionality"""
