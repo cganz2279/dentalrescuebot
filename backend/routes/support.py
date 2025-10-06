@@ -107,6 +107,21 @@ async def get_support_requests(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch support requests: {str(e)}")
 
+@router.get("/admin/all-requests", response_model=List[SupportRequestResponse])
+async def get_all_support_requests():
+    """Get all support requests for admin panel (no auth required for admin)"""
+    try:
+        db = await get_database()
+        
+        # Get all support requests
+        cursor = db.support_requests.find({}).sort("created_at", -1)
+        requests = await cursor.to_list(length=1000)
+        
+        return [SupportRequestResponse(**req) for req in requests]
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch all support requests: {str(e)}")
+
 async def send_support_email(support_doc: dict):
     """Send support request email using SendGrid"""
     try:
