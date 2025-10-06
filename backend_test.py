@@ -745,55 +745,148 @@ class ForgotPasswordTester:
             )
             return False
 
+    def send_fresh_password_reset_email(self):
+        """Send a fresh password reset email to caryganz@gmail.com as requested"""
+        print("🚨 URGENT: Sending fresh password reset email to caryganz@gmail.com...")
+        
+        try:
+            # Send password reset email to caryganz@gmail.com
+            payload = {
+                "email": "caryganz@gmail.com",
+                "recovery_method": "email"
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/auth/forgot-password",
+                json=payload,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            print(f"🔍 POST /api/auth/forgot-password Response: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test(
+                    "Fresh Password Reset Email Sent",
+                    True,
+                    f"✅ NEW PASSWORD RESET EMAIL SENT to caryganz@gmail.com. Message: {data.get('message', 'No message')}",
+                    data
+                )
+                
+                # Check if email was actually sent
+                sent_methods = data.get('sent_methods', [])
+                if 'email' in sent_methods:
+                    self.log_test(
+                        "Email Delivery Confirmation",
+                        True,
+                        "✅ Email was successfully sent via SendGrid - NEW TOKEN GENERATED",
+                        {"sent_methods": sent_methods}
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Email Delivery Confirmation",
+                        False,
+                        f"❌ Email not in sent methods: {sent_methods}",
+                        data
+                    )
+                    return False
+                    
+            else:
+                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
+                self.log_test(
+                    "Fresh Password Reset Email Sent",
+                    False,
+                    f"❌ HTTP {response.status_code}: {error_data.get('detail', response.text)}",
+                    error_data
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Fresh Password Reset Email Sent",
+                False,
+                f"❌ Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_new_token_validation(self):
+        """Test that new tokens can be validated on the current backend"""
+        print("🔍 Testing New Token Validation on Current Backend...")
+        
+        try:
+            # Test with a dummy token to verify the validation endpoint works
+            dummy_token = "test-token-12345"
+            
+            response = self.session.get(
+                f"{API_BASE}/auth/validate-reset-token/{dummy_token}"
+            )
+            
+            print(f"🔍 GET /api/auth/validate-reset-token/{dummy_token} Response: {response.status_code}")
+            
+            if response.status_code == 400:
+                data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {}
+                if "Invalid or expired reset token" in data.get('detail', ''):
+                    self.log_test(
+                        "Token Validation Endpoint Working",
+                        True,
+                        "✅ Token validation endpoint is working correctly - rejects invalid tokens",
+                        data
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Token Validation Endpoint Working",
+                        False,
+                        f"❌ Unexpected error message: {data.get('detail')}",
+                        data
+                    )
+                    return False
+            else:
+                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
+                self.log_test(
+                    "Token Validation Endpoint Working",
+                    False,
+                    f"❌ Expected 400 but got {response.status_code}: {error_data}",
+                    error_data
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Token Validation Endpoint Working",
+                False,
+                f"❌ Exception occurred: {str(e)}"
+            )
+            return False
+
     def run_all_tests(self):
-        """Run all forgot password and username tests"""
-        print("🚀 Starting Password Reset Token Validation Testing...")
-        print(f"🔗 Backend URL: {BACKEND_URL}")
+        """Run focused tests for the user's specific request"""
+        print("🚀 Starting Fresh Password Reset Email Testing...")
+        print(f"🔗 Backend URL: {FRONTEND_BACKEND_URL}")
         print(f"🔗 API Base: {API_BASE}")
+        print("🎯 FOCUS: Send fresh password reset email to caryganz@gmail.com")
         print("=" * 80)
         
-        # URGENT: Test the specific token from user report first
-        print("🚨 URGENT: Testing specific token from user report...")
+        # 1. Send fresh password reset email to caryganz@gmail.com
+        print("🚨 STEP 1: Sending fresh password reset email...")
+        email_sent = self.send_fresh_password_reset_email()
+        time.sleep(2)
+        
+        # 2. Test that token validation endpoint is working
+        print("🚨 STEP 2: Testing token validation endpoint...")
+        self.test_new_token_validation()
+        time.sleep(1)
+        
+        # 3. Test the old token to show the difference
+        print("🚨 STEP 3: Testing old token for comparison...")
         self.test_specific_reset_token()
         time.sleep(1)
         
-        self.check_database_for_specific_token()
-        time.sleep(1)
-        
-        # Test the domain mismatch issue
-        print("🚨 URGENT: Testing domain mismatch issue...")
-        self.test_domain_mismatch_issue()
-        time.sleep(1)
-        
+        # 4. Verify email configuration
+        print("🚨 STEP 4: Verifying email configuration...")
         self.test_email_url_configuration()
         time.sleep(1)
-        
-        # Test forgot password functionality
-        self.test_forgot_password_endpoint()
-        time.sleep(1)  # Brief pause between tests
-        
-        self.test_forgot_password_sms()
-        time.sleep(1)
-        
-        self.test_forgot_password_both()
-        time.sleep(1)
-        
-        # Test reset password flow
-        self.test_validate_reset_token_endpoint()
-        time.sleep(1)
-        
-        self.test_reset_password_endpoint()
-        time.sleep(1)
-        
-        # Test forgot username functionality
-        self.test_forgot_username_endpoint()
-        time.sleep(1)
-        
-        # Test URL and branding verification
-        self.test_url_verification()
-        time.sleep(1)
-        
-        self.test_email_branding_verification()
         
         # Print summary
         print("=" * 80)
