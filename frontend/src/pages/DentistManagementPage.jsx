@@ -359,6 +359,7 @@ const DentistManagementPage = () => {
                 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Email Address *</label>
+                  <div className="bg-yellow-200 p-2 text-xs">DEBUG: Code updated at {new Date().toISOString()}</div>
                   <Input
                     type="text"
                     value={newDentist.email}
