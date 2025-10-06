@@ -46,7 +46,7 @@ class DentistManagementTester:
             self.failed_tests.append(test_name)
             print(f"❌ {test_name}: {details}")
     
-    def test_real_samcart_webhook_structure(self):
+    def authenticate(self):
         """Test webhook with real SamCart payload structure"""
         print("\n🔍 Testing Real SamCart Webhook Structure...")
         
