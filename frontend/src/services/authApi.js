@@ -362,3 +362,48 @@ export const patientsApi = {
     return response.data;
   }
 };
+
+// Create axios instance for admin
+const apiClient = axios.create({
+  baseURL: BACKEND_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add auth token to admin requests
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export const adminApi = {
+  login: async (credentials) => {
+    const response = await apiClient.post('/admin/login', credentials);
+    return response.data;
+  },
+
+  getPractices: async (limit = 10, offset = 0) => {
+    const response = await apiClient.get(`/admin/practices?limit=${limit}&offset=${offset}`);
+    return response.data;
+  },
+
+  getDashboardStats: async () => {
+    const response = await apiClient.get('/admin/dashboard-stats');
+    return response.data;
+  },
+
+  getAllSupportRequests: async () => {
+    const response = await apiClient.get('/support/admin/all-requests');
+    return response.data;
+  }
+};
