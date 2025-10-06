@@ -194,7 +194,7 @@ const EditPatientPage = () => {
               </div>
               
               <div>
-                <Label htmlFor="cellphone">Cellphone Number *</Label>
+                <Label htmlFor="phone">Phone Number *</Label>
                 <Input
                   id="cellphone"
                   type="tel"
