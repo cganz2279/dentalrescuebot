@@ -271,6 +271,10 @@ const DentistManagementPage = () => {
       licenseNumber: '',
       specialties: []
     });
+    
+    // Clear any field errors when resetting form
+    setFieldErrors({});
+    
     setShowAddDentist(false);
   };
 
