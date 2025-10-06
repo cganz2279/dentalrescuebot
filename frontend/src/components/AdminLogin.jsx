@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import { adminApi } from '../services/authApi';
+import AdminSupport from './AdminSupport';
 import TutorialManagement from './TutorialManagement';
 
 // Error Boundary to catch React errors
