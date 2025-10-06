@@ -4,8 +4,8 @@ from typing import Optional, List
 import uuid
 from datetime import datetime, timezone
 import os
-from ..database import get_database
-from .auth import get_current_user
+from database import get_database
+from routes.auth import get_current_user
 
 router = APIRouter(prefix="/support", tags=["support"])
 
