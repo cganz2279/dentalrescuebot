@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-CRITICAL SAMCART WEBHOOK INTEGRATION TESTING
-Testing the FIXED SamCart webhook integration with real payload structure
+DENTIST MANAGEMENT API TESTING
+Testing the dentist management endpoints to ensure they work correctly with the updated DentistManagementPage.jsx frontend
 """
 
 import requests
@@ -16,7 +16,11 @@ import sys
 BACKEND_URL = "https://dentiportal.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class SamCartWebhookTester:
+# Test credentials from previous testing
+TEST_EMAIL = "cganz2279@gmail.com"
+TEST_PASSWORD = "password123"
+
+class DentistManagementTester:
     def __init__(self):
         self.test_results = []
         self.failed_tests = []
