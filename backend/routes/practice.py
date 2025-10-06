@@ -1631,7 +1631,7 @@ async def get_patient_csv_template(
             )
         
         # Create CSV template content
-        template_content = "firstName,lastName,email,cellphone,primaryDentist\n"
+        template_content = "firstName,lastName,email,phone,primaryDentist\n"
         template_content += "John,Doe,john.doe@email.com,555-123-4567,Dr. Smith\n"
         template_content += "Jane,Smith,jane.smith@email.com,555-987-6543,Dr. Johnson\n"
         template_content += "Robert,Johnson,robert.j@email.com,555-456-7890,\n"
