@@ -233,7 +233,15 @@ const DentistManagementPage = () => {
       setFieldErrors(prevErrors => {
         console.log('🔧 Previous fieldErrors state:', prevErrors);
         console.log('🔧 Setting fieldErrors state to:', newFieldErrors);
-        return {...newFieldErrors};
+        const updatedErrors = {...newFieldErrors};
+        
+        // Force React to re-render by ensuring the object reference changes
+        if (JSON.stringify(prevErrors) !== JSON.stringify(updatedErrors)) {
+          console.log('🔄 fieldErrors changed, forcing update');
+          return updatedErrors;
+        }
+        console.log('⚠️ fieldErrors unchanged');
+        return prevErrors;
       });
       
       // Only show toast for general errors, not field-specific ones
