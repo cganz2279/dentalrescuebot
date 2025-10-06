@@ -502,13 +502,7 @@ app.include_router(video_api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=[
-        "*",
-        "https://samcart-auth-fix.preview.static.emergentagent.com",
-        "https://dentiportal.preview.emergentagent.com",
-        "http://localhost:3000",
-        "https://localhost:3000"
-    ],
+    allow_origins=["*"],
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
     expose_headers=["*"],
