@@ -87,6 +87,9 @@ const DentistManagementPage = () => {
   };
 
   const handleAddDentist = async () => {
+    console.log('🚀 handleAddDentist called with newDentist:', newDentist);
+    console.log('🔍 newDentist.id value:', newDentist.id);
+    
     if (!newDentist.firstName || !newDentist.lastName || !newDentist.email) {
       toast({
         title: "Validation Error",
