@@ -57,7 +57,7 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 
-user_problem_statement: "URGENT: Create caryganz@gmail.com practice account in the empty database. The MongoDB collections are completely empty which is why wrong/cached data is showing. Please: 1. Create practice account for caryganz@gmail.com in practices collection 2. Set practice name to 'The Dental Spa at Garden City' 3. Set all proper practice details (owner: Cary Ganz, phone: 516-236-1083) 4. Set a working password so they can login 5. Verify the account is created and can be retrieved from database 6. Test login returns correct practice data. The database is empty which explains why login shows cached/mock practice data instead of real account. Customer needs their actual paid practice account created."
+user_problem_statement: "Complete DentistManagementPage.jsx fixes to resolve React rendering error and implement field-level validation. Port critical frontend fixes from PracticeSettingsPage.jsx including: 1. Phone number formatting with formatPhoneNumber function 2. Email input field validation with red borders and inline error messages 3. Field-level error handling for Pydantic validation errors 4. Clear field errors on successful submission and form reset. The React rendering error 'Objects are not valid as React child' was occurring when adding/editing dentists due to missing error handling."
 
 backend:
   - task: "Practice Authentication API"
