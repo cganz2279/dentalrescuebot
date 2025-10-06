@@ -103,7 +103,7 @@ metadata:
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 
-user_problem_statement: "Complete DentistManagementPage.jsx fixes to resolve React rendering error and implement field-level validation. Port critical frontend fixes from PracticeSettingsPage.jsx including: 1. Phone number formatting with formatPhoneNumber function 2. Email input field validation with red borders and inline error messages 3. Field-level error handling for Pydantic validation errors 4. Clear field errors on successful submission and form reset. The React rendering error 'Objects are not valid as React child' was occurring when adding/editing dentists due to missing error handling."
+user_problem_statement: "Test the 'Forgot Password' and 'Forgot Username' functionality to ensure they work correctly with caryganz@gmail.com email address. Verify password reset emails are sent with correct URL pointing to https://app.dentalaftercarenotes.com (not SamCart/preview URLs), working reset links with proper tokens, professional branding (Dental AfterCare Notes), and clear instructions for password reset. Check if 'Forgot Username' functionality exists and test it. Ensure all password reset emails use FRONTEND_URL environment variable and verify no SamCart or preview URLs are present."
 
 backend:
   - task: "Practice Authentication API"
