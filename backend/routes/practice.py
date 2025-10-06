@@ -1568,7 +1568,7 @@ async def import_patients_csv(
                     "invitedBy": user_id,
                     "invitedAt": datetime.utcnow(),
                     "loginCount": 0,
-                    "cellphone": cellphone,
+                    "phone": phone,
                     "primaryDentist": primary_dentist if primary_dentist else None,
                     "importedAt": datetime.utcnow(),
                     "importedBy": user_id,
