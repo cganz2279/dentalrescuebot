@@ -103,7 +103,7 @@ metadata:
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 
-user_problem_statement: "Test the 'Forgot Password' and 'Forgot Username' functionality to ensure they work correctly with caryganz@gmail.com email address. Verify password reset emails are sent with correct URL pointing to https://app.dentalaftercarenotes.com (not SamCart/preview URLs), working reset links with proper tokens, professional branding (Dental AfterCare Notes), and clear instructions for password reset. Check if 'Forgot Username' functionality exists and test it. Ensure all password reset emails use FRONTEND_URL environment variable and verify no SamCart or preview URLs are present."
+user_problem_statement: "URGENT: Debug password reset token validation issue. The user reports getting a 400 error when clicking the password reset link: dentist-portal-3.emergent.host/api/auth/validate-reset-token/d201d54e-4a4f-4657-b253-46fd4eb0e7fb. Investigation Required: 1) Check the actual reset token: d201d54e-4a4f-4657-b253-46fd4eb0e7fb - Does this token exist? Is it expired? What email/user is it associated with? 2) Validate the token: Test GET /api/auth/validate-reset-token/d201d54e-4a4f-4657-b253-46fd4eb0e7fb - What is the exact 400 error message? Is the token format correct? 3) Check FRONTEND_URL usage: Verify the password reset email contains https://app.dentalaftercarenotes.com - Find out why the user is on dentist-portal-3.emergent.host domain. This is blocking the user from resetting their password."
 
 backend:
   - task: "Forgot Password Email Functionality"
