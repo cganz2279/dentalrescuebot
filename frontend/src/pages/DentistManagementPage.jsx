@@ -342,11 +342,35 @@ const DentistManagementPage = () => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Email Address *</label>
                   <Input
-                    type="email"
+                    type="text"
                     value={newDentist.email}
-                    onChange={(e) => setNewDentist({...newDentist, email: e.target.value})}
+                    onChange={(e) => {
+                      const newEmail = e.target.value;
+                      console.log('Email onChange:', newEmail);
+                      
+                      // Clear field error when user starts typing
+                      if (fieldErrors.email) {
+                        setFieldErrors({...fieldErrors, email: null});
+                      }
+                      
+                      setNewDentist({...newDentist, email: newEmail});
+                    }}
+                    onBlur={(e) => {
+                      console.log('Email onBlur:', e.target.value);
+                    }}
                     placeholder="Enter email address"
+                    autoComplete="email"
+                    noValidate
+                    className={fieldErrors.email ? "border-red-500 focus:border-red-500" : ""}
                   />
+                  {fieldErrors.email && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
