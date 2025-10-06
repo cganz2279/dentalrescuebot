@@ -125,7 +125,7 @@ async def get_all_support_requests():
 async def send_support_email(support_doc: dict):
     """Send support request email using SendGrid"""
     try:
-        from ..services.email_service import EmailService
+        from services.email_service import EmailService
         
         email_service = EmailService()
         
