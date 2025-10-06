@@ -398,7 +398,10 @@ const LoginForm = ({ onSwitchToRegister }) => {
             <p className="text-sm">
               <button 
                 type="button"
-                onClick={() => setShowForgotPassword(true)}
+                onClick={() => {
+                  console.log('🔍 Forgot Password clicked, setting showForgotPassword to true');
+                  setShowForgotPassword(true);
+                }}
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
                 Forgot Password?
