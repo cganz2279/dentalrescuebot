@@ -605,3 +605,39 @@ async def send_email(email_data: EmailData) -> bool:
         import traceback
         traceback.print_exc()
         return False
+    
+    async def send_custom_email(self, to_email: str, subject: str, html_content: str, from_email: str = None, from_name: str = None):
+        """Send a custom email with specified content"""
+        try:
+            # Create a fresh SendGrid client for this email
+            sg = SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
+            
+            from_email_obj = Email(from_email or "noreply@dentalaftercarenotes.com", from_name or "Dental AfterCare Notes")
+            to_email_obj = To(to_email)
+            
+            # Create the email
+            mail = Mail(
+                from_email=from_email_obj,
+                to_emails=to_email_obj,
+                subject=subject,
+                html_content=html_content
+            )
+            
+            # Set reply-to if different from sender
+            if from_email and from_email != "noreply@dentalaftercarenotes.com":
+                mail.reply_to = ReplyTo(from_email, from_name)
+            
+            # Send email
+            response = sg.send(mail)
+            
+            if response.status_code in [200, 201, 202]:
+                print(f"✅ Custom email sent successfully to {to_email}")
+                return True
+            else:
+                print(f"❌ Failed to send custom email. Status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Error sending custom email: {str(e)}")
+            traceback.print_exc()
+            return False
